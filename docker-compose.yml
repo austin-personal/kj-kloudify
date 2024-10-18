@@ -1,20 +1,18 @@
 services:
   client:
     build:
-      context: ./client
+      context: ${CLIENT_PATH}  # 환경 변수를 사용하여 경로 설정
     ports:
-      - "80:80"  # React는 Nginx에서 80번 포트로 제공
+      - "80:80"
     volumes:
-      - ./client:/app
+      - ${CLIENT_PATH}:/app  # 환경 변수를 사용하여 경로 설정
     depends_on:
       - server
 
   server:
     build:
-      context: ./server
+      context: ${SERVER_PATH}
     ports:
-      - "3000:3000"  # NestJS는 3000번 포트에서 동작
+      - "3000:3000"
     volumes:
-      - ./server:/app
-
-
+      - ${SERVER_PATH}:/app
