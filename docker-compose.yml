@@ -1,0 +1,20 @@
+services:
+  client:
+    build:
+      context: ./client
+    ports:
+      - "80:80"  # React는 Nginx에서 80번 포트로 제공
+    volumes:
+      - ./client:/app
+    depends_on:
+      - server
+
+  server:
+    build:
+      context: ./server
+    ports:
+      - "3000:3000"  # NestJS는 3000번 포트에서 동작
+    volumes:
+      - ./server:/app
+
+

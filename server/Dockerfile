@@ -1,0 +1,18 @@
+# 베이스 이미지로 Node.js 선택
+FROM node:16
+
+# 작업 디렉토리 설정
+WORKDIR /app
+
+# 의존성 복사 및 설치
+COPY package*.json ./
+RUN npm install
+
+# 소스 파일 복사
+COPY . .
+
+# NestJS 애플리케이션 빌드 및 실행
+RUN npm run build
+CMD ["npm", "run", "start:prod"]
+
+EXPOSE 3000
