@@ -13,6 +13,7 @@ COPY . .
 
 # NestJS 애플리케이션 빌드 및 실행
 RUN npm run build
-CMD ["npm", "run", "start:prod"]
+# changed from CMD ["npm", "run", "start:prod"] :prod will need to have dist folder in local
+CMD ["npm", "run", "start"] 
 
 EXPOSE 3000
