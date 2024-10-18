@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
-  imports: [],
-  controllers: [AppController],  // AppController가 등록되어 있는지 확인
+  imports: [AuthModule],
+  controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {}
