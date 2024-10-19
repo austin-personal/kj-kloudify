@@ -1,12 +1,11 @@
 import React from 'react';
-import './Home.css';
 
-function Home() {
-  return (
-    <div>
-      
-    </div>
-  );
-}
+const Home: React.FC = () => {
+    return (
+        <div style={{ textAlign: 'center', marginTop: '50px' }}>
+            <h1>Welcome to the Home Page</h1>
+        </div>
+    );
+};
 
 export default Home;

@@ -1,19 +1,24 @@
 import React from 'react';
-import './Login.css';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Home from '../Home/Home'
+import { useNavigate } from 'react-router-dom';
 
-function Login() {
+interface LoginProps {
+    setIsLoggedIn: (loggedIn: boolean) => void;
+}
+
+const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
+    const navigate = useNavigate();
+
+    const handleLogin = () => {
+        setIsLoggedIn(true);
+        navigate('/');
+    };
+
     return (
-        <div>
-            <Router>
-                <button></button>
-                <Routes>
-                    <Route path="/" element={<Home />} />
-                </Routes>
-            </Router>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '50px' }}>
+            <h1>Login</h1>
+            <button onClick={handleLogin}>Login</button>
         </div>
     );
-}
+};
 
 export default Login;
