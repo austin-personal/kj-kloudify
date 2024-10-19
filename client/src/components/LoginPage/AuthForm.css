@@ -1,0 +1,36 @@
+.auth-form h2 {
+    margin-bottom: 20px;
+}
+
+.auth-form input {
+    display: block;
+    margin: 10px 0;
+    padding: 10px;
+    width: 100%;
+    max-width: 300px;
+}
+
+.auth-form button {
+    padding: 10px 20px;
+    margin: 10px 0;
+}
+
+.divider {
+    margin: 20px 0;
+    color: #999;
+}
+
+.google-login {
+    background-color: #4285F4;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    margin: 10px 0;
+}
+
+.auth-toggle {
+    margin-top: 20px;
+    cursor: pointer;
+    color: #007bff;
+}
