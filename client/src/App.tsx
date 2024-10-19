@@ -25,7 +25,7 @@ const AppRoutes: React.FC = () => {
             <Routes>
                 <Route path="/" element={<Login />} />
                 <Route path="/home" element={<Home />} />
-                {/* 잘못된 주소로 접근할 경우 로그인 페이지로 소환*/}
+                {/* 잘못된 주소로 접근할 경우 로그인 페이지로 소환 */}
                 <Route path="*" element={<Navigate to="/" />} />
             </Routes>
         </>
