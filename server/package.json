@@ -18,13 +18,20 @@
     "@nestjs/jwt": "^10.2.0",
     "@nestjs/passport": "^10.0.3",
     "@nestjs/platform-express": "^10.4.5",
+    "@nestjs/typeorm": "^10.0.2",
+    "bcrypt": "^5.1.1",
+    "bcryptjs": "^2.4.3",
+    "mysql2": "^3.11.3",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
-    "reflect-metadata": "0.2"
+    "pg": "^8.13.0",
+    "reflect-metadata": "0.2",
+    "typeorm": "^0.3.20"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.4.5",
     "@nestjs/schematics": "^10.2.2",
+    "@types/bcrypt": "^5.0.2",
     "@types/node": "^22.7.6",
     "typescript": "^5"
   }
