@@ -2,10 +2,18 @@ import React, { useState, useEffect, useRef } from "react";
 import "./Chat.css";
 import { Typewriter } from "react-simple-typewriter";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCircleDown } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCircleDown,
+  faCloud,
+  faPaperPlane,
+} from "@fortawesome/free-solid-svg-icons";
 // import axios from "axios"; //백엔드 연결 위함
 //id 값에 date 대신 더 안정성있는 uuid 방식 사용/ 고유한 식별자를 생성하기 때문
 const { v4: uuidv4 } = require("uuid");
+
+interface ChatProps {
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}
 
 interface Message {
   id: number;
@@ -13,7 +21,7 @@ interface Message {
   sender: "user" | "bot";
   maxLength?: number;
 }
-const Chat: React.FC = () => {
+const Chat: React.FC<ChatProps> = ({ setIsOpen }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [showScrollButton, setShowScrollButton] = useState(false);
@@ -86,23 +94,33 @@ const Chat: React.FC = () => {
   };
   return (
     <div className="chat-container">
+      <div className="notice-text">
+        채팅창을 누르면 자세한 설명을 볼 수 있어요.
+      </div>
       <div className="message-list " ref={scrollRef}>
         {messages.map((message) => (
-          <div
-            key={message.id}
-            className={`message ${
-              message.sender === "user" ? "user-message" : "bot-message"
-            }`}
-          >
-            {message.sender === "bot" && message.text !== "로딩중..." ? (
-              <TypingMessage
-                text={message.text}
-                maxLength={message.maxLength || 100}
-              />
-            ) : (
-              message.text
+          <>
+            {message.sender === "bot" && (
+              <FontAwesomeIcon className="bot-icon" icon={faCloud} />
             )}
-          </div>
+            <div
+              key={message.id}
+              className={`message ${
+                message.sender === "user" ? "user-message" : "bot-message"
+              }`}
+            >
+              {message.sender === "bot" ? (
+                <div onClick={() => setIsOpen(true)}>
+                  <TypingMessage
+                    text={message.text}
+                    maxLength={message.maxLength || 100}
+                  />
+                </div>
+              ) : (
+                message.text
+              )}
+            </div>
+          </>
         ))}
       </div>
 
@@ -116,14 +134,16 @@ const Chat: React.FC = () => {
         />
       )}
       <div className="input-container">
-        <form className="" onSubmit={handleSendMessage}>
+        <form className="form" onSubmit={handleSendMessage}>
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Type a message..."
           />
-          <button type="submit">Send</button>
+          <button type="submit">
+            <FontAwesomeIcon icon={faPaperPlane} />
+          </button>
         </form>
       </div>
     </div>
@@ -156,13 +176,13 @@ const TypingMessage: React.FC<TypingMessageProps> = ({ text, maxLength }) => {
   }, [typedText, maxLength, text]);
 
   return (
-    <>
+    <div>
       {typingStopped ? (
         <p>{text}</p> // 타이핑 중단 후 전체 텍스트 표시
       ) : (
         <p>{typedText}|</p> // 타이핑되는 텍스트
       )}
-    </>
+    </div>
   );
 };
 
