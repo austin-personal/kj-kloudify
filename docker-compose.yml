@@ -5,7 +5,7 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ${CLIENT_PATH}:/app  # 환경 변수를 사용하여 경로 설정
+      - ${CLIENT_PATH}:/app
     depends_on:
       - server
 
@@ -16,3 +16,9 @@ services:
       - "3000:3000"
     volumes:
       - ${SERVER_PATH}:/app
+    environment:
+      - DATABASE_HOST=host.docker.internal  # 로컬 MySQL에 연결
+      - DATABASE_PORT=3306
+      - DATABASE_USER=root
+      - DATABASE_PASSWORD=1234
+      - DATABASE_NAME=my_test

@@ -21,9 +21,8 @@ export class UsersController {
   @Post('login')
   async login(@Body() loginDto: LoginDto): Promise<{ access_token: string }> {
     const user = await this.usersService.validateUser(loginDto.username, loginDto.password);
-    if (!user) {
-      throw new UnauthorizedException();
-    }
+    // validateUser 메서드에서 예외가 발생하지 않으면 user는 null이 될 수 없으므로 추가적인 null 체크 불필요
     return this.usersService.login(user);  // 비밀번호를 제외한 user 정보
   }
+  
 }

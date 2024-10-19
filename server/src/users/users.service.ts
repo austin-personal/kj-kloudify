@@ -1,45 +1,51 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
-import { User } from './users.interface';  // User 인터페이스 가져오기
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { UserEntity } from './users.entity';  // UserEntity 가져오기
 import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class UsersService {
-  private readonly users: User[] = [];  // User 타입으로 정의
+  constructor(
+    @InjectRepository(UserEntity)
+    private readonly usersRepository: Repository<UserEntity>,  // TypeORM Repository 주입
+    private readonly jwtService: JwtService,
+  ) {}
 
-  constructor(private readonly jwtService: JwtService) {}  // JwtService 주입
-
-  async findOne(username: string): Promise<User | undefined> {
-    return this.users.find(user => user.username === username);
+  async findOne(username: string): Promise<UserEntity | null> {
+    return this.usersRepository.findOne({ where: { username } });
   }
 
-  async createUser(username: string, password: string, email?: string): Promise<User> {
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser: User = {
-      id: this.users.length + 1,
+  async createUser(username: string, password: string, email?: string): Promise<UserEntity> {
+    const hashedPassword = await bcrypt.hash(password, 10);  // 비밀번호 해시
+    const newUser = this.usersRepository.create({
       username,
       password: hashedPassword,
-      email: email || '',  // email 필드 명시
-      createdAt: new Date(),  // createdAt 필드 추가
-    };
-    this.users.push(newUser);
-    return newUser;
+      email,
+    });
+    return this.usersRepository.save(newUser);  // DB에 저장
   }
 
-  async login(user: Omit<User, 'password'>): Promise<{ access_token: string }> {
+  async login(user: Omit<UserEntity, 'password'>): Promise<{ access_token: string }> {
     const payload = { username: user.username, sub: user.id };  // JWT 페이로드
     return {
-      access_token: this.jwtService.sign(payload),  // 실제 JWT 발급
+      access_token: this.jwtService.sign(payload),  // JWT 발급
     };
   }
-  
 
-  async validateUser(username: string, password: string): Promise<Omit<User, 'password'> | null> {
+  async validateUser(username: string, password: string): Promise<Omit<UserEntity, 'password'>> {
     const user = await this.findOne(username);
-    if (user && await bcrypt.compare(password, user.password)) {
-      const { password, ...result } = user;  // 비밀번호는 제외하고 반환
-      return result;
+    if (!user) {
+      throw new UnauthorizedException('해당 사용자가 존재하지 않습니다.');
     }
-    return null;
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('비밀번호가 일치하지 않습니다.');
+    }
+
+    const { password: userPassword, ...result } = user;
+    return result;
   }
 }
