@@ -61,13 +61,14 @@ function App() {
     email: 'john.doe@example.com',
     profilePicture: 'https://via.placeholder.com/150'
   };
-  // 임시 프로젝트
+  // 임시 프로젝트들
   const tempProjects = [
     { id: 1, title: 'Project 1', description: 'Description of project 1', createdAt: '2023-01-01' },
     { id: 2, title: 'Project 2', description: 'Description of project 2', createdAt: '2023-02-01' },
     { id: 3, title: 'Project 3', description: 'Description of project 3', createdAt: '2023-03-01' },
   ];
 
+  // 임시 프로젝트
   const tempProject = {
     name: 'AWS Cloud Deployment',
     services: [
@@ -102,7 +103,7 @@ function App() {
         {/* <Route path="/profile" element={user ? <Profile user={user} projects={user.projects} /> : <Navigate to="/" />} /> */}
         <Route path="/profile" element={<Profile user={tempUser} projects={tempProjects} />} />
 
-        <Route path="/history" element={<History project = {tempProject} />} />
+        <Route path="/history" element={<History project={tempProject} />} />
 
         {/* 주소가 잘못된 경우 싹다 login으로 소환 */}
         <Route path="*" element={<Navigate to="/" />} />
