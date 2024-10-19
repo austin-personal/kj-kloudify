@@ -5,9 +5,12 @@ import {
   faChevronRight,
   faChevronLeft,
 } from "@fortawesome/free-solid-svg-icons";
-const SideBar: React.FC = () => {
-  const [isOpen, setIsOpen] = useState(false);
 
+interface SidebarProps {
+  isOpen: boolean;
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}
+const SideBar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
   const toggleSidebar = () => {
     setIsOpen(!isOpen); // 현재의 isOpen 상태를 반대로 설정
   };
