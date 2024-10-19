@@ -17,8 +17,9 @@ services:
     volumes:
       - ${SERVER_PATH}:/app
     environment:
-      - DATABASE_HOST=host.docker.internal  # 로컬 MySQL에 연결
-      - DATABASE_PORT=3306
-      - DATABASE_USER=root
-      - DATABASE_PASSWORD=1234
-      - DATABASE_NAME=my_test
+      - DATABASE_HOST=host.docker.internal  # 로컬 PostgreSQL에 연결
+      - DATABASE_PORT=5432  # PostgreSQL의 기본 포트
+      - DATABASE_USER=postgres  # PostgreSQL의 기본 사용자
+      - DATABASE_PASSWORD=1234  # PostgreSQL 비밀번호
+      - DATABASE_NAME=my_test  # PostgreSQL 데이터베이스 이름
+

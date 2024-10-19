@@ -2,7 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { UserEntity } from './users.entity';  // UserEntity 가져오기
+import { UserEntity } from './entity/users.entity';  // UserEntity 가져오기
 import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
@@ -17,7 +17,7 @@ export class UsersService {
     return this.usersRepository.findOne({ where: { username } });
   }
 
-  async createUser(username: string, password: string, email?: string): Promise<UserEntity> {
+  async createUser(username: string, password: string, email: string): Promise<UserEntity> {
     const hashedPassword = await bcrypt.hash(password, 10);  // 비밀번호 해시
     const newUser = this.usersRepository.create({
       username,
