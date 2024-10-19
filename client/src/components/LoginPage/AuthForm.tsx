@@ -2,19 +2,20 @@ import React from 'react';
 import './AuthForm.css';
 
 interface AuthFormProps {
-    setIsLoggedIn: (loggedIn: boolean) => void;
+    onLogin: () => void;
 }
 
-const AuthForm: React.FC<AuthFormProps> = ({ setIsLoggedIn }) => {
-    const handleLogin = () => {
-        // 로그인 성공 시 setIsLoggedIn을 호출하여 상태를 true로 설정
-        setIsLoggedIn(true);
+const AuthForm: React.FC<AuthFormProps> = ({ onLogin }) => {
+    const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        // 일단 지금은 냅다 로그인 성공
+        onLogin();
     };
 
     return (
         <div className="auth-form">
             <h2>Login</h2>
-            <form onSubmit={(e) => { e.preventDefault(); handleLogin(); }}>
+            <form onSubmit={handleLogin}>
                 <input type="text" placeholder="ID" />
                 <input type="password" placeholder="Password" />
                 <button type="submit">Login</button>
