@@ -2,7 +2,7 @@ import React from 'react';
 
 const Home: React.FC = () => {
     return (
-        <div style={{ textAlign: 'center', marginTop: '50px' }}>
+        <div>
             <h1>Welcome to the Home Page</h1>
         </div>
     );
