@@ -29,8 +29,11 @@
     margin: 10px 0;
 }
 
-.auth-toggle {
-    margin-top: 20px;
+.auth {
+    margin-top: 20px;   
+}
+
+.signup-toggle, .login-toggle {
     cursor: pointer;
     color: #007bff;
 }
