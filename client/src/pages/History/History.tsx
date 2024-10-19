@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import NavBar from '../../components/NavBar/NavBar';
+import { useLocation } from 'react-router-dom';
 import './History.css';
 
-// 임시 서비스
 interface Service {
     id: number;
     name: string;
@@ -10,25 +9,27 @@ interface Service {
     price: number;
 }
 
-// 임시 프로젝트
 interface Project {
+    id: number;
     name: string;
     services: Service[];
     previousChats: string[];
 }
 
-// HistoryProps 인터페이스
-interface HistoryProps {
-    project: Project;
-}
+const History: React.FC = () => {
+    const location = useLocation();
+    const project = location.state?.project as Project;
 
-const History: React.FC<HistoryProps> = ({ project }) => {
     const [showPriceSummary, setShowPriceSummary] = useState(false);
     const [showChatPopup, setShowChatPopup] = useState(false);
 
     const handleChatButtonClick = () => {
         setShowChatPopup(!showChatPopup);
     };
+
+    if (!project) {
+        return <p>No project data available.</p>;
+    }
 
     return (
         <div className="history-page">
@@ -40,7 +41,6 @@ const History: React.FC<HistoryProps> = ({ project }) => {
             </div>
 
             <div className="main-content">
-                {/* 이전 채팅 내역 div */}
                 <div className={`previous-chats ${showChatPopup ? 'expanded' : ''}`}>
                     <h3>Previous Chats</h3>
                     {project.previousChats.map((chat, index) => (
@@ -63,7 +63,6 @@ const History: React.FC<HistoryProps> = ({ project }) => {
                 </div>
             </div>
 
-            {/* Price Summary Div */}
             {showPriceSummary && (
                 <div className="price-summary">
                     <h3>Price Summary</h3>
@@ -74,8 +73,7 @@ const History: React.FC<HistoryProps> = ({ project }) => {
                     ))}
                 </div>
             )}
-            
-            {/* 채팅 버튼 */}
+
             <button onClick={handleChatButtonClick} className="chat-button">
                 Previous Chats
             </button>
