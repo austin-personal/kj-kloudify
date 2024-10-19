@@ -16,10 +16,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: JwtPayload) {
-    const user = await this.usersService.findOne(payload.username);
+    const user = await this.usersService.findOneByEmail(payload.username);  // JWT 페이로드에서 이메일 추출
     if (!user) {
-      throw new UnauthorizedException();  // 유저가 존재하지 않으면 예외 발생
+      throw new UnauthorizedException('User not found');
     }
-    return { userId: user.id, username: user.username };
+    return { userId: user.id, username: user.email };  // JWT에서 이메일 또는 유저 ID 반환
   }
+  
+  
 }
