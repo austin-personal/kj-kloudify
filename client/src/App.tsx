@@ -129,7 +129,9 @@ function App() {
         {/* 임시로 profile에다가 가짜정보 넣는중 */}
         {/* <Route path="/profile" element={user ? <Profile user={user} projects={user.projects} /> : <Navigate to="/" />} /> */}
         <Route path="/profile" element={<Profile user={tempUser} projects={tempProjects} />} />
-        
+
+        <Route path="/history" element={<History />} />
+
         {/* 주소가 잘못된 경우 싹다 login으로 소환 */}
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>

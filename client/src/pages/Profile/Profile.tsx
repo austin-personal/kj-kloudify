@@ -1,6 +1,5 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-
 import './Profile.css';
 
 interface Project {
@@ -40,7 +39,6 @@ const Profile: React.FC<ProfileProps> = ({ user, projects }) => {
         }
     };
 
-
     return (
         <div className="profile-page">
             {/* 상단 프로필 섹션 */}
@@ -53,7 +51,6 @@ const Profile: React.FC<ProfileProps> = ({ user, projects }) => {
             {/* 하단 프로젝트 리스트 섹션 */}
             <div className="project-list">
                 {projects.map((project) => (
-<<<<<<< HEAD
                     <div 
                         key={project.id} 
                         className="project-item" 
