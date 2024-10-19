@@ -11,9 +11,10 @@ export class UserEntity {
   @Column()
   password: string;
 
-  @Column({ nullable: true })
+  @Column({ unique: true })
   email: string;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date;
+  
 }

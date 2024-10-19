@@ -14,7 +14,7 @@ export class UsersController {
     if (user) {
       throw new UnauthorizedException('User already exists');
     }
-    const newUser = await this.usersService.createUser(createUserDto.username, createUserDto.password);
+    const newUser = await this.usersService.createUser(createUserDto.username, createUserDto.password, createUserDto.email);
     return this.usersService.login(newUser); // 회원가입 후 로그인
   }
 

@@ -6,7 +6,8 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './jwt.strategy';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserEntity } from './users.entity';  // UserEntity 가져오기
+import { UserEntity } from './entity/users.entity'; // UserEntity 가져오기
+                  // C:\Users\dlstj\Desktop\project\kj-kloudify\server\src\users\entitiy\users.entity.ts
 
 @Module({
   imports: [
