@@ -1,9 +1,11 @@
 import { Module } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { AuthController } from './auth.controller';
+import { UsersService } from './users.service';
+import { UsersController } from './users.controller';
+
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './jwt.strategy';
+import { JwtAuthGuard } from './jwt-auth.guard';
 
 @Module({
   imports: [
@@ -13,7 +15,7 @@ import { JwtStrategy } from './jwt.strategy';
       signOptions: { expiresIn: '1d' },  // 토큰 유효 기간 1일
     }),
   ],
-  providers: [AuthService, JwtStrategy],  // AuthService 및 JwtStrategy 제공
-  controllers: [AuthController],  // AuthController 설정
+  providers: [UsersService, JwtStrategy, JwtAuthGuard],
+  controllers: [UsersController]
 })
-export class AuthModule {}
+export class UsersModule {}
