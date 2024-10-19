@@ -1,0 +1,78 @@
+/* 채팅창 전체 컨테이너 */
+.chat-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 400px;
+  width: 300px;
+  overflow: hidden;
+}
+
+/* 메시지 목록 스타일 */
+.message-list {
+  flex-grow: 1;
+  padding: 10px;
+  display: flex;
+  flex-direction: column; /* 메시지들이 세로로 쌓이게 함 */
+  gap: 10px; /* 메시지 간의 간격 */
+  overflow-y: auto;
+  max-height: "400px";
+}
+
+/* 개별 메시지 스타일 */
+.message {
+  max-width: 70%;
+  margin: 5px 0;
+  padding: 10px;
+  border-radius: 5px;
+  word-wrap: break-word;
+}
+
+.user-message {
+  align-self: flex-end;
+  background-color: #d1e7dd;
+  text-align: right;
+}
+
+.bot-message {
+  align-self: flex-start;
+  background-color: #f8d7da;
+  text-align: left;
+}
+
+/* 입력 필드 및 버튼 스타일 */
+.input-container {
+  display: flex;
+  padding: 10px;
+  background-color: white;
+  border-top: 1px solid #ccc;
+}
+
+.input-container input {
+  flex-grow: 1;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.input-container button {
+  margin-left: 10px;
+  padding: 5px 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.scroll-to-bottom {
+  position: absolute;
+  bottom: 10%; /* 세로 중앙 */
+  left: 50%; /* 가로 중앙 */
+  transform: translate(-50%, -50%); /* 정확한 중앙을 맞추기 위해 변환 */
+  color: #007bff;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  z-index: 1000;
+}
