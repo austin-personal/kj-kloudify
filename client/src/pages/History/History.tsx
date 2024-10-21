@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import NavBar from '../../components/NavBar/NavBar';
+import { useLocation } from 'react-router-dom';
 import './History.css';
 
-// 임시 서비스
+// 이렇게 올 예정
+// navigate(`/history/${projectId}`, { state: { project: projectHistory } });
+
 interface Service {
     id: number;
     name: string;
@@ -10,27 +12,35 @@ interface Service {
     price: number;
 }
 
-// 임시 프로젝트
 interface Project {
+    id: number;
     name: string;
     services: Service[];
     previousChats: string[];
 }
 
-// HistoryProps 인터페이스
-interface HistoryProps {
-    project: Project;
-}
+const History: React.FC = () => {
+    const location = useLocation();
+    // location의 state가 null이거나 undefined가 아닌경우
+    // Project 타입으로 project 불러오기
+    const project = location.state?.project as Project;
 
-const History: React.FC<HistoryProps> = ({ project }) => {
     const [showPriceSummary, setShowPriceSummary] = useState(false);
     const [showChatPopup, setShowChatPopup] = useState(false);
 
+    // 채팅창 보여주는 함수
     const handleChatButtonClick = () => {
         setShowChatPopup(!showChatPopup);
     };
 
+    // 프로젝트가 없을경우
+    if (!project) {
+        return <p>No project data available.</p>;
+    }
+
+    // 프로젝트가 있을경우
     return (
+        
         <div className="history-page">
             <div className="project-header">
                 <h2>{project.name}</h2>
@@ -40,7 +50,6 @@ const History: React.FC<HistoryProps> = ({ project }) => {
             </div>
 
             <div className="main-content">
-                {/* 이전 채팅 내역 div */}
                 <div className={`previous-chats ${showChatPopup ? 'expanded' : ''}`}>
                     <h3>Previous Chats</h3>
                     {project.previousChats.map((chat, index) => (
@@ -63,7 +72,6 @@ const History: React.FC<HistoryProps> = ({ project }) => {
                 </div>
             </div>
 
-            {/* Price Summary Div */}
             {showPriceSummary && (
                 <div className="price-summary">
                     <h3>Price Summary</h3>
@@ -74,8 +82,7 @@ const History: React.FC<HistoryProps> = ({ project }) => {
                     ))}
                 </div>
             )}
-            
-            {/* 채팅 버튼 */}
+
             <button onClick={handleChatButtonClick} className="chat-button">
                 Previous Chats
             </button>

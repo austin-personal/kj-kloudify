@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { Route, Routes, Navigate, useLocation } from "react-router-dom";
-import Home from "./pages/Home/Home";
-import Login from "./pages/Login/Login";
-import NavBar from "./components/NavBar/NavBar";
-import Profile from "./pages/Profile/Profile";
-import History from "./pages/History/History";
-import { getUserInfo } from "./services/authService";
+import React, { useEffect, useState } from 'react';
+import { Route, Routes, Navigate, useLocation } from 'react-router-dom';
+import Home from './pages/Home/Home';
+import Login from './pages/Login/Login';
+import NavBar from './components/NavBar/NavBar';
+import Profile from './pages/Profile/Profile';
+import History from './pages/History/History';
+import Guide from './pages/Guide/Guide';
+import { getUserInfo } from './services/authService';
 
 function App() {
   const location = useLocation();
@@ -83,26 +84,6 @@ function App() {
     },
   ];
 
-  // 임시 프로젝트
-  const tempProject = {
-    name: "AWS Cloud Deployment",
-    services: [
-      { id: 1, name: "EC2 Instance", status: "running" as const, price: 50 },
-      { id: 2, name: "S3 Storage", status: "running" as const, price: 20 },
-      { id: 3, name: "RDS Database", status: "stopped" as const, price: 100 },
-      { id: 4, name: "Lambda Function", status: "running" as const, price: 10 },
-      { id: 5, name: "CloudFront", status: "running" as const, price: 30 },
-    ],
-    previousChats: [
-      "User: How can I optimize my EC2 instances?",
-      "LLM: You can resize the instances or use autoscaling.",
-      "User: What is the best way to secure my S3 bucket?",
-      "LLM: You should enable encryption and restrict access with IAM policies.",
-      "User: How can I reduce the cost of my Lambda functions?",
-      "LLM: Consider reducing execution time and memory allocation.",
-    ],
-  };
-
   return (
     <>
       {/* 주소가 login이면 NavBar 꺼져 */}
@@ -121,7 +102,11 @@ function App() {
           element={<Profile user={tempUser} projects={tempProjects} />}
         />
 
-        <Route path="/history" element={<History project={tempProject} />} />
+        {/* 임시로 history페이지 가는중 */}
+        {/* <Route path="/history/:id" element={<History />} /> */}
+        <Route path="/history" element={<History />} />
+
+        <Route path="guide" element={<Guide />} />
 
         {/* 주소가 잘못된 경우 싹다 login으로 소환 */}
         <Route path="*" element={<Navigate to="/" />} />

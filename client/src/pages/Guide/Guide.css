@@ -1,0 +1,11 @@
+/* NavBar 높이를 설정 */
+:root {
+    --navbar-height: 60px;
+}
+
+.guide-page {
+    margin-top: var(--navbar-height);
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
