@@ -19,6 +19,34 @@
   margin-bottom: 20px;
 }
 
+.setting-services {
+  position: absolute;
+  display: flex;
+  justify-content: center; /* 수평 가운데 정렬 */
+  align-items: center; /* 수직 가운데 정렬 */
+  top: 40px;
+  width: 72px;
+  height: 33px;
+  border-radius: 10px 10px 0px 0px;
+  font-size: 22px;
+  font-style: bold;
+  padding-top: 5px;
+  color: white;
+  border-style: solid;
+  border-width: 1px;
+  border-bottom-style: none;
+}
+.set-up-complete {
+  right: 120px;
+  background-color: #8ae37e;
+  border-color: #75c16b;
+}
+.setting-in-progress {
+  right: 25px;
+  background-color: #e37e7e;
+  border-color: #c16b6b;
+}
+
 .review-btn {
   position: absolute;
   bottom: 25px;
