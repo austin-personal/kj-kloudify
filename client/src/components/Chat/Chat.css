@@ -13,12 +13,18 @@
 /* 메시지 목록 스타일 */
 .message-list {
   flex-grow: 1;
+  margin: 0 25px 0 25px;
   padding: 10px;
   display: flex;
   flex-direction: column; /* 메시지들이 세로로 쌓이게 함 */
   gap: 10px; /* 메시지 간의 간격 */
   overflow-y: auto;
   max-height: "400px";
+}
+
+/* 크롬 및 사파리에서 스크롤바 숨기기 */
+.message-list::-webkit-scrollbar {
+  display: none; /* 스크롤바 숨기기 */
 }
 
 /* 개별 메시지 스타일 */
@@ -90,7 +96,7 @@
   bottom: 10%; /* 세로 중앙 */
   left: 50%; /* 가로 중앙 */
   transform: translate(-50%, -50%); /* 정확한 중앙을 맞추기 위해 변환 */
-  color: #ffb546;
+  color: #fdc36d;
 
   padding: 10px;
   cursor: pointer;
@@ -107,7 +113,7 @@
   background-color: white;
 }
 .bot-icon {
-  color: #ffb546;
+  color: #fdc36d;
   padding: 10px;
   width: 28px;
   height: 28px;
@@ -117,6 +123,7 @@
 }
 
 .notice-text {
+  opacity: 0.5;
   text-align: center;
   font-size: 18px;
 }
