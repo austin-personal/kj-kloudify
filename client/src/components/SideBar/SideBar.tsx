@@ -1,13 +1,16 @@
-import React, { useState } from "react";
+import React from "react";
 import "./SideBar.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faChevronRight,
   faChevronLeft,
 } from "@fortawesome/free-solid-svg-icons";
-const SideBar: React.FC = () => {
-  const [isOpen, setIsOpen] = useState(false);
 
+interface SidebarProps {
+  isOpen: boolean;
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}
+const SideBar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
   const toggleSidebar = () => {
     setIsOpen(!isOpen); // 현재의 isOpen 상태를 반대로 설정
   };
@@ -16,7 +19,7 @@ const SideBar: React.FC = () => {
     <>
       {" "}
       <aside className={`sidebar ${isOpen ? "open" : ""}`}>
-        <p className="contents">자세한 설명 가나다라마바사아자차카타파아</p>
+        <p className="contents">자세한 설명 가나다라마바사아자차카타파아df</p>
         <button onClick={toggleSidebar} className="toggle-btn">
           <FontAwesomeIcon icon={isOpen ? faChevronLeft : faChevronRight} />
         </button>

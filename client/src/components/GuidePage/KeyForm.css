@@ -1,0 +1,21 @@
+.key-form {
+    width: 40%;
+    height: 90vh;
+    /* border: 1px solid black; */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: start;
+    font-size: 24px;
+}
+
+.input-box {
+    /* border: 1px solid black; */
+    padding: 20px;
+}
+
+input {
+    font-size: 24px;
+    width: 400px;
+    margin-top: 10px;
+}

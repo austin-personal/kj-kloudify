@@ -2,23 +2,23 @@
 .sidebar {
   position: fixed;
   top: 0;
-  left: -282px; /* 기본적으로 화면 밖으로 숨김 */
-  width: 250px;
+  left: -380px; /* 기본적으로 화면 밖으로 숨김 */
+  width: 350px;
   height: 100%;
   background-color: gray;
   color: white;
   transition: left 0.3s ease; /* 부드러운 슬라이딩 애니메이션 */
-  z-index: 1000; /* 다른 요소 위에 위치 */
+  z-index: 990; /* 다른 요소 위에 위치 */
   padding: 1rem;
-  padding-top: 40px; /*navbar 위치 빼놓음*/
+  padding-top: 90px; /*navbar 위치 빼놓음*/
 }
 
 .sidebar.open {
-  left: -25px; /* 사이드바가 화면으로 나올 때의 위치 */
+  left: 0px; /* 사이드바가 화면으로 나올 때의 위치 */
 }
 
 .toggle-btn {
-  height: 100px;
+  height: 168px;
   position: absolute;
   top: 46%;
   right: -27px; /* 사이드바 오른쪽 밖으로 살짝 나옴 */
@@ -43,6 +43,7 @@
 }
 
 .contents {
+  padding: 10px;
+  font-size: 18px;
   position: absolute;
-  left: 50px;
 }
