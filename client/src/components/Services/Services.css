@@ -1,0 +1,171 @@
+.services {
+  flex: 2;
+  margin: 0 20px 0 20px;
+  height: 60%;
+  color: #312d26;
+}
+.service-container {
+  display: flex;
+  height: 190px;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+  margin-top: 20px;
+  overflow-y: auto;
+}
+
+.service-container::-webkit-scrollbar {
+  width: 20px;
+  height: 8px;
+}
+
+.service-container::-webkit-scrollbar-thumb {
+  border-radius: 20px;
+  background: #cccaba;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid #ddd;
+  margin: 10px 0;
+}
+
+.service-element {
+  background-color: #f2eed1;
+  padding: 10px;
+  border-style: solid;
+  border-width: 1px;
+  border-color: #a09e8a;
+  border-radius: 20px;
+  display: flex;
+  align-items: center; /* 아이콘과 텍스트를 세로 중앙 정렬 */
+  justify-content: space-between; /* 아이콘과 텍스트 사이 공간 확보 */
+}
+
+.price-summary-header {
+  width: 100%;
+}
+
+.top-label {
+  font-size: 23px;
+  width: 50%; /* 부모 너비의 50% */
+  margin-left: 5%;
+  margin-right: 30%; /* 부모 요소 너비의 5%만큼 마진 */
+}
+
+.service-label,
+.price-label {
+  font-size: 24px;
+  width: 50%; /* 부모 너비의 50% */
+  margin-left: 2%;
+  margin-right: 30%; /* 부모 요소 너비의 5%만큼 마진 */
+}
+
+.service-image {
+  width: 37px;
+  height: 37px;
+  border-radius: 10px;
+}
+
+.price-summary-btn,
+.deploy-btn {
+  font-family: "NanumSquareRound", sans-serif;
+  font-weight: bold;
+  font-size: 24px;
+  background-color: #f6b755;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  height: 67px;
+
+  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 13%);
+  transition: background-color 0.3s;
+  margin-bottom: 13px;
+}
+
+.deploy-btn {
+  width: 137px;
+}
+.price-summary-btn {
+  width: 200px;
+}
+
+.price-summary-btn:hover,
+.deploy-btn:hover {
+  background-color: #f49a29;
+}
+.right-btn {
+  display: flex;
+  justify-content: flex-end; /* 자식 요소를 오른쪽으로 정렬 */
+}
+
+.info-btn {
+  font-size: 23px;
+  padding: 10px 20px;
+  background-color: transparent;
+  color: #6b3ed4;
+  border: none;
+  font-family: "NanumSquareRound", sans-serif;
+  font-weight: bold;
+  cursor: pointer;
+  margin-bottom: 20px;
+}
+
+.middle-btn {
+  text-align: center; /* 버튼을 수평 중앙으로 정렬 */
+  margin-top: 20px;
+}
+
+/* App.css */
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5); /* 모달 배경 어둡게 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal {
+  position: relative;
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 500px;
+  width: 100%;
+  height: 500px;
+  text-align: center;
+}
+
+.close-btn {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 20px;
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: orange;
+  border: none;
+  cursor: pointer;
+}
+
+.info-notice {
+  font-size: 23px;
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  height: 30px;
+}
+
+.info-title {
+  margin-left: 10px;
+}
+
+.info-contents {
+  height: 10px;
+  font-size: 23px;
+}

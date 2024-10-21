@@ -16,7 +16,7 @@ const IntroSection: React.FC = () => {
 
     return (
         <div className="intro-section">
-            <div className="intro-content">
+            <div className={`intro-content`}>
                 {introData[currentIndex].content}
             </div>
             <div className="intro-dots">

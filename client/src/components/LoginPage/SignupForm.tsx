@@ -24,19 +24,13 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSwitchToLogin }) => {
 
     return (
         <div className="auth-form">
-            <h2>Sign Up</h2>
-            <form onSubmit={handleSignup}>
+            <h2>회원가입</h2>
+            <form className='login-form' onSubmit={handleSignup}>
                 <input
                     type="text"
-                    placeholder="Username"
+                    placeholder="Id"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                />
-                <input
-                    type="email"
-                    placeholder="Email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
                 />
                 <input
                     type="password"
@@ -44,10 +38,16 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSwitchToLogin }) => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                 />
-                <button type="submit">Sign Up</button>
+                <input
+                    type="email"
+                    placeholder="Email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                />
+                <button type="submit">회원가입</button>
             </form>
-            <div className="auth">
-                Already have an account? <span className='login-toggle' onClick={onSwitchToLogin}>Log in</span>
+            <div className="auth-login">
+                이미 계정이 있으신가요? <span className='login-toggle' onClick={onSwitchToLogin}>로그인</span>
             </div>
         </div>
     );

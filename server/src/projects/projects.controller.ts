@@ -3,6 +3,9 @@ import { ProjectsService } from './projects.service';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { Projects } from './entity/projects.entity';
+import { UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from '../users/jwt-auth.guard';
+import { Req } from '@nestjs/common';
 
 @Controller('projects')
 export class ProjectsController {
@@ -25,7 +28,7 @@ export class ProjectsController {
   @Get()
   async findAll(@Req() req): Promise<Projects[]> {
     const userId = req.user.uid; // JWT에서 userId 추출
-    return this.projectsService.findAll(userId);
+    return this.projectsService.findAll();
   }
 
   // 프로젝트 업데이트
