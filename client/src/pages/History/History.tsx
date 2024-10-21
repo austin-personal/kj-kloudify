@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { useLocation } from 'react-router-dom';
 import './History.css';
+import ServiceStatus from '../../components/HistoryPage/ServiceStatus';
+import PreviousChat from '../../components/HistoryPage/PreviousChat';
 
 // 이렇게 올 예정
 // navigate(`/history/${projectId}`, { state: { project: projectHistory } });
@@ -51,37 +52,50 @@ const tempProject: Project = {
 }
 
 const History: React.FC = () => {
+
+    const [isChatting, setIsChatting] = useState(false);
+    const [isPriceSummary, setIsPriceSummary] = useState(false);
+
     return (
         <div className="history-page">
+
             <div className="project-header">
                 <h2>{tempProject.name}</h2>
-                <button className="price-summary-btn">
-                    Price Summary
-                </button>
+                <div className='price-summary-frame'>
+                    {isPriceSummary ?
+                        <div className='price-summary-box'>
+                            {tempProject.services.map((service) => (
+                                <div>
+                                    {service.name} : {service.price}
+                                </div>
+                            ))}
+                        </div>
+                        : ''}
+                    <button className="price-summary-btn"
+                        onClick={(e) => setIsPriceSummary(!isPriceSummary)}>
+                        Price Summary
+                    </button>
+                </div>
             </div>
 
             <div className="main-content">
-                <div className="previous-chats">
-                    <h3>Previous Chats</h3>
-                    {tempProject.previousChats.map((chat, index) => (
-                        <p key={index}>{chat}</p>
-                    ))}
+                <div className="previous-chat">
+                    <button className='chat-button'
+                        onClick={(e) => setIsChatting(!isChatting)}>previous chat</button>
                 </div>
-
-                <div className="service-status">
-                    <h3>Service Status</h3>
-                    {tempProject.services.map((service) => (
-                        <div key={service.id} className={`service ${service.status}`}>
-                            {service.name}: {service.status}
-                        </div>
-                    ))}
+                <div className="left-content">
+                    {isChatting ? (
+                        <ServiceStatus projectServices={tempProject.services} />
+                    ) : (
+                        <PreviousChat previousChats={tempProject.previousChats} />
+                    )}
                 </div>
-
                 <div className="architecture-box">
                     <h3>Architecture</h3>
                     <p>Details about the architecture used in this project...</p>
                 </div>
             </div>
+
         </div>
     );
 };

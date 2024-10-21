@@ -11,4 +11,76 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    font-size: 24px;
+    border: 1px solid black;
+    height: 90vh;
+    width: 100%;
+}
+
+.project-header {
+    border: 1px solid black;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    height: 20%;
+    width: 1100px;
+    margin: 20px;
+    padding: 0px 50px;
+}
+
+.price-summary-frame {
+    position: relative;
+}
+
+.price-summary-box {
+    border: 1px solid black;
+    border-radius: 10px;
+    width: 380px;
+    height: 480px;
+    background-color: white;
+    position: absolute;
+    right: 220px;
+    padding: 30px;
+}
+
+.price-summary-btn {
+    border-radius: 10px;
+    font-size: 24px;
+    width: 200px;
+    height: 80px;
+}
+
+.price-summary-btn:hover {
+    background-color: lightgray;
+}
+
+.main-content {
+    border: 1px solid black;
+    display: flex;
+    flex-direction: row;
+    width: 1200px;
+    height: 80%;
+}
+
+.previous-chat {
+    border: 1px solid black;
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+}
+
+.chat-button {
+    width: 40px;
+    margin-left: 100px;
+}
+
+.left-content {
+    width: 300px;
+    border: 1px solid black;
+}
+
+.architecture-box {
+    width: 860px;
+    border: 1px solid black;
 }
