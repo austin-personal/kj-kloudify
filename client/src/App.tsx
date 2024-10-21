@@ -14,7 +14,9 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   // 토큰이 존재하는지 확인
-  const isAuthenticated = !!localStorage.getItem('token');
+  // ?????
+  const token = localStorage.getItem('token');
+  const isAuthenticated = !!token;
   // 주소가 login인지 아닌지
   const showNavBar = location.pathname !== '/';
 
@@ -66,26 +68,6 @@ function App() {
     { id: 2, title: 'Project 2', description: 'Description of project 2', createdAt: '2023-02-01' },
     { id: 3, title: 'Project 3', description: 'Description of project 3', createdAt: '2023-03-01' },
   ];
-
-  // 임시 프로젝트
-  const tempProject = {
-    name: 'AWS Cloud Deployment',
-    services: [
-      { id: 1, name: 'EC2 Instance', status: 'running' as const, price: 50 },
-      { id: 2, name: 'S3 Storage', status: 'running' as const, price: 20 },
-      { id: 3, name: 'RDS Database', status: 'stopped' as const, price: 100 },
-      { id: 4, name: 'Lambda Function', status: 'running' as const, price: 10 },
-      { id: 5, name: 'CloudFront', status: 'running' as const, price: 30 }
-    ],
-    previousChats: [
-      'User: How can I optimize my EC2 instances?',
-      'LLM: You can resize the instances or use autoscaling.',
-      'User: What is the best way to secure my S3 bucket?',
-      'LLM: You should enable encryption and restrict access with IAM policies.',
-      'User: How can I reduce the cost of my Lambda functions?',
-      'LLM: Consider reducing execution time and memory allocation.'
-    ]
-  };
 
   return (
     <>
