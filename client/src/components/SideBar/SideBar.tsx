@@ -19,7 +19,7 @@ const SideBar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
     <>
       {" "}
       <aside className={`sidebar ${isOpen ? "open" : ""}`}>
-        <p className="contents">자세한 설명 가나다라마바사아자차카타파아</p>
+        <p className="contents">자세한 설명 가나다라마바사아자차카타파아df</p>
         <button onClick={toggleSidebar} className="toggle-btn">
           <FontAwesomeIcon icon={isOpen ? faChevronLeft : faChevronRight} />
         </button>
