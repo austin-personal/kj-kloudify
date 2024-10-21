@@ -3,8 +3,56 @@
   align-items: stretch;
   margin: 90px 50px 0 50px;
 }
-
+.right-side {
+  flex: 2;
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  margin: 0 25px 0 25px;
+}
 .vertical-line {
   border-left: 1px solid rgba(49, 45, 38, 0.2);
   height: 642px;
+}
+.project-name {
+  margin-bottom: 20px;
+}
+
+.review-btn {
+  position: absolute;
+  bottom: 25px;
+  right: 50px;
+  font-size: 25px;
+}
+.popup {
+  font-size: 22px;
+  position: absolute;
+  top: 100px;
+  left: 50px;
+  width: 100px;
+  background-color: lightcoral;
+  cursor: pointer;
+  transition: width 0.3s ease, height 0.3s ease;
+}
+
+.popup.visible {
+  width: 89%;
+  height: 20%;
+}
+
+.popup.hidden {
+  width: 100px;
+  height: 35px;
+}
+
+/* 추가 텍스트 스타일 */
+.extra-content {
+  margin-top: 20px;
+  opacity: 1;
+  transition: opacity 0.3s ease; /* 추가 텍스트가 부드럽게 나타나도록 설정 */
+}
+
+.popup.hidden .extra-content {
+  opacity: 0; /* 팝업이 닫힐 때 추가 텍스트 숨기기 */
 }
