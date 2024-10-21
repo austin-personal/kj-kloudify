@@ -89,6 +89,7 @@ function App() {
   };
 
   return (
+<<<<<<< HEAD
     <>
       {/* 주소가 login이면 NavBar 꺼져 */}
       {showNavBar && <NavBar />}
@@ -109,6 +110,11 @@ function App() {
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </>
+=======
+    <div className="App">
+      <Home />
+    </div>
+>>>>>>> 2f9260f (feat-FE-SA/app.js 업로드)
   );
 }
 
