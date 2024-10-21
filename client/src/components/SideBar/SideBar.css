@@ -17,7 +17,9 @@
 }
 
 .sidebar.open {
+
   left: 0px; /* 사이드바가 화면으로 나올 때의 위치 */
+
 }
 
 .toggle-btn {

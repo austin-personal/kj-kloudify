@@ -8,6 +8,7 @@ import { TerraformsModule } from './terraforms/terraform.module';
 import { ConversationsController } from './conversations/conversations.controller';
 import { ConversationsModule } from './conversations/conversations.module';
 
+
 @Module({
   imports: [UsersModule,
     TypeOrmModule.forRoot({
@@ -24,6 +25,7 @@ import { ConversationsModule } from './conversations/conversations.module';
     ConversationsModule,
   ],
   controllers: [AppController, ConversationsController],
+
   providers: [AppService],
 })
 export class AppModule {}

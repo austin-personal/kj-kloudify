@@ -37,6 +37,7 @@ const Profile: React.FC<ProfileProps> = ({ user, projects }) => {
                     <div 
                         key={project.id} 
                         className="project-item"
+
                     >
                         <h3>{project.title}</h3>
                         <p>{project.description}</p>

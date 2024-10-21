@@ -31,7 +31,6 @@ export class TerraformController {
 
   }
 
-
   // POST /terraforms/destroy - 테라폼 리소스 삭제
   @Post('destroy')
   async destroy() {

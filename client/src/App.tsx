@@ -47,6 +47,10 @@ function App() {
   ];
 
   return (
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> d03895824c52cd65b5c12d3381692c2da45ae0a2
     <>
       {/* 주소가 login이면 NavBar 꺼져 */}
       {showNavBar && <NavBar />}
