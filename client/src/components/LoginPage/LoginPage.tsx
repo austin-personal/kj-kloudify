@@ -4,12 +4,7 @@ import LoginForm from './LoginForm';
 import SignupForm from './SignupForm';
 import './LoginPage.css';
 
-interface LoginPageProps {
-    // 얘는 그냥 징검다리용
-    onLogin: () => void;
-}
-
-const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
+const LoginPage: React.FC = () => {
     // 로그인 폼인지, 회원가입 폼인지 야바위
     const [isSignup, setIsSignup] = useState(false);
 

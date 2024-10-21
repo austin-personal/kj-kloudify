@@ -9,14 +9,20 @@ const introData = [
 
 const IntroSection: React.FC = () => {
     const [currentIndex, setCurrentIndex] = useState(0);
+    const [direction, setDirection] = useState('');
 
     const handleDotClick = (index: number) => {
+        if (index < currentIndex) {
+            setDirection('right');
+        } else {
+            setDirection('left');
+        }
         setCurrentIndex(index);
     };
 
     return (
         <div className="intro-section">
-            <div className="intro-content">
+            <div className={`intro-content ${direction}`}>
                 {introData[currentIndex].content}
             </div>
             <div className="intro-dots">
