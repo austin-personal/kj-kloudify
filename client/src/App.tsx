@@ -16,7 +16,6 @@ function App() {
   // 토큰이 존재하는지 확인
   // ?????
   const token = localStorage.getItem('token');
-
   const isAuthenticated = !!token;
   // 주소가 login인지 아닌지
   const showNavBar = location.pathname !== '/';
@@ -75,25 +74,9 @@ function App() {
   };
   // 임시 프로젝트들
   const tempProjects = [
-    {
-      id: 1,
-      title: "Project 1",
-      description: "Description of project 1",
-      createdAt: "2023-01-01",
-    },
-    {
-      id: 2,
-      title: "Project 2",
-      description: "Description of project 2",
-      createdAt: "2023-02-01",
-    },
-    {
-      id: 3,
-      title: "Project 3",
-      description: "Description of project 3",
-      createdAt: "2023-03-01",
-    },
-
+    { id: 1, title: 'Project 1', description: 'Description of project 1', createdAt: '2023-01-01' },
+    { id: 2, title: 'Project 2', description: 'Description of project 2', createdAt: '2023-02-01' },
+    { id: 3, title: 'Project 3', description: 'Description of project 3', createdAt: '2023-03-01' },
   ];
 
   return (
