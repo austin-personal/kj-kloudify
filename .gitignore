@@ -1,3 +1,4 @@
 .env
 .terraform
-main.tf
+server/main.tf
+server/.terraform
