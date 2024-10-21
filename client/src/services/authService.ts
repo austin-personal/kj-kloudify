@@ -31,19 +31,3 @@ export const login = async (email: string, password: string) => {
         throw error;
     }
 };
-
-export const getUserInfo = async (token: string) => {
-    try {
-        // 태현 api 주소 확인!!!
-        const response = await axios.get(`${API_URL}/me`, {
-            headers: {
-                // ?????
-                Authorization: `Bearer ${token}`
-            }
-        });
-        return response.data;
-    } catch (error) {
-        console.error('유저 패치 개박살!! :', error);
-        throw error;
-    }
-};
