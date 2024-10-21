@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import SideBar from "../../components/SideBar/SideBar";
 import Chat from "../../components/Chat/Chat";
 import Board from "../../components/Board/Board";
@@ -8,8 +9,12 @@ function Home() {
   //상태 끌어올리기
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenSummary, setIsOpenSummary] = useState(false);
+  const navigate = useNavigate();
   const togglePopup = () => {
     setIsOpenSummary(!isOpenSummary); // 현재의 isOpen 상태를 반대로 설정
+  };
+  const handleFinish = () => {
+    navigate("/review");
   };
   return (
     <div className="home">
@@ -30,7 +35,9 @@ function Home() {
             </div>
           )}
         </div>
-        <button className="review-btn">Finish & Review</button>
+        <button onClick={handleFinish} className="review-btn">
+          Finish & Review
+        </button>
       </div>
     </div>
   );
