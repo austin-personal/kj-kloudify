@@ -16,32 +16,71 @@
   height: 642px;
 }
 .project-name {
+  margin-left: 25px;
   margin-bottom: 20px;
 }
 
+.setting-services {
+  position: absolute;
+  display: flex;
+  justify-content: center; /* 수평 가운데 정렬 */
+  align-items: center; /* 수직 가운데 정렬 */
+  top: 40px;
+  width: 72px;
+  height: 33px;
+  border-radius: 10px 10px 0px 0px;
+  font-size: 22px;
+  font-style: bold;
+  padding-top: 5px;
+  color: white;
+  border-style: solid;
+  border-width: 1px;
+  border-bottom-style: none;
+}
+.set-up-complete {
+  right: 120px;
+  background-color: #8ae37e;
+  border-color: #75c16b;
+}
+.setting-in-progress {
+  right: 25px;
+  background-color: #e37e7e;
+  border-color: #c16b6b;
+}
+
 .review-btn {
+  width: 125px;
+  height: 87px;
   position: absolute;
   bottom: 25px;
   right: 50px;
   font-size: 25px;
+  background-color: #fdc36d;
+  border: none;
+  border-radius: 20px;
+  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 10%);
 }
 .popup {
   font-size: 22px;
   position: absolute;
+  padding: 10px 10px 0 10px;
   top: 100px;
   left: 50px;
   width: 100px;
-  background-color: lightcoral;
+  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 10%);
+  background-color: #b6d6ed;
   cursor: pointer;
   transition: width 0.3s ease, height 0.3s ease;
 }
 
 .popup.visible {
-  width: 89%;
+  border-radius: 15px;
+  width: 86%;
   height: 20%;
 }
 
 .popup.hidden {
+  border-radius: 30px;
   width: 100px;
   height: 35px;
 }
