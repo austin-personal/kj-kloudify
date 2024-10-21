@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./Chat.css";
-import { Typewriter } from "react-simple-typewriter";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCircleDown,
@@ -126,12 +125,15 @@ const Chat: React.FC<ChatProps> = ({ setIsOpen }) => {
 
       {/* 최근 메시지로 이동 버튼 */}
       {showScrollButton && (
-        <FontAwesomeIcon
-          className="scroll-to-bottom"
-          onClick={scrollToBottom}
-          icon={faCircleDown}
-          size="2xl"
-        />
+        <>
+          <FontAwesomeIcon
+            className="scroll-to-bottom"
+            onClick={scrollToBottom}
+            icon={faCircleDown}
+            size="2xl"
+          />
+          <div className="scroll-background"></div>
+        </>
       )}
       <div className="input-container">
         <form className="form" onSubmit={handleSendMessage}>
@@ -142,7 +144,7 @@ const Chat: React.FC<ChatProps> = ({ setIsOpen }) => {
             placeholder="Type a message..."
           />
           <button type="submit">
-            <FontAwesomeIcon icon={faPaperPlane} />
+            <FontAwesomeIcon icon={faPaperPlane} size="2xl" />
           </button>
         </form>
       </div>
