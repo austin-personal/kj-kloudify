@@ -17,12 +17,12 @@ function App() {
   const [error, setError] = useState<string | null>(null);
   // 토큰이 존재하는지 확인
   // ?????
-  const token = localStorage.getItem('token');
 
+
+  const token = localStorage.getItem("token");
   const isAuthenticated = !!token;
   // 주소가 login인지 아닌지
-  const showNavBar = location.pathname !== '/';
-
+  const showNavBar = location.pathname !== "/";
 
   useEffect(() => {
     // 유저정보를 가져오는 함수
@@ -45,11 +45,7 @@ function App() {
         setLoading(false);
       }
 
-
     };
-
-
-
     // 함수 실행
     fetchUser();
   }, [token]);
@@ -62,14 +58,12 @@ function App() {
   // 에러가 났다면
   if (error) {
 
-
     return <div>{error}</div>;
 
   }
 
   // 임시 유저
   const tempUser = {
-
 
     name: "John Doe",
     email: "john.doe@example.com",
@@ -99,7 +93,6 @@ function App() {
   ];
 
   return (
-<<<<<<< HEAD
     <>
       {/* 주소가 login이면 NavBar 꺼져 */}
       {showNavBar && <NavBar />}
@@ -113,12 +106,10 @@ function App() {
         {/* 임시로 profile에다가 가짜정보 넣는중 */}
         {/* <Route path="/profile" element={user ? <Profile user={user} projects={user.projects} /> : <Navigate to="/" />} /> */}
 
-
         <Route
           path="/profile"
           element={<Profile user={tempUser} projects={tempProjects} />}
         />
-
 
         {/* 임시로 history페이지 가는중 */}
         {/* <Route path="/history/:id" element={<History />} /> */}
