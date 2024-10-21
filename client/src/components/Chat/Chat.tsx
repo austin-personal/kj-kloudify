@@ -144,7 +144,7 @@ const Chat: React.FC<ChatProps> = ({ setIsOpen }) => {
             onChange={(e) => setInput(e.target.value)}
             placeholder="Type a message..."
           />
-          <button type="submit" className="chat-button">
+          <button type="submit" className="chat-button-sa">
             <FontAwesomeIcon
               icon={faPaperPlane}
               size="2xl"
