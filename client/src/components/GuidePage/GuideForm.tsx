@@ -1,7 +1,13 @@
 import React from "react";
 import './GuideForm.css'
 
-const GuideForm: React.FC = () => {
+interface GuideFormProps {
+    isConsentChecked: boolean;
+    setIsConsentChecked: React.Dispatch<React.SetStateAction<boolean>>;
+    handleSubmit: () => void;
+}
+
+const GuideForm: React.FC<GuideFormProps> = ({ isConsentChecked, setIsConsentChecked, handleSubmit }) => {
     return (
         <div className="guide-form">
             <div className="instruction">
@@ -22,13 +28,15 @@ const GuideForm: React.FC = () => {
                         type="checkbox"
                         id="consent-checkbox"
                         className="consent-checkbox"
+                        checked={isConsentChecked}
+                        onChange={(e) => setIsConsentChecked(e.target.checked)}
                     />
                     <label htmlFor="consent-checkbox" className="consent-label">
                         I agree to the collection of my personal information
                     </label>
                 </div>
             </div>
-            <button className="submit">submit</button>
+            <button className="submit" onClick={handleSubmit}>Submit</button>
         </div>
     )
 }

@@ -1,11 +1,16 @@
-import React, { useState } from "react";
+import React from "react";
 import './KeyForm.css'
 
-const KeyForm: React.FC = () => {
-    const [keyId, setKeyId] = useState('');
-    const [secretKey, setSecretKey] = useState('');
-    const [keyPair, setKeyPair] = useState('');
+interface KeyFormProps {
+    keyId: string;
+    setKeyId: React.Dispatch<React.SetStateAction<string>>;
+    secretKey: string;
+    setSecretKey: React.Dispatch<React.SetStateAction<string>>;
+    keyPair: string;
+    setKeyPair: React.Dispatch<React.SetStateAction<string>>;
+}
 
+const KeyForm: React.FC<KeyFormProps> = ({ keyId, setKeyId, secretKey, setSecretKey, keyPair, setKeyPair }) => {
     return (
         <div className="key-form">
             <div className="input-box">
