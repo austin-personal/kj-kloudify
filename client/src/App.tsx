@@ -5,7 +5,9 @@ import Login from './pages/Login/Login';
 import NavBar from './components/NavBar/NavBar';
 import Profile from './pages/Profile/Profile';
 import History from './pages/History/History';
+
 import Guide from './pages/Guide/Guide';
+
 import { getUserInfo } from './services/authService';
 
 function App() {
@@ -15,10 +17,12 @@ function App() {
   const [error, setError] = useState<string | null>(null);
   // 토큰이 존재하는지 확인
   // ?????
+
   const token = localStorage.getItem("token");
   const isAuthenticated = !!token;
   // 주소가 login인지 아닌지
   const showNavBar = location.pathname !== "/";
+
 
   useEffect(() => {
     // 유저정보를 가져오는 함수
@@ -40,7 +44,9 @@ function App() {
       } else {
         setLoading(false);
       }
+
     };
+
 
     // 함수 실행
     fetchUser();
@@ -53,11 +59,14 @@ function App() {
 
   // 에러가 났다면
   if (error) {
+
     return <div>{error}</div>;
+
   }
 
   // 임시 유저
   const tempUser = {
+
     name: "John Doe",
     email: "john.doe@example.com",
     profilePicture: "https://via.placeholder.com/150",
@@ -82,6 +91,7 @@ function App() {
       description: "Description of project 3",
       createdAt: "2023-03-01",
     },
+
   ];
 
   return (
@@ -97,6 +107,7 @@ function App() {
 
         {/* 임시로 profile에다가 가짜정보 넣는중 */}
         {/* <Route path="/profile" element={user ? <Profile user={user} projects={user.projects} /> : <Navigate to="/" />} /> */}
+
         <Route
           path="/profile"
           element={<Profile user={tempUser} projects={tempProjects} />}
@@ -107,6 +118,7 @@ function App() {
         <Route path="/history" element={<History />} />
 
         <Route path="guide" element={<Guide />} />
+
 
         {/* 주소가 잘못된 경우 싹다 login으로 소환 */}
         <Route path="*" element={<Navigate to="/" />} />

@@ -2,12 +2,15 @@
 .sidebar {
   position: fixed;
   top: 0;
+
   left: -380px; /* 기본적으로 화면 밖으로 숨김 */
   width: 350px;
+
   height: 100%;
   background-color: gray;
   color: white;
   transition: left 0.3s ease; /* 부드러운 슬라이딩 애니메이션 */
+
   z-index: 990; /* 다른 요소 위에 위치 */
   padding: 1rem;
   padding-top: 90px; /*navbar 위치 빼놓음*/
@@ -19,6 +22,7 @@
 
 .toggle-btn {
   height: 168px;
+
   position: absolute;
   top: 46%;
   right: -27px; /* 사이드바 오른쪽 밖으로 살짝 나옴 */
@@ -43,7 +47,9 @@
 }
 
 .contents {
+
   padding: 10px;
   font-size: 18px;
   position: absolute;
+
 }
