@@ -8,6 +8,14 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 
+# Terraform 설치
+RUN apt-get update && apt-get install -y gnupg software-properties-common \
+    && wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor > /usr/share/keyrings/hashicorp-archive-keyring.gpg \
+    && echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/hashicorp.list \
+    && apt-get update && apt-get install terraform
+
+
+
 # 소스 파일 복사
 COPY . .
 
