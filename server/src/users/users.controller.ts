@@ -36,7 +36,7 @@ export class UsersController {
   @Get('info')
   @UseGuards(JwtAuthGuard)  // JWT 인증 가드 적용
   async getUserInfo(@CurrentUser() user: any) {
-    const email = user.username;  // JWT에서 이메일 추출
+    const email = user.userName;  // JWT에서 이메일 추출
     const userInfo = await this.usersService.findOneByEmail(email);  // 이메일로 사용자 조회
 
     // userInfo가 null인 경우 처리
@@ -45,7 +45,7 @@ export class UsersController {
     }
 
     return {
-      message: `${userInfo.username}님의 정보 조회가 완료되었습니다.`,
+      message: `${userInfo.userName}님의 정보 조회가 완료되었습니다.`,
       user: userInfo,
     };
   }
@@ -58,6 +58,6 @@ export class UsersController {
   //   @Body() updateUserDto: UpdateUserDto
   // ) {
   //   const updatedUser = await this.usersService.updateUserByEmail(user.email, updateUserDto);  // 이메일을 기반으로 정보 업데이트
-  //   return { message: `${updatedUser.username}님, 변경이 완료되었습니다.` };
+  //   return { message: `${updatedUser.userName}님, 변경이 완료되었습니다.` };
   // }
 }

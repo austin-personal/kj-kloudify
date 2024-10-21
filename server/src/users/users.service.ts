@@ -2,41 +2,41 @@ import { Injectable, UnauthorizedException , NotFoundException } from '@nestjs/c
 import * as bcrypt from 'bcryptjs';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { UserEntity } from './entity/users.entity';  // UserEntity 가져오기
+import { User } from './entity/users.entity';  // User 가져오기
 import { JwtService } from '@nestjs/jwt';
 import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectRepository(UserEntity)
-    private readonly usersRepository: Repository<UserEntity>,  // TypeORM Repository 주입
+    @InjectRepository(User)
+    private readonly usersRepository: Repository<User>,  // TypeORM Repository 주입
     private readonly jwtService: JwtService,
   ) {}
 
-  async findOne(username: string): Promise<UserEntity | null> {
-    return this.usersRepository.findOne({ where: { username } });
+  async findOne(userName: string): Promise<User | null> {
+    return this.usersRepository.findOne({ where: { userName } });
   }
 
-  async createUser(username: string, password: string, email: string): Promise<UserEntity> {
+  async createUser(userName: string, password: string, email: string): Promise<User> {
     const hashedPassword = await bcrypt.hash(password, 10);  // 비밀번호 해시
     const newUser = this.usersRepository.create({
-      username,
+      userName,
       password: hashedPassword,
       email,
     });
     return this.usersRepository.save(newUser);  // DB에 저장
   }
 
-  async login(user: Omit<UserEntity, 'password'>): Promise<{ access_token: string }> {
-    const payload = { email: user.email, sub: user.id };  // JWT 페이로드에 이메일 사용
+  async login(user: Omit<User, 'password'>): Promise<{ access_token: string }> {
+    const payload = { email: user.email, sub: user.email };  // JWT 페이로드에 이메일 사용
     return {
       access_token: this.jwtService.sign(payload),  // JWT 발급
     };
   }
 
-  async validateUser(username: string, password: string): Promise<Omit<UserEntity, 'password'>> {
-    const user = await this.findOne(username);
+  async validateUser(userName: string, password: string): Promise<Omit<User, 'password'>> {
+    const user = await this.findOne(userName);
     if (!user) {
       throw new UnauthorizedException('해당 사용자가 존재하지 않습니다.');
     }
@@ -51,7 +51,7 @@ export class UsersService {
   }
 
   // 이메일을 기준으로 사용자 찾기
-  async findOneByEmail(email: string): Promise<UserEntity | null> {
+  async findOneByEmail(email: string): Promise<User | null> {
     const user = await this.usersRepository.findOne({ where: { email } });
     if (!user) {
       throw new NotFoundException('User not found');  // 사용자가 없으면 예외 발생
@@ -60,17 +60,17 @@ export class UsersService {
   }
 
   // 사용자 업데이트 메서드
-  // async updateUserByEmail(email: string, updateUserDto: UpdateUserDto): Promise<UserEntity> {
+  // async updateUserByEmail(email: string, updateUserDto: UpdateUserDto): Promise<User> {
   //   const user = await this.findOneByEmail(email);  // 현재 사용자 찾기
   //   if (!user) {
   //     throw new NotFoundException('User not found');
   //   }
 
   //   // 사용자 이름 중복 체크 (email은 업데이트하지 않으므로 생략)
-  //   if (updateUserDto.username && updateUserDto.username !== user.username) {
-  //     const existingUserByName = await this.usersRepository.findOne({ where: { username: updateUserDto.username } });
+  //   if (updateUserDto.userName && updateUserDto.userName !== user.userName) {
+  //     const existingUserByName = await this.usersRepository.findOne({ where: { userName: updateUserDto.userName } });
   //     if (existingUserByName) {
-  //       throw new ConflictException('This username is already in use.');
+  //       throw new ConflictException('This userName is already in use.');
   //     }
   //   }
 
