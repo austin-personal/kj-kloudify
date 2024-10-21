@@ -53,7 +53,6 @@ const Profile: React.FC<ProfileProps> = ({ user, projects }) => {
             {/* 하단 프로젝트 리스트 섹션 */}
             <div className="project-list">
                 {projects.map((project) => (
-<<<<<<< HEAD
                     <div 
                         key={project.id} 
                         className="project-item" 
