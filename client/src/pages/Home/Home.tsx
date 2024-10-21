@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import SideBar from "../../components/SideBar/SideBar";
 import Chat from "../../components/Chat/Chat";
+import Board from "../../components/Board/Board";
 import "./Home.css";
 
 function Home() {
@@ -12,6 +13,8 @@ function Home() {
     <div className="home">
       <SideBar isOpen={isOpen} setIsOpen={setIsOpen} />
       <Chat setIsOpen={setIsOpen} />
+      <div className="vertical-line"></div>
+      <Board />
     </div>
   );
 }
