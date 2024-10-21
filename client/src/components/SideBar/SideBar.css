@@ -8,9 +8,9 @@
   background-color: gray;
   color: white;
   transition: left 0.3s ease; /* 부드러운 슬라이딩 애니메이션 */
-  z-index: 1000; /* 다른 요소 위에 위치 */
+  z-index: 990; /* 다른 요소 위에 위치 */
   padding: 1rem;
-  padding-top: 40px; /*navbar 위치 빼놓음*/
+  padding-top: 90px; /*navbar 위치 빼놓음*/
 }
 
 .sidebar.open {
@@ -43,6 +43,7 @@
 }
 
 .contents {
+  padding: 10px;
+  font-size: 18px;
   position: absolute;
-  left: 50px;
 }
