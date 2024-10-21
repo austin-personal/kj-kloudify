@@ -5,6 +5,7 @@ import Login from './pages/Login/Login';
 import NavBar from './components/NavBar/NavBar';
 import Profile from './pages/Profile/Profile';
 import History from './pages/History/History';
+import Guide from './pages/Guide/Guide';
 import { getUserInfo } from './services/authService';
 
 function App() {
@@ -84,7 +85,11 @@ function App() {
         {/* <Route path="/profile" element={user ? <Profile user={user} projects={user.projects} /> : <Navigate to="/" />} /> */}
         <Route path="/profile" element={<Profile user={tempUser} projects={tempProjects} />} />
 
-        <Route path="/history/:id" element={<History />} />
+        {/* 임시로 history페이지 가는중 */}
+        {/* <Route path="/history/:id" element={<History />} /> */}
+        <Route path="/history" element={<History />} />
+
+        <Route path="guide" element={<Guide />} />
 
         {/* 주소가 잘못된 경우 싹다 login으로 소환 */}
         <Route path="*" element={<Navigate to="/" />} />
