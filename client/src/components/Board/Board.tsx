@@ -17,7 +17,16 @@ import "./Board.css";
 import { initialNodes, nodeTypes } from "./nodes";
 import { initialEdges, edgeTypes } from "./edges";
 
-export default function Board() {
+// Props 타입 정의
+interface BoardProps {
+  height?: string; // 높이는 선택적이며 문자열로 받을 것
+  borderRadius?: string; // border-radius도 선택적이며 문자열로 받을 것
+}
+
+const Board: React.FC<BoardProps> = ({
+  height = "540px",
+  borderRadius = "15px 0px 15px 15px",
+}) => {
   const [nodes, , onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const onConnect: OnConnect = useCallback(
@@ -26,7 +35,13 @@ export default function Board() {
   );
 
   return (
-    <div className="board">
+    <div
+      className="board"
+      style={{
+        height: height || "540px",
+        borderRadius: borderRadius || "15px 0px 15px 15px",
+      }}
+    >
       <ReactFlow
         nodes={nodes}
         nodeTypes={nodeTypes}
@@ -42,4 +57,6 @@ export default function Board() {
       </ReactFlow>
     </div>
   );
-}
+};
+
+export default Board;
