@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import "./Services.css";
 import { useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
 const Services: React.FC = () => {
   // 모달 열림 상태 관리
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -19,8 +21,8 @@ const Services: React.FC = () => {
   return (
     <div className="services">
       <div className="price-summary-header">
-        <span className="service-label">서비스</span>
-        <span className="price-label">예상 비용</span>
+        <span className="top-label">서비스</span>
+        <span className="top-label">예상 비용</span>
       </div>
       <hr />
       <div className="service-container">
@@ -79,15 +81,25 @@ const Services: React.FC = () => {
         )}
       </div>
       <hr />
-      <h3>배포 전 마지막 단계</h3>
-      <p>배포를 위한 AWS 관련 정보가 필요합니다.</p>
+      <div className="info-notice">
+        <FontAwesomeIcon
+          icon={faCircleExclamation}
+          size="2xl"
+          style={{ color: "#E37E7E" }}
+        />
+        <h3 className="info-title">배포 전 마지막 단계</h3>
+      </div>
+
+      <p className="info-contents">배포를 위한 AWS 관련 정보가 필요합니다.</p>
       <div className="right-btn">
         <button className="info-btn" onClick={handleGuide}>
           정보 입력하러 가기 →
         </button>
       </div>
       <div className="right-btn">
-        <button onClick={handleDeploy}>Deploy</button>
+        <button className="deploy-btn" onClick={handleDeploy}>
+          Deploy
+        </button>
       </div>
     </div>
   );

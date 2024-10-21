@@ -2,15 +2,26 @@
   flex: 2;
   margin: 0 20px 0 20px;
   height: 60%;
+  color: #312d26;
 }
 .service-container {
   display: flex;
-  height: 150px;
+  height: 190px;
   flex-direction: column;
   gap: 10px;
   margin-bottom: 20px;
   margin-top: 20px;
   overflow-y: auto;
+}
+
+.service-container::-webkit-scrollbar {
+  width: 20px;
+  height: 8px;
+}
+
+.service-container::-webkit-scrollbar-thumb {
+  border-radius: 20px;
+  background: #cccaba;
 }
 
 hr {
@@ -20,7 +31,12 @@ hr {
 }
 
 .service-element {
-  background-color: gray;
+  background-color: #f2eed1;
+  padding: 10px;
+  border-style: solid;
+  border-width: 1px;
+  border-color: #a09e8a;
+  border-radius: 20px;
   display: flex;
   align-items: center; /* 아이콘과 텍스트를 세로 중앙 정렬 */
   justify-content: space-between; /* 아이콘과 텍스트 사이 공간 확보 */
@@ -29,32 +45,53 @@ hr {
 .price-summary-header {
   width: 100%;
 }
+
+.top-label {
+  font-size: 23px;
+  width: 50%; /* 부모 너비의 50% */
+  margin-left: 5%;
+  margin-right: 30%; /* 부모 요소 너비의 5%만큼 마진 */
+}
+
 .service-label,
 .price-label {
+  font-size: 24px;
   width: 50%; /* 부모 너비의 50% */
-  margin-left: 10%;
+  margin-left: 2%;
   margin-right: 30%; /* 부모 요소 너비의 5%만큼 마진 */
 }
 
 .service-image {
   width: 37px;
   height: 37px;
+  border-radius: 10px;
 }
 
-.price-summary-btn {
+.price-summary-btn,
+.deploy-btn {
+  font-family: "NanumSquareRound", sans-serif;
+  font-weight: bold;
+  font-size: 24px;
   background-color: #f6b755;
-  color: #fff;
-  padding: 10px 20px;
   border: none;
-  border-radius: 5px;
-  font-size: 16px;
+  border-radius: 20px;
   cursor: pointer;
-  width: 200px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  height: 67px;
+
+  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 13%);
   transition: background-color 0.3s;
+  margin-bottom: 13px;
 }
 
-.price-summary-btn:hover {
+.deploy-btn {
+  width: 137px;
+}
+.price-summary-btn {
+  width: 200px;
+}
+
+.price-summary-btn:hover,
+.deploy-btn:hover {
   background-color: #f49a29;
 }
 .right-btn {
@@ -63,10 +100,15 @@ hr {
 }
 
 .info-btn {
+  font-size: 23px;
   padding: 10px 20px;
-  background-color: orange;
+  background-color: transparent;
+  color: #6b3ed4;
   border: none;
+  font-family: "NanumSquareRound", sans-serif;
+  font-weight: bold;
   cursor: pointer;
+  margin-bottom: 20px;
 }
 
 .middle-btn {
@@ -109,4 +151,21 @@ hr {
   background-color: orange;
   border: none;
   cursor: pointer;
+}
+
+.info-notice {
+  font-size: 23px;
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  height: 30px;
+}
+
+.info-title {
+  margin-left: 10px;
+}
+
+.info-contents {
+  height: 10px;
+  font-size: 23px;
 }

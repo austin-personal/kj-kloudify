@@ -6,7 +6,7 @@ import "./Review.css";
 function Review() {
   return (
     <div className="review">
-      <Board />
+      <Board height="600px" borderRadius="20px 20px 20px 20px" />
       <div className="vertical-line"></div>
       <Services />
     </div>
