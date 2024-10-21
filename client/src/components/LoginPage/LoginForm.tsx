@@ -28,7 +28,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignup }) => {
     return (
         <div className="auth-form">
             <h1>Kloudify</h1>
-            <form className='form' onSubmit={handleLogin}>
+            <form className='login-form' onSubmit={handleLogin}>
                 <input
                     type='id'
                     placeholder="Id"

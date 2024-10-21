@@ -25,7 +25,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSwitchToLogin }) => {
     return (
         <div className="auth-form">
             <h2>회원가입</h2>
-            <form className='form' onSubmit={handleSignup}>
+            <form className='login-form' onSubmit={handleSignup}>
                 <input
                     type="text"
                     placeholder="Id"
