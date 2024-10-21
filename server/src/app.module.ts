@@ -6,12 +6,13 @@ import { UsersModule } from './users/users.module';
 // TypeORM entities
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Projects } from './projects/entity/projects.entity';
-import { User } from './users/entity/users.entity';
+import { Users } from './users/entity/users.entity';
 import { Secrets } from './users/entity/secrets.entity';
 import { ArchBoards } from './archboards/entity/archboards.entity';
 import { Service } from './archboards/entity/service.entity';  // Ensure this exists
 import { ArchService } from './archboards/entity/archservice.entity';
 
+import { ProjectsModule } from './projects/projects.module';
 
 import { TerraformsModule } from './terraforms/terraform.module';
 
@@ -25,7 +26,7 @@ import { TerraformsModule } from './terraforms/terraform.module';
       username: process.env.DATABASE_USER || 'postgres',
       password: process.env.DATABASE_PASSWORD || '1234',
       database: process.env.DATABASE_NAME || 'my_test',
-      entities: [Projects, User, Secrets, ArchBoards, Service, ArchService],  
+      entities: [Projects, Users, Secrets, ArchBoards, Service, ArchService],  
       synchronize: true,  // Development setting
     }),
     TerraformsModule,

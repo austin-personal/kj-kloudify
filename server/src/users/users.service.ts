@@ -2,23 +2,23 @@ import { Injectable, UnauthorizedException , NotFoundException } from '@nestjs/c
 import * as bcrypt from 'bcryptjs';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User } from './entity/users.entity';  // User 가져오기
+import { Users } from './entity/users.entity';  // User 가져오기
 import { JwtService } from '@nestjs/jwt';
 import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectRepository(User)
-    private readonly usersRepository: Repository<User>,  // TypeORM Repository 주입
+    @InjectRepository(Users)
+    private readonly usersRepository: Repository<Users>,  // TypeORM Repository 주입
     private readonly jwtService: JwtService,
   ) {}
 
-  async findOne(userName: string): Promise<User | null> {
+  async findOne(userName: string): Promise<Users | null> {
     return this.usersRepository.findOne({ where: { userName } });
   }
 
-  async createUser(userName: string, password: string, email: string): Promise<User> {
+  async createUser(userName: string, password: string, email: string): Promise<Users> {
     const hashedPassword = await bcrypt.hash(password, 10);  // 비밀번호 해시
     const newUser = this.usersRepository.create({
       userName,
@@ -28,14 +28,14 @@ export class UsersService {
     return this.usersRepository.save(newUser);  // DB에 저장
   }
 
-  async login(user: Omit<User, 'password'>): Promise<{ access_token: string }> {
+  async login(user: Omit<Users, 'password'>): Promise<{ access_token: string }> {
     const payload = { email: user.email, sub: user.email };  // JWT 페이로드에 이메일 사용
     return {
       access_token: this.jwtService.sign(payload),  // JWT 발급
     };
   }
 
-  async validateUser(userName: string, password: string): Promise<Omit<User, 'password'>> {
+  async validateUser(userName: string, password: string): Promise<Omit<Users, 'password'>> {
     const user = await this.findOne(userName);
     if (!user) {
       throw new UnauthorizedException('해당 사용자가 존재하지 않습니다.');
@@ -51,7 +51,7 @@ export class UsersService {
   }
 
   // 이메일을 기준으로 사용자 찾기
-  async findOneByEmail(email: string): Promise<User | null> {
+  async findOneByEmail(email: string): Promise<Users | null> {
     const user = await this.usersRepository.findOne({ where: { email } });
     if (!user) {
       throw new NotFoundException('User not found');  // 사용자가 없으면 예외 발생

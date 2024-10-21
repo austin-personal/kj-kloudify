@@ -3,7 +3,7 @@ import { Projects } from '../../projects/entity/projects.entity';
 import { Secrets } from './secrets.entity';
 
 @Entity()
-export class User {
+export class Users {
   @PrimaryGeneratedColumn()
   UID: number;  // Primary Key
 
@@ -13,7 +13,7 @@ export class User {
   @Column()
   password: string;
 
-  @Column()
+  @Column({ unique: true })
   email: string;
 
   @OneToMany(() => Projects, (project) => project.user)

@@ -6,12 +6,12 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './jwt.strategy';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from './entity/users.entity'; // UserEntity 가져오기
+import { Users } from './entity/users.entity'; // UserEntity 가져오기
                   // C:\Users\dlstj\Desktop\project\kj-kloudify\server\src\users\entitiy\users.entity.ts
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User]),  // UserEntity 리포지토리 등록
+    TypeOrmModule.forFeature([Users]),  // UserEntity 리포지토리 등록
     PassportModule,
     JwtModule.register({
       secret: 'I\'M IML',  // 비밀 키 설정

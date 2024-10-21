@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'typeorm';
-import { User } from '../../users/entity/users.entity';
+import { Users } from '../../users/entity/users.entity';
 import { ArchBoards } from '../../archboards/entity/archboards.entity';
 
 @Entity()
@@ -19,8 +19,11 @@ export class Projects {
   @Column()
   ARCTID: number;  // Foreign Key (Architecture)
 
-  @ManyToOne(() => User, (user) => user.projects)
-  user: User;
+  @Column()
+  UID: number;  // Foreign Key (Architecture)
+
+  @ManyToOne(() => Users, (users) => users.projects)
+  user: Users;
 
   @OneToMany(() => ArchBoards, (archBoard) => archBoard.projects)
   archBoards: ArchBoards[];

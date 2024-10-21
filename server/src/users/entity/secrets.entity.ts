@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToOne } from 'typeorm';
-import { User } from './users.entity';
+import { Users } from './users.entity';
 
 @Entity()
 export class Secrets {
@@ -15,6 +15,6 @@ export class Secrets {
   @Column()
   securityKey: string;
 
-  @OneToOne(() => User, (user) => user.secrets)
-  user: User;
+  @OneToOne(() => Users, (user) => user.secrets)
+  user: Users;
 }
