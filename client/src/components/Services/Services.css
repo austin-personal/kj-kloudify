@@ -1,0 +1,112 @@
+.services {
+  flex: 2;
+  margin: 0 20px 0 20px;
+  height: 60%;
+}
+.service-container {
+  display: flex;
+  height: 150px;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+  margin-top: 20px;
+  overflow-y: auto;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid #ddd;
+  margin: 10px 0;
+}
+
+.service-element {
+  background-color: gray;
+  display: flex;
+  align-items: center; /* 아이콘과 텍스트를 세로 중앙 정렬 */
+  justify-content: space-between; /* 아이콘과 텍스트 사이 공간 확보 */
+}
+
+.price-summary-header {
+  width: 100%;
+}
+.service-label,
+.price-label {
+  width: 50%; /* 부모 너비의 50% */
+  margin-left: 10%;
+  margin-right: 30%; /* 부모 요소 너비의 5%만큼 마진 */
+}
+
+.service-image {
+  width: 37px;
+  height: 37px;
+}
+
+.price-summary-btn {
+  background-color: #f6b755;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  width: 200px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s;
+}
+
+.price-summary-btn:hover {
+  background-color: #f49a29;
+}
+.right-btn {
+  display: flex;
+  justify-content: flex-end; /* 자식 요소를 오른쪽으로 정렬 */
+}
+
+.info-btn {
+  padding: 10px 20px;
+  background-color: orange;
+  border: none;
+  cursor: pointer;
+}
+
+.middle-btn {
+  text-align: center; /* 버튼을 수평 중앙으로 정렬 */
+  margin-top: 20px;
+}
+
+/* App.css */
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5); /* 모달 배경 어둡게 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal {
+  position: relative;
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 500px;
+  width: 100%;
+  height: 500px;
+  text-align: center;
+}
+
+.close-btn {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 20px;
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: orange;
+  border: none;
+  cursor: pointer;
+}

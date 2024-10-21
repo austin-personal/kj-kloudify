@@ -1,14 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import { Route, Routes, Navigate, useLocation } from 'react-router-dom';
-import Home from './pages/Home/Home';
-import Login from './pages/Login/Login';
-import NavBar from './components/NavBar/NavBar';
-import Profile from './pages/Profile/Profile';
-import History from './pages/History/History';
+import React, { useEffect, useState } from "react";
+import { Route, Routes, Navigate, useLocation } from "react-router-dom";
+import Home from "./pages/Home/Home";
+import Login from "./pages/Login/Login";
+import NavBar from "./components/NavBar/NavBar";
+import Profile from "./pages/Profile/Profile";
+import History from "./pages/History/History";
+import Review from "./pages/Review/Review";
 
-import Guide from './pages/Guide/Guide';
+import Guide from "./pages/Guide/Guide";
 
-import { getUserInfo } from './services/authService';
+import { getUserInfo } from "./services/authService";
 
 function App() {
   const location = useLocation();
@@ -18,7 +19,6 @@ function App() {
 
   // 임시 유저
   const tempUser = {
-
     name: "John Doe",
     email: "john.doe@example.com",
     profilePicture: "https://via.placeholder.com/150",
@@ -43,7 +43,6 @@ function App() {
       description: "Description of project 3",
       createdAt: "2023-03-01",
     },
-
   ];
 
   return (
@@ -56,7 +55,8 @@ function App() {
         {/* 나중에 토큰 구현되면 이 코드로 */}
         {/* <Route path="/home" element={isAuthenticated ? <Home /> : <Navigate to="/" />} /> */}
         <Route path="/home" element={<Home />} />
-
+        {/* 슬아 리뷰페이지 추가 */}
+        <Route path="/review" element={<Review />} />
         {/* 임시로 profile에다가 가짜정보 넣는중 */}
         {/* <Route path="/profile" element={user ? <Profile user={user} projects={user.projects} /> : <Navigate to="/" />} /> */}
 
@@ -70,7 +70,6 @@ function App() {
         <Route path="/history" element={<History />} />
 
         <Route path="guide" element={<Guide />} />
-
 
         {/* 주소가 잘못된 경우 싹다 login으로 소환 */}
         <Route path="*" element={<Navigate to="/" />} />
