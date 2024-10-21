@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { TerraformsModule } from './terraforms/terraform.module';
 
 @Module({
   imports: [UsersModule,
@@ -17,6 +18,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       entities: [__dirname + '/users/entity/*.entity{.ts,.js}'],
       synchronize: true,  // 개발 환경에서는 true로 설정
     }),
+    TerraformsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
