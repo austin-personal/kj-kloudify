@@ -5,6 +5,8 @@ import { UsersModule } from './users/users.module';
 
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TerraformsModule } from './terraforms/terraform.module';
+import { ConversationsController } from './conversations/conversations.controller';
+import { ConversationsModule } from './conversations/conversations.module';
 
 @Module({
   imports: [UsersModule,
@@ -19,8 +21,9 @@ import { TerraformsModule } from './terraforms/terraform.module';
       synchronize: true,  // 개발 환경에서는 true로 설정
     }),
     TerraformsModule,
+    ConversationsModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, ConversationsController],
   providers: [AppService],
 })
 export class AppModule {}

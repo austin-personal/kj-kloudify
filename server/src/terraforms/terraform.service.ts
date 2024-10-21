@@ -8,7 +8,7 @@ export class TerraformService {
   // 키워드별로 필요한 Terraform 블록을 생성
   private generateTerraformBlock(service: string, options: any): string {
     let terraformBlock = '';
-
+  
     // EC2 인스턴스 생성 (퍼블릭/프라이빗 여부 조건에 따라 처리)
     if (service === 'ec2') {
       terraformBlock += `
@@ -19,26 +19,31 @@ export class TerraformService {
         subnet_id     = "${options.subnet_id || 'subnet-123456'}"
       }\n`;
     }
-
-    // S3 버킷 생성 (연결 여부 옵션 처리)
+  
+    // S3 버킷 생성 (파일 업로드 없이 버킷만 생성)
     if (service === 's3') {
       terraformBlock += `
+      provider "aws" {
+        alias       = "s3_provider"
+        access_key  = "${options.access_key || ''}"  // 자격 증명 전달
+        secret_key  = "${options.secret_key || ''}"
+        region      = "${options.region || 'ap-northeast-2'}"  // S3 리전 설정
+      }
+    
       resource "aws_s3_bucket" "example" {
-        bucket = "${options.bucket_name || 'example-bucket'}"
+        provider = aws.s3_provider  // 올바른 provider 참조
+        bucket   = "${options.bucket_name || 'example-bucket'}"
       }\n`;
-
-      // 만약 S3와 연결된 EC2가 있다면
+  
+      // S3와 EC2 연결이 필요하지만 파일 업로드는 하지 않음
       if (options.linked_to_ec2) {
         terraformBlock += `
-        resource "aws_s3_bucket_object" "example" {
-          bucket = aws_s3_bucket.example.bucket
-          key    = "example-object"
-          source = "path/to/source/file"
-        }\n`;
+        # S3와 EC2 연결을 위해 추가적인 설정이 필요할 경우 여기에 작성 가능 (업로드는 하지 않음)
+        `;
       }
     }
-
-    // DB 연결 상태 (옵션에 따라 처리)
+  
+    // RDS DB 인스턴스 생성
     if (service === 'rds') {
       terraformBlock += `
       resource "aws_db_instance" "example" {
@@ -49,7 +54,7 @@ export class TerraformService {
         username             = "${options.username || 'admin'}"
         password             = "${options.password || 'password'}"
       }\n`;
-
+  
       // 만약 DB와 연결된 EC2가 있다면
       if (options.linked_to_ec2) {
         terraformBlock += `
@@ -58,27 +63,42 @@ export class TerraformService {
         }\n`;
       }
     }
-
+  
     return terraformBlock;
   }
 
-  // 여러 키워드를 받아 Terraform configuration 파일 생성
-  private generateTerraformConfig(keywords: Array<{ service: string; options: any }>): string {
-    let terraformConfig = `provider "aws" {\n  region = "${keywords[0]?.options?.region || 'us-east-1'}"\n}\n`;
+  // 여러 서비스를 받아 Terraform configuration 파일 생성
+  private generateTerraformConfig(
+    services: Array<{ service: string; options: any }>, 
+    awsCredentials: { accessKeyId: string; secretAccessKey: string }
+  ): string {
+    let terraformConfig = `
+      provider "aws" {
+        access_key = "${awsCredentials.accessKeyId}"
+        secret_key = "${awsCredentials.secretAccessKey}"
+        region     = "${services[0]?.options?.region || 'ap-northeast-2'}"  // 서울 리전으로 설정
+      }\n`;
 
-    // 주어진 키워드 리스트에 따라 Terraform 블록을 생성하여 병합
-    for (const keyword of keywords) {
-      terraformConfig += this.generateTerraformBlock(keyword.service, keyword.options) + '\n';
+    // 주어진 서비스 리스트에 따라 Terraform 블록을 생성하여 병합
+    for (const service of services) {
+      terraformConfig += this.generateTerraformBlock(service.service, {
+        ...service.options,
+        access_key: awsCredentials.accessKeyId,
+        secret_key: awsCredentials.secretAccessKey
+      }) + '\n';
     }
 
     return terraformConfig;
   }
 
   // 테라폼 생성 명령어 실행
-  async createTerraform(keywords: Array<{ service: string; options: any }>): Promise<string> {
+  async createTerraform(
+    services: Array<{ service: string; options: any }>, 
+    awsCredentials: { accessKeyId: string; secretAccessKey: string }
+  ): Promise<string> {
     return new Promise((resolve, reject) => {
       // 주어진 키워드에 맞는 Terraform configuration 파일 생성
-      const terraformConfig = this.generateTerraformConfig(keywords);
+      const terraformConfig = this.generateTerraformConfig(services, awsCredentials);
       fs.writeFileSync('main.tf', terraformConfig); // main.tf 파일 생성
 
       // Terraform 명령어 실행
@@ -95,6 +115,7 @@ export class TerraformService {
       });
     });
   }
+  
 
   // 테라폼 삭제 명령어 실행
   async destroyTerraform(): Promise<string> {
@@ -104,11 +125,11 @@ export class TerraformService {
           reject(`Error: ${error.message}`);
           return;
         }
-        if (stderr) {
+        if (stderr && !stderr.includes('Warning')) {  // 경고를 제외한 stderr 처리
           reject(`Stderr: ${stderr}`);
           return;
         }
-        resolve(stdout);
+        resolve(stdout); // 성공 시 stdout 로그 반환
       });
     });
   }
@@ -121,11 +142,11 @@ export class TerraformService {
           reject(`Error: ${error.message}`);
           return;
         }
-        if (stderr) {
+        if (stderr && !stderr.includes('Warning')) {  // 경고를 제외한 stderr 처리
           reject(`Stderr: ${stderr}`);
           return;
         }
-        resolve(stdout);
+        resolve(stdout); // 성공 시 stdout 로그 반환
       });
     });
   }
