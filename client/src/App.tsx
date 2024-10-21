@@ -5,7 +5,9 @@ import Login from './pages/Login/Login';
 import NavBar from './components/NavBar/NavBar';
 import Profile from './pages/Profile/Profile';
 import History from './pages/History/History';
+
 import Guide from './pages/Guide/Guide';
+
 import { getUserInfo } from './services/authService';
 
 function App() {
@@ -15,10 +17,11 @@ function App() {
   const [error, setError] = useState<string | null>(null);
   // 토큰이 존재하는지 확인
   // ?????
-  const token = localStorage.getItem('token');
+
+  const token = localStorage.getItem("token");
   const isAuthenticated = !!token;
   // 주소가 login인지 아닌지
-  const showNavBar = location.pathname !== '/';
+  const showNavBar = location.pathname !== "/";
 
 
   useEffect(() => {
@@ -42,9 +45,7 @@ function App() {
         setLoading(false);
       }
 
-
     };
-
 
 
     // 함수 실행
@@ -59,14 +60,13 @@ function App() {
   // 에러가 났다면
   if (error) {
 
-
     return <div>{error}</div>;
+
 
   }
 
   // 임시 유저
   const tempUser = {
-
 
     name: "John Doe",
     email: "john.doe@example.com",
@@ -74,9 +74,25 @@ function App() {
   };
   // 임시 프로젝트들
   const tempProjects = [
-    { id: 1, title: 'Project 1', description: 'Description of project 1', createdAt: '2023-01-01' },
-    { id: 2, title: 'Project 2', description: 'Description of project 2', createdAt: '2023-02-01' },
-    { id: 3, title: 'Project 3', description: 'Description of project 3', createdAt: '2023-03-01' },
+    {
+      id: 1,
+      title: "Project 1",
+      description: "Description of project 1",
+      createdAt: "2023-01-01",
+    },
+    {
+      id: 2,
+      title: "Project 2",
+      description: "Description of project 2",
+      createdAt: "2023-02-01",
+    },
+    {
+      id: 3,
+      title: "Project 3",
+      description: "Description of project 3",
+      createdAt: "2023-03-01",
+    },
+
   ];
 
   return (
@@ -93,13 +109,18 @@ function App() {
 
         {/* 임시로 profile에다가 가짜정보 넣는중 */}
         {/* <Route path="/profile" element={user ? <Profile user={user} projects={user.projects} /> : <Navigate to="/" />} /> */}
-        <Route path="/profile" element={<Profile user={tempUser} projects={tempProjects} />} />
+
+        <Route
+          path="/profile"
+          element={<Profile user={tempUser} projects={tempProjects} />}
+        />
 
         {/* 임시로 history페이지 가는중 */}
         {/* <Route path="/history/:id" element={<History />} /> */}
         <Route path="/history" element={<History />} />
 
         <Route path="guide" element={<Guide />} />
+
 
         {/* 주소가 잘못된 경우 싹다 login으로 소환 */}
         <Route path="*" element={<Navigate to="/" />} />
