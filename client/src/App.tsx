@@ -1,15 +1,15 @@
-import React from 'react';
-import { Route, Routes, Navigate, useLocation } from 'react-router-dom';
-import Home from './pages/Home/Home';
-import Login from './pages/Login/Login';
-import NavBar from './components/NavBar/NavBar';
+import React from "react";
+import { Route, Routes, Navigate, useLocation } from "react-router-dom";
+import Home from "./pages/Home/Home";
+import Login from "./pages/Login/Login";
+import NavBar from "./components/NavBar/NavBar";
 
 function App() {
   const location = useLocation();
   // 토큰이 존재하는지 확인
-  const isAuthenticated = !!localStorage.getItem('token');
+  const isAuthenticated = !!localStorage.getItem("token");
   // 주소가 login인지 아닌지
-  const showNavBar = location.pathname !== '/';
+  const showNavBar = location.pathname !== "/";
 
   return (
     <>
