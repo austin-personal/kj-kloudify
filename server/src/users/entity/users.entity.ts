@@ -1,12 +1,14 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, OneToOne, JoinColumn } from 'typeorm';
+import { Projects } from '../../projects/entity/projects.entity';
+import { Secrets } from './secrets.entity';
 
-@Entity('users')  // MySQL의 users 테이블에 매핑
-export class UserEntity {
+@Entity()
+export class Users {
   @PrimaryGeneratedColumn()
-  id: number;
+  UID: number;  // Primary Key
 
-  @Column({ unique: true })
-  username: string;
+  @Column()
+  userName: string;
 
   @Column()
   password: string;
@@ -14,7 +16,10 @@ export class UserEntity {
   @Column({ unique: true })
   email: string;
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  created_at: Date;
-  
+  @OneToMany(() => Projects, (project) => project.user)
+  projects: Projects[];
+
+  @OneToOne(() => Secrets, (secrets) => secrets.user)
+  @JoinColumn()  // One-to-one relationship, join with Secrets table
+  secrets: Secrets;
 }

@@ -3,23 +3,34 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 
+// TypeORM entities
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { Projects } from './projects/entity/projects.entity';
+import { Users } from './users/entity/users.entity';
+import { Secrets } from './users/entity/secrets.entity';
+import { ArchBoards } from './archboards/entity/archboards.entity';
+import { Service } from './archboards/entity/service.entity';  // Ensure this exists
+import { ArchService } from './archboards/entity/archservice.entity';
+
+import { ProjectsModule } from './projects/projects.module';
+
 import { TerraformsModule } from './terraforms/terraform.module';
 import { ConversationsController } from './conversations/conversations.controller';
 import { ConversationsModule } from './conversations/conversations.module';
 
 
 @Module({
-  imports: [UsersModule,
+  imports: [
+    UsersModule,
     TypeOrmModule.forRoot({
-      type: 'postgres',  // MySQL에서 PostgreSQL로 변경
+      type: 'postgres',  // Database type
       host: process.env.DATABASE_HOST || 'localhost',
-      port: parseInt(process.env.DATABASE_PORT || '5432', 10),  // 기본 포트를 명시적으로 설정
-      username: process.env.DATABASE_USER || 'postgres',  // PostgreSQL의 기본 사용자 이름은 'postgres'
+      port: parseInt(process.env.DATABASE_PORT || '5432', 10),
+      username: process.env.DATABASE_USER || 'postgres',
       password: process.env.DATABASE_PASSWORD || '1234',
       database: process.env.DATABASE_NAME || 'my_test',
-      entities: [__dirname + '/users/entity/*.entity{.ts,.js}'],
-      synchronize: true,  // 개발 환경에서는 true로 설정
+      entities: [Projects, Users, Secrets, ArchBoards, Service, ArchService],  
+      synchronize: true,  // Development setting
     }),
     TerraformsModule,
     ConversationsModule,
