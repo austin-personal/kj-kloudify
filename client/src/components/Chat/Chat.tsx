@@ -136,15 +136,20 @@ const Chat: React.FC<ChatProps> = ({ setIsOpen }) => {
         </>
       )}
       <div className="input-container">
-        <form className="form" onSubmit={handleSendMessage}>
+        <form className="chat-form" onSubmit={handleSendMessage}>
           <input
+            className="chat-input"
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Type a message..."
           />
-          <button type="submit">
-            <FontAwesomeIcon icon={faPaperPlane} size="2xl" />
+          <button type="submit" className="chat-button">
+            <FontAwesomeIcon
+              icon={faPaperPlane}
+              size="2xl"
+              className="chat-icon"
+            />
           </button>
         </form>
       </div>
