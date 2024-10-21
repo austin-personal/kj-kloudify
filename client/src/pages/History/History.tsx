@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import './History.css';
 
+// 이렇게 올 예정
+// navigate(`/history/${projectId}`, { state: { project: projectHistory } });
+
 interface Service {
     id: number;
     name: string;
@@ -18,20 +21,26 @@ interface Project {
 
 const History: React.FC = () => {
     const location = useLocation();
+    // location의 state가 null이거나 undefined가 아닌경우
+    // Project 타입으로 project 불러오기
     const project = location.state?.project as Project;
 
     const [showPriceSummary, setShowPriceSummary] = useState(false);
     const [showChatPopup, setShowChatPopup] = useState(false);
 
+    // 채팅창 보여주는 함수
     const handleChatButtonClick = () => {
         setShowChatPopup(!showChatPopup);
     };
 
+    // 프로젝트가 없을경우
     if (!project) {
         return <p>No project data available.</p>;
     }
 
+    // 프로젝트가 있을경우
     return (
+        
         <div className="history-page">
             <div className="project-header">
                 <h2>{project.name}</h2>
