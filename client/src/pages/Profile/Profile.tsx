@@ -22,25 +22,6 @@ interface ProfileProps {
 const Profile: React.FC<ProfileProps> = ({ user, projects }) => {
     const navigate = useNavigate();
 
-    // 프로젝트 클릭 핸들러
-    const handleProjectClick = async (projectId: number) => {
-        try {
-            // API 호출하여 프로젝트 히스토리 데이터 가져오기
-            // 태현 api 주소 확인!!!
-            const response = await fetch(`/api/projects/${projectId}/history`);
-            if (!response.ok) {
-                throw new Error('Failed to fetch project history');
-            }
-            const projectHistory = await response.json();
-
-            // 가져온 데이터를 History 페이지로 이동하면서 전달
-            navigate(`/history/${projectId}`, { state: { project: projectHistory } });
-        } catch (error) {
-            console.error('Error fetching project history:', error);
-        }
-    };
-
-
     return (
         <div className="profile-page">
             {/* 상단 프로필 섹션 */}
@@ -55,8 +36,7 @@ const Profile: React.FC<ProfileProps> = ({ user, projects }) => {
                 {projects.map((project) => (
                     <div 
                         key={project.id} 
-                        className="project-item" 
-                        onClick={() => handleProjectClick(project.id)} // 클릭 시 프로젝트 불러오기
+                        className="project-item"
                     >
                         <h3>{project.title}</h3>
                         <p>{project.description}</p>
