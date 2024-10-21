@@ -27,11 +27,11 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignup }) => {
 
     return (
         <div className="auth-form">
-            <h2>Login</h2>
-            <form onSubmit={handleLogin}>
+            <h1>Kloudify</h1>
+            <form className='form' onSubmit={handleLogin}>
                 <input
-                    type="email"
-                    placeholder="Email"
+                    type='id'
+                    placeholder="Id"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                 />
@@ -41,12 +41,12 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignup }) => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                 />
-                <button type="submit">Login</button>
+                <button type="submit">로그인</button>
             </form>
-            <div className="divider">- or -</div>
-            <button className="google-login">Login with Google</button>
-            <div className="auth">
-                Don't have an account? <span className='signup-toggle' onClick={onSwitchToSignup}>Sign up</span>
+            <div className="divider">또는</div>
+            <button className="google-login">Google로 로그인</button>
+            <div className="auth-signup">
+                계정이 없으신가요? <span className='signup-toggle' onClick={onSwitchToSignup}>가입하기</span>
             </div>
         </div>
     );

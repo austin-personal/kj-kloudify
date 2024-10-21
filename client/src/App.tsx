@@ -45,7 +45,7 @@ const App: React.FC = () => {
   ];
 
   return (
-    <>
+    <div className="app">
       {/* 주소가 login이면 NavBar 꺼져 */}
       {showNavBar && <NavBar />}
       <Routes>
@@ -79,7 +79,7 @@ const App: React.FC = () => {
         {/* 주소가 잘못된 경우 싹다 login으로 소환 */}
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
-    </>
+    </div>
   );
 }
 
