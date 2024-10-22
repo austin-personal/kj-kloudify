@@ -20,68 +20,42 @@ export class ProjectsService {
     if (!user) {
       throw new NotFoundException('User not found');
     }
-
+    console.log("createProjectDto.projectName: ", createProjectDto.projectName);
     const project = this.projectRepository.create({
-      projectName: createProjectDto.projectName,
-      createdDate: new Date(),
-      user,
+    projectName: createProjectDto.projectName,
+    createdDate: new Date(),
+    UID: user.UID,
     });
 
     return this.projectRepository.save(project);
   }
 
-  async findOne(id: number): Promise<Projects> {
-    const project = await this.projectRepository.findOne({ where: { PID: id } });
-    if (!project) {
-      throw new NotFoundException('Project not found');
-    }
-    return project;
-  }
-  
 
-  // 모든 프로젝트 가져오기
-  async findAll(userId: number): Promise<Projects[]> {
-    const user = await this.userRepository.findOne({ where: { UID: userId } });
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-    // 유저와 연결된 모든 프로젝트 가져오기
-    return this.projectRepository.find({ where: { user: user } });
-  }
-  
-
-  // 특정 프로젝트 가져오기
-  async findOneByPID(PID: number): Promise<Projects> {
-    const project = await this.projectRepository.findOne({ where: { PID } });
-    if (!project) {
-      throw new NotFoundException('Project not found');
-    }
-    return project;
-  }
-  
-  // UID로 프로젝트 검색
+// 유저ID로 모든 프로젝트 가져오기
   async findAllByUserId(userId: number): Promise<Projects[]> {
     return this.projectRepository.find({ where: { UID: userId } });
   }
 
-  // 프로젝트 업데이트
-  async update(id: number, updateProjectDto: UpdateProjectDto): Promise<Projects> {
-    const project = await this.findOne(id);
+
+// PID로 특정 프로젝트 가져오기
+  async findOneByPID(pid: number): Promise<Projects> {
+    const project = await this.projectRepository.findOne({ where: { PID:pid } });
     if (!project) {
       throw new NotFoundException('Project not found');
     }
-
-    Object.assign(project, updateProjectDto);
-    return this.projectRepository.save(project);
+    console.log("project findOne: ", pid);
+    
+    return project;
   }
 
-  // 프로젝트 삭제
-  async remove(id: number): Promise<void> {
-    const project = await this.findOne(id);
+// PID로 프로젝트 삭제
+  async remove(pid: number, uid: number): Promise<void> {
+    const project = await this.projectRepository.findOne({ where: { PID:pid } });
     if (!project) {
-      throw new NotFoundException('Project not found');
+      throw new NotFoundException('There is no projectsProject not found');
     }
-
+    console.log("Delet: ",pid);
+    
     await this.projectRepository.remove(project);
   }
 }
