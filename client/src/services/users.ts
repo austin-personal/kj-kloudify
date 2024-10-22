@@ -6,7 +6,7 @@ const API_URL = 'http://localhost:3000/users';
 export const signup = async (username: string, email: string, password: string) => {
     try {
         // 태현 api 주소 확인!!!
-        const response = await axios.post(`${API_URL}/signup`, {
+        const response = await axios.post(`${API_URL}/signUp`, {
             username,
             password,
             email,

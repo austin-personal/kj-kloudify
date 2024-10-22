@@ -52,30 +52,47 @@ const App: React.FC = () => {
       <Routes>
         <Route path="/" element={<Login />} />
 
-        {/* 나중에 싹 다 protectedroute로 묶어야 함 */}
-        {/* <Route path="/home" element={
+        <Route path="/home" element={
           <ProtectedRoute>
             <Home />
           </ProtectedRoute>
         }
-        /> */}
-        <Route path="/home" element={<Home />} />
+        />
 
         {/* 슬아 리뷰페이지 추가 */}
-        <Route path="/review" element={<Review />} />
+        <Route path="/review" element={
+          <ProtectedRoute>
+            <Review />
+          </ProtectedRoute>
+        }
+        />
         {/* 임시로 profile에다가 가짜정보 넣는중 */}
         {/* <Route path="/profile" element={user ? <Profile user={user} projects={user.projects} /> : <Navigate to="/" />} /> */}
 
         <Route
           path="/profile"
-          element={<Profile user={tempUser} projects={tempProjects} />}
+          element={
+            <ProtectedRoute>
+              <Profile user={tempUser} projects={tempProjects} />
+            </ProtectedRoute>
+          }
         />
 
         {/* 임시로 history페이지 가는중 */}
         {/* <Route path="/history/:id" element={<History />} /> */}
-        <Route path="/history" element={<History />} />
+        <Route path="/history" element={
+          <ProtectedRoute>
+            <History />
+          </ProtectedRoute>
+        }
+        />
 
-        <Route path="/guide" element={<Guide />} />
+        <Route path="/guide" element={
+          <ProtectedRoute>
+            <Guide />
+          </ProtectedRoute>
+        }
+        />
 
         {/* 주소가 잘못된 경우 싹다 login으로 소환 */}
         <Route path="*" element={<Navigate to="/" />} />
