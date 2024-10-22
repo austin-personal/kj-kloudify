@@ -23,13 +23,13 @@ export class ProjectsController {
     return this.projectsService.findOne(id);
   }
 
-  // 모든 프로젝트 가져오기
-  @UseGuards(JwtAuthGuard)
-  @Get()
-  async findAll(@Req() req): Promise<Projects[]> {
-    const userId = req.user.uid; // JWT에서 userId 추출
-    return this.projectsService.findAll();
-  }
+  // // 모든 프로젝트 가져오기
+  // @UseGuards(JwtAuthGuard)
+  // @Get()
+  // async findAll(@Req() req): Promise<Projects[]> {
+  //   const userId = req.user.uid; // JWT에서 userId 추출
+  //   return this.projectsService.findAll();
+  // }
 
   // 프로젝트 업데이트
   @Patch(':id')

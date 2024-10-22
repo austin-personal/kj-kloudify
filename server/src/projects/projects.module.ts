@@ -6,7 +6,7 @@ import { Projects } from './entity/projects.entity';
 import { Users } from '../users/entity/users.entity'; // User 엔티티 추가
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Projects, Users])],
+  // imports: [TypeOrmModule.forFeature([Projects, Users])],
   providers: [ProjectsService],
   controllers: [ProjectsController],
 })
