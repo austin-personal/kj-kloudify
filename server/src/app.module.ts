@@ -12,8 +12,9 @@ import { ArchBoards } from './archboards/entity/archboards.entity';
 import { Service } from './archboards/entity/service.entity';  // Ensure this exists
 import { ArchService } from './archboards/entity/archservice.entity';
 
-import { ProjectsModule } from './projects/projects.module';
 
+
+import { ProjectsModule } from './projects/projects.module';
 import { TerraformsModule } from './terraforms/terraform.module';
 import { ConversationsController } from './conversations/conversations.controller';
 import { ConversationsModule } from './conversations/conversations.module';
@@ -22,6 +23,7 @@ import { ConversationsModule } from './conversations/conversations.module';
 @Module({
   imports: [
     UsersModule,
+    ProjectsModule,
     TypeOrmModule.forRoot({
       type: 'postgres',  // Database type
       host: process.env.DATABASE_HOST || 'localhost',
