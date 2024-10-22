@@ -38,6 +38,8 @@ export class ConversationsService {
     }
 
     async askBedrockModel(user_question: string, CID: string): Promise<any> {
+        console.log(`CID received in askBedrockModel: ${cid}`);
+
         const client = new AWS.BedrockRuntime({
             region: process.env.AWS_REGION,
             accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -123,6 +125,9 @@ export class ConversationsService {
 
     // DynamoDB에서 특정 CID의 대화 기록을 불러오는 함수
     async getConversationsByCID(CID: string): Promise<any> {
+
+        
+
         const params = {
             TableName: 'Conversations',
             FilterExpression: 'CID = :cid',
