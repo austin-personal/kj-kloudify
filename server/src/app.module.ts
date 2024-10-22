@@ -18,10 +18,12 @@ import { ProjectsModule } from './projects/projects.module';
 import { TerraformsModule } from './terraforms/terraform.module';
 import { ConversationsController } from './conversations/conversations.controller';
 import { ConversationsModule } from './conversations/conversations.module';
+import { ConfigModule } from '@nestjs/config';
 
 
 @Module({
   imports: [
+    ConfigModule.forRoot(),
     UsersModule,
     ProjectsModule,
     TypeOrmModule.forRoot({
