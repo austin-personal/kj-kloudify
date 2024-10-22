@@ -2,4 +2,4 @@
 .terraform
 server/main.tf
 server/.terraform
-.env
+

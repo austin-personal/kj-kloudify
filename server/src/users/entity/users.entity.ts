@@ -7,8 +7,8 @@ export class Users {
   @PrimaryGeneratedColumn()
   UID: number;  // Primary Key
 
-  @Column({ nullable: false })
-  userName: string;
+  @Column()
+  username: string;
 
   @Column({ nullable: false })
   password: string;

@@ -14,20 +14,36 @@ export class UsersService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async findOne(userName: string): Promise<Users | null> {
-    return this.usersRepository.findOne({ where: { userName } });
+  async findOne(username: string): Promise<Users | null> {
+    return this.usersRepository.findOne({ where: { username } });
   }
 
-  async createUser(userName: string, password: string, email: string): Promise<Users> {
+  // 새 사용자 생성
+  async createUser(username: string, password: string, email: string): Promise<Users> {
     const hashedPassword = await bcrypt.hash(password, 10);  // 비밀번호 해시
     const newUser = this.usersRepository.create({
-      userName,
+      username,
       password: hashedPassword,
       email,
     });
-    return this.usersRepository.save(newUser);  // DB에 저장
+    
+    try {
+      const newUser = this.usersRepository.create({
+        username,
+        password: hashedPassword,
+        email,
+      });
+
+      console.log(newUser);
+      return await this.usersRepository.save(newUser);
+    } catch (error) {
+      console.error("Error creating user:", error);
+      throw new Error("Failed to create user");
+    }
   }
 
+
+  // 로그인 
   async login(user: Omit<Users, 'password'>): Promise<{ access_token: string }> {
     const payload = { email: user.email, sub: user.email };  // JWT 페이로드에 이메일 사용
     return {
@@ -35,8 +51,11 @@ export class UsersService {
     };
   }
 
-  async validateUser(userName: string, password: string): Promise<Omit<Users, 'password'>> {
-    const user = await this.findOne(userName);
+  async validateUser(email: string, password: string): Promise<Omit<Users, 'password'>> {
+    console.log(email, password);
+    
+    const user = await this.findOneByEmail(email);
+    console.log("USER : ",user);
     if (!user) {
       throw new UnauthorizedException('해당 사용자가 존재하지 않습니다.');
     }
@@ -51,7 +70,7 @@ export class UsersService {
   }
 
   // 이메일을 기준으로 사용자 찾기
-  async findOneByEmail(email: string): Promise<Users | null> {
+  async findOneByEmail(email: string): Promise<Users> {
     const user = await this.usersRepository.findOne({ where: { email } });
     if (!user) {
       throw new NotFoundException('User not found');  // 사용자가 없으면 예외 발생
@@ -67,10 +86,10 @@ export class UsersService {
   //   }
 
   //   // 사용자 이름 중복 체크 (email은 업데이트하지 않으므로 생략)
-  //   if (updateUserDto.userName && updateUserDto.userName !== user.userName) {
-  //     const existingUserByName = await this.usersRepository.findOne({ where: { userName: updateUserDto.userName } });
+  //   if (updateUserDto.username && updateUserDto.username !== user.username) {
+  //     const existingUserByName = await this.usersRepository.findOne({ where: { username: updateUserDto.username } });
   //     if (existingUserByName) {
-  //       throw new ConflictException('This userName is already in use.');
+  //       throw new ConflictException('This username is already in use.');
   //     }
   //   }
 
