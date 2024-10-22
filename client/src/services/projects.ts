@@ -1,14 +1,18 @@
 import axios from 'axios';
 
 // 태현 api 주소 확인!!!
-const API_URL = 'http://localhost:3000/Projects';
+const API_URL = 'http://localhost:3000/projects';
 
-export const create = async (projectName: string) => {
+export const create = async (projectName: string,token: string) => {
     try {
         // 태현 api 주소 확인!!!
-        const response = await axios.post(`${API_URL}/create`, {
-            projectName
-        });
+        console.log("create 함수 안 테스트",projectName);
+        const response = await axios.post(`${API_URL}/create`,  { projectName }, 
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`  // 옵션에 headers를 넣습니다.
+                }
+            });
         return response;
     } catch (error) {
         console.error('프로젝트 생성 개박살!! : ', error);
