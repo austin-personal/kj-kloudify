@@ -12,8 +12,6 @@ import { ArchBoards } from './archboards/entity/archboards.entity';
 import { Service } from './archboards/entity/service.entity';  // Ensure this exists
 import { ArchService } from './archboards/entity/archservice.entity';
 
-
-
 import { ProjectsModule } from './projects/projects.module';
 import { TerraformsModule } from './terraforms/terraform.module';
 import { ConversationsController } from './conversations/conversations.controller';

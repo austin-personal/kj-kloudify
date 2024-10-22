@@ -45,6 +45,7 @@ export class UsersService {
 
   // 로그인 
   async login(user: Omit<Users, 'password'>): Promise<{ access_token: string }> {
+    // JWT 토큰에 사용할 재료... 현재는 이메일 이메일
     const payload = { email: user.email, sub: user.email };  // JWT 페이로드에 이메일 사용
     return {
       access_token: this.jwtService.sign(payload),  // JWT 발급

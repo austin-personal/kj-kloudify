@@ -11,6 +11,8 @@ import { NotFoundException } from '@nestjs/common';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+
+  // 회원가입 엔드포인트
   @Post('signUp')
   async signUp(@Body() createUserDto: CreateUserDto) {
     const user = await this.usersService.findOne(createUserDto.username);
@@ -25,6 +27,7 @@ export class UsersController {
     return this.usersService.login(newUser); // 회원가입 후 로그인
   }
 
+  // 로그인 엔드포인트
   @Post('login')
   async login(@Body() loginDto: LoginDto): Promise<{ access_token: string }> {
     const user = await this.usersService.validateUser(loginDto.email, loginDto.password);
@@ -50,14 +53,4 @@ export class UsersController {
     };
   }
 
-  // // 이메일을 기준으로 사용자 정보 수정
-  // @Patch('update')
-  // @UseGuards(JwtAuthGuard)  // JWT 인증 가드 사용
-  // async updateUserByEmail(
-  //   @CurrentUser() user: any,  // 커스텀 데코레이터로 user 정보 가져오기
-  //   @Body() updateUserDto: UpdateUserDto
-  // ) {
-  //   const updatedUser = await this.usersService.updateUserByEmail(user.email, updateUserDto);  // 이메일을 기반으로 정보 업데이트
-  //   return { message: `${updatedUser.userName}님, 변경이 완료되었습니다.` };
-  // }
 }
