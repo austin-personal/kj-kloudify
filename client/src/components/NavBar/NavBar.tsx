@@ -23,6 +23,7 @@ const NavBar: React.FC = () => {
           className="back-button"
           onClick={handleBackClick}
         />
+        <button className="new-project-btn">+ New Project</button>
       </div>
       <div className="navbar-center">
         <FontAwesomeIcon icon={faCloud} size="2xl" className="navbar-icon" />
