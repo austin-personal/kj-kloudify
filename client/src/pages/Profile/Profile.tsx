@@ -7,9 +7,9 @@ import { info } from '../../services/users';
 // 유저 프로필 타입 정의
 interface UserProfile {
     UID: number;
-    email: string;
-    password: string;
     username: string;
+    password: string;
+    email: string;
 }
 
 // 프로젝트 타입 정의
@@ -32,11 +32,13 @@ const Profile: React.FC = () => {
                 if (token) {
                     // 유저 정보 가져오기
                     const userData = await info(token);
-                    setUserProfile(userData);
+                    console.log('User Data:', userData.user);
+                    setUserProfile(userData.user);
 
                     // 유저의 프로젝트 리스트 가져오기
                     const projectData = await projectAllInfo(token);
                     setProjects(projectData.data); // 응답 데이터에 따라 수정 필요
+                    console.log('Project Data:', projectData.data);
                 } else {
                     // 토큰이 없으면 로그인 페이지로 이동
                     navigate('/');
