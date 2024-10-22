@@ -36,7 +36,7 @@ export class UsersController {
   @Get('info')
   @UseGuards(JwtAuthGuard)  // JWT 인증 가드 적용
   async getUserInfo(@CurrentUser() user: any) {
-    const email = user.userName;  // JWT에서 이메일 추출
+    const email = user.email;  // JWT에서 이메일 추출
     const userInfo = await this.usersService.findOneByEmail(email);  // 이메일로 사용자 조회
 
     // userInfo가 null인 경우 처리
