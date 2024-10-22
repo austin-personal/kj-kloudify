@@ -46,10 +46,14 @@ export const projectOneInfo = async (pid: number) => {
     }
 };
 
-export const projectAllInfo = async () => {
+export const projectAllInfo = async (token: string) => {
     try {
         // 태현 api 주소 확인!!!
-        const response = await axios.get(`${API_URL}/findAll`);
+        const response = await axios.get(`${API_URL}/findAll`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
         return response;
     } catch (error) {
         console.error('프로젝트 정보 개박살!! :', error);
