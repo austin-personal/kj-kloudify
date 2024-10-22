@@ -78,6 +78,9 @@ const History: React.FC = () => {
                 <div className="previous-chat">
                     <button className='chat-button'
                         onClick={(e) => setIsChatting(!isChatting)}>previous chat</button>
+                    <div className="previous-chat-explanation-th">
+                        Previous chat
+                    </div>
                 </div>
                 <div className="left-content">
                     <div className={`previous-chatting-th ${isChatting ? 'open' : 'close'}`}>
