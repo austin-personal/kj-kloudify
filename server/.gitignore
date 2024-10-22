@@ -7,3 +7,4 @@ node_modules/
 [._]sw[a-p]
 .terraform
 main.tf
+.env

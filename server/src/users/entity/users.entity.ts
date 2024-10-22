@@ -10,7 +10,7 @@ export class Users {
   @Column()
   username: string;
 
-  @Column()
+  @Column({ nullable: false })
   password: string;
 
   @Column({ unique: true })

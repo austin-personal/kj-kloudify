@@ -38,6 +38,7 @@ export class ProjectsController {
     return this.projectsService.create(createProjectDto, user);
   }
 
+
   @UseGuards(JwtAuthGuard)
   @Get()
   async findAll(@Req() req): Promise<Projects[]> {
@@ -49,7 +50,6 @@ export class ProjectsController {
     const userId = user.UID; // UID 가져오기
     return this.projectsService.findAllByUserId(userId); // UID로 프로젝트 검색
   }
-  
 
   // 프로젝트 업데이트
   @Patch(':id')

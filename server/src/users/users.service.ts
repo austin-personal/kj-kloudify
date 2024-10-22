@@ -71,7 +71,7 @@ export class UsersService {
 
   // 이메일을 기준으로 사용자 찾기
   async findOneByEmail(email: string): Promise<Users> {
-    const user = await this.usersRepository.findOne({ where: { email } });
+    const user = await this.usersRepository.findOne({ where: {email} });
     if (!user) {
       throw new NotFoundException('User not found');  // 사용자가 없으면 예외 발생
     }
