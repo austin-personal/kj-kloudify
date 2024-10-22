@@ -16,8 +16,7 @@ export class ProjectsService {
   ) {}
 
   // 새로운 프로젝트 생성
-  async create(createProjectDto: CreateProjectDto): Promise<Projects> {
-    const user = await this.userRepository.findOne({ where: { UID: createProjectDto.UID } });
+  async create(createProjectDto, user): Promise<Projects> {
     if (!user) {
       throw new NotFoundException('User not found');
     }
@@ -41,13 +40,28 @@ export class ProjectsService {
   
 
   // 모든 프로젝트 가져오기
-  async findAll(): Promise<Projects[]> {
+  async findAll(userId: number): Promise<Projects[]> {
     const user = await this.userRepository.findOne({ where: { UID: userId } });
     if (!user) {
       throw new NotFoundException('User not found');
     }
     // 유저와 연결된 모든 프로젝트 가져오기
     return this.projectRepository.find({ where: { user: user } });
+  }
+  
+
+  // 특정 프로젝트 가져오기
+  async findOneByPID(PID: number): Promise<Projects> {
+    const project = await this.projectRepository.findOne({ where: { PID } });
+    if (!project) {
+      throw new NotFoundException('Project not found');
+    }
+    return project;
+  }
+  
+  // UID로 프로젝트 검색
+  async findAllByUserId(userId: number): Promise<Projects[]> {
+    return this.projectRepository.find({ where: { UID: userId } });
   }
 
   // 프로젝트 업데이트

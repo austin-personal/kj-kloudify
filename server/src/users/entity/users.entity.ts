@@ -8,7 +8,7 @@ export class Users {
   UID: number;  // Primary Key
 
   @Column()
-  userName: string;
+  username: string;
 
   @Column()
   password: string;
