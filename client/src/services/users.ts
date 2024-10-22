@@ -32,7 +32,7 @@ export const login = async (username: string, password: string) => {
     }
 };
 
-export const getUserInfo = async (token: string) => {
+export const info = async (token: string) => {
     try {
         // 태현 api 주소 확인!!!
         const response = await axios.get(`${API_URL}/info`, {
