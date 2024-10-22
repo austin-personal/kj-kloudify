@@ -5,6 +5,18 @@
   justify-content: center;
   align-items: start;
   font-size: 24px;
+  margin-right: 20px;
+}
+
+.top-key-form-th {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  /* border: 1px solid black; */
+}
+
+.input-box {
+  margin: 10px 0;
 }
 
 .input-box input {
@@ -23,8 +35,8 @@
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
 
-.etc {
-  background-color: #e7e3c7;
+.color-font-th {
+  color: #312D26;
 }
 
 .input-box input::placeholder {
@@ -37,5 +49,9 @@
   border: none;
   width: 100%;
   border-top: 1px solid #cccaba;
-  margin: 10px 0;
+  margin: 30px 0;
+}
+
+.bottom-key-form-th {
+  height: 300px;
 }
