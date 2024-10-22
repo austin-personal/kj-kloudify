@@ -6,8 +6,10 @@ import { info } from '../../services/users';
 
 // 유저 프로필 타입 정의
 interface UserProfile {
-    name: string;
+    UID: number;
     email: string;
+    password: string;
+    username: string;
 }
 
 // 프로젝트 타입 정의
@@ -37,7 +39,7 @@ const Profile: React.FC = () => {
                     setProjects(projectData.data); // 응답 데이터에 따라 수정 필요
                 } else {
                     // 토큰이 없으면 로그인 페이지로 이동
-                    navigate('/login');
+                    navigate('/');
                 }
             } catch (error) {
                 console.error('데이터 로딩 중 오류 발생:', error);
@@ -53,7 +55,7 @@ const Profile: React.FC = () => {
         <div className="profile-page">
             {/* 상단 프로필 섹션 */}
             <div className="profile-info">
-                <h2>{userProfile.name}</h2>
+                <h2>{userProfile.username}</h2>
                 <p>{userProfile.email}</p>
             </div>
             <hr className='userProfile-line-th' />
