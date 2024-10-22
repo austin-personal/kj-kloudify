@@ -13,9 +13,11 @@ export class Projects {
   @Column()
   createdDate: Date;
 
+  @PrimaryGeneratedColumn()
   @Column()
   CID: number;  // Foreign Key (Conversation)
 
+  @PrimaryGeneratedColumn()
   @Column()
   ARCTID: number;  // Foreign Key (Architecture)
 

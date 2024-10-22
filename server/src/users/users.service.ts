@@ -78,30 +78,4 @@ export class UsersService {
     return user;
   }
 
-  // 사용자 업데이트 메서드
-  // async updateUserByEmail(email: string, updateUserDto: UpdateUserDto): Promise<User> {
-  //   const user = await this.findOneByEmail(email);  // 현재 사용자 찾기
-  //   if (!user) {
-  //     throw new NotFoundException('User not found');
-  //   }
-
-  //   // 사용자 이름 중복 체크 (email은 업데이트하지 않으므로 생략)
-  //   if (updateUserDto.username && updateUserDto.username !== user.username) {
-  //     const existingUserByName = await this.usersRepository.findOne({ where: { username: updateUserDto.username } });
-  //     if (existingUserByName) {
-  //       throw new ConflictException('This username is already in use.');
-  //     }
-  //   }
-
-  //   // 비밀번호 변경을 요청한 경우, 해시화
-  //   if (updateUserDto.password) {
-  //     user.password = await bcrypt.hash(updateUserDto.password, 10);  // 비밀번호 해시화
-  //   }
-
-  //   // 사용자 정보 업데이트 (필요한 정보만 덮어쓰기)
-  //   Object.assign(user, updateUserDto);
-
-  //   return this.usersRepository.save(user);  // 변경된 정보 저장
-  // }
-
 }
