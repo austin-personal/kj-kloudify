@@ -1,21 +1,41 @@
 .key-form {
-    width: 40%;
-    height: 90vh;
-    /* border: 1px solid black; */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: start;
-    font-size: 24px;
+  /* border: 1px solid black; */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: start;
+  font-size: 24px;
 }
 
-.input-box {
-    /* border: 1px solid black; */
-    padding: 20px;
+.input-box input {
+  padding-left: 20px;
+  box-sizing: border-box;
+  width: 505px;
+  outline: none;
+  display: block;
+  margin: 5px 0;
+  height: 41px;
+  border: none;
+  border-radius: 8px;
+  border-style: solid;
+  border-color: #d6d6d6;
+  border-width: 1px;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
 
-input {
-    font-size: 24px;
-    width: 400px;
-    margin-top: 10px;
+.etc {
+  background-color: #e7e3c7;
+}
+
+.input-box input::placeholder {
+  font-family: "NanumSquareRound", sans-serif;
+  font-size: 22px;
+  opacity: 0.5;
+}
+
+.keyForm-line {
+  border: none;
+  width: 100%;
+  border-top: 1px solid #cccaba;
+  margin: 10px 0;
 }

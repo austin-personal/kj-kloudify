@@ -27,7 +27,7 @@ export class UsersController {
 
   @Post('login')
   async login(@Body() loginDto: LoginDto): Promise<{ access_token: string }> {
-    const user = await this.usersService.validateUser(loginDto.username, loginDto.password);
+    const user = await this.usersService.validateUser(loginDto.email, loginDto.password);
     // validateUser 메서드에서 예외가 발생하지 않으면 user는 null이 될 수 없으므로 추가적인 null 체크 불필요
     return this.usersService.login(user);  // 비밀번호를 제외한 user 정보
   }
@@ -45,7 +45,7 @@ export class UsersController {
     }
 
     return {
-      message: `${userInfo.userName}님의 정보 조회가 완료되었습니다.`,
+      message: `${userInfo.username}님의 정보 조회가 완료되었습니다.`,
       user: userInfo,
     };
   }
