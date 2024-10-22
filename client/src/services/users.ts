@@ -19,11 +19,11 @@ export const signup = async (username: string, email: string, password: string) 
 };
 // 회원가입 페이지
 
-export const login = async (username: string, password: string) => {
+export const login = async (email: string, password: string) => {
     try {
         // 태현 api 주소 확인!!!
         const response = await axios.post(`${API_URL}/login`, {
-            username,
+            email,
             password,
         });
         return response.data.token;
