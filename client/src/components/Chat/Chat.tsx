@@ -17,7 +17,7 @@ interface ChatProps {
 
 interface Message {
   id: number;
-  text: string;
+  text: string | JSX.Element;
   sender: "user" | "bot";
   maxLength?: number;
 }
@@ -74,9 +74,10 @@ const Chat: React.FC<ChatProps> = ({ setIsOpen }) => {
     setMessages([...messages, userMessage]);
     const loadingMessage: Message = {
       id: uuidv4(),
-      text: "로딩중",
+      text: <div className="loader"></div>,
       sender: "bot",
     };
+    setMessages((prevMessages) => [...prevMessages, loadingMessage]);
     try {
       const responseMessage = await ask(input);
       const botMessage: Message = {
@@ -109,11 +110,18 @@ const Chat: React.FC<ChatProps> = ({ setIsOpen }) => {
               }`}
             >
               {message.sender === "bot" ? (
-                <div onClick={() => setIsOpen(true)}>
-                  <TypingMessage
-                    text={message.text}
-                    maxLength={message.maxLength || 100}
-                  />
+                <div
+                  onClick={() => setIsOpen(true)}
+                  className="message-content"
+                >
+                  {typeof message.text === "string" ? (
+                    <TypingMessage
+                      text={message.text}
+                      maxLength={message.maxLength || 100}
+                    />
+                  ) : (
+                    message.text // JSX Element인 경우 직접 렌더링
+                  )}
                 </div>
               ) : (
                 message.text
