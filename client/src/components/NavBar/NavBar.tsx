@@ -56,7 +56,12 @@ const NavBar: React.FC<NavbarProps> = ({ onProjectSubmit }) => {
       }
     };
   }, [isModalOpen]);
-
+  // /home 경로일 때 모달을 자동으로 열기
+  useEffect(() => {
+    if (location.pathname === "/home") {
+      setIsModalOpen(true);
+    }
+  }, [location]);
   // 모달 열고 닫는 함수
   const handleNewProjectClick = () => {
     setIsModalOpen(!isModalOpen);
@@ -83,8 +88,6 @@ const NavBar: React.FC<NavbarProps> = ({ onProjectSubmit }) => {
     }
 
     setIsModalOpen(false); // 제출 후 모달을 닫기
-
-    navigate("/home");
   };
 
   return (
