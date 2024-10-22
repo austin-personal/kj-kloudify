@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // 태현 api 주소 확인!!!
-const API_URL = 'http://localhost:3000/api/terraforms';
+const API_URL = 'http://localhost:3000/terraforms';
 
 export const create = async () => {
     try {

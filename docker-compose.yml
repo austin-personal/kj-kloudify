@@ -1,13 +1,17 @@
 services:
   client:
     build:
-      context: ${CLIENT_PATH}  # 환경 변수를 사용하여 경로 설정
+      context: ${CLIENT_PATH}
     ports:
       - "80:80"
     volumes:
       - ${CLIENT_PATH}:/app
     depends_on:
       - server
+    environment:
+      - REACT_APP_SERVER_URL=http://server:3000  # 서버의 URL을 환경 변수로 전달
+    networks:
+      - webnet
 
   server:
     build:
@@ -17,9 +21,14 @@ services:
     volumes:
       - ${SERVER_PATH}:/app
     environment:
-      - DATABASE_HOST=host.docker.internal  # 로컬 PostgreSQL에 연결
-      - DATABASE_PORT=5432  # PostgreSQL의 기본 포트
-      - DATABASE_USER=postgres  # PostgreSQL의 기본 사용자
-      - DATABASE_PASSWORD=1234  # PostgreSQL 비밀번호
-      - DATABASE_NAME=my_test  # PostgreSQL 데이터베이스 이름
+      - DATABASE_HOST=host.docker.internal
+      - DATABASE_PORT=5432
+      - DATABASE_USER=postgres
+      - DATABASE_PASSWORD=1234
+      - DATABASE_NAME=my_test
+    networks:
+      - webnet
 
+networks:
+  webnet:
+    driver: bridge

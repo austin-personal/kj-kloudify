@@ -1,3 +1,4 @@
+import { Payload } from './../../node_modules/aws-sdk/clients/athena.d';
 import { Injectable, UnauthorizedException , NotFoundException } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -47,6 +48,8 @@ export class UsersService {
   async login(user: Omit<Users, 'password'>): Promise<{ access_token: string }> {
     // JWT 토큰에 사용할 재료... 현재는 이메일 이메일
     const payload = { email: user.email, sub: user.email };  // JWT 페이로드에 이메일 사용
+    console.log("user login: ", payload);
+    
     return {
       access_token: this.jwtService.sign(payload),  // JWT 발급
     };

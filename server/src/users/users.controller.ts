@@ -30,6 +30,7 @@ export class UsersController {
   // 로그인 엔드포인트
   @Post('login')
   async login(@Body() loginDto: LoginDto): Promise<{ access_token: string }> {
+    console.log("user login: ", loginDto);
     const user = await this.usersService.validateUser(loginDto.email, loginDto.password);
     // validateUser 메서드에서 예외가 발생하지 않으면 user는 null이 될 수 없으므로 추가적인 null 체크 불필요
     return this.usersService.login(user);  // 비밀번호를 제외한 user 정보
