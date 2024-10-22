@@ -5,10 +5,12 @@ const API_URL = 'http://localhost:3000/conversations';
 
 export const ask= async (msg:string) => {
     try {
+     
         const response = await axios.post(`${API_URL}/ask`, {
-            message :msg
+            message:msg
         });
-        return response.data.response.content[0].text;
+        console.log(msg);
+        return response.data.content[0].text;
     } catch (error) {
         console.error('응답실패!! : ', error);
         throw error;
