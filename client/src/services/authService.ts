@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // 태현 api 주소 확인!!!
-const API_URL = 'http://your-backend-api-url.com/api/auth';
+const API_URL = 'http://your-backend-api-url.com/api/users';
 
 export const signup = async (username: string, email: string, password: string) => {
     try {
@@ -35,7 +35,7 @@ export const login = async (username: string, password: string) => {
 export const getUserInfo = async (token: string) => {
     try {
         // 태현 api 주소 확인!!!
-        const response = await axios.get(`${API_URL}/me`, {
+        const response = await axios.get(`${API_URL}/info`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
