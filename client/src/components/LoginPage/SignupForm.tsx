@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { signup } from '../../services/authService';
+import { signup } from '../../services/users';
 import './AuthForm.css';
 
 interface SignupFormProps {

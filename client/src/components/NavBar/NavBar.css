@@ -1,41 +1,71 @@
 .navbar {
-    background-color: #333;
-    color: white;
-    padding: 1rem 2rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: fixed;
-    width: 100%; /* 화면 전체 너비를 차지 */
-    top: 0;
-    left: 0;
-    z-index: 1000;
-    box-sizing: border-box; /* 패딩을 포함한 너비 계산 */
+  background-color: #fffce8;
+  padding: 15px 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: fixed;
+  width: 100%; /* 화면 전체 너비를 차지 */
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  box-sizing: border-box; /* 패딩을 포함한 너비 계산 */
+  border-bottom-style: solid;
+  border-width: 1px;
+  border-color: rgba(0, 0, 0, 0.15);
+  box-shadow: 0px 2px 20px 0px rgba(0, 0, 0, 10%);
+}
+
+.navbar-left {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-center {
+  display: flex;
+  align-items: center;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%); /* 가운데 정렬 */
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center;
 }
 
 .navbar-logo {
-    font-size: 1.5rem;
-    font-weight: bold;
+  margin-left: 10px;
+  color: #312d26;
+  font-size: 36px;
+  font-weight: bold;
+  text-decoration: none;
+  padding-top: 5px;
+  top: 10px;
 }
 
-.navbar-links {
-    list-style: none;
-    display: flex;
-    gap: 1.5rem;
-    margin: 0;
+.navbar-icon {
+  font-size: 54px;
+  color: #fdc36d;
 }
 
-.navbar-links li {
-    display: inline;
+.profile-button {
+  color: #312d26;
+  text-decoration: none;
+  cursor: pointer;
+  font-size: 20px;
+  padding-top: 6px;
+  margin-right: 15px;
 }
 
-.navbar-links a {
-    color: white;
-    text-decoration: none;
-    font-size: 1rem;
-    transition: color 0.2s;
+.logout-button {
+  color: #8d8d8d;
+  font-size: 30px;
+  opacity: 0.5;
+  cursor: pointer;
 }
 
-.navbar-links a:hover {
-    color: #61dafb;
+.back-button {
+  color: #bcb89f;
+  cursor: pointer;
 }

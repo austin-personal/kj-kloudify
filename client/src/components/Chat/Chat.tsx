@@ -94,7 +94,7 @@ const Chat: React.FC<ChatProps> = ({ setIsOpen }) => {
   return (
     <div className="chat-container">
       <div className="notice-text">
-        채팅창을 누르면 자세한 설명을 볼 수 있어요.
+        메세지를 누르면 자세한 설명을 볼 수 있어요.
       </div>
       <div className="message-list " ref={scrollRef}>
         {messages.map((message) => (
