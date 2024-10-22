@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 import './History.css';
-import ServiceStatus from '../../components/HistoryPage/ServiceStatus';
-import PreviousChat from '../../components/HistoryPage/PreviousChat';
 
 // 이렇게 올 예정
 // navigate(`/history/${projectId}`, { state: { project: projectHistory } });
@@ -60,18 +58,16 @@ const History: React.FC = () => {
         <div className="history-page">
 
             <div className="project-header">
-                <h2>{tempProject.name}</h2>
+                <p className='project-name-title-th'>Project Name : <span className='project-name-th'>{tempProject.name}</span></p>
                 <div className='price-summary-frame'>
-                    {isPriceSummary ?
-                        <div className='price-summary-box'>
+                        <div className={`price-summary-box ${isPriceSummary ? 'open' : 'close'}`}>
                             {tempProject.services.map((service) => (
                                 <div>
                                     {service.name} : {service.price}
                                 </div>
                             ))}
                         </div>
-                        : ''}
-                    <button className="price-summary-btn"
+                    <button className="price-summary-btn-th"
                         onClick={(e) => setIsPriceSummary(!isPriceSummary)}>
                         Price Summary
                     </button>
@@ -84,11 +80,22 @@ const History: React.FC = () => {
                         onClick={(e) => setIsChatting(!isChatting)}>previous chat</button>
                 </div>
                 <div className="left-content">
-                    {isChatting ? (
-                        <ServiceStatus projectServices={tempProject.services} />
-                    ) : (
-                        <PreviousChat previousChats={tempProject.previousChats} />
-                    )}
+                    <div className={`previous-chatting-th ${isChatting ? 'open' : 'close'}`}>
+                        <h3>Previous Chat</h3>
+                        {tempProject.previousChats.map((chat) => (
+                            <div>
+                                {chat}
+                            </div>
+                        ))}
+                    </div>
+                    <div className="service-status-th">
+                        <h3>Service Status</h3>
+                        {tempProject.services.map((service) => (
+                            <div key={service.id} className={`service ${service.status}`}>
+                                {service.name}: {service.status}
+                            </div>
+                        ))}
+                    </div>
                 </div>
                 <div className="architecture-box">
                     <h3>Architecture</h3>

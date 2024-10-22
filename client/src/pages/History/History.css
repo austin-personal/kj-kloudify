@@ -18,7 +18,7 @@
 }
 
 .project-header {
-    border: 1px solid black;
+    border-bottom: 1px solid #cccaba;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -27,6 +27,14 @@
     width: 1100px;
     margin: 20px;
     padding: 0px 50px;
+}
+
+.project-name-title-th {
+    font-size: 36px;
+}
+
+.project-name-th {
+    font-size: 28px;
 }
 
 .price-summary-frame {
@@ -42,21 +50,31 @@
     position: absolute;
     right: 220px;
     padding: 30px;
+    transition: opacity 0.5s ease;
 }
 
-.price-summary-btn {
-    border-radius: 10px;
+.price-summary-box.open {
+    opacity: 1;
+}
+
+.price-summary-box.close {
+    opacity: 0;
+}
+
+.price-summary-btn-th {
+    border: none;
+    box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 13%);
+    border-radius: 20px;
     font-size: 24px;
+    font-weight: bold;
     width: 200px;
-    height: 80px;
-}
-
-.price-summary-btn:hover {
-    background-color: lightgray;
+    height: 67px;
+    background-color: #FDC36D;
+    cursor: pointer;
 }
 
 .main-content {
-    border: 1px solid black;
+    /* border: 1px solid black; */
     display: flex;
     flex-direction: row;
     width: 1200px;
@@ -64,7 +82,7 @@
 }
 
 .previous-chat {
-    border: 1px solid black;
+    /* border: 1px solid black; */
     display: flex;
     flex-direction: column;
     justify-content: end;
@@ -76,11 +94,38 @@
 }
 
 .left-content {
+    position: relative;
     width: 300px;
-    border: 1px solid black;
+    /* border: 1px solid black; */
+}
+
+.previous-chatting-th {
+    border-radius: 20px;
+    background-color: #E7E3C7;
+    width: 492px;
+    height: 400px;
+    padding: 20px;
+    position: absolute;
+    left: 10px;
+    bottom: 0px;
+    transition: opacity 0.5s ease;
+    overflow: hidden;
+    opacity: 0;
+}
+
+.previous-chatting-th.open {
+    opacity: 1;
+}
+
+.previous-chatting-th.close {
+    opacity: 0;
+}
+
+.service-status-th {
+    padding: 10px;
 }
 
 .architecture-box {
     width: 860px;
-    border: 1px solid black;
+    /* border: 1px solid black; */
 }
