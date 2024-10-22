@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // 태현 api 주소 확인!!!
-const API_URL = 'http://your-backend-api-url.com/api/users';
+const API_URL = 'http://localhost:3000/users';
 
 export const signup = async (username: string, email: string, password: string) => {
     try {
@@ -17,6 +17,7 @@ export const signup = async (username: string, email: string, password: string) 
         throw error;
     }
 };
+// 회원가입 페이지
 
 export const login = async (username: string, password: string) => {
     try {
@@ -31,6 +32,7 @@ export const login = async (username: string, password: string) => {
         throw error;
     }
 };
+// 로그인 페이지
 
 export const info = async (token: string) => {
     try {
@@ -46,3 +48,4 @@ export const info = async (token: string) => {
         throw error;
     }
 };
+// 프로필 페이지

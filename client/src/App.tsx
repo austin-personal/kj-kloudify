@@ -75,7 +75,7 @@ const App: React.FC = () => {
         {/* <Route path="/history/:id" element={<History />} /> */}
         <Route path="/history" element={<History />} />
 
-        <Route path="guide" element={<Guide />} />
+        <Route path="/guide" element={<Guide />} />
 
         {/* 주소가 잘못된 경우 싹다 login으로 소환 */}
         <Route path="*" element={<Navigate to="/" />} />
