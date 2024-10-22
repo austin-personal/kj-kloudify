@@ -68,4 +68,22 @@
 .back-button {
   color: #bcb89f;
   cursor: pointer;
+  margin-right: 30px;
+}
+
+.new-project-btn {
+  display: flex; /* Flexbox 사용 */
+  justify-content: center; /* 가로 가운데 정렬 */
+  align-items: center; /* 세로 가운데 정렬 */
+  padding: 20px;
+  color: white;
+  font-family: "NanumSquareRound", sans-serif;
+  font-weight: bold;
+  font-size: 18px;
+  background-color: #f6b755;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  height: 30px;
+  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 13%);
 }
