@@ -1,19 +1,23 @@
-/* 전체 페이지 스타일 */
+:root {
+    --navbar-height: 60px;
+}
+
 .profile-page {
-    padding: 20px;
+    margin-top: var(--navbar-height);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 /* 상단 프로필 정보 */
 .profile-info {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: start;
     justify-content: center;
-    height: 35vh; /* 화면의 35% 높이를 차지 */
+    height: 300px;
+    width: 800px;
     background-color: #f5f5f5;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    text-align: center;
 }
 
 .profile-picture {
@@ -26,12 +30,12 @@
 
 .profile-info h2 {
     margin: 10px 0 5px;
-    font-size: 1.8rem;
+    font-size: 36px
 }
 
 .profile-info p {
     color: #666;
-    font-size: 1rem;
+    font-size: 26px
 }
 
 /* 하단 프로젝트 리스트 */

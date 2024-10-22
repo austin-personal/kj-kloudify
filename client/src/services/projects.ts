@@ -42,7 +42,7 @@ export const projectOneInfo = async (pid: number) => {
     }
 };
 
-export const ProjectAllInfo = async () => {
+export const projectAllInfo = async () => {
     try {
         // 태현 api 주소 확인!!!
         const response = await axios.get(`${API_URL}/findAll`);
