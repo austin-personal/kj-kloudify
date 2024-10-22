@@ -5,7 +5,11 @@ import Chat from "../../components/Chat/Chat";
 import Board from "../../components/Board/Board";
 import "./Home.css";
 
-function Home() {
+interface HomeProps {
+  projectName: string;
+}
+
+const Home: React.FC<HomeProps> = ({ projectName }) => {
   //상태 끌어올리기
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenSummary, setIsOpenSummary] = useState(false);
@@ -22,7 +26,7 @@ function Home() {
       <Chat setIsOpen={setIsOpen} />
       <div className="vertical-line"></div>
       <div className="right-side">
-        <h1 className="project-name">Project: Namanmu</h1>
+        <h1 className="project-name">Project:{projectName}</h1>
         <Board />
         <div className="setting-container">
           <div className="setting-services set-up-complete">2</div>
@@ -45,6 +49,6 @@ function Home() {
       </div>
     </div>
   );
-}
+};
 
 export default Home;

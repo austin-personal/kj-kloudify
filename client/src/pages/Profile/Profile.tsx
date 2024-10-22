@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-
 import './Profile.css';
+import { projectAllInfo } from '../../services/projects';
 
 interface Project {
     id: number;
@@ -26,7 +26,6 @@ const Profile: React.FC<ProfileProps> = ({ user, projects }) => {
         <div className="profile-page">
             {/* 상단 프로필 섹션 */}
             <div className="profile-info">
-                <img src={user.profilePicture} alt={`${user.name}'s profile`} className="profile-picture" />
                 <h2>{user.name}</h2>
                 <p>{user.email}</p>
             </div>

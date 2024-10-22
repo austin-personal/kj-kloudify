@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { ask } from "../../services/conversations";
 import "./Chat.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -16,7 +17,7 @@ interface ChatProps {
 
 interface Message {
   id: number;
-  text: string;
+  text: string | JSX.Element;
   sender: "user" | "bot";
   maxLength?: number;
 }
@@ -73,14 +74,15 @@ const Chat: React.FC<ChatProps> = ({ setIsOpen }) => {
     setMessages([...messages, userMessage]);
     const loadingMessage: Message = {
       id: uuidv4(),
-      text: "로딩중",
+      text: <div className="loader"></div>,
       sender: "bot",
     };
+    setMessages((prevMessages) => [...prevMessages, loadingMessage]);
     try {
-      //   const response = await axios.post("");
+      const responseMessage = await ask(input);
       const botMessage: Message = {
         id: uuidv4(),
-        text: "나는 봇이야 그녀는 오래된 서랍 속에서 작은 열쇠를 발견했다. 기억도 나지 않는 낡은 상자에 맞춰보니, 정확히 들어맞았다. 상자가 열리자 빛바랜 사진 한 장이 나왔다. 어린 시절의 자신과 옆에 선 낯선 소년. “누구였지?” 사진 뒷면엔 ‘영원히’라는 단어만 적혀 있었다. 그녀는 소년의 얼굴을 떠올리려 했지만, 기억은 여전히 희미했다.",
+        text: responseMessage,
         sender: "bot",
         maxLength: 50,
       };
@@ -98,28 +100,34 @@ const Chat: React.FC<ChatProps> = ({ setIsOpen }) => {
       </div>
       <div className="message-list " ref={scrollRef}>
         {messages.map((message) => (
-          <>
+          <React.Fragment key={message.id}>
             {message.sender === "bot" && (
               <FontAwesomeIcon className="bot-icon" icon={faCloud} />
             )}
             <div
-              key={message.id}
               className={`message ${
                 message.sender === "user" ? "user-message" : "bot-message"
               }`}
             >
               {message.sender === "bot" ? (
-                <div onClick={() => setIsOpen(true)}>
-                  <TypingMessage
-                    text={message.text}
-                    maxLength={message.maxLength || 100}
-                  />
+                <div
+                  onClick={() => setIsOpen(true)}
+                  className="message-content"
+                >
+                  {typeof message.text === "string" ? (
+                    <TypingMessage
+                      text={message.text}
+                      maxLength={message.maxLength || 100}
+                    />
+                  ) : (
+                    message.text // JSX Element인 경우 직접 렌더링
+                  )}
                 </div>
               ) : (
                 message.text
               )}
             </div>
-          </>
+          </React.Fragment>
         ))}
       </div>
 

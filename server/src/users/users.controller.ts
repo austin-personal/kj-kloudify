@@ -11,8 +11,8 @@ import { NotFoundException } from '@nestjs/common';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Post('signup')
-  async signup(@Body() createUserDto: CreateUserDto) {
+  @Post('signUp')
+  async signUp(@Body() createUserDto: CreateUserDto) {
     const user = await this.usersService.findOne(createUserDto.username);
     if (user) {
       throw new UnauthorizedException('User already exists');
