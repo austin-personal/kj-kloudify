@@ -29,7 +29,7 @@ const Profile: React.FC<ProfileProps> = ({ user, projects }) => {
                 <h2>{user.name}</h2>
                 <p>{user.email}</p>
             </div>
-            
+            <hr className='user-line-th'/>
             {/* 하단 프로젝트 리스트 섹션 */}
             <div className="project-list">
                 {projects.map((project) => (
