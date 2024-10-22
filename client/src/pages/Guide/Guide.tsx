@@ -34,6 +34,7 @@ const Guide: React.FC = () => {
                 keyPair={keyPair}
                 setKeyPair={setKeyPair}
             />
+            <div className="vertical-line"></div>
             <GuideForm 
                 isConsentChecked={isConsentChecked}
                 setIsConsentChecked={setIsConsentChecked}
