@@ -5,14 +5,15 @@ const API_URL = 'http://localhost:3000/projects';
 
 export const create = async (projectName: string,token: string) => {
     try {
-        // 태현 api 주소 확인!!!
-        console.log("create 함수 안 테스트",projectName);
-        const response = await axios.post(`${API_URL}/create`,  { projectName }, 
+        console.log("create 함수 안 테스트", projectName);
+        const response = await axios.post(`${API_URL}`,  
+            { projectName },  // createProjectDto로 보내질 부분
             {
                 headers: {
-                    Authorization: `Bearer ${token}`  // 옵션에 headers를 넣습니다.
+                    Authorization: `Bearer ${token}`  // JWT 토큰을 헤더에 포함
                 }
             });
+        console.log(response);
         return response;
     } catch (error) {
         console.error('프로젝트 생성 개박살!! : ', error);
