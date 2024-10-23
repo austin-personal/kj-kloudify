@@ -12,6 +12,7 @@ import { v4 as uuidv4 } from "uuid"; // UUID 가져오기
 interface ChatProps {
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
   projectCID: number;
+  onParsedData?: (data: string[]) => void; // 새로운 prop 추가
 }
 
 interface Message {
@@ -24,30 +25,26 @@ interface Message {
 
 interface Template {
   name: string;
-  qustion: string;
   buttons: { id: number; label: string }[];
 }
 
 const templates: Record<number, Template> = {
   1: {
-    name: "템플릿 1",
-    qustion: "aaa",
+    name: "서버는 어떤걸로 구성하실건가요?",
     buttons: [
-      { id: 1, label: "옵션 1" },
-      { id: 2, label: "옵션 2" },
+      { id: 1, label: "EC2" },
+      { id: 2, label: "ECS" },
     ],
   },
   2: {
-    name: "템플릿 2",
-    qustion: "bbb",
+    name: "데이터베이스는 어떤걸로 구성하실건가요?",
     buttons: [
-      { id: 3, label: "옵션 3" },
-      { id: 4, label: "옵션 4" },
+      { id: 3, label: "RDS" },
+      { id: 4, label: "DynamoDB" },
     ],
   },
   3: {
     name: "템플릿 3",
-    qustion: "ccc",
     buttons: [
       { id: 5, label: "옵션 5" },
       { id: 6, label: "옵션 6" },
@@ -55,21 +52,22 @@ const templates: Record<number, Template> = {
   },
 };
 
-const Chat: React.FC<ChatProps> = ({ setIsOpen, projectCID }) => {
+const Chat: React.FC<ChatProps> = ({ setIsOpen, projectCID, onParsedData }) => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: uuidv4(),
-      text: "골라",
+      text: "어떤것을 만들고 싶나요?",
       sender: "bot",
       buttons: [
-        { id: 1, label: "1번" },
-        { id: 2, label: "2번" },
+        { id: 1, label: "간단한 website" },
+        { id: 2, label: "간단한 game" },
       ],
     },
   ]);
   const [input, setInput] = useState("");
   const [showScrollButton, setShowScrollButton] = useState(false);
   const scrollRef = useRef<HTMLDivElement | null>(null);
+  const [templateIndex, setTemplateIndex] = useState(1); // 템플릿 인덱스 상태 추가
 
   // 메시지 추가 후 자동으로 스크롤을 아래로 이동시키는 함수
   const scrollToBottom = () => {
@@ -109,6 +107,57 @@ const Chat: React.FC<ChatProps> = ({ setIsOpen, projectCID }) => {
     }
   }, [scrollRef.current]); // scrollRef.current가 변경될 때만 실행
 
+  // 응답 메시지를 처리하는 함수
+  const processResponseMessage = (responseMessage: string) => {
+    if (typeof responseMessage === "string" && responseMessage.includes("**")) {
+      const index = responseMessage.indexOf("**");
+      const parsedPart = responseMessage.slice(index + 2).trim();
+
+      // "**" 뒤의 데이터를 배열로 파싱
+      let parsedDataArray: string[] = [];
+
+      try {
+        // 데이터가 JSON 배열 형식인지 확인하고 파싱
+        parsedDataArray = JSON.parse(parsedPart);
+        if (!Array.isArray(parsedDataArray)) {
+          throw new Error("Parsed data is not an array");
+        }
+      } catch (e) {
+        console.error("Failed to parse data after '**' as JSON array:", e);
+        // JSON 배열이 아닌 경우 수동으로 파싱
+        let dataString = parsedPart.replace(/^\[|\]$/g, "");
+        parsedDataArray = dataString.split(",").map((item) => item.trim());
+      }
+
+      // 파싱된 데이터를 부모 컴포넌트로 전달
+      if (onParsedData) {
+        onParsedData(parsedDataArray);
+      }
+
+      // 템플릿 처리
+      if (templates[templateIndex]) {
+        const template = templates[templateIndex];
+        const newBotMessage: Message = {
+          id: uuidv4(),
+          text: template.name,
+          sender: "bot",
+          buttons: template.buttons,
+        };
+        setMessages((prevMessages) => [...prevMessages, newBotMessage]);
+        setTemplateIndex((prevIndex) => prevIndex + 1);
+      }
+    } else {
+      // 일반적인 응답 처리
+      const botMessage: Message = {
+        id: uuidv4(),
+        text: responseMessage,
+        sender: "bot",
+        maxLength: 50,
+      };
+      setMessages((prevMessages) => [...prevMessages, botMessage]);
+    }
+  };
+
   // 메시지 전송 핸들러 (인풋 필드용)
   const handleSendMessage = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -137,34 +186,8 @@ const Chat: React.FC<ChatProps> = ({ setIsOpen, projectCID }) => {
         prevMessages.filter((msg) => msg.id !== loadingMessage.id)
       );
 
-      // 응답이 '**'로 시작하는지 확인
-      if (typeof responseMessage === "string" && responseMessage.startsWith("**")) {
-        const name = responseMessage.slice(2)
-
-        //templates 객체를 순회하며 name과 일치하는 항목을 찾음
-        const matchingTemplate = Object.values(templates).find(
-          (template) => template.name === name
-        )
-
-        if (matchingTemplate) {
-          const newBotMessage: Message = {
-            id: uuidv4(),
-            text: matchingTemplate.qustion,
-            sender: "bot",
-            buttons: matchingTemplate.buttons,
-          };
-          setMessages((prevMessages) => [...prevMessages, newBotMessage]);
-        }
-      } else {
-        // 일반적인 응답 처리
-        const botMessage: Message = {
-          id: uuidv4(),
-          text: responseMessage,
-          sender: "bot",
-          maxLength: 50,
-        };
-        setMessages((prevMessages) => [...prevMessages, botMessage]);
-      }
+      // 응답 메시지 처리
+      processResponseMessage(responseMessage);
     } catch (error) {
       console.error("메시지 전송 오류:", error);
       // 오류 메시지 추가 (선택 사항)
@@ -213,34 +236,8 @@ const Chat: React.FC<ChatProps> = ({ setIsOpen, projectCID }) => {
         prevMessages.filter((msg) => msg.id !== loadingMessage.id)
       );
 
-      // 응답이 '**'로 시작하는지 확인
-      if (typeof responseMessage === "string" && responseMessage.startsWith("**")) {
-        const name = responseMessage.slice(2)
-
-        //templates 객체를 순회하며 name과 일치하는 항목을 찾음
-        const matchingTemplate = Object.values(templates).find(
-          (template) => template.name === name
-        )
-
-        if (matchingTemplate) {
-          const newBotMessage: Message = {
-            id: uuidv4(),
-            text: matchingTemplate.qustion,
-            sender: "bot",
-            buttons: matchingTemplate.buttons,
-          };
-          setMessages((prevMessages) => [...prevMessages, newBotMessage]);
-        }
-      } else {
-        // 일반적인 응답 처리
-        const botMessage: Message = {
-          id: uuidv4(),
-          text: responseMessage,
-          sender: "bot",
-          maxLength: 50,
-        };
-        setMessages((prevMessages) => [...prevMessages, botMessage]);
-      }
+      // 응답 메시지 처리
+      processResponseMessage(responseMessage);
     } catch (error) {
       console.error("메시지 전송 오류:", error);
       // 오류 메시지 추가 (선택 사항)
@@ -323,7 +320,7 @@ const Chat: React.FC<ChatProps> = ({ setIsOpen, projectCID }) => {
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Type a message..."
+            placeholder="메시지를 입력하세요..."
           />
           <button type="submit" className="chat-button-sa">
             <FontAwesomeIcon
