@@ -56,15 +56,16 @@ const NavBar: React.FC<NavbarProps> = ({ onProjectSubmit }) => {
       }
     };
   }, [isModalOpen]);
-  // /home 경로일 때 모달을 자동으로 열기
-  useEffect(() => {
-    if (location.pathname === "/home") {
-      setIsModalOpen(true);
-    }
-  }, [location]);
+
   // 모달 열고 닫는 함수
-  const handleNewProjectClick = () => {
-    setIsModalOpen(!isModalOpen);
+  const handleNewProjectOpen = () => {
+    setIsModalOpen(true);
+    navigate("/home");
+  };
+
+  const handleNewProjectClose = () => {
+    setIsModalOpen(false);
+    navigate("/profile");
   };
 
   const handleProjectSubmit = async (
@@ -100,7 +101,7 @@ const NavBar: React.FC<NavbarProps> = ({ onProjectSubmit }) => {
             className="back-button"
             onClick={handleBackClick}
           />
-          <button className="new-project-btn" onClick={handleNewProjectClick}>
+          <button className="new-project-btn" onClick={handleNewProjectOpen}>
             + New Project
           </button>
         </div>
@@ -143,7 +144,7 @@ const NavBar: React.FC<NavbarProps> = ({ onProjectSubmit }) => {
                   <button
                     type="button"
                     className="cancel-btn"
-                    onClick={handleNewProjectClick}
+                    onClick={handleNewProjectClose}
                   >
                     Cancel
                   </button>
