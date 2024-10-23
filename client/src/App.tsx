@@ -62,7 +62,7 @@ const App: React.FC = () => {
         {/* 임시로 history페이지 가는중 */}
         {/* <Route path="/history/:id" element={<History />} /> */}
         <Route
-          path="/history"
+          path="/history/:pid"
           element={
             <ProtectedRoute>
               <History />

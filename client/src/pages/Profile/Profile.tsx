@@ -14,10 +14,12 @@ interface UserProfile {
 
 // 프로젝트 타입 정의
 interface Project {
-    id: number;
-    title: string;
-    description: string;
-    createdAt: string;
+    PID: number;
+    CID: number;
+    UID: number;
+    ARCTID: number;
+    projectName: string;
+    createdDate: string;
 }
 
 const Profile: React.FC = () => {
@@ -32,13 +34,11 @@ const Profile: React.FC = () => {
                 if (token) {
                     // 유저 정보 가져오기
                     const userData = await info(token);
-                    console.log('User Data:', userData.user);
                     setUserProfile(userData.user);
 
                     // 유저의 프로젝트 리스트 가져오기
                     const projectData = await projectAllInfo(token);
                     setProjects(projectData.data); // 응답 데이터에 따라 수정 필요
-                    console.log('Project Data:', projectData.data);
                 } else {
                     // 토큰이 없으면 로그인 페이지로 이동
                     navigate('/');
@@ -53,6 +53,10 @@ const Profile: React.FC = () => {
 
     if (!userProfile) return <div>Loading...</div>;
 
+    const handleProjectClick = (PID: number) => {
+        navigate(`/history/${PID}`);
+    };
+
     return (
         <div className="profile-page">
             {/* 상단 프로필 섹션 */}
@@ -65,12 +69,13 @@ const Profile: React.FC = () => {
             <div className="project-list">
                 {projects.map((project) => (
                     <div
-                        key={project.id}
+                        key={project.PID}
                         className="project-item"
+                        onClick={() => handleProjectClick(project.PID)} // 클릭 이벤트 핸들러 추가
                     >
-                        <h3>{project.title}</h3>
-                        <p>{project.description}</p>
-                        <small>Created at: {new Date(project.createdAt).toLocaleDateString()}</small>
+                        <h3>{project.projectName}</h3>
+                        <p>{project.PID}</p>
+                        <small>{new Date(project.createdDate).toLocaleDateString()}</small>
                     </div>
                 ))}
             </div>

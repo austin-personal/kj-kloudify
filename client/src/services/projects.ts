@@ -13,7 +13,6 @@ export const create = async (projectName: string,token: string) => {
                     Authorization: `Bearer ${token}`  // JWT 토큰을 헤더에 포함
                 }
             });
-        console.log(response);
         return response;
     } catch (error) {
         console.error('프로젝트 생성 개박살!! : ', error);
@@ -36,10 +35,14 @@ export const deleteProject = async (PID: number) => {
     }
 };
 
-export const projectOneInfo = async (pid: number) => {
+export const projectOneInfo = async (pid: number, token: string | null) => {
     try {
         // 태현 api 주소 확인!!!
-        const response = await axios.get(`${API_URL}/${pid}`);
+        const response = await axios.get(`${API_URL}/${pid}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
         return response;
     } catch (error) {
         console.error('프로젝트 정보 개박살!! :', error);
