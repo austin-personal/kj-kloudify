@@ -24,12 +24,14 @@ interface Message {
 
 interface Template {
   name: string;
+  qustion: string;
   buttons: { id: number; label: string }[];
 }
 
 const templates: Record<number, Template> = {
   1: {
     name: "템플릿 1",
+    qustion: "aaa",
     buttons: [
       { id: 1, label: "옵션 1" },
       { id: 2, label: "옵션 2" },
@@ -37,6 +39,7 @@ const templates: Record<number, Template> = {
   },
   2: {
     name: "템플릿 2",
+    qustion: "bbb",
     buttons: [
       { id: 3, label: "옵션 3" },
       { id: 4, label: "옵션 4" },
@@ -44,6 +47,7 @@ const templates: Record<number, Template> = {
   },
   3: {
     name: "템플릿 3",
+    qustion: "ccc",
     buttons: [
       { id: 5, label: "옵션 5" },
       { id: 6, label: "옵션 6" },
@@ -135,14 +139,19 @@ const Chat: React.FC<ChatProps> = ({ setIsOpen, projectCID }) => {
 
       // 응답이 '**'로 시작하는지 확인
       if (typeof responseMessage === "string" && responseMessage.startsWith("**")) {
-        const number = parseInt(responseMessage.slice(2), 10);
-        if (templates[number]) {
-          const template = templates[number];
+        const name = responseMessage.slice(2)
+
+        //templates 객체를 순회하며 name과 일치하는 항목을 찾음
+        const matchingTemplate = Object.values(templates).find(
+          (template) => template.name === name
+        )
+
+        if (matchingTemplate) {
           const newBotMessage: Message = {
             id: uuidv4(),
-            text: template.name,
+            text: matchingTemplate.qustion,
             sender: "bot",
-            buttons: template.buttons,
+            buttons: matchingTemplate.buttons,
           };
           setMessages((prevMessages) => [...prevMessages, newBotMessage]);
         }
@@ -206,14 +215,19 @@ const Chat: React.FC<ChatProps> = ({ setIsOpen, projectCID }) => {
 
       // 응답이 '**'로 시작하는지 확인
       if (typeof responseMessage === "string" && responseMessage.startsWith("**")) {
-        const number = parseInt(responseMessage.slice(2), 10);
-        if (templates[number]) {
-          const template = templates[number];
+        const name = responseMessage.slice(2)
+
+        //templates 객체를 순회하며 name과 일치하는 항목을 찾음
+        const matchingTemplate = Object.values(templates).find(
+          (template) => template.name === name
+        )
+
+        if (matchingTemplate) {
           const newBotMessage: Message = {
             id: uuidv4(),
-            text: template.name,
+            text: matchingTemplate.qustion,
             sender: "bot",
-            buttons: template.buttons,
+            buttons: matchingTemplate.buttons,
           };
           setMessages((prevMessages) => [...prevMessages, newBotMessage]);
         }
@@ -252,9 +266,8 @@ const Chat: React.FC<ChatProps> = ({ setIsOpen, projectCID }) => {
               <FontAwesomeIcon className="bot-icon" icon={faCloud} />
             )}
             <div
-              className={`message ${
-                message.sender === "user" ? "user-message" : "bot-message"
-              }`}
+              className={`message ${message.sender === "user" ? "user-message" : "bot-message"
+                }`}
             >
               {message.sender === "bot" ? (
                 <div
