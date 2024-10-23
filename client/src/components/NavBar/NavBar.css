@@ -36,12 +36,20 @@
 }
 
 .navbar-logo {
-  margin-left: 10px;
+  font-family: "Baloo 2", sans-serif;
+  font-style: italic;
+  /* font-family: "Unica One", sans-serif; */
+  /* font-family: "Secular One", sans-serif; */
+  /* font-family: "Damion", cursive; */
+  /* font-family: "Fugaz One", sans-serif;
+  /* font-family: "Gowun Batang", serif;
+  */
+  font-weight: 700;
+  margin-left: 2px;
   color: #312d26;
-  font-size: 36px;
+  font-size: 40px;
   font-weight: bold;
   text-decoration: none;
-  padding-top: 5px;
   top: 10px;
 }
 
