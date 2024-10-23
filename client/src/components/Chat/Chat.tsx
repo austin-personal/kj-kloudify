@@ -72,6 +72,7 @@ const Chat: React.FC<ChatProps> = ({ setIsOpen }) => {
       sender: "user",
     };
     setMessages([...messages, userMessage]);
+    setInput(""); //메세지 전송 후 인풋창 초기화
     const loadingMessage: Message = {
       id: uuidv4(),
       text: <div className="loader"></div>,
@@ -90,7 +91,6 @@ const Chat: React.FC<ChatProps> = ({ setIsOpen }) => {
         ...prevMessages.filter((msg) => msg.id !== loadingMessage.id),
         botMessage,
       ]);
-      setInput(""); //메세지 전송 후 인풋창 초기화
     } catch (error) {}
   };
   return (
