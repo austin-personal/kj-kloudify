@@ -1,5 +1,5 @@
 import type { Edge, EdgeTypes } from "@xyflow/react";
-import { MarkerType, Position } from "@xyflow/react";
+import { MarkerType} from "@xyflow/react";
 export const initialEdges = [
   // {
   //   id: "e1-2",
