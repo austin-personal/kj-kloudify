@@ -19,8 +19,8 @@ const NavBar: React.FC<NavbarProps> = ({ onProjectSubmit }) => {
   const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태
   const navigate = useNavigate(); // useNavigate 훅 사용
   const location = useLocation();
-  const [userProfile, setUserProfile] = useState('');
-  const token = localStorage.getItem('token');
+  const [userProfile, setUserProfile] = useState("");
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -29,13 +29,12 @@ const NavBar: React.FC<NavbarProps> = ({ onProjectSubmit }) => {
           // 유저 정보 가져오기
           const userData = await info(token);
           setUserProfile(userData.user.username);
-
         } else {
           // 토큰이 없으면 로그인 페이지로 이동
-          navigate('/');
+          navigate("/");
         }
       } catch (error) {
-        console.error('데이터 로딩 중 오류 발생:', error);
+        console.error("데이터 로딩 중 오류 발생:", error);
       }
     };
 
@@ -94,7 +93,6 @@ const NavBar: React.FC<NavbarProps> = ({ onProjectSubmit }) => {
   const handleProjectSubmit = async (
     event: React.FormEvent<HTMLFormElement>
   ) => {
-    event.preventDefault();
     const projectName = (event.target as HTMLFormElement).projectName.value;
     console.log("New Project Name:", projectName);
 
@@ -114,7 +112,7 @@ const NavBar: React.FC<NavbarProps> = ({ onProjectSubmit }) => {
     setIsModalOpen(false); // 제출 후 모달을 닫기
   };
 
-  const isProfilePage = location.pathname === '/profile'
+  const isProfilePage = location.pathname === "/profile";
 
   return (
     <>
