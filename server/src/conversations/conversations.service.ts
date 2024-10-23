@@ -68,9 +68,12 @@ export class ConversationsService {
                     + "예시 텍스트에서 [짧은 설명 텍스트]에는 짧게 전체적인 설명을 해주고 [선정한 이유]에는 해당 인스턴스에 대한 짧은 설명 부탁해. 중괄호는 출력하지 않아도 돼"
                     + "만약 사용자가 특정 서비스를 선택하는 메세지를 전송 시 긍정해주는 메세지를 보내줘.";
             case 1:
-                return "1번 케이스의 프롬프트 메시지입니다.";
+                return "당신은 사용자의 요구에 맞는 AWS 서비스 아키텍처를 단계별로 구성하는 안내자 역할을 합니다."
+                + "대화를 주도하며 필요한 경우 추가 질문을 통해 사용자의 요구사항을 명확히 하세요. "
+                + "대화내역 및 답변에서 사용자가 특정 aws의 서비스를 단순히 언급하는게 아닌 '확실하게 사용하겠다고 확정 {ex)ec2를 사용할께 같은 경우}' 지은 경우에만 대답을 완료한 후 별도로 추출하기 쉽도록 텍스트 하단에 **aws 서비스 : ... 이런 양식으로 서비스 종류 하나씩 출력하세요";
+                
             case 2:
-                return "2번 케이스의 프롬프트 메시지입니다.";
+                return "아웃풋 텍스트 제일 뒤에 **나와라제발 을 추가해줘";
             case 3:
                 return "3번 케이스의 프롬프트 메시지입니다.";
             default:
@@ -136,7 +139,7 @@ export class ConversationsService {
             대화 내역:
             ${conversationHistory}
     
-            추가 메시지: 
+            현재 단계: 
             ${customMessage}
     
             새로운 질문: 
@@ -161,7 +164,7 @@ export class ConversationsService {
                 .invokeModel({
                     body: JSON.stringify(requestBody),
                     contentType: 'application/json',
-                    modelId: 'anthropic.claude-3-haiku-20240307-v1:0',
+                    modelId: 'anthropic.claude-3-5-sonnet-20240620-v1:0',
                 })
                 .promise();
     
@@ -171,15 +174,16 @@ export class ConversationsService {
             // 응답에서 'content' 필드의 'text' 값을 추출하여 botResponse로 사용
             const botResponse = parsedResponse.content?.[0]?.text;
     
-            // 대화 내용을 DynamoDB에 저장
-            await this.saveConversation(CID, user_question, botResponse);
+            // 키워드 처리 및 저장 (botResponse, user_question을 사용)
+            await this.processTextAndAddKeywords(botResponse, user_question, CID);
     
-            // 원본 JSON 형태로 반환
+            // 최종적으로 업데이트된 텍스트와 함께 리턴
             return parsedResponse;
         } catch (error) {
             throw new Error(`Bedrock 모델 호출 실패: ${error.message}`);
         }
     }
+    
     
 
     // 대화 기록을 DynamoDB에 저장하는 함수
@@ -234,4 +238,146 @@ export class ConversationsService {
             throw new Error('대화 기록 불러오기 실패');
         }
     }
+
+
+
+        // 챗봇 응답을 받아와 특정 프롬프트와 함께 Bedrock 모델에 보내는 함수
+    async sendResponseWithPrompt(chatbotResponse: string, promptMessage: string): Promise<any> {
+        // 프롬프트 메시지 구성
+        const prompt_content = `
+            이전 챗봇 응답:
+            ${chatbotResponse}
+
+            추가 프롬프트 메시지: 
+            ${promptMessage}
+        `;
+
+        // 요청 바디 구성
+        const requestBody = {
+            max_tokens: 1000,
+            anthropic_version: 'bedrock-2023-05-31',
+            messages: [
+                {
+                    role: 'user',
+                    content: prompt_content,
+                },
+            ],
+        };
+
+        try {
+            const client = new AWS.BedrockRuntime({
+                region: process.env.AWS_REGION,
+                accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+                secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+            });
+
+            // Bedrock 모델 호출
+            const response = await client
+                .invokeModel({
+                    body: JSON.stringify(requestBody),
+                    contentType: 'application/json',
+                    modelId: 'anthropic.claude-3-haiku-20240307-v1:0',
+                })
+                .promise();
+
+            const responseBody = response.body.toString();
+            const parsedResponse = JSON.parse(responseBody);
+
+            // 응답에서 'content' 필드의 'text' 값을 추출하여 botResponse로 사용
+            const botResponse = parsedResponse.content?.[0]?.text;
+
+            // 결과 반환
+            return botResponse;
+        } catch (error) {
+            throw new Error(`Bedrock 모델 호출 실패: ${error.message}`);
+        }
+    }
+
+    // **로 감싸진 텍스트에서 키워드 추출
+    extractKeywords(text: string): string[] {
+        if (!text) {
+            console.log("여긴 콘솔로그 안");
+            return [];  // null 또는 빈 문자열 처리
+        }
+    
+        const regex = /\*\*(.*?)(\n|$)/g;  // **로 시작하고 개행(\n) 또는 텍스트 끝까지 추출
+    const matches = [...text.matchAll(regex)].map(match => match[1].trim());  // 추출 및 공백 제거
+
+    return matches;
+    }
+
+// 기존 키워드와 새로 추출한 키워드를 모두 누적 저장하는 함수
+async saveKeywords(keywords: string[], CID: string): Promise<void> {
+    // 기존 키워드를 먼저 불러오기
+    let existingKeywords = await this.fetchExistingKeywords(CID);
+    
+    // 새로운 키워드를 기존 키워드에 추가하여 문자열로 결합
+    const combinedKeywords = existingKeywords ? `${existingKeywords}, ${keywords.join(', ')}` : keywords.join(', ');
+
+    const params = {
+        TableName: 'Archboard_keyword',
+        Item: {
+            CID: CID,  // CID를 파티션 키로 사용
+            keyword: combinedKeywords,  // 기존 키워드와 새 키워드를 결합한 문자열 저장
+            timestamp: new Date().toISOString(),
+        }
+    };
+
+    try {
+        await this.dynamoDB.put(params).promise();
+        console.log(`키워드 저장 성공: ${combinedKeywords}`);
+    } catch (error) {
+        console.error(`키워드 저장 실패: ${error.message}`);
+    }
+}
+
+    // **가 있는지 확인 후 처리하는 함수
+    async processTextAndAddKeywords(outputText: string, inputText: string, CID: string): Promise<void> {
+        // **로 감싸진 키워드 추출 (아웃풋 기준)
+        const keywords = this.extractKeywords(outputText);
+        console.log("여기 키워드 출력되어야해 반드시",keywords);
+    
+        if (keywords.length > 0) {
+            await this.saveKeywords(keywords, CID);  // 키워드 저장
+        }
+    
+        // CID로 저장된 키워드 조회
+        const fetchedKeywords = await this.fetchKeywordsByCID(CID);
+    
+        // 조회된 키워드 텍스트에 추가 (아웃풋 기준)
+        const updatedText = outputText + `\n추가된 키워드: ${fetchedKeywords.join(', ')}`;
+    
+        // 최종적으로 인풋(사용자 입력)과 아웃풋(업데이트된 텍스트) 모두 저장
+        await this.saveConversation(CID, inputText, updatedText);
+    }
+    
+
+    async fetchKeywordsByCID(CID: string): Promise<string[]> {
+        const params = {
+            TableName: 'Archboard_keyword',  // 원하는 테이블 이름
+            KeyConditionExpression: 'CID = :cid',  // CID에 대해 쿼리
+            ExpressionAttributeValues: { ':cid': CID }
+        };
+    
+        const result = await this.dynamoDB.query(params).promise();
+        if (!result.Items || result.Items.length === 0) {
+            return [];  // 키워드가 없을 경우 빈 배열 반환
+        }
+    
+        return result.Items.map(item => item.keyword);  // 키워드 배열 반환
+    }
+    
+    // CID로 기존에 저장된 키워드를 조회하는 함수
+    async fetchExistingKeywords(CID: string): Promise<string | null> {
+        const params = {
+            TableName: 'Archboard_keyword',
+            Key: {
+                CID: CID
+            }
+        };
+
+        const result = await this.dynamoDB.get(params).promise();
+        return result.Item ? result.Item.keyword : null;  // 기존 키워드 반환, 없으면 null
+    }
+
 }
