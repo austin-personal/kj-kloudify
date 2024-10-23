@@ -80,35 +80,69 @@ export class ConversationsService {
 
     async askBedrockModel(user_question: string, CID: string): Promise<any> {
         console.log(`CID received in askBedrockModel: ${CID}`);
-
+    
+        // 특정 입력에 대한 템플릿 응답 설정
+        const templateResponses = {
+            '특정 질문 1': '이것은 템플릿 응답입니다. 질문 1에 대한 준비된 답변입니다.',
+            '특정 질문 2': '이것은 템플릿 응답입니다. 질문 2에 대한 준비된 답변입니다.',
+        };
+    
+        // 특정 질문이 들어오면 템플릿 응답 제공
+        if (templateResponses[user_question]) {
+            const templateResponse = templateResponses[user_question];
+    
+            // 대화 내용을 DynamoDB에 저장
+            await this.saveConversation(CID, user_question, templateResponse);
+    
+            // 템플릿 응답을 JSON 형식으로 반환
+            return {
+                "id": "-",
+                "type": "message",
+                "role": "assistant",
+                "model": "-",
+                "content": [
+                    {
+                        "type": "text",
+                        "text": templateResponse
+                    }
+                ],
+                "stop_reason": "-",
+                "stop_sequence": null,
+                "usage": {
+                    "input_tokens": "-",
+                    "output_tokens": "-"
+                }
+            };
+        }
+    
+        // 이 아래는 기존 Bedrock 모델 호출 로직 그대로 유지
         const client = new AWS.BedrockRuntime({
             region: process.env.AWS_REGION,
             accessKeyId: process.env.AWS_ACCESS_KEY_ID,
             secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
         });
-
+    
         // 기존 대화 내역 불러오기
         const previousConversations = await this.getConversationsByCID(CID);
         const conversationHistory = previousConversations
             .map((item) => `User: ${item.userMessage}\nBot: ${item.botResponse}`)
             .join('\n');
-
+    
         // 전역 변수에 따라 프롬프트 메시지 변경
         const customMessage = this.getCustomMessage();
-
+    
         // 프롬프트 메시지 구성
         const prompt_content = `
             대화 내역:
             ${conversationHistory}
-
+    
             추가 메시지: 
             ${customMessage}
-
+    
             새로운 질문: 
             ${user_question}
-            
         `;
-
+    
         // 요청 바디 구성
         const requestBody = {
             max_tokens: 1000,
@@ -120,7 +154,7 @@ export class ConversationsService {
                 },
             ],
         };
-
+    
         try {
             // Bedrock 모델 호출
             const response = await client
@@ -130,22 +164,23 @@ export class ConversationsService {
                     modelId: 'anthropic.claude-3-haiku-20240307-v1:0',
                 })
                 .promise();
-
+    
             const responseBody = response.body.toString();
             const parsedResponse = JSON.parse(responseBody);
-
+    
             // 응답에서 'content' 필드의 'text' 값을 추출하여 botResponse로 사용
             const botResponse = parsedResponse.content?.[0]?.text;
-
+    
             // 대화 내용을 DynamoDB에 저장
             await this.saveConversation(CID, user_question, botResponse);
-
+    
             // 원본 JSON 형태로 반환
             return parsedResponse;
         } catch (error) {
             throw new Error(`Bedrock 모델 호출 실패: ${error.message}`);
         }
     }
+    
 
     // 대화 기록을 DynamoDB에 저장하는 함수
     async saveConversation(CID: string, userMessage: string, botResponse: string): Promise<void> {
