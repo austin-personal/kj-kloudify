@@ -13,4 +13,12 @@ export class ConversationsController {
     const response = await this.conversationsService.askBedrockModel(message, CID); // CID 전달
     return response;
 }
+
+
+@Post('increment')
+incrementCounter(): string {
+    ConversationsService.incrementModelCounter();
+    return `Counter incremented to ${ConversationsService.modelSwitchCounter}`;
 }
+}
+

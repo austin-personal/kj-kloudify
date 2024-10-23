@@ -18,7 +18,7 @@ import { ConversationsController } from './conversations/conversations.controlle
 import { ConversationsModule } from './conversations/conversations.module';
 import { ConfigModule } from '@nestjs/config';
 
-
+// 최초 시작모듈
 @Module({
   imports: [
     ConfigModule.forRoot(),
