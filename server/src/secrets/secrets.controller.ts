@@ -10,7 +10,6 @@ export class SecretsController {
     private readonly usersService: UsersService
   ) {}
 
-  // 새로운 AWS credentials 저장
   @UseGuards(JwtAuthGuard) // JwtAuthGuard를 바로 사용
   @Post()
   async createSecret(
@@ -18,15 +17,21 @@ export class SecretsController {
     @Body('secretAccessKey') secretAccessKey: string,
     @Body('securityKey') securityKey: string,
     @Req() req
-  ) {
+  ): Promise<{ message: string }> {
     const email = req.user.email;  // JWT에서 이메일 추출
-    if (accessKey & secretAccessKey) {
-      console.log("Secrets-createSecret: All Keys recieved")
+  
+    // accessKey와 secretAccessKey가 모두 존재하는지 확인
+    if (accessKey && secretAccessKey) {
+      console.log("Secrets-createSecret: All Keys received");
+    } else {
+      throw new Error("Missing accessKey or secretAccessKey");
     }
-    
+  
     const userInfo = await this.usersService.findOneByEmail(email);  // 이메일로 사용자 조회
     const userId = userInfo.UID;
-    return this.secretsService.createSecret(userId, accessKey, secretAccessKey, securityKey);
+    await this.secretsService.createSecret(userId, accessKey, secretAccessKey, securityKey);
+    // secretsService를 호출하여 새로운 Secret 생성
+    return { message: 'Secret successfully created' };
   }
 
   // Delete Secrets API

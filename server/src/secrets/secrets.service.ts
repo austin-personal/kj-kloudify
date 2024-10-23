@@ -15,7 +15,7 @@ export class SecretsService {
   ) {}
 
 // 새로운 Secrets 생성 함수
-  async createSecret(userId: number, AccessKey: string, SecretAccessKey: string, SecurityKey: string): Promise<Secrets> {
+  async createSecret(userId: number, AccessKey: string, SecretAccessKey: string, SecurityKey: string) {
     const user = await this.usersRepository.findOne({ where: { UID: userId } });
     if (!user) {
       throw new Error('User not found');
@@ -27,10 +27,7 @@ export class SecretsService {
       securityKey: SecurityKey,
       UID: userId,
     });
-    const savedSecret = await this.secretsRepository.save(secret);
-    return {
-      message: 'Secret successfully created',
-    };
+    await this.secretsRepository.save(secret);
   }
 
 // 현재 유저의 AWS Credential 삭제
