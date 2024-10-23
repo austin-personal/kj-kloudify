@@ -43,7 +43,7 @@ import { ConfigModule } from '@nestjs/config';
       synchronize: true,  // Development setting
     }),
   ],
-  controllers: [AppController, ConversationsController],
+  controllers: [AppController],
 
   providers: [AppService],
 })
