@@ -9,11 +9,11 @@
   align-items: center;
 }
 
-.user-line-th {
+.userProfile-line-th {
   border: none;
   width: 1000px;
   border-top: 1px solid #cccaba;
-  margin: 30px 0;
+  margin-bottom: 40px;
 }
 
 /* 상단 프로필 정보 */
@@ -43,6 +43,19 @@
   flex-direction: column;
   gap: 15px;
   height: 300px;
+}
+
+.project-list-name-th {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  font-size: 20px;
+  background-color: #e7e3c7;
+  width: 200px;
+  height: 30px;
+  border-radius: 20px;
+  padding: 8px;
 }
 
 .project-item {

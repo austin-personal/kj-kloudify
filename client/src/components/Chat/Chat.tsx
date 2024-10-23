@@ -133,9 +133,9 @@ const Chat: React.FC<ChatProps> = ({ setIsOpen, projectCID }) => {
         prevMessages.filter((msg) => msg.id !== loadingMessage.id)
       );
 
-      // 응답이 '!'로 시작하는지 확인
-      if (typeof responseMessage === "string" && responseMessage.startsWith("!")) {
-        const number = parseInt(responseMessage.slice(1), 10);
+      // 응답이 '**'로 시작하는지 확인
+      if (typeof responseMessage === "string" && responseMessage.startsWith("**")) {
+        const number = parseInt(responseMessage.slice(2), 10);
         if (templates[number]) {
           const template = templates[number];
           const newBotMessage: Message = {
@@ -204,9 +204,9 @@ const Chat: React.FC<ChatProps> = ({ setIsOpen, projectCID }) => {
         prevMessages.filter((msg) => msg.id !== loadingMessage.id)
       );
 
-      // 응답이 '!'로 시작하는지 확인
-      if (typeof responseMessage === "string" && responseMessage.startsWith("!")) {
-        const number = parseInt(responseMessage.slice(1), 10);
+      // 응답이 '**'로 시작하는지 확인
+      if (typeof responseMessage === "string" && responseMessage.startsWith("**")) {
+        const number = parseInt(responseMessage.slice(2), 10);
         if (templates[number]) {
           const template = templates[number];
           const newBotMessage: Message = {

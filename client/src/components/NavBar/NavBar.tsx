@@ -18,6 +18,7 @@ interface NavbarProps {
 const NavBar: React.FC<NavbarProps> = ({ onProjectSubmit }) => {
   const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태
   const navigate = useNavigate(); // useNavigate 훅 사용
+  const location = useLocation();
   const [userProfile, setUserProfile] = useState('');
   const token = localStorage.getItem('token');
 
@@ -113,16 +114,20 @@ const NavBar: React.FC<NavbarProps> = ({ onProjectSubmit }) => {
     setIsModalOpen(false); // 제출 후 모달을 닫기
   };
 
+  const isProfilePage = location.pathname === '/profile'
+
   return (
     <>
       <nav className="navbar">
         <div className="navbar-left">
-          <FontAwesomeIcon
-            icon={faArrowLeft}
-            size="2xl"
-            className="back-button"
-            onClick={handleBackClick}
-          />
+          {!isProfilePage && (
+            <FontAwesomeIcon
+              icon={faArrowLeft}
+              size="2xl"
+              className="back-button"
+              onClick={handleBackClick}
+            />
+          )}
           <button className="new-project-btn" onClick={handleNewProjectOpen}>
             + New Project
           </button>
