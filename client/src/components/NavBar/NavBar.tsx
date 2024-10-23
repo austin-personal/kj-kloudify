@@ -40,7 +40,7 @@ const NavBar: React.FC<NavbarProps> = ({ onProjectSubmit }) => {
     };
 
     fetchData();
-  }, [token, navigate]);
+  }, [token]);
 
   const handleBackClick = () => {
     navigate(-1); // 이전 페이지로 이동
