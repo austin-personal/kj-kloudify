@@ -1,8 +1,7 @@
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import {
   Background,
   Controls,
-  MiniMap,
   ReactFlow,
   addEdge,
   useNodesState,
@@ -23,11 +22,13 @@ import { initialEdges, edgeTypes, addConnectEdge } from "./edges";
 interface BoardProps {
   height?: string; // 높이는 선택적이며 문자열로 받을 것
   borderRadius?: string; // border-radius도 선택적이며 문자열로 받을 것
+  myServices: string[]; //여기 안에 채팅 답변에 포함된 서비스 이름들이 들어올것임.
 }
 
 const Board: React.FC<BoardProps> = ({
   height = "540px",
   borderRadius = "15px 0px 15px 15px",
+  myServices,
 }) => {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] =
