@@ -11,12 +11,18 @@ import { ArchBoards } from './archboards/entity/archboards.entity';
 import { Service } from './archboards/entity/service.entity';  // Ensure this exists
 import { ArchService } from './archboards/entity/archservice.entity';
 
+
+// All modules
+import { UsersModule } from './users/users.module';
+import { SecretsModule } from './secrets/secrets.module';
 import { ProjectsModule } from './projects/projects.module';
 import { TerraformsModule } from './terraforms/terraform.module';
 import { ConversationsModule } from './conversations/conversations.module';
 import { ConfigModule } from '@nestjs/config';
 
+
 // 최초 시작모듈
+
 @Module({
   imports: [
     ConfigModule.forRoot(),

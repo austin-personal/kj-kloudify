@@ -9,9 +9,12 @@ import { JwtAuthGuard } from '../users/jwt-auth.guard';
 import { CurrentUser } from '../users/current-user.decorator';
 import { Req } from '@nestjs/common';
 import { UsersService } from '../users/users.service'; 
+<<<<<<< HEAD
 
 
 
+=======
+>>>>>>> 572a3d179dbda8dc94d29daa4c89516f7539c5ca
 
 @Controller('projects')
 export class ProjectsController {
