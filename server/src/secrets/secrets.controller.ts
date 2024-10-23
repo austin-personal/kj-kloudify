@@ -20,7 +20,9 @@ export class SecretsController {
     @Req() req
   ) {
     const email = req.user.email;  // JWT에서 이메일 추출
-    console.log("secrets create",email);
+    if (accessKey & secretAccessKey) {
+      console.log("Secrets-createSecret: All Keys recieved")
+    }
     
     const userInfo = await this.usersService.findOneByEmail(email);  // 이메일로 사용자 조회
     const userId = userInfo.UID;

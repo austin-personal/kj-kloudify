@@ -27,8 +27,10 @@ export class SecretsService {
       securityKey: SecurityKey,
       UID: userId,
     });
-
-    return this.secretsRepository.save(secret);
+    const savedSecret = await this.secretsRepository.save(secret);
+    return {
+      message: 'Secret successfully created',
+    };
   }
 
 // 현재 유저의 AWS Credential 삭제
