@@ -7,9 +7,10 @@ import "./Home.css";
 
 interface HomeProps {
   projectName: string;
+  projectCID: number;
 }
 
-const Home: React.FC<HomeProps> = ({ projectName }) => {
+const Home: React.FC<HomeProps> = ({ projectName, projectCID }) => {
   //상태 끌어올리기
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenSummary, setIsOpenSummary] = useState(false);
@@ -23,7 +24,7 @@ const Home: React.FC<HomeProps> = ({ projectName }) => {
   return (
     <div className="home">
       <SideBar isOpen={isOpen} setIsOpen={setIsOpen} />
-      <Chat setIsOpen={setIsOpen} />
+      <Chat setIsOpen={setIsOpen} projectCID={projectCID} />
       <div className="vertical-line"></div>
       <div className="right-side">
         <h1 className="project-name">Project:{projectName}</h1>
