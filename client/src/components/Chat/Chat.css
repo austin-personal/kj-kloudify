@@ -29,12 +29,25 @@
 
 /* 개별 메시지 스타일 */
 .message {
-  max-width: 70%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 300px;
   margin: 5px 0;
   padding: 10px;
   border-radius: 15px;
   word-wrap: break-word;
   box-shadow: 5px 4px 20px 0px rgba(0, 0, 0, 13%);
+}
+
+.templete-btn-th {
+  width: 300px;
+  font-size: 22px;
+  margin-top: 10px;
+  border: none;
+  border-radius: 20px;
+  background-color: #fffce8;
+  cursor: pointer;
 }
 
 .user-message {
@@ -44,16 +57,17 @@
   border-top-right-radius: 0;
 }
 
-.message-content {
-  white-space: pre-line;
-}
-
 .bot-message {
   align-self: flex-start;
   text-align: left;
   background-color: #b6d6ed;
   border-top-left-radius: 0;
 }
+
+.message-content {
+  white-space: pre-line;
+}
+
 .chat-form {
   display: flex; /* Flexbox 사용 */
   width: 100%;
@@ -62,6 +76,7 @@
   border-radius: 50px;
   box-shadow: 5px 4px 20px 0px rgba(0, 0, 0, 13%);
 }
+
 /* 입력 필드 및 버튼 스타일 */
 .input-container {
   display: flex;
