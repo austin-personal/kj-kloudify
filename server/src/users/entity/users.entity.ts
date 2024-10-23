@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, OneToOne, JoinColumn } from 'typeorm';
 import { Projects } from '../../projects/entity/projects.entity';
-import { Secrets } from './secrets.entity';
+import { Secrets } from '../../secrets/entity/secrets.entity';
 
 @Entity()
 export class Users {
