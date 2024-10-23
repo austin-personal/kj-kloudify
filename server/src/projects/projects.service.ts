@@ -20,14 +20,14 @@ export class ProjectsService {
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    console.log("createProjectDto.projectName: ", createProjectDto.projectName);
     const project = this.projectRepository.create({
     projectName: createProjectDto.projectName,
     createdDate: new Date(),
     UID: user.UID,
     });
-
-    return this.projectRepository.save(project);
+    const savedProject = await this.projectRepository.save(project);
+    console.log("savedProject", savedProject);
+    return savedProject;
   }
 
 
