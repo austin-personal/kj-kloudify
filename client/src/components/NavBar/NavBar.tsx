@@ -9,6 +9,7 @@ import {
   faRightFromBracket,
 } from "@fortawesome/free-solid-svg-icons";
 import { create } from "../../services/projects";
+import { info } from "../../services/users";
 
 interface NavbarProps {
   onProjectSubmit: (name: string, cid: number) => void;
@@ -17,7 +18,28 @@ interface NavbarProps {
 const NavBar: React.FC<NavbarProps> = ({ onProjectSubmit }) => {
   const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태
   const navigate = useNavigate(); // useNavigate 훅 사용
-  const location = useLocation(); // 현재 경로를 확인하는 훅
+  const [userProfile, setUserProfile] = useState('');
+  const token = localStorage.getItem('token');
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        if (token) {
+          // 유저 정보 가져오기
+          const userData = await info(token);
+          setUserProfile(userData.user.username);
+
+        } else {
+          // 토큰이 없으면 로그인 페이지로 이동
+          navigate('/');
+        }
+      } catch (error) {
+        console.error('데이터 로딩 중 오류 발생:', error);
+      }
+    };
+
+    fetchData();
+  }, [token, navigate]);
 
   const handleBackClick = () => {
     navigate(-1); // 이전 페이지로 이동
@@ -113,7 +135,7 @@ const NavBar: React.FC<NavbarProps> = ({ onProjectSubmit }) => {
         </div>
         <div className="navbar-right">
           <Link to="/profile" className="profile-button">
-            안녕하세요,OO님
+            {`안녕하세요,${userProfile}님`}
           </Link>
           <Link to="/login" className="profile-button">
             <FontAwesomeIcon
