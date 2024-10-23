@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import Board from "../../components/Board/Board";
 import { projectOneInfo } from '../../services/projects';
 import './History.css';
 
@@ -93,7 +94,7 @@ const History: React.FC = () => {
                 </div>
                 <div className="architecture-box">
                     <h3>Architecture</h3>
-                    <p>Details about the architecture used in this project...</p>
+                    <Board height="400px" borderRadius="20px 20px 20px 20px" />
                 </div>
             </div>
         </div>
