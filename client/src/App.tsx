@@ -13,10 +13,12 @@ import Guide from "./pages/Guide/Guide";
 const App: React.FC = () => {
   const location = useLocation();
   const [projectName, setProjectName] = useState<string>("");
+  const [projectCID, setProjectCID] = useState<number>(0);
 
   // projectName을 업데이트하는 함수
-  const handleProjectNameUpdate = (name: string) => {
+  const handleProjectNameUpdate = (name: string, cid: number) => {
     setProjectName(name);
+    setProjectCID(cid);
   };
 
   // 주소가 login인지 아닌지
@@ -33,7 +35,7 @@ const App: React.FC = () => {
           path="/home"
           element={
             <ProtectedRoute>
-              <Home projectName={projectName} />
+              <Home projectName={projectName} projectCID={projectCID} />
             </ProtectedRoute>
           }
         />
@@ -54,7 +56,7 @@ const App: React.FC = () => {
           path="/profile"
           element={
             <ProtectedRoute>
-              <Profile/>
+              <Profile />
             </ProtectedRoute>
           }
         />
@@ -62,7 +64,7 @@ const App: React.FC = () => {
         {/* 임시로 history페이지 가는중 */}
         {/* <Route path="/history/:id" element={<History />} /> */}
         <Route
-          path="/history"
+          path="/history/:pid"
           element={
             <ProtectedRoute>
               <History />
