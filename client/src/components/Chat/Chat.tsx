@@ -13,6 +13,7 @@ const { v4: uuidv4 } = require("uuid");
 
 interface ChatProps {
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  projectCID: number;
 }
 
 interface Message {
@@ -21,7 +22,7 @@ interface Message {
   sender: "user" | "bot";
   maxLength?: number;
 }
-const Chat: React.FC<ChatProps> = ({ setIsOpen }) => {
+const Chat: React.FC<ChatProps> = ({ setIsOpen, projectCID }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [showScrollButton, setShowScrollButton] = useState(false);
@@ -80,7 +81,7 @@ const Chat: React.FC<ChatProps> = ({ setIsOpen }) => {
     };
     setMessages((prevMessages) => [...prevMessages, loadingMessage]);
     try {
-      const responseMessage = await ask(input);
+      const responseMessage = await ask(input, projectCID);
       const botMessage: Message = {
         id: uuidv4(),
         text: responseMessage,

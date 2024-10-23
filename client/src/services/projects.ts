@@ -5,7 +5,6 @@ const API_URL = 'http://localhost:3000/projects';
 
 export const create = async (projectName: string,token: string) => {
     try {
-        console.log("create 함수 안 테스트", projectName);
         const response = await axios.post(`${API_URL}`,  
             { projectName },  // createProjectDto로 보내질 부분
             {
@@ -13,8 +12,7 @@ export const create = async (projectName: string,token: string) => {
                     Authorization: `Bearer ${token}`  // JWT 토큰을 헤더에 포함
                 }
             });
-        console.log(response);
-        return response;
+        return response.data.CID;
     } catch (error) {
         console.error('프로젝트 생성 개박살!! : ', error);
         throw error;
