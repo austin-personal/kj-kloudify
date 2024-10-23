@@ -19,14 +19,16 @@ export const create = async (projectName: string,token: string) => {
     }
 };
 
-export const deleteProject = async (PID: number) => {
+export const deleteProject = async (PID:number,token:string) => {
     try {
         // 태현 api 주소 확인!!!
-        const response = await axios.delete(`${API_URL}/delete`, {
-           data : {
-            PID
-           }
-        });
+        console.log("delete 프론트 PID",PID);
+        const response = await axios.delete(`${API_URL}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+              },
+              data: { PID }, // PID를 body로 전달
+            });
         return response;
     } catch (error) {
         console.error('프로젝트 삭제 개박살!! :', error);
