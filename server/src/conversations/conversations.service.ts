@@ -70,7 +70,7 @@ export class ConversationsService {
             case 1:
                 return "당신은 사용자의 요구에 맞는 AWS 서비스 아키텍처를 단계별로 구성하는 안내자 역할을 합니다."
                 + "대화를 주도하며 필요한 경우 추가 질문을 통해 사용자의 요구사항을 명확히 하세요. "
-                + "대화내역 및 답변에서 사용자가 특정 aws의 서비스를 단순히 언급하는게 아닌 '확실하게 사용하겠다고 확정 {ex)ec2를 사용할께 같은 경우}' 지은 경우에만 대답을 완료한 후 별도로 추출하기 쉽도록 텍스트 하단에 **aws 서비스 : ... 이런 양식으로 서비스 종류 하나씩 출력하세요";
+                + "답변에서 사용자가 특정 aws의 서비스를 단순히 언급하는게 아닌 '확실하게 사용하겠다고 확정 {ex)ec2를 사용할께 같은 경우}' 지은 경우에만 대답을 완료한 후 별도로 추출하기 쉽도록 텍스트 하단에 '**{aws 서비스}' 이런 포맷으로 서비스 종류 하나씩 출력하세요. 대괄호는 필요 없습니다.";
                 
             case 2:
                 return "아웃풋 텍스트 제일 뒤에 **나와라제발 을 추가해줘";
@@ -175,14 +175,23 @@ export class ConversationsService {
             const botResponse = parsedResponse.content?.[0]?.text;
     
             // 키워드 처리 및 저장 (botResponse, user_question을 사용)
-            await this.processTextAndAddKeywords(botResponse, user_question, CID);
+            const updatedResponse = await this.processTextAndAddKeywords(botResponse, user_question, CID);
     
-            // 최종적으로 업데이트된 텍스트와 함께 리턴
-            return parsedResponse;
+            // 최종적으로 업데이트된 텍스트와 함께 리턴 (키워드 리스트 포함)
+            return {
+                ...parsedResponse,
+                content: [
+                    {
+                        type: "text",
+                        text: updatedResponse  // 업데이트된 텍스트 (키워드 리스트 포함)
+                    }
+                ]
+            };
         } catch (error) {
             throw new Error(`Bedrock 모델 호출 실패: ${error.message}`);
         }
     }
+    
     
     
 
@@ -241,101 +250,109 @@ export class ConversationsService {
 
 
 
-        // 챗봇 응답을 받아와 특정 프롬프트와 함께 Bedrock 모델에 보내는 함수
-    async sendResponseWithPrompt(chatbotResponse: string, promptMessage: string): Promise<any> {
-        // 프롬프트 메시지 구성
-        const prompt_content = `
-            이전 챗봇 응답:
-            ${chatbotResponse}
+    //     // 챗봇 응답을 받아와 특정 프롬프트와 함께 Bedrock 모델에 보내는 함수
+    // async sendResponseWithPrompt(chatbotResponse: string, promptMessage: string): Promise<any> {
+    //     // 프롬프트 메시지 구성
+    //     const prompt_content = `
+    //         이전 챗봇 응답:
+    //         ${chatbotResponse}
 
-            추가 프롬프트 메시지: 
-            ${promptMessage}
-        `;
+    //         추가 프롬프트 메시지: 
+    //         ${promptMessage}
+    //     `;
 
-        // 요청 바디 구성
-        const requestBody = {
-            max_tokens: 1000,
-            anthropic_version: 'bedrock-2023-05-31',
-            messages: [
-                {
-                    role: 'user',
-                    content: prompt_content,
-                },
-            ],
+    //     // 요청 바디 구성
+    //     const requestBody = {
+    //         max_tokens: 1000,
+    //         anthropic_version: 'bedrock-2023-05-31',
+    //         messages: [
+    //             {
+    //                 role: 'user',
+    //                 content: prompt_content,
+    //             },
+    //         ],
+    //     };
+
+    //     try {
+    //         const client = new AWS.BedrockRuntime({
+    //             region: process.env.AWS_REGION,
+    //             accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    //             secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    //         });
+
+    //         // Bedrock 모델 호출
+    //         const response = await client
+    //             .invokeModel({
+    //                 body: JSON.stringify(requestBody),
+    //                 contentType: 'application/json',
+    //                 modelId: 'anthropic.claude-3-haiku-20240307-v1:0',
+    //             })
+    //             .promise();
+
+    //         const responseBody = response.body.toString();
+    //         const parsedResponse = JSON.parse(responseBody);
+
+    //         // 응답에서 'content' 필드의 'text' 값을 추출하여 botResponse로 사용
+    //         const botResponse = parsedResponse.content?.[0]?.text;
+
+    //         // 결과 반환
+    //         return botResponse;
+    //     } catch (error) {
+    //         throw new Error(`Bedrock 모델 호출 실패: ${error.message}`);
+    //     }
+    // }
+
+    // **로 감싸진 텍스트에서 키워드 추출
+    extractKeywords(text: string): { keywords: string[], updatedText: string } {
+        if (!text) {
+            console.log("여긴 콘솔로그 안");
+            return { keywords: [], updatedText: text };  // null 또는 빈 문자열 처리
+        }
+    
+        // **로 시작하고 개행(\n) 또는 텍스트 끝까지 추출
+        const regex = /\*\*(.*?)(\n|$)/g;
+        const matches: string[] = [];
+        let updatedText = text;  // 원본 텍스트 복사
+    
+        let match;
+        // 정규식을 통해 키워드 추출과 동시에 텍스트에서 해당 부분 제거
+        while ((match = regex.exec(text)) !== null) {
+            matches.push(match[1].trim());  // 키워드 추출
+            updatedText = updatedText.replace(match[0], '');  // 추출한 부분 텍스트에서 제거
+        }
+    
+        return { keywords: matches, updatedText: updatedText.trim() };  // 키워드와 수정된 텍스트 반환
+    }
+
+    // 기존 키워드와 새로 추출한 키워드를 모두 누적 저장하는 함수
+    async saveKeywords(keywords: string[], CID: string): Promise<void> {
+        // 기존 키워드를 먼저 불러오기
+        let existingKeywords = await this.fetchExistingKeywords(CID);
+        
+        // 새로운 키워드를 기존 키워드에 추가하여 문자열로 결합
+        const combinedKeywords = existingKeywords ? `${existingKeywords}, ${keywords.join(', ')}` : keywords.join(', ');
+
+        const params = {
+            TableName: 'Archboard_keyword',
+            Item: {
+                CID: CID,  // CID를 파티션 키로 사용
+                keyword: combinedKeywords,  // 기존 키워드와 새 키워드를 결합한 문자열 저장
+                timestamp: new Date().toISOString(),
+            }
         };
 
         try {
-            const client = new AWS.BedrockRuntime({
-                region: process.env.AWS_REGION,
-                accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-                secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-            });
-
-            // Bedrock 모델 호출
-            const response = await client
-                .invokeModel({
-                    body: JSON.stringify(requestBody),
-                    contentType: 'application/json',
-                    modelId: 'anthropic.claude-3-haiku-20240307-v1:0',
-                })
-                .promise();
-
-            const responseBody = response.body.toString();
-            const parsedResponse = JSON.parse(responseBody);
-
-            // 응답에서 'content' 필드의 'text' 값을 추출하여 botResponse로 사용
-            const botResponse = parsedResponse.content?.[0]?.text;
-
-            // 결과 반환
-            return botResponse;
+            await this.dynamoDB.put(params).promise();
+            console.log(`키워드 저장 성공: ${combinedKeywords}`);
         } catch (error) {
-            throw new Error(`Bedrock 모델 호출 실패: ${error.message}`);
+            console.error(`키워드 저장 실패: ${error.message}`);
         }
     }
 
-    // **로 감싸진 텍스트에서 키워드 추출
-    extractKeywords(text: string): string[] {
-        if (!text) {
-            console.log("여긴 콘솔로그 안");
-            return [];  // null 또는 빈 문자열 처리
-        }
-    
-        const regex = /\*\*(.*?)(\n|$)/g;  // **로 시작하고 개행(\n) 또는 텍스트 끝까지 추출
-    const matches = [...text.matchAll(regex)].map(match => match[1].trim());  // 추출 및 공백 제거
-
-    return matches;
-    }
-
-// 기존 키워드와 새로 추출한 키워드를 모두 누적 저장하는 함수
-async saveKeywords(keywords: string[], CID: string): Promise<void> {
-    // 기존 키워드를 먼저 불러오기
-    let existingKeywords = await this.fetchExistingKeywords(CID);
-    
-    // 새로운 키워드를 기존 키워드에 추가하여 문자열로 결합
-    const combinedKeywords = existingKeywords ? `${existingKeywords}, ${keywords.join(', ')}` : keywords.join(', ');
-
-    const params = {
-        TableName: 'Archboard_keyword',
-        Item: {
-            CID: CID,  // CID를 파티션 키로 사용
-            keyword: combinedKeywords,  // 기존 키워드와 새 키워드를 결합한 문자열 저장
-            timestamp: new Date().toISOString(),
-        }
-    };
-
-    try {
-        await this.dynamoDB.put(params).promise();
-        console.log(`키워드 저장 성공: ${combinedKeywords}`);
-    } catch (error) {
-        console.error(`키워드 저장 실패: ${error.message}`);
-    }
-}
-
-    // **가 있는지 확인 후 처리하는 함수
-    async processTextAndAddKeywords(outputText: string, inputText: string, CID: string): Promise<void> {
-        // **로 감싸진 키워드 추출 (아웃풋 기준)
-        const keywords = this.extractKeywords(outputText);
-        console.log("여기 키워드 출력되어야해 반드시",keywords);
+    async processTextAndAddKeywords(outputText: string, inputText: string, CID: string): Promise<string> {
+        // 키워드 추출 및 텍스트 업데이트
+        const result = this.extractKeywords(outputText);
+        const { keywords, updatedText } = result;  // 객체에서 키워드와 업데이트된 텍스트 분리
     
         if (keywords.length > 0) {
             await this.saveKeywords(keywords, CID);  // 키워드 저장
@@ -344,14 +361,15 @@ async saveKeywords(keywords: string[], CID: string): Promise<void> {
         // CID로 저장된 키워드 조회
         const fetchedKeywords = await this.fetchKeywordsByCID(CID);
     
-        // 조회된 키워드 텍스트에 추가 (아웃풋 기준)
-        const updatedText = outputText + `\n추가된 키워드: ${fetchedKeywords.join(', ')}`;
+        // 최종적으로 텍스트 끝에 키워드 리스트 추가
+        const finalText = updatedText + `\n**[${fetchedKeywords.join(', ')}]`;
     
-        // 최종적으로 인풋(사용자 입력)과 아웃풋(업데이트된 텍스트) 모두 저장
-        await this.saveConversation(CID, inputText, updatedText);
+        // 인풋(사용자 입력)과 최종 텍스트 저장
+        await this.saveConversation(CID, inputText, finalText);
+    
+        return finalText;
     }
     
-
     async fetchKeywordsByCID(CID: string): Promise<string[]> {
         const params = {
             TableName: 'Archboard_keyword',  // 원하는 테이블 이름
