@@ -106,7 +106,7 @@ const NavBar: React.FC<NavbarProps> = ({ onProjectSubmit }) => {
         </div>
         <div className="navbar-center">
           <FontAwesomeIcon icon={faCloud} size="2xl" className="navbar-icon" />
-          <Link to="/home" className="navbar-logo">
+          <Link to="/profile" className="navbar-logo">
             Kloudify
           </Link>
         </div>

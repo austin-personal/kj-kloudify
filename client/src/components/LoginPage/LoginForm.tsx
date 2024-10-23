@@ -23,7 +23,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignup }) => {
       console.log(token);
       localStorage.setItem("token", token);
       alert("Login successful!");
-      navigate("/home"); // 홈 페이지로 이동
+      navigate("/profile"); //프로필 페이지로 이동
     } catch (error) {
       alert("Login failed. Please check your credentials.");
     }
