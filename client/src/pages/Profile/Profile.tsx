@@ -92,6 +92,7 @@ const Profile: React.FC = () => {
       <hr className="userProfile-line-th" />
       {/* 하단 프로젝트 리스트 섹션 */}
       <div className="project-list">
+        <div className="project-list-name-th">프로젝트 리스트</div>
         {projects.map((project) => (
           <div
             key={project.PID}
