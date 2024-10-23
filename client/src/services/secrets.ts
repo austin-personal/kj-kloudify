@@ -20,3 +20,18 @@ export const createSecret = async (accessKey: string, secretAccessKey: string, s
         throw error;
     }
 };
+
+export const deleteSecret = async (token: string) => {
+    try {
+        const response = await axios.delete(`${API_URL}`,  
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`  // JWT 토큰을 헤더에 포함
+                }
+            });
+        return response.data.message;
+    } catch (error) {
+        console.error('키 삭제 실패: ', error);
+        throw error;
+    }
+};

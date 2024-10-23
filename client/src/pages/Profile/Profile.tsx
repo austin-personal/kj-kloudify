@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Profile.css";
 import { projectAllInfo, deleteProject } from "../../services/projects";
+import { deleteSecret } from "../../services/secrets";
 import { info } from "../../services/users";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
@@ -29,6 +30,7 @@ const Profile: React.FC = () => {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [projects, setProjects] = useState<Project[]>([]);
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
+  const [modalType, setModalType] = useState<string>(""); // 모달 타입을 구분하는 상태
   const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
   const token = localStorage.getItem("token");
 
@@ -62,20 +64,34 @@ const Profile: React.FC = () => {
   };
   const handleDeleteClick = (project: Project) => {
     setProjectToDelete(project); // project 객체 전체를 설정
+    setModalType("deleteProject"); // 모달 타입 설정
     setShowDeleteModal(true); // 모달 띄우기
   };
+
+  const handleAWSKeyDeleteClick = () => {
+    setModalType("deleteAWSKey"); // 모달 타입 설정
+    setShowDeleteModal(true); // 모달 띄우기
+  };
+
   const handleConfirmDelete = async () => {
-    if (projectToDelete) {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        throw new Error("토큰이 존재하지 않습니다.");
-      }
+    const token = localStorage.getItem("token");
+    if (!token) {
+      throw new Error("토큰이 존재하지 않습니다.");
+    }
+
+    if (modalType === "deleteProject" && projectToDelete) {
+      // 프로젝트 삭제 로직
       await deleteProject(projectToDelete.PID, token);
       console.log(`Deleting project with PID: ${projectToDelete.PID}`);
-      // 삭제 완료 후 모달 닫기
-      setShowDeleteModal(false);
       setProjects(projects.filter((p) => p.PID !== projectToDelete.PID));
+    } else if (modalType === "deleteAWSKey") {
+      // AWS Key 삭제 로직
+      const response = await deleteSecret(token);
+      console.log(response);
     }
+
+    setShowDeleteModal(false);
+    setProjectToDelete(null); // 초기화
   };
 
   const handleCancelDelete = () => {
@@ -86,8 +102,21 @@ const Profile: React.FC = () => {
     <div className="profile-page">
       {/* 상단 프로필 섹션 */}
       <div className="profile-info">
-        <h2>{userProfile.username}</h2>
-        <p>{userProfile.email}</p>
+        <div className="profile-text">
+          <h2>{userProfile.username}</h2>
+          <p>{userProfile.email}</p>
+        </div>
+        <div className="profile-button">
+          <button
+            className="AWS-Credential-deleteButton"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleAWSKeyDeleteClick();
+            }}
+          >
+            AWS Key 삭제
+          </button>
+        </div>
       </div>
       <hr className="userProfile-line-th" />
       {/* 하단 프로젝트 리스트 섹션 */}
@@ -118,8 +147,14 @@ const Profile: React.FC = () => {
       {showDeleteModal && (
         <div className="delete-modal">
           <div className="delete-modal-content">
-            <h3>정말 삭제하시겠습니까?</h3>
-            <p>프로젝트: {projectToDelete?.projectName}</p>
+            <h3>
+              {modalType === "deleteProject"
+                ? "프로젝트를 정말 삭제하시겠습니까?"
+                : "AWS Key를 정말 삭제하시겠습니까?"}
+            </h3>
+            {modalType === "deleteProject" && (
+              <p>프로젝트: {projectToDelete?.projectName}</p>
+            )}
             <div className="delete-modal-buttons">
               <button
                 className="delete-cancel-button"

@@ -19,12 +19,16 @@
 /* 상단 프로필 정보 */
 .profile-info {
   display: flex;
-  flex-direction: column;
-  align-items: start;
-  justify-content: center;
+  flex-direction: row;
+  justify-content: space-between;
   height: 150px;
   width: 800px;
   margin-top: 100px;
+}
+.profile-text {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
 }
 
 .profile-info h2 {
@@ -172,4 +176,22 @@
   background: none;
   border: none;
   cursor: pointer;
+}
+
+.AWS-Credential-deleteButton {
+  background-color: #e37e7e;
+}
+
+.AWS-Credential-deleteButton {
+  padding: 10px;
+  font-family: "NanumSquareRound", sans-serif;
+  font-weight: bold;
+  font-size: 18px;
+  background-color: #e37e7e;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  color: white;
+  transition: background-color 0.3s;
+  margin-bottom: 13px;
 }
