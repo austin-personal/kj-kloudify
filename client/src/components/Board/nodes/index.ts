@@ -26,3 +26,27 @@ export const nodeTypes = {
   "position-logger": PositionLoggerNode,
   // Add any of your custom nodes here!
 } satisfies NodeTypes;
+
+// 새로운 노드를 추가하는 함수
+export const addNode = (keyword: string, nodes: AppNode[]): AppNode[] => {
+  // 백엔드에서 전달된 키워드에 따라 새로운 노드 생성
+
+  // 마지막 노드의 y축 위치를 참조하여 50씩 증가시킴
+  const lastNodeY = nodes.length > 0 ? nodes[nodes.length - 1].position.y : 0;
+  const lastNodeX = nodes.length > 0 ? nodes[nodes.length - 1].position.x : 0;
+  const newNodeX = lastNodeX+ 80;
+  const imageChange =keyword==="EC2"? "https://icon.icepanel.io/AWS/svg/Compute/EC2.svg" : "https://icon.icepanel.io/AWS/svg/Database/DynamoDB.svg"
+  const newNode : PositionLoggerNode ={
+    id: (nodes.length + 1).toString(),
+    type: "position-logger",
+    position: { x: newNodeX, y: lastNodeY},  // 랜덤 위치로 설정
+    data: {
+      label: keyword,
+      imgUrl: imageChange,
+      description: `${keyword}는 AWS의 주요 컴퓨팅 서비스 중 하나입니다.`
+    }
+  };
+  
+  // 기존 노드 배열에 새 노드를 추가한 배열을 반환
+  return [...nodes, newNode];
+};
