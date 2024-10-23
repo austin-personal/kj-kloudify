@@ -8,6 +8,8 @@ dotenv.config();
 export class ConversationsService {
     private dynamoDB: AWS.DynamoDB.DocumentClient;
 
+    static modelSwitchCounter = 0;
+
     constructor() {
         this.dynamoDB = new AWS.DynamoDB.DocumentClient({
             region: process.env.AWS_REGION,
@@ -16,29 +18,68 @@ export class ConversationsService {
         });
     }
 
+    // 전역 변수를 1씩 증가시키는 함수
+    static incrementModelCounter(): void {
+        ConversationsService.modelSwitchCounter++;
+    }
+
     // ID 증가를 위해 테이블의 가장 큰 ID를 조회하는 함수
     async getLastID(): Promise<number> {
-        const params = {
-            TableName: 'Conversations',
-            ProjectionExpression: 'ID', // ID 값만 가져옴
-            ScanIndexForward: false, // 내림차순 정렬 (가장 큰 값부터)
-            Limit: 1 // 마지막 항목 하나만 조회
-        };
-
-        try {
-            const result = await this.dynamoDB.scan(params).promise(); // scan으로 테이블 전체 검색
-            if (result.Items && result.Items.length > 0) {
-                return result.Items[0].ID; // 가장 큰 ID 반환
+        let lastEvaluatedKey: AWS.DynamoDB.Key | undefined = undefined; // null 대신 undefined 사용
+        let maxID = 0;
+    
+        do {
+            const params = {
+                TableName: 'Conversations',
+                ProjectionExpression: 'ID', // ID 값만 가져옴
+                ExclusiveStartKey: lastEvaluatedKey, // 페이지네이션을 위해 마지막 키 설정
+            };
+    
+            try {
+                const result = await this.dynamoDB.scan(params).promise();
+                if (result.Items && result.Items.length > 0) {
+                    // 각 페이지에서 최대 ID 찾기
+                    result.Items.forEach(item => {
+                        if (item.ID > maxID) {
+                            maxID = item.ID; // 가장 큰 ID를 찾음
+                        }
+                    });
+                }
+                // 다음 페이지가 있으면 lastEvaluatedKey 설정
+                lastEvaluatedKey = result.LastEvaluatedKey;
+            } catch (error) {
+                console.error('마지막 ID 조회 실패:', error.message);
+                throw new Error('마지막 ID 조회 실패');
             }
-            return 0; // 항목이 없으면 0부터 시작
-        } catch (error) {
-            console.error('마지막 ID 조회 실패:', error.message);
-            throw new Error('마지막 ID 조회 실패');
+        } while (lastEvaluatedKey); // 마지막 페이지까지 탐색
+    
+        return maxID; // 최종적으로 가장 큰 ID 반환
+    }
+    
+
+    // 전역 변수에 따라 다른 프롬프트 메시지를 생성하는 함수
+    getCustomMessage(): string {
+        switch (ConversationsService.modelSwitchCounter % 4) {
+            case 0:
+                return "당신은 사용자의 요구에 맞는 AWS 서비스 아키텍처를 단계별로 구성하는 안내자 역할을 합니다. "
+                    + "대화를 주도하며 필요한 경우 추가 질문을 통해 사용자의 요구사항을 명확히 하세요. "
+                    + "질문에 대해 뭔가 만들고싶다고 요청할 시 필요한 서비스를 목록화 해서 짧게 대답해줘. 문장을 완성하지말고 키워드만 언급하면서"
+                    + "예시) [짧은 설명 텍스트] \n 1. EC2 - [인스턴스 이름 ex)t2.micro] : [선정한 이유] \n"
+                    + "예시 텍스트에서 [짧은 설명 텍스트]에는 짧게 전체적인 설명을 해주고 [선정한 이유]에는 해당 인스턴스에 대한 짧은 설명 부탁해. 중괄호는 출력하지 않아도 돼"
+                    + "만약 사용자가 특정 서비스를 선택하는 메세지를 전송 시 긍정해주는 메세지를 보내줘.";
+            case 1:
+                return "1번 케이스의 프롬프트 메시지입니다.";
+            case 2:
+                return "2번 케이스의 프롬프트 메시지입니다.";
+            case 3:
+                return "3번 케이스의 프롬프트 메시지입니다.";
+            default:
+                return "기본 프롬프트 메시지입니다.";
         }
     }
 
     async askBedrockModel(user_question: string, CID: string): Promise<any> {
-        console.log(`CID received in askBedrockModel: ${cid}`);
+        console.log(`CID received in askBedrockModel: ${CID}`);
 
         const client = new AWS.BedrockRuntime({
             region: process.env.AWS_REGION,
@@ -52,12 +93,20 @@ export class ConversationsService {
             .map((item) => `User: ${item.userMessage}\nBot: ${item.botResponse}`)
             .join('\n');
 
+        // 전역 변수에 따라 프롬프트 메시지 변경
+        const customMessage = this.getCustomMessage();
+
         // 프롬프트 메시지 구성
         const prompt_content = `
             대화 내역:
             ${conversationHistory}
 
-            새로운 질문: ${user_question}
+            추가 메시지: 
+            ${customMessage}
+
+            새로운 질문: 
+            ${user_question}
+            
         `;
 
         // 요청 바디 구성
@@ -101,8 +150,9 @@ export class ConversationsService {
     // 대화 기록을 DynamoDB에 저장하는 함수
     async saveConversation(CID: string, userMessage: string, botResponse: string): Promise<void> {
         const lastID = await this.getLastID(); // 마지막 ID 조회
+        console.log(lastID);
         const newID = lastID + 1; // 마지막 ID에 1을 더해 새로운 ID 생성
-
+    
         const params = {
             TableName: 'Conversations',
             Item: {
@@ -113,21 +163,20 @@ export class ConversationsService {
                 timestamp: new Date().toISOString(),  // 현재 시간을 timestamp로 저장
             }
         };
-
+    
         try {
+            console.log('DynamoDB에 저장할 데이터:', params); // 디버깅을 위한 로그
             await this.dynamoDB.put(params).promise();
             console.log('대화 기록이 성공적으로 저장되었습니다.');
         } catch (error) {
             console.error('대화 기록 저장 실패:', error.message);
+            console.error('DynamoDB 요청 실패 params:', params); // 추가 디버깅 로그
             throw new Error('대화 기록 저장 실패');
         }
     }
 
     // DynamoDB에서 특정 CID의 대화 기록을 불러오는 함수
     async getConversationsByCID(CID: string): Promise<any> {
-
-        
-
         const params = {
             TableName: 'Conversations',
             FilterExpression: 'CID = :cid',
@@ -140,12 +189,10 @@ export class ConversationsService {
             console.log('쿼리 파라미터:', params);
             const result = await this.dynamoDB.scan(params).promise(); // scan을 사용하여 CID 필터링
 
-            // Items가 undefined일 가능성 처리
             if (!result.Items) {
                 return [];  // 항목이 없으면 빈 배열 반환
             }
 
-            // timestamp 기준으로 시간순 정렬
             return result.Items.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
         } catch (error) {
             console.error('대화 기록 불러오기 실패:', error.message);
