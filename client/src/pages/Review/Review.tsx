@@ -9,7 +9,7 @@ function Review() {
       <Board
         height="600px"
         borderRadius="20px 20px 20px 20px"
-        myServices={["apple", "banana", "cherry"]}
+        parsedData={["apple", "banana", "cherry"]}
       />
       <div className="vertical-line"></div>
       <Services />
