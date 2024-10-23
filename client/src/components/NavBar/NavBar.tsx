@@ -93,6 +93,7 @@ const NavBar: React.FC<NavbarProps> = ({ onProjectSubmit }) => {
   const handleProjectSubmit = async (
     event: React.FormEvent<HTMLFormElement>
   ) => {
+    event.preventDefault();
     const projectName = (event.target as HTMLFormElement).projectName.value;
     console.log("New Project Name:", projectName);
 
