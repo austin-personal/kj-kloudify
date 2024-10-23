@@ -104,7 +104,7 @@ const History: React.FC = () => {
           <Board
             height="400px"
             borderRadius="20px 20px 20px 20px"
-            myServices={["apple", "banana", "cherry"]}
+            parsedData={["aaa","bbb"]}
           />
         </div>
       </div>
