@@ -14,7 +14,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       secretOrKey: 'I\'M IML',  // 비밀 키 설정
     });
   }
-
+  // 페이로드에서 이메일을 추출해서 
   async validate(payload: JwtPayload) {
     const user = await this.usersService.findOneByEmail(payload.email);
     if (!user) {
