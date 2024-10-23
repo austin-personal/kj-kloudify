@@ -8,6 +8,7 @@ import {
   faCloud,
   faRightFromBracket,
 } from "@fortawesome/free-solid-svg-icons";
+import { create } from "../../services/projects";
 
 interface NavbarProps {
   onProjectSubmit: (name: string) => void;
@@ -55,23 +56,38 @@ const NavBar: React.FC<NavbarProps> = ({ onProjectSubmit }) => {
       }
     };
   }, [isModalOpen]);
-
+  // /home 경로일 때 모달을 자동으로 열기
+  useEffect(() => {
+    if (location.pathname === "/home") {
+      setIsModalOpen(true);
+    }
+  }, [location]);
   // 모달 열고 닫는 함수
   const handleNewProjectClick = () => {
     setIsModalOpen(!isModalOpen);
   };
 
-  const handleProjectSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleProjectSubmit = async (
+    event: React.FormEvent<HTMLFormElement>
+  ) => {
     event.preventDefault();
     const projectName = (event.target as HTMLFormElement).projectName.value;
     console.log("New Project Name:", projectName);
 
     // 부모 컴포넌트로 projectName 전달
     onProjectSubmit(projectName);
+    //prohectName을 DB에 넘김
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("토큰이 존재하지 않습니다.");
+      }
+      await create(projectName, token); // token이 string임을 보장
+    } catch (error) {
+      console.log(error);
+    }
 
     setIsModalOpen(false); // 제출 후 모달을 닫기
-
-    navigate("/home");
   };
 
   return (

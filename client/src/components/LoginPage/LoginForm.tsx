@@ -20,6 +20,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignup }) => {
     try {
       const token = await login(email, password);
       // JWT 토큰을 로컬 스토리지에 저장
+      console.log(token);
       localStorage.setItem("token", token);
       alert("Login successful!");
       navigate("/home"); // 홈 페이지로 이동
@@ -37,7 +38,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignup }) => {
       <form className="login-form" onSubmit={handleLogin}>
         <input
           type="id"
-          placeholder="아이디를 입력하세요"
+          placeholder="이메일을 입력하세요"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />

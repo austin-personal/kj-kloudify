@@ -22,34 +22,6 @@ const App: React.FC = () => {
   // 주소가 login인지 아닌지
   const showNavBar = location.pathname !== "/";
 
-  // 임시 유저
-  const tempUser = {
-    name: "John Doe",
-    email: "john.doe@example.com",
-    profilePicture: "https://via.placeholder.com/150",
-  };
-  // 임시 프로젝트들
-  const tempProjects = [
-    {
-      id: 1,
-      title: "Project 1",
-      description: "Description of project 1",
-      createdAt: "2023-01-01",
-    },
-    {
-      id: 2,
-      title: "Project 2",
-      description: "Description of project 2",
-      createdAt: "2023-02-01",
-    },
-    {
-      id: 3,
-      title: "Project 3",
-      description: "Description of project 3",
-      createdAt: "2023-03-01",
-    },
-  ];
-
   return (
     <div className="app">
       {/* 주소가 login이면 NavBar 꺼져 */}
@@ -82,7 +54,7 @@ const App: React.FC = () => {
           path="/profile"
           element={
             <ProtectedRoute>
-              <Profile user={tempUser} projects={tempProjects} />
+              <Profile/>
             </ProtectedRoute>
           }
         />
