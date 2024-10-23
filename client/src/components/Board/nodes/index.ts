@@ -35,11 +35,17 @@ export const addNode = (keyword: string, nodes: AppNode[]): AppNode[] => {
   const lastNodeY = nodes.length > 0 ? nodes[nodes.length - 1].position.y : 0;
   const lastNodeX = nodes.length > 0 ? nodes[nodes.length - 1].position.x : 0;
   const newNodeX = lastNodeX+ 80;
-  const imageChange =keyword==="EC2"? "https://icon.icepanel.io/AWS/svg/Compute/EC2.svg" : "https://icon.icepanel.io/AWS/svg/Database/DynamoDB.svg"
+  const imageChange = 
+  keyword === "EC2" 
+    ? "https://icon.icepanel.io/AWS/svg/Compute/EC2.svg" 
+    : keyword === "RDS" 
+    ? "https://icon.icepanel.io/AWS/svg/Database/RDS.svg" 
+    : "https://icon.icepanel.io/AWS/svg/Storage/S3.svg";
+
   const newNode : PositionLoggerNode ={
     id: (nodes.length + 1).toString(),
     type: "position-logger",
-    position: { x: newNodeX, y: lastNodeY},  // 랜덤 위치로 설정
+    position: { x: newNodeX, y: lastNodeY},  
     data: {
       label: keyword,
       imgUrl: imageChange,

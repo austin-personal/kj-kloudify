@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   Background,
   Controls,
@@ -35,12 +35,12 @@ const Board: React.FC<BoardProps> = ({
     useEdgesState<Edge<Record<string, unknown>, string | undefined>>(
       initialEdges
     );
-
   // 사용자 연결 이벤트를 처리하는 onConnect 핸들러
   const onConnect: OnConnect = useCallback(
     (connection) => setEdges((edges) => addEdge(connection, edges)),
     [setEdges]
   );
+  //노드 추가 함수
   const handleAddNode = useCallback(
     (nodeLabel: string) => {
       const newNodes = addNode(nodeLabel, nodes);
@@ -48,7 +48,7 @@ const Board: React.FC<BoardProps> = ({
     },
     [nodes, setNodes]
   );
-
+  //노드 간 연결 해주는 함수
   const handleConnectNode = () => {
     const DynamoDBNode = nodes.find((node) => node.data.label === "DynamoDB");
     const ec2Node = nodes.find((node) => node.data.label === "EC2");
@@ -57,7 +57,15 @@ const Board: React.FC<BoardProps> = ({
       setEdges(newEdges);
     }
   };
-
+  // parsedData 변경 시 노드 자동 추가
+  useEffect(() => {
+    if (parsedData.length > 0) {
+      // parsedData 배열의 모든 요소에 대해 노드 추가
+      parsedData.forEach((service) => {
+        handleAddNode(service); // 각 서비스 이름에 해당하는 노드 추가
+      });
+    }
+  }, [parsedData, handleAddNode]); // parsedData가 변경될 때마다 실행
   return (
     <div
       className="board"
