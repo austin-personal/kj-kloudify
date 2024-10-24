@@ -2,12 +2,9 @@ import React, { useState, useEffect, useRef } from "react";
 import { ask } from "../../services/conversations";
 import "./Chat.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCircleDown,
-  faCloud,
-  faPaperPlane,
-} from "@fortawesome/free-solid-svg-icons";
+import { faCircleDown, faCloud, faPaperPlane, } from "@fortawesome/free-solid-svg-icons";
 import { v4 as uuidv4 } from "uuid"; // UUID 가져오기
+import { useTemplates } from "./TemplateProvider";
 
 interface ChatProps {
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -21,54 +18,11 @@ interface Message {
   sender: "user" | "bot";
   maxLength?: number;
   buttons?: { id: number; label: string }[];
+  checks?: { id: number; label: string }[];
 }
-
-interface Template {
-  name: string;
-  buttons: { id: number; label: string }[];
-}
-
-const templates: Record<number, Template> = {
-  1: {
-    name: "어떤 웹사이트를 만들고 싶으세요? (ex. 카메라를 켜놓고 나의 운동 동작을 파악하는 웹사이트야)",
-    buttons: [],
-  },
-  3: {
-    name: "서버는 어떤 서버를 원하시나요?",
-    buttons: [
-      { id: 6, label: "EC2" },
-      { id: 7, label: "Lambda" },
-      { id: 8, label: "Elastic beanstalk" },
-    ],
-  },
- 4: {
-    name: "서버를 어떻게 설정 할까요? ",
-    buttons: [
-      { id: 6, label: "t2.micro" },
-      { id: 7, label: "c5.large" },
-      { id: 8, label: "r5.large" },
-    ],
-  },
-  5: {
-    name: "DB는 어떤 DB를 원하시나요?",
-    buttons: [
-      { id: 9, label: "DynamoDB" },
-      { id: 10, label: "DocumentDB" },
-      { id: 11, label: "RDS" },
-    ],
-  },
- 6: {
-    name: "DB를 어떻게 설정 할까요? ",
-    buttons: [
-      { id: 6, label: "SSD GP2" },
-      { id: 7, label: "IOPS SSD IO1" },
-      { id: 8, label: "Standard" },
-    ],
-  },
-
-};
 
 const Chat: React.FC<ChatProps> = ({ setIsOpen, projectCID, onParsedData }) => {
+  const templates = useTemplates();
   const [messages, setMessages] = useState<Message[]>([
     {
       id: uuidv4(),
@@ -83,6 +37,7 @@ const Chat: React.FC<ChatProps> = ({ setIsOpen, projectCID, onParsedData }) => {
   const [input, setInput] = useState("");
   const [showScrollButton, setShowScrollButton] = useState(false);
   const scrollRef = useRef<HTMLDivElement | null>(null);
+  const [selectedChecks, setSelectedChecks] = useState<{ [key: string]: string[] }>({});
 
   // 메시지 추가 후 자동으로 스크롤을 아래로 이동시키는 함수
   const scrollToBottom = () => {
@@ -122,6 +77,32 @@ const Chat: React.FC<ChatProps> = ({ setIsOpen, projectCID, onParsedData }) => {
     }
   }, [scrollRef.current]); // scrollRef.current가 변경될 때만 실행
 
+  // 체크박스 클릭 핸들러
+  const handleCheckChange = (messageId: string, label: string) => {
+    setSelectedChecks((prevState) => {
+      const currentChecks = prevState[messageId] || [];
+      if (currentChecks.includes(label)) {
+        return {
+          ...prevState,
+          [messageId]: currentChecks.filter((item) => item !== label),
+        };
+      } else {
+        return {
+          ...prevState,
+          [messageId]: [...currentChecks, label]
+        }
+      }
+    })
+  }
+
+  // 체크박스 제출 핸들러
+  const handleCheckSubmit = (messageId: string) => {
+    const selectedLabels = selectedChecks[messageId] || [];
+    if (selectedLabels.length > 0) {
+      handleButtonClick(messageId, { id: 0, label: selectedLabels.join(", ") });
+    }
+  };
+
   // 응답 메시지를 처리하는 함수
   const processResponseMessage = (responseMessage: string) => {
     if (typeof responseMessage === "string" && responseMessage.includes("**")) {
@@ -129,43 +110,46 @@ const Chat: React.FC<ChatProps> = ({ setIsOpen, projectCID, onParsedData }) => {
         .split("**")
         .map((part) => part.trim());
 
-      // Parse the data after "**" into an array
+      // "**"뒤에 있는 데이터를 배열형태로 받기
       let parsedDataArray: string[] = [];
 
       try {
-        // Try parsing as JSON array
+        // JSON배열로 파싱
         parsedDataArray = JSON.parse(afterAsterisks);
         if (!Array.isArray(parsedDataArray)) {
-          throw new Error("Parsed data is not an array");
+          throw new Error("파싱된 데이터가 배열이 아님");
         }
       } catch (e) {
-        console.error("Failed to parse data after '**' as JSON array:", e);
-        // If not JSON array, parse manually
+        console.error("'**'뒤에있는 데이터를 JSON배열로 파싱하는거 실패 :", e);
+        // 만약 JSON배열이 아니면 매뉴얼대로 파싱
         let dataString = afterAsterisks.replace(/^\[|\]$/g, "");
         parsedDataArray = dataString.split(",").map((item) => item.trim());
       }
 
-      // Send parsed data to parent
+      // 부모에게 파싱된 데이터 보내기
       if (onParsedData) {
         onParsedData(parsedDataArray);
       }
 
-      // Now check if beforeAsterisks matches any template's name
+      // 이제 beforeAsterisks가 템플릿 이름과 매치하는지 찾기
       const matchingTemplate = Object.values(templates).find(
         (template) => template.name === beforeAsterisks
       );
 
+      // 만약 일치한다면
       if (matchingTemplate) {
-        // Display the template
+        // 템플릿을 묘사해라
         const newBotMessage: Message = {
           id: uuidv4(),
           text: matchingTemplate.name,
           sender: "bot",
           buttons: matchingTemplate.buttons,
+          checks: matchingTemplate.checks,
         };
         setMessages((prevMessages) => [...prevMessages, newBotMessage]);
+        // 일치 안한다면
       } else {
-        // Display beforeAsterisks as a normal bot message
+        // 그냥 평범하게 메세지 출력해라
         const botMessage: Message = {
           id: uuidv4(),
           text: beforeAsterisks,
@@ -290,11 +274,7 @@ const Chat: React.FC<ChatProps> = ({ setIsOpen, projectCID, onParsedData }) => {
             {message.sender === "bot" && (
               <FontAwesomeIcon className="bot-icon" icon={faCloud} />
             )}
-            <div
-              className={`message ${
-                message.sender === "user" ? "user-message" : "bot-message"
-              }`}
-            >
+            <div className={`message ${message.sender}-message"`}>
               {message.sender === "bot" ? (
                 <div
                   onClick={() => setIsOpen(true)}
@@ -313,6 +293,19 @@ const Chat: React.FC<ChatProps> = ({ setIsOpen, projectCID, onParsedData }) => {
                 message.text
               )}
 
+              {/* 체크박스가 존재하면 렌더링 */}
+              {
+                message.checks &&
+                message.checks.map((check) => (
+                  <>
+                    <input type="checkbox"
+                      onChange={() => handleCheckChange(message.id, check.label)}
+                    />
+                    {check.label}
+                  </>
+                ))
+              }
+
               {/* 버튼이 존재하면 렌더링 */}
               {message.buttons &&
                 message.buttons.map((button) => (
@@ -324,6 +317,16 @@ const Chat: React.FC<ChatProps> = ({ setIsOpen, projectCID, onParsedData }) => {
                     {button.label}
                   </button>
                 ))}
+
+              {/* 체크박스 제출 버튼 */}
+              {message.checks && (
+                <button
+                  onClick={() => handleCheckSubmit(message.id)}
+                  className="check-submit-button"
+                >
+                  제출
+                </button>
+              )}
             </div>
           </React.Fragment>
         ))}
