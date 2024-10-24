@@ -156,23 +156,26 @@ const NavBar: React.FC<NavbarProps> = ({ onProjectSubmit }) => {
             <div className="modal-content">
               <h2>Create New Project</h2>
               <form onSubmit={handleProjectSubmit}>
-                <label htmlFor="projectName">Project Name:</label>
+                <label htmlFor="projectName">
+                  먼저, 프로젝트 이름을 입력해주세요.
+                </label>
                 <input
+                  className="projectName-input"
                   type="text"
                   id="projectName"
                   name="projectName"
                   required
                 />
                 <div className="modal-actions">
-                  <button type="submit" className="submit-btn">
-                    Create
-                  </button>
                   <button
                     type="button"
                     className="cancel-btn"
                     onClick={handleNewProjectClose}
                   >
                     Cancel
+                  </button>
+                  <button type="submit" className="submit-btn">
+                    Create
                   </button>
                 </div>
               </form>
