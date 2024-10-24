@@ -32,6 +32,8 @@ const Profile: React.FC = () => {
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
   const [modalType, setModalType] = useState<string>(""); // 모달 타입을 구분하는 상태
   const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5; // 한 페이지에 보여줄 항목 수
   const token = localStorage.getItem("token");
 
   useEffect(() => {
@@ -56,6 +58,39 @@ const Profile: React.FC = () => {
 
     fetchData();
   }, [token, navigate]);
+
+  // 페이지에 맞춰서 보여줄 프로젝트 목록 계산
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+
+  const sortedProjects = projects.sort((a, b) => {
+    const dateA = new Date(a.createdDate || 0).getTime(); // createdDate가 없을 경우 1970년 1월 1일로 기본 설정
+    const dateB = new Date(b.createdDate || 0).getTime(); // createdDate가 없을 경우 1970년 1월 1일로 기본 설정
+    return dateB - dateA; // 최신순 정렬 (타임스탬프 기반 비교)
+  });
+
+  const currentProjects = sortedProjects.slice(
+    indexOfFirstItem,
+    indexOfLastItem
+  );
+
+  // 빈 행을 추가해 5개의 행을 유지
+  const emptyRows = itemsPerPage - currentProjects.length; // 남은 빈 행의 개수 계산
+
+  // 총 페이지 수 계산
+  const totalPages = Math.ceil(projects.length / itemsPerPage);
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
 
   if (!userProfile) return <div>Loading...</div>;
 
@@ -82,12 +117,13 @@ const Profile: React.FC = () => {
     if (modalType === "deleteProject" && projectToDelete) {
       // 프로젝트 삭제 로직
       await deleteProject(projectToDelete.PID, token);
+
       console.log(`Deleting project with PID: ${projectToDelete.PID}`);
       setProjects(projects.filter((p) => p.PID !== projectToDelete.PID));
     } else if (modalType === "deleteAWSKey") {
       // AWS Key 삭제 로직
       const response = await deleteSecret(token);
-      console.log(response);
+      alert(response);
     }
 
     setShowDeleteModal(false);
@@ -120,28 +156,92 @@ const Profile: React.FC = () => {
       </div>
       <hr className="userProfile-line-th" />
       {/* 하단 프로젝트 리스트 섹션 */}
-      <div className="project-list">
-        <div className="project-list-name-th">프로젝트 리스트</div>
-        {projects.map((project) => (
-          <div
-            key={project.PID}
-            className="project-item"
-            onClick={() => handleProjectClick(project.PID)} // 클릭 이벤트 핸들러 추가
+      <div className="project-list-container">
+        <table className="project-list-table">
+          <thead>
+            <tr>
+              <th className="project-name">Project Name</th>
+              <th className="status">Status</th>
+              <th className="created-date">Date</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {currentProjects.length > 0 ? (
+              currentProjects.map((project) => (
+                <tr
+                  key={project.PID}
+                  onClick={() => handleProjectClick(project.PID)}
+                >
+                  <td>{project.projectName}</td>
+                  <td className="status">ON🟢</td>
+                  <td>{new Date(project.createdDate).toLocaleDateString()}</td>
+                  <td className="button-cell">
+                    <button
+                      className="deleteButton"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteClick(project);
+                      }}
+                    >
+                      <FontAwesomeIcon
+                        icon={faTrashCan}
+                        size="xl"
+                        className="svg"
+                      />
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={4} style={{ textAlign: "center" }}>
+                  아직 게시물이 없습니다
+                </td>
+              </tr>
+            )}
+            {/* 빈 행을 추가하여 항상 5개의 행이 유지되도록 */}
+            {Array.from({ length: emptyRows }, (_, index) => (
+              <tr key={`empty-${index}`} className="empty-row">
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        <div className="pagination">
+          <button
+            className="prev-btn"
+            onClick={handlePrevPage}
+            disabled={currentPage === 1}
           >
-            <h3>{project.projectName}</h3>
-            <p>{project.PID}</p>
-            <small>{new Date(project.createdDate).toLocaleDateString()}</small>
-            <button
-              className="deleteButton"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleDeleteClick(project);
-              }}
-            >
-              <FontAwesomeIcon icon={faTrashCan} size="lg" className="svg" />
-            </button>
+            Previous
+          </button>
+          <div className="page-numbers">
+            {/* 현재 페이지를 표시 */}
+            {Array.from({ length: totalPages }, (_, i) => (
+              <span
+                key={i + 1}
+                className={`page-number ${
+                  currentPage === i + 1 ? "active" : ""
+                }`}
+                onClick={() => setCurrentPage(i + 1)}
+              >
+                {i + 1}
+              </span>
+            ))}
           </div>
-        ))}
+          <button
+            className="next-btn"
+            onClick={handleNextPage}
+            disabled={currentPage === totalPages}
+          >
+            Next
+          </button>
+        </div>
       </div>
       {/* 삭제 확인 모달 */}
       {showDeleteModal && (
