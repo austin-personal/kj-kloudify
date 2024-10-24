@@ -41,7 +41,7 @@ const templates: Record<number, Template> = {
       { id: 8, label: "Elastic beanstalk" },
     ],
   },
- 4: {
+  4: {
     name: "서버를 어떻게 설정 할까요? ",
     buttons: [
       { id: 6, label: "t2.micro" },
@@ -57,7 +57,7 @@ const templates: Record<number, Template> = {
       { id: 11, label: "RDS" },
     ],
   },
- 6: {
+  6: {
     name: "DB를 어떻게 설정 할까요? ",
     buttons: [
       { id: 6, label: "SSD GP2" },
@@ -65,21 +65,27 @@ const templates: Record<number, Template> = {
       { id: 8, label: "Standard" },
     ],
   },
-
 };
 
 const Chat: React.FC<ChatProps> = ({ setIsOpen, projectCID, onParsedData }) => {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: uuidv4(),
-      text: "어떤것을 만들고 싶나요?",
-      sender: "bot",
-      buttons: [
-        { id: 1, label: "웹사이트" },
-        { id: 2, label: "게임" },
-      ],
-    },
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]); // 초기 messages는 빈 배열
+
+  useEffect(() => {
+    if (projectCID > 0) {
+      // projectCID가 있을 때만 메시지 추가
+      setMessages([
+        {
+          id: uuidv4(),
+          text: "어떤것을 만들고 싶나요?",
+          sender: "bot",
+          buttons: [
+            { id: 1, label: "간단한 website" },
+            { id: 2, label: "간단한 game" },
+          ],
+        },
+      ]);
+    }
+  }, [projectCID]); // isModalOpen 값이 변경될 때마다 실행
   const [input, setInput] = useState("");
   const [showScrollButton, setShowScrollButton] = useState(false);
   const scrollRef = useRef<HTMLDivElement | null>(null);
@@ -387,11 +393,7 @@ const TypingMessage: React.FC<TypingMessageProps> = ({ text, maxLength }) => {
     return () => clearInterval(intervalId);
   }, [typedText, maxLength, text]);
 
-  return (
-    <div>
-      {typingStopped ? <p>{text}</p> : <p>{typedText}|</p>}
-    </div>
-  );
+  return <div>{typingStopped ? <p>{text}</p> : <p>{typedText}|</p>}</div>;
 };
 
 export default Chat;
