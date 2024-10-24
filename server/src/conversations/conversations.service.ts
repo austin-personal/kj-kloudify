@@ -8,7 +8,7 @@ dotenv.config();
 export class ConversationsService {
     private dynamoDB: AWS.DynamoDB.DocumentClient;
 
-    static modelSwitchCounter = 0;
+    static modelSwitchCounter = 1;
 
     constructor() {
         this.dynamoDB = new AWS.DynamoDB.DocumentClient({
@@ -70,12 +70,30 @@ export class ConversationsService {
             case 1:
                 return "당신은 사용자의 요구에 맞는 AWS 서비스 아키텍처를 단계별로 구성하는 안내자 역할을 합니다."
                 + "대화를 주도하며 필요한 경우 추가 질문을 통해 사용자의 요구사항을 명확히 하세요. "
-                + "답변에서 사용자가 특정 aws의 서비스를 단순히 언급하는게 아닌 '확실하게 사용하겠다고 확정 {ex)ec2를 사용할께 같은 경우}' 지은 경우에만 대답을 완료한 후 별도로 추출하기 쉽도록 텍스트 하단에 '**{aws 서비스}' 이런 포맷으로 서비스 종류 하나씩 출력하세요. 대괄호는 필요 없습니다.";
+                + "답변에서 사용자가 특정 aws의 서비스를 단순히 언급하는게 아닌 '확실하게 사용하겠다고 확정 {ex)ec2를 사용할께 같은 경우}' 지은 경우에만 대답을 완료한 후 별도로 추출하기 쉽도록 텍스트 하단에 "
+                + `**[ {
+                    "service": "ec2",
+                    "options": {
+                        "ami": "ami-02c329a4b4aba6a48",
+                        "instance_type": "t2.micro",
+                        "public": true,
+                        "subnet_id": "subnet-0189db2034ce49d30"
+                    }
+                    } ] 이런 포맷으로 서비스 종류 하나씩 출력하세요.` 
+                ;
                 
             case 2:
                 return "아웃풋 텍스트 제일 뒤에 **나와라제발 을 추가해줘";
             case 3:
-                return "3번 케이스의 프롬프트 메시지입니다.";
+                return `{
+                    "service": "ec2",
+                    "options": {
+                        "ami": "ami-02c329a4b4aba6a48",
+                        "instance_type": "t2.micro",
+                        "public": true,
+                        "subnet_id": "subnet-0189db2034ce49d30"
+                    }
+                }`;
             default:
                 return "기본 프롬프트 메시지입니다.";
         }
@@ -149,16 +167,27 @@ export class ConversationsService {
         `;
     
         // 요청 바디 구성
+        // const requestBody = {
+        //     max_tokens: 1000,
+        //     anthropic_version: 'bedrock-2023-05-31',
+        //     messages: [
+        //         {
+        //             role: 'user',
+        //             content: prompt_content,
+        //         },
+        //     ],
+        // };
+
         const requestBody = {
-            max_tokens: 1000,
-            anthropic_version: 'bedrock-2023-05-31',
-            messages: [
-                {
-                    role: 'user',
-                    content: prompt_content,
-                },
-            ],
+            input_text: prompt_content,  // 요청할 프롬프트 내용을 prompt_content로 지정
+            parameters: {
+                max_tokens: 1000,       // 생성할 최대 토큰 수
+                temperature: 0.7,       // 창의성 정도 조정
+                top_p: 0.9,             // 확률 분포 기반 선택 기준
+                stop_sequences: ["\n"]  // 응답을 멈추게 할 시퀀스 설정
+            },
         };
+        
     
         try {
             // Bedrock 모델 호출
@@ -357,6 +386,7 @@ export class ConversationsService {
         const { keywords, updatedText } = result;  // 객체에서 키워드와 업데이트된 텍스트 분리
     
         if (keywords.length > 0) {
+            // ConversationsService.incrementModelCounter(); // 여기서 1증가시켜서 컨텍스트 스위칭 일어남
             await this.saveKeywords(keywords, CID);  // 키워드 저장
         }
     
