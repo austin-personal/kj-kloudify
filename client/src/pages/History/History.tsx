@@ -104,7 +104,7 @@ const History: React.FC = () => {
           <Board
             height="400px"
             borderRadius="20px 20px 20px 20px"
-            parsedData={["aaa","bbb"]}
+            parsedData={[]}
           />
         </div>
       </div>
