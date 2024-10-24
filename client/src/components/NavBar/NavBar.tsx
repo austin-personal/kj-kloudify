@@ -82,6 +82,7 @@ const NavBar: React.FC<NavbarProps> = ({ onProjectSubmit }) => {
   // 모달 열고 닫는 함수
   const handleNewProjectOpen = () => {
     setIsModalOpen(true);
+    onProjectSubmit("", -1); //이전 프로젝트 정보 초기화
     navigate("/home");
   };
 
