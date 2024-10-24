@@ -30,26 +30,42 @@ interface Template {
 
 const templates: Record<number, Template> = {
   1: {
-    name: "서버는 어떤걸로 구성하실건가요?",
-    buttons: [
-      { id: 1, label: "EC2" },
-      { id: 2, label: "ECS" },
-    ],
-  },
-  2: {
-    name: "데이터베이스는 어떤걸로 구성하실건가요?",
-    buttons: [
-      { id: 3, label: "RDS" },
-      { id: 4, label: "DynamoDB" },
-    ],
+    name: "어떤 웹사이트를 만들고 싶으세요? (ex. 카메라를 켜놓고 나의 운동 동작을 파악하는 웹사이트야)",
+    buttons: [],
   },
   3: {
-    name: "템플릿 3",
+    name: "서버는 어떤 서버를 원하시나요?",
     buttons: [
-      { id: 5, label: "옵션 5" },
-      { id: 6, label: "옵션 6" },
+      { id: 6, label: "EC2" },
+      { id: 7, label: "Lambda" },
+      { id: 8, label: "Elastic beanstalk" },
     ],
   },
+ 4: {
+    name: "서버를 어떻게 설정 할까요? ",
+    buttons: [
+      { id: 6, label: "t2.micro" },
+      { id: 7, label: "c5.large" },
+      { id: 8, label: "r5.large" },
+    ],
+  },
+  5: {
+    name: "DB는 어떤 DB를 원하시나요?",
+    buttons: [
+      { id: 9, label: "DynamoDB" },
+      { id: 10, label: "DocumentDB" },
+      { id: 11, label: "RDS" },
+    ],
+  },
+ 6: {
+    name: "DB를 어떻게 설정 할까요? ",
+    buttons: [
+      { id: 6, label: "SSD GP2" },
+      { id: 7, label: "IOPS SSD IO1" },
+      { id: 8, label: "Standard" },
+    ],
+  },
+
 };
 
 const Chat: React.FC<ChatProps> = ({ setIsOpen, projectCID, onParsedData }) => {
@@ -59,15 +75,14 @@ const Chat: React.FC<ChatProps> = ({ setIsOpen, projectCID, onParsedData }) => {
       text: "어떤것을 만들고 싶나요?",
       sender: "bot",
       buttons: [
-        { id: 1, label: "간단한 website" },
-        { id: 2, label: "간단한 game" },
+        { id: 1, label: "웹사이트" },
+        { id: 2, label: "게임" },
       ],
     },
   ]);
   const [input, setInput] = useState("");
   const [showScrollButton, setShowScrollButton] = useState(false);
   const scrollRef = useRef<HTMLDivElement | null>(null);
-  const [templateIndex, setTemplateIndex] = useState(1); // 템플릿 인덱스 상태 추가
 
   // 메시지 추가 후 자동으로 스크롤을 아래로 이동시키는 함수
   const scrollToBottom = () => {
@@ -110,41 +125,54 @@ const Chat: React.FC<ChatProps> = ({ setIsOpen, projectCID, onParsedData }) => {
   // 응답 메시지를 처리하는 함수
   const processResponseMessage = (responseMessage: string) => {
     if (typeof responseMessage === "string" && responseMessage.includes("**")) {
-      const index = responseMessage.indexOf("**");
-      const parsedPart = responseMessage.slice(index + 2).trim();
+      const [beforeAsterisks, afterAsterisks] = responseMessage
+        .split("**")
+        .map((part) => part.trim());
 
-      // "**" 뒤의 데이터를 배열로 파싱
+      // Parse the data after "**" into an array
       let parsedDataArray: string[] = [];
 
       try {
-        // 데이터가 JSON 배열 형식인지 확인하고 파싱
-        parsedDataArray = JSON.parse(parsedPart);
+        // Try parsing as JSON array
+        parsedDataArray = JSON.parse(afterAsterisks);
         if (!Array.isArray(parsedDataArray)) {
           throw new Error("Parsed data is not an array");
         }
       } catch (e) {
         console.error("Failed to parse data after '**' as JSON array:", e);
-        // JSON 배열이 아닌 경우 수동으로 파싱
-        let dataString = parsedPart.replace(/^\[|\]$/g, "");
+        // If not JSON array, parse manually
+        let dataString = afterAsterisks.replace(/^\[|\]$/g, "");
         parsedDataArray = dataString.split(",").map((item) => item.trim());
       }
 
-      // 파싱된 데이터를 부모 컴포넌트로 전달
+      // Send parsed data to parent
       if (onParsedData) {
         onParsedData(parsedDataArray);
       }
 
-      // 템플릿 처리
-      if (templates[templateIndex]) {
-        const template = templates[templateIndex];
+      // Now check if beforeAsterisks matches any template's name
+      const matchingTemplate = Object.values(templates).find(
+        (template) => template.name === beforeAsterisks
+      );
+
+      if (matchingTemplate) {
+        // Display the template
         const newBotMessage: Message = {
           id: uuidv4(),
-          text: template.name,
+          text: matchingTemplate.name,
           sender: "bot",
-          buttons: template.buttons,
+          buttons: matchingTemplate.buttons,
         };
         setMessages((prevMessages) => [...prevMessages, newBotMessage]);
-        setTemplateIndex((prevIndex) => prevIndex + 1);
+      } else {
+        // Display beforeAsterisks as a normal bot message
+        const botMessage: Message = {
+          id: uuidv4(),
+          text: beforeAsterisks,
+          sender: "bot",
+          maxLength: 50,
+        };
+        setMessages((prevMessages) => [...prevMessages, botMessage]);
       }
     } else {
       // 일반적인 응답 처리
@@ -263,8 +291,9 @@ const Chat: React.FC<ChatProps> = ({ setIsOpen, projectCID, onParsedData }) => {
               <FontAwesomeIcon className="bot-icon" icon={faCloud} />
             )}
             <div
-              className={`message ${message.sender === "user" ? "user-message" : "bot-message"
-                }`}
+              className={`message ${
+                message.sender === "user" ? "user-message" : "bot-message"
+              }`}
             >
               {message.sender === "bot" ? (
                 <div
