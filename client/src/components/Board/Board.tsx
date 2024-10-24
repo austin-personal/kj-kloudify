@@ -85,9 +85,9 @@ const Board: React.FC<BoardProps> = ({
         fitView
       >
         <Panel>
-          <button onClick={() => handleAddNode("DynamoDB")}>노드 생성1</button>
+          {/* <button onClick={() => handleAddNode("DynamoDB")}>노드 생성1</button>
           <button onClick={() => handleAddNode("EC2")}>노드 생성2</button>
-          <button onClick={handleConnectNode}>연결 생성</button>
+          <button onClick={handleConnectNode}>연결 생성</button> */}
         </Panel>
         <Background />
         <Controls />
