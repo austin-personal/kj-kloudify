@@ -21,47 +21,8 @@ interface Message {
   checks?: { id: number; label: string }[];
 }
 
-const templates: Record<number, Template> = {
-  1: {
-    name: "어떤 웹사이트를 만들고 싶으세요? (ex. 카메라를 켜놓고 나의 운동 동작을 파악하는 웹사이트야)",
-    buttons: [],
-  },
-  3: {
-    name: "서버는 어떤 서버를 원하시나요?",
-    buttons: [
-      { id: 6, label: "EC2" },
-      { id: 7, label: "Lambda" },
-      { id: 8, label: "Elastic beanstalk" },
-    ],
-  },
- 4: {
-    name: "서버를 어떻게 설정 할까요? ",
-    buttons: [
-      { id: 6, label: "t2.micro" },
-      { id: 7, label: "c5.large" },
-      { id: 8, label: "r5.large" },
-    ],
-  },
-  5: {
-    name: "DB는 어떤 DB를 원하시나요?",
-    buttons: [
-      { id: 9, label: "DynamoDB" },
-      { id: 10, label: "DocumentDB" },
-      { id: 11, label: "RDS" },
-    ],
-  },
- 6: {
-    name: "DB를 어떻게 설정 할까요? ",
-    buttons: [
-      { id: 6, label: "SSD GP2" },
-      { id: 7, label: "IOPS SSD IO1" },
-      { id: 8, label: "Standard" },
-    ],
-  },
-
-};
-
 const Chat: React.FC<ChatProps> = ({ setIsOpen, projectCID, onParsedData }) => {
+  const templates = useTemplates();
   const [messages, setMessages] = useState<Message[]>([
     {
       id: uuidv4(),
