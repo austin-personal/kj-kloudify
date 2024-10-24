@@ -44,4 +44,18 @@ export class SecretsController {
     await this.secretsService.deleteSecret(id);
     return { message: 'Secret deleted successfully' };
   }
+
+  @UseGuards(JwtAuthGuard) // JwtAuthGuard를 바로 사용
+  @Get('check')
+  async checkSecret(@Req() req) {
+    const email = req.user.email; // JWT에서 이메일 추출
+    const userInfo = await this.usersService.findOneByEmail(email);  // 이메일로 사용자 조회
+    const id = userInfo.UID;
+    const secret = await this.secretsService.findOneByUID(id);
+    if (secret) {
+      return { message: 'Secret exists' };
+    } else {
+      return { message: 'Secret does not exist' };
+    }
+  }
 }
