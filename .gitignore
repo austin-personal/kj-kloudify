@@ -4,3 +4,6 @@ server/main.tf
 server/.terraform
 server/.env
 .env
+server/.terraform.lock.hcl
+server/terraform.tfstate
+server/terraform.tfstate.backup

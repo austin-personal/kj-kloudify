@@ -8,3 +8,6 @@ node_modules/
 .terraform
 main.tf
 .env
+.terraform.lock.hcl
+terraform.tfstate
+terraform.tfstate.backup
