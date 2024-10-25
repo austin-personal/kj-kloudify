@@ -1,6 +1,6 @@
-import { Controller, Post, Body, Delete, Req, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, Delete, Req, UseGuards,Get } from '@nestjs/common';
 import { SecretsService } from './secrets.service';
-import { UsersService } from '../users/users.service'; 
+import { UsersService } from '../users/users.service';
 import { JwtAuthGuard } from '../users/jwt-auth.guard';
 
 @Controller('secrets')
@@ -53,7 +53,9 @@ export class SecretsController {
     const id = userInfo.UID;
     
     // UID로 Secret 조회
-    const secret = await this.secretsService.findOneByUID(id);
+    const secret = await this.secretsService.secretCheck(id);
+    console.log("secret check(bool): ", !!secret);
+    
     
     // Secret이 존재하는지 여부를 논리값으로 반환
     return { exists: !!secret };
