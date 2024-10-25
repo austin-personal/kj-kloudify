@@ -61,6 +61,15 @@ const Profile: React.FC = () => {
     fetchData();
   }, [token, navigate]);
 
+  // 페이지가 변경될 때 currentPage를 조정하는 useEffect 추가
+  useEffect(() => {
+    // 현재 페이지가 총 페이지 수보다 클 경우, 총 페이지 수에 맞춰 currentPage 수정
+    const totalPages = Math.ceil(projects.length / itemsPerPage);
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages > 0 ? totalPages : 1);
+    }
+  }, [projects, currentPage, itemsPerPage]);
+
   // 페이지에 맞춰서 보여줄 프로젝트 목록 계산
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
