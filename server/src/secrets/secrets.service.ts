@@ -1,3 +1,4 @@
+import { Return } from './../../node_modules/aws-sdk/clients/cloudsearchdomain.d';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -38,5 +39,12 @@ export class SecretsService {
     }
 
     await this.secretsRepository.remove(secret);
+  }
+
+// 현재 유저의 AWS Credential 유무 확인
+  async secretCheck(userId: number): Promise<boolean> {
+    const secret = await this.secretsRepository.findOne({ where: { UID: userId } });
+
+    return !!secret;
   }
 }
