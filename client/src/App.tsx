@@ -7,6 +7,8 @@ import Profile from "./pages/Profile/Profile";
 import History from "./pages/History/History";
 import Review from "./pages/Review/Review";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
 import Guide from "./pages/Guide/Guide";
 
