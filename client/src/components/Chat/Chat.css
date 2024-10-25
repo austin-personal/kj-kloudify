@@ -176,7 +176,9 @@
 }
 
 .custom-checkbox {
+  width: 280px;
   display: flex;
+  justify-content: start;
   align-items: center;
   cursor: pointer;
   font-size: 22px;
