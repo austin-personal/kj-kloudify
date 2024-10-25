@@ -12,7 +12,7 @@ import { create } from "../../services/projects";
 import { info } from "../../services/users";
 
 interface NavbarProps {
-  onProjectSubmit: (name: string, cid: number) => void;
+  onProjectSubmit: (name: string, cid: string) => void;
 }
 
 const NavBar: React.FC<NavbarProps> = ({ onProjectSubmit }) => {
@@ -82,7 +82,7 @@ const NavBar: React.FC<NavbarProps> = ({ onProjectSubmit }) => {
   // 모달 열고 닫는 함수
   const handleNewProjectOpen = () => {
     setIsModalOpen(true);
-    onProjectSubmit("", -1); //이전 프로젝트 정보 초기화
+    onProjectSubmit("", "-1"); //이전 프로젝트 정보 초기화
     navigate("/home");
   };
 

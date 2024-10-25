@@ -13,10 +13,10 @@ import Guide from "./pages/Guide/Guide";
 const App: React.FC = () => {
   const location = useLocation();
   const [projectName, setProjectName] = useState<string>("");
-  const [projectCID, setProjectCID] = useState<number>(0);
+  const [projectCID, setProjectCID] = useState<string>("0");
 
   // projectName을 업데이트하는 함수
-  const handleProjectNameUpdate = (name: string, cid: number) => {
+  const handleProjectNameUpdate = (name: string, cid: string) => {
     setProjectName(name);
     setProjectCID(cid);
   };

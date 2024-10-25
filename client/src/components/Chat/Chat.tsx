@@ -8,7 +8,7 @@ import { useTemplates } from "./TemplateProvider";
 
 interface ChatProps {
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  projectCID: number;
+  projectCID: string;
   onParsedData?: (data: string[]) => void; // 새로운 prop 추가
 }
 
@@ -206,6 +206,12 @@ const Chat: React.FC<ChatProps> = ({ setIsOpen, projectCID, onParsedData }) => {
       processResponseMessage(responseMessage);
     } catch (error) {
       console.error("메시지 전송 오류:", error);
+
+      // 로딩 메시지 제거
+      setMessages((prevMessages) =>
+        prevMessages.filter((msg) => msg.id !== loadingMessage.id)
+      );
+
       // 오류 메시지 추가 (선택 사항)
       const errorMessage: Message = {
         id: uuidv4(),
