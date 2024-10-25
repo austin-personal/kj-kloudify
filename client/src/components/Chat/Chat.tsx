@@ -32,6 +32,10 @@ const Chat: React.FC<ChatProps> = ({ setIsOpen, projectCID, onParsedData }) => {
         { id: 1, label: "웹사이트" },
         { id: 2, label: "게임" },
       ],
+      checks: [
+        { id: 3, label: "안뇽!" },
+        { id: 4, label: "반가워!" }
+      ]
     },
   ]);
   const [input, setInput] = useState("");
@@ -252,6 +256,12 @@ const Chat: React.FC<ChatProps> = ({ setIsOpen, projectCID, onParsedData }) => {
       processResponseMessage(responseMessage);
     } catch (error) {
       console.error("메시지 전송 오류:", error);
+
+      // 로딩 메시지 제거
+      setMessages((prevMessages) =>
+        prevMessages.filter((msg) => msg.id !== loadingMessage.id)
+      );
+      
       // 오류 메시지 추가 (선택 사항)
       const errorMessage: Message = {
         id: uuidv4(),
@@ -274,7 +284,7 @@ const Chat: React.FC<ChatProps> = ({ setIsOpen, projectCID, onParsedData }) => {
             {message.sender === "bot" && (
               <FontAwesomeIcon className="bot-icon" icon={faCloud} />
             )}
-            <div className={`message ${message.sender}-message"`}>
+            <div className={`message ${message.sender}-message`}>
               {message.sender === "bot" ? (
                 <div
                   onClick={() => setIsOpen(true)}
@@ -298,10 +308,13 @@ const Chat: React.FC<ChatProps> = ({ setIsOpen, projectCID, onParsedData }) => {
                 message.checks &&
                 message.checks.map((check) => (
                   <>
-                    <input type="checkbox"
-                      onChange={() => handleCheckChange(message.id, check.label)}
-                    />
-                    {check.label}
+                    <label className="custom-checkbox" key={check.label}>
+                      <input type="checkbox"
+                        onChange={() => handleCheckChange(message.id, check.label)}
+                      />
+                      <span className="checkbox-mark"></span>
+                      {check.label}
+                    </label>
                   </>
                 ))
               }
@@ -311,7 +324,7 @@ const Chat: React.FC<ChatProps> = ({ setIsOpen, projectCID, onParsedData }) => {
                 message.buttons.map((button) => (
                   <button
                     key={button.id}
-                    className="templete-btn-th"
+                    className="template-btn-th"
                     onClick={() => handleButtonClick(message.id, button)}
                   >
                     {button.label}
@@ -327,6 +340,7 @@ const Chat: React.FC<ChatProps> = ({ setIsOpen, projectCID, onParsedData }) => {
                   제출
                 </button>
               )}
+
             </div>
           </React.Fragment>
         ))}
