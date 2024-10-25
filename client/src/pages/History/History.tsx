@@ -7,7 +7,7 @@ import "./History.css";
 // 프로젝트 타입 정의
 interface Project {
   PID: number;
-  CID: number;
+  CID: string;
   UID: number;
   ARCTID: number;
   projectName: string;
@@ -25,7 +25,6 @@ const History: React.FC = () => {
   const { pid } = useParams<{ pid: string }>();
   const [project, setProject] = useState<Project | null>(null);
   const [isChatting, setIsChatting] = useState(false);
-  const [isPriceSummary, setIsPriceSummary] = useState(false);
   const token = localStorage.getItem("token");
 
   useEffect(() => {
@@ -52,23 +51,6 @@ const History: React.FC = () => {
           Project Name :{" "}
           <span className="project-name-th">{project.projectName}</span>
         </p>
-        <div className="price-summary-frame">
-          <div
-            className={`price-summary-box ${isPriceSummary ? "open" : "close"}`}
-          >
-            {project.services?.map((service) => (
-              <div key={service.id}>
-                {service.name} : {service.price}
-              </div>
-            ))}
-          </div>
-          <button
-            className="price-summary-btn-th"
-            onClick={() => setIsPriceSummary(!isPriceSummary)}
-          >
-            Price Summary
-          </button>
-        </div>
       </div>
 
       <div className="main-content">

@@ -11,11 +11,7 @@ import {
 import { create } from "../../services/projects";
 import { info } from "../../services/users";
 
-interface NavbarProps {
-  onProjectSubmit: (name: string, cid: string) => void;
-}
-
-const NavBar: React.FC<NavbarProps> = ({ onProjectSubmit }) => {
+const NavBar: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태
   const navigate = useNavigate(); // useNavigate 훅 사용
   const location = useLocation();
@@ -82,13 +78,10 @@ const NavBar: React.FC<NavbarProps> = ({ onProjectSubmit }) => {
   // 모달 열고 닫는 함수
   const handleNewProjectOpen = () => {
     setIsModalOpen(true);
-    onProjectSubmit("", "-1"); //이전 프로젝트 정보 초기화
-    navigate("/home");
   };
 
   const handleNewProjectClose = () => {
     setIsModalOpen(false);
-    navigate("/profile");
   };
 
   const handleProjectSubmit = async (
@@ -105,12 +98,10 @@ const NavBar: React.FC<NavbarProps> = ({ onProjectSubmit }) => {
         throw new Error("토큰이 존재하지 않습니다.");
       }
       const cid = await create(projectName, token); // token이 string임을 보장
-      // 부모 컴포넌트로 projectName 전달
-      onProjectSubmit(projectName, cid);
+      navigate(`/home/${cid}`)
     } catch (error) {
       console.log(error);
     }
-
     setIsModalOpen(false); // 제출 후 모달을 닫기
   };
 
