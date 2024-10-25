@@ -3,9 +3,8 @@ import axios from 'axios';
 // 태현 api 주소 확인!!!
 const API_URL = 'http://localhost:3000/conversations';
 
-export const ask= async (msg:string,cid:number) => {
+export const ask= async (msg:string,cid:string) => {
     try {
-     
         const response = await axios.post(`${API_URL}/ask`, {
             message:msg,
             CID:cid

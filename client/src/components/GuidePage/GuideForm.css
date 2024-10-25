@@ -47,7 +47,7 @@ h2 {
   display: flex;
   flex-direction: column;
   border: 1px solid #b1b1b1;
-  background-color: #F2EED1;
+  background-color: #f2eed1;
   border-radius: 20px;
   padding: 20px;
   width: 90%;
@@ -57,10 +57,9 @@ h2 {
 .readonly-input {
   font-size: 22px;
   outline: none;
-  width: 90%;
+  width: 100%;
   height: 100px;
   margin-top: 10px;
-  padding: 10px;
   border-radius: 4px;
   overflow-y: auto;
   resize: none;
@@ -74,22 +73,28 @@ h2 {
   margin-top: 10px;
 }
 
+.color-font-th {
+  font-weight: bold;
+}
+
 .consent-checkbox {
-  width: auto;
+  width: 24px;
+  height: 24px;
   margin-right: 10px;
 }
 
 .consent-label {
-  font-size: 14px;
+  font-size: 20px;
   color: #333;
   white-space: nowrap;
 }
 
 .submit {
+  font-family: "NanumSquareRound", sans-serif;
   margin-top: 20px;
   width: 100px;
   height: 100px;
-  background-color: #FDC36D;
+  background-color: #fdc36d;
   border: none;
   border-radius: 20px;
   width: 130px;

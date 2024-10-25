@@ -7,7 +7,7 @@ import "./Home.css";
 
 interface HomeProps {
   projectName: string;
-  projectCID: number;
+  projectCID: string;
 }
 
 const Home: React.FC<HomeProps> = ({ projectName, projectCID }) => {
@@ -44,7 +44,7 @@ const Home: React.FC<HomeProps> = ({ projectName, projectCID }) => {
       <div className="vertical-line"></div>
       <div className="right-side">
         <h1 className="project-name">Project:{projectName}</h1>
-        <Board parsedData={parsedData} />
+        <Board parsedData={[]} />
         <div className="setting-container">
           <div className="setting-services set-up-complete">2</div>
           <div className="setting-services setting-in-progress">2</div>

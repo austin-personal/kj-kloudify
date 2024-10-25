@@ -12,7 +12,7 @@ import { create } from "../../services/projects";
 import { info } from "../../services/users";
 
 interface NavbarProps {
-  onProjectSubmit: (name: string, cid: number) => void;
+  onProjectSubmit: (name: string, cid: string) => void;
 }
 
 const NavBar: React.FC<NavbarProps> = ({ onProjectSubmit }) => {
@@ -82,6 +82,7 @@ const NavBar: React.FC<NavbarProps> = ({ onProjectSubmit }) => {
   // 모달 열고 닫는 함수
   const handleNewProjectOpen = () => {
     setIsModalOpen(true);
+    onProjectSubmit("", "-1"); //이전 프로젝트 정보 초기화
     navigate("/home");
   };
 
@@ -156,23 +157,26 @@ const NavBar: React.FC<NavbarProps> = ({ onProjectSubmit }) => {
             <div className="modal-content">
               <h2>Create New Project</h2>
               <form onSubmit={handleProjectSubmit}>
-                <label htmlFor="projectName">Project Name:</label>
+                <label htmlFor="projectName">
+                  먼저, 프로젝트 이름을 입력해주세요.
+                </label>
                 <input
+                  className="projectName-input"
                   type="text"
                   id="projectName"
                   name="projectName"
                   required
                 />
                 <div className="modal-actions">
-                  <button type="submit" className="submit-btn">
-                    Create
-                  </button>
                   <button
                     type="button"
                     className="cancel-btn"
                     onClick={handleNewProjectClose}
                   >
                     Cancel
+                  </button>
+                  <button type="submit" className="submit-btn">
+                    Create
                   </button>
                 </div>
               </form>

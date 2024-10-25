@@ -13,7 +13,7 @@
   border: none;
   width: 1000px;
   border-top: 1px solid #cccaba;
-  margin-bottom: 40px;
+  margin-bottom: 20px;
 }
 
 /* 상단 프로필 정보 */
@@ -23,7 +23,7 @@
   justify-content: space-between;
   height: 150px;
   width: 800px;
-  margin-top: 100px;
+  margin-top: 25px;
 }
 .profile-text {
   display: flex;
@@ -42,57 +42,91 @@
 }
 
 /* 하단 프로젝트 리스트 */
-.project-list {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  height: 300px;
+
+.project-list-container {
+  color: #312d26;
+  font-size: 22px;
+  width: 1000px;
 }
 
-.project-list-name-th {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  font-size: 20px;
-  background-color: #e7e3c7;
-  width: 200px;
-  height: 30px;
-  border-radius: 20px;
-  padding: 8px;
+.project-list-table {
+  border-radius: 10px;
+  background-color: rgba(242, 238, 209, 0.45);
+  width: 100%;
+  border-collapse: collapse;
 }
 
-.project-item {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  background-color: #e7e3c7;
-  width: 800px;
-  padding: 20px;
-  border: 1px solid #ddd;
-  border-radius: 20px;
-  transition: transform 0.2s;
+.project-list-table tbody tr {
+  height: 60px; /* 각 행의 고정된 높이 */
+}
+
+.empty-row {
+  cursor: context-menu;
+  height: 60px; /* 빈 행의 고정된 높이 */
+}
+
+.project-list-table th {
+  padding-top: 20px;
+  padding-left: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+  text-align: left;
+}
+
+.project-list-table td {
+  padding-left: 15px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+  text-align: left;
   cursor: pointer;
 }
 
-.project-item:hover {
-  transform: translateY(-2px);
+.project-list-table tbody tr:nth-child(odd) {
+  background-color: #e7e3c7; /* 홀수 행의 배경색 */
 }
 
-.project-item h3 {
-  margin: 0 0 5px;
-  font-size: 1.2rem;
+.project-list-table tbody tr:nth-child(even) {
+  background-color: #f2eed1; /* 짝수 행의 배경색 */
 }
 
-.project-item p {
-  margin: 0 0 10px;
-  font-size: 1rem;
-  color: #444;
+.project-name,
+.status,
+.created-date {
+  width: 20%;
 }
 
-.project-item small {
-  color: #999;
-  font-size: 0.8rem;
+.button-cell {
+  text-align: right; /* 버튼이 오른쪽에 정렬되도록 설정 */
+  width: 1%; /* 셀 크기를 자동으로 확장하지 않도록 설정 */
+}
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.prev-btn,
+.next-btn {
+  padding: 10px;
+  border: none;
+  background-color: #f3f4f6;
+  cursor: pointer;
+}
+
+.page-numbers {
+  display: flex;
+  gap: 5px;
+}
+
+.page-number {
+  padding: 5px 10px;
+  border: 1px solid #e5e7eb;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.page-number.active {
+  background-color: #3b82f6;
+  color: white;
 }
 
 /* From Uiverse.io by vinodjangid07 */
@@ -107,7 +141,7 @@
   color: gray;
 }
 .deleteButton svg {
-  width: 44%;
+  width: 80%;
 }
 .deleteButton:hover {
   background-color: #e37e7e;
@@ -178,11 +212,11 @@
   cursor: pointer;
 }
 
-.AWS-Credential-deleteButton {
-  background-color: #e37e7e;
+.hidden-btn {
+  display: none;
 }
 
-.AWS-Credential-deleteButton {
+.visible-btn {
   padding: 10px;
   font-family: "NanumSquareRound", sans-serif;
   font-weight: bold;
@@ -194,4 +228,44 @@
   color: white;
   transition: background-color 0.3s;
   margin-bottom: 13px;
+}
+
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.prev-btn,
+.next-btn {
+  color: gray;
+  border-radius: 5px;
+  font-size: 20px;
+  padding: 10px;
+  border: none;
+  background-color: #f3f4f6;
+  cursor: pointer;
+}
+
+.prev-btn:disabled,
+.next-btn:disabled {
+  background-color: #ddd;
+  cursor: not-allowed;
+}
+
+.page-numbers {
+  display: flex;
+  gap: 5px;
+}
+
+.page-number {
+  display: flex;
+  align-items: center;
+  border: none;
+  cursor: pointer;
+}
+
+.page-number.active {
+  background-color: #b6d6ed;
+  color: white;
 }

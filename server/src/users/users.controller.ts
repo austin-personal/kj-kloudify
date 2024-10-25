@@ -1,3 +1,4 @@
+import { Email } from './../../node_modules/aws-sdk/clients/finspacedata.d';
 import { Controller, Post, Patch, Body, UseGuards, Req, UnauthorizedException , Get} from '@nestjs/common'; // UseGuards, Req 추가
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -15,7 +16,7 @@ export class UsersController {
   // 회원가입 엔드포인트
   @Post('signUp')
   async signUp(@Body() createUserDto: CreateUserDto) {
-    const user = await this.usersService.findOne(createUserDto.username);
+    const user = await this.usersService.findOne(createUserDto.Email);
     if (user) {
       throw new UnauthorizedException('User already exists');
     }

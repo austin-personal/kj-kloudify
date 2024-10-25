@@ -129,16 +129,33 @@
 .cancel-btn {
   padding: 10px 20px;
   border: none;
-  border-radius: 4px;
+  border-radius: 10px;
   cursor: pointer;
 }
 
 .submit-btn {
-  background-color: #4caf50;
+  background-color: #8ae37e;
   color: white;
 }
 
 .cancel-btn {
-  background-color: #f44336;
+  background-color: #e37e7e;
   color: white;
+}
+
+.projectName-input {
+  padding-left: 20px;
+  box-sizing: border-box;
+  width: 100%;
+  outline: none;
+  display: block;
+  margin: 5px 0;
+  height: 43px;
+  border: none;
+  border-radius: 8px;
+  border-style: solid;
+  border-color: #d6d6d6;
+  border-width: 1px;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  font-size: 22px;
 }
