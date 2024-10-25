@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import Board from "../../components/Board/Board";
+import DonutChart from "../../components/HistoryPage/DonutChart";
 import { projectOneInfo } from "../../services/projects";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCloud } from "@fortawesome/free-solid-svg-icons";
 import "./History.css";
 
 // 프로젝트 타입 정의
@@ -59,7 +62,7 @@ const History: React.FC = () => {
             className="chat-button"
             onClick={() => setIsChatting(!isChatting)}
           >
-            previous chat
+            <FontAwesomeIcon className="bot-icon" icon={faCloud} />
           </button>
           <div className="previous-chat-explanation-th">Previous chat</div>
         </div>
@@ -67,13 +70,14 @@ const History: React.FC = () => {
           <div
             className={`previous-chatting-th ${isChatting ? "open" : "close"}`}
           >
-            <h3>Previous Chat</h3>
+            <p>Previous Chat</p>
             {project.previousChats?.map((chat, index) => (
               <div key={index}>{chat}</div>
             ))}
           </div>
           <div className="service-status-th">
             <h3>Service Status</h3>
+            <DonutChart slices={[25, 35, 40]} />
             {project.services?.map((service) => (
               <div key={service.id} className={`service ${service.status}`}>
                 {service.name}: {service.status}
@@ -82,7 +86,6 @@ const History: React.FC = () => {
           </div>
         </div>
         <div className="architecture-box">
-          <h3>Architecture</h3>
           <Board
             height="400px"
             borderRadius="20px 20px 20px 20px"
