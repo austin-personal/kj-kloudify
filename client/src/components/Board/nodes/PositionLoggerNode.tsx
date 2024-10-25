@@ -58,7 +58,7 @@ export function PositionLoggerNode({
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      {data.label && <div>{data.label}</div>}
+      {/* {data.label && <div>{data.label}</div>} */}
       <Handle type="source" position={Position.Right} id="a" />
       <img src={data.imgUrl} alt="ec2" className="node-img" />
       <Handle type="target" position={Position.Left} id="b" />
