@@ -32,10 +32,6 @@ const Chat: React.FC<ChatProps> = ({ setIsOpen, projectCID, onParsedData }) => {
         { id: 1, label: "웹사이트" },
         { id: 2, label: "게임" },
       ],
-      checks: [
-        { id: 3, label: "안뇽!" },
-        { id: 4, label: "반가워!" }
-      ]
     },
   ]);
   const [input, setInput] = useState("");
@@ -227,10 +223,11 @@ const Chat: React.FC<ChatProps> = ({ setIsOpen, projectCID, onParsedData }) => {
     messageId: string,
     button: { id: number; label: string }
   ) => {
+
     // 해당 메시지에서 버튼 제거
     setMessages((prevMessages) =>
       prevMessages.map((msg) =>
-        msg.id === messageId ? { ...msg, buttons: undefined } : msg
+        msg.id === messageId ? { ...msg, buttons: undefined, checks: undefined } : msg
       )
     );
 
@@ -267,7 +264,7 @@ const Chat: React.FC<ChatProps> = ({ setIsOpen, projectCID, onParsedData }) => {
       setMessages((prevMessages) =>
         prevMessages.filter((msg) => msg.id !== loadingMessage.id)
       );
-      
+
       // 오류 메시지 추가 (선택 사항)
       const errorMessage: Message = {
         id: uuidv4(),
@@ -314,13 +311,15 @@ const Chat: React.FC<ChatProps> = ({ setIsOpen, projectCID, onParsedData }) => {
                 message.checks &&
                 message.checks.map((check) => (
                   <>
-                    <label className="custom-checkbox" key={check.label}>
-                      <input type="checkbox"
-                        onChange={() => handleCheckChange(message.id, check.label)}
-                      />
-                      <span className="checkbox-mark"></span>
-                      {check.label}
-                    </label>
+                    <div className="checkbox-container-th">
+                      <label className="custom-checkbox" key={check.label}>
+                        <input type="checkbox"
+                          onChange={() => handleCheckChange(message.id, check.label)}
+                        />
+                        <span className="checkbox-mark"></span>
+                        {check.label}
+                      </label>
+                    </div >
                   </>
                 ))
               }
@@ -341,7 +340,7 @@ const Chat: React.FC<ChatProps> = ({ setIsOpen, projectCID, onParsedData }) => {
               {message.checks && (
                 <button
                   onClick={() => handleCheckSubmit(message.id)}
-                  className="check-submit-button"
+                  className="template-btn-th"
                 >
                   제출
                 </button>
