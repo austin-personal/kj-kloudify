@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Profile.css";
 import { projectAllInfo, deleteProject } from "../../services/projects";
-import { deleteSecret } from "../../services/secrets";
+import { deleteSecret, checkSecret } from "../../services/secrets";
 import { info } from "../../services/users";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
@@ -33,6 +33,7 @@ const Profile: React.FC = () => {
   const [modalType, setModalType] = useState<string>(""); // 모달 타입을 구분하는 상태
   const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [hasSecret, setHasSecret] = useState(false);
   const itemsPerPage = 5; // 한 페이지에 보여줄 항목 수
   const token = localStorage.getItem("token");
 
@@ -40,10 +41,11 @@ const Profile: React.FC = () => {
     const fetchData = async () => {
       try {
         if (token) {
+          const result = await checkSecret(token);
+          setHasSecret(result);
           // 유저 정보 가져오기
           const userData = await info(token);
           setUserProfile(userData.user);
-
           // 유저의 프로젝트 리스트 가져오기
           const projectData = await projectAllInfo(token);
           setProjects(projectData.data); // 응답 데이터에 따라 수정 필요
@@ -124,6 +126,7 @@ const Profile: React.FC = () => {
       // AWS Key 삭제 로직
       const response = await deleteSecret(token);
       alert(response);
+      setHasSecret(false);
     }
 
     setShowDeleteModal(false);
@@ -144,7 +147,9 @@ const Profile: React.FC = () => {
         </div>
         <div className="profile-button">
           <button
-            className="AWS-Credential-deleteButton"
+            className={`AWS-Credential-deleteButton ${
+              hasSecret ? "visible-btn" : "hidden-btn"
+            }`}
             onClick={(e) => {
               e.stopPropagation();
               handleAWSKeyDeleteClick();

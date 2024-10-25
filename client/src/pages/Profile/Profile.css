@@ -212,11 +212,11 @@
   cursor: pointer;
 }
 
-.AWS-Credential-deleteButton {
-  background-color: #e37e7e;
+.hidden-btn {
+  display: none;
 }
 
-.AWS-Credential-deleteButton {
+.visible-btn {
   padding: 10px;
   font-family: "NanumSquareRound", sans-serif;
   font-weight: bold;

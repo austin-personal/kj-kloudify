@@ -35,3 +35,18 @@ export const deleteSecret = async (token: string) => {
         throw error;
     }
 };
+
+export const checkSecret = async (token: string) => {
+    try {
+        const response = await axios.get(`${API_URL}/check`,  
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`  // JWT 토큰을 헤더에 포함
+                }
+            });
+        return response.data.exists;
+    } catch (error) {
+        console.error('키 확인 실패: ', error);
+        throw error;
+    }
+};
