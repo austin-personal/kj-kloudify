@@ -28,7 +28,7 @@ const Chat: React.FC<ChatProps> = ({ setIsOpen, projectCID, onParsedData }) => {
       id: uuidv4(),
       text: "어떤것을 만들고 싶나요?",
       sender: "bot",
-      buttons: [
+      checks: [
         { id: 1, label: "웹사이트" },
         { id: 2, label: "게임" },
       ],
@@ -99,7 +99,7 @@ const Chat: React.FC<ChatProps> = ({ setIsOpen, projectCID, onParsedData }) => {
   const handleCheckSubmit = (messageId: string) => {
     const selectedLabels = selectedChecks[messageId] || [];
     if (selectedLabels.length > 0) {
-      handleButtonClick(messageId, { id: 0, label: selectedLabels.join(", ") });
+      handleButtonClick(messageId, { id: 0, label: `@@##${selectedLabels.join(", ")}` });
     }
   };
 
@@ -141,7 +141,7 @@ const Chat: React.FC<ChatProps> = ({ setIsOpen, projectCID, onParsedData }) => {
         // 템플릿을 묘사해라
         const newBotMessage: Message = {
           id: uuidv4(),
-          text: matchingTemplate.name,
+          text: matchingTemplate.text,
           sender: "bot",
           buttons: matchingTemplate.buttons,
           checks: matchingTemplate.checks,
@@ -232,12 +232,21 @@ const Chat: React.FC<ChatProps> = ({ setIsOpen, projectCID, onParsedData }) => {
     );
 
     // 사용자 메시지 추가
-    const userMessage: Message = {
-      id: uuidv4(),
-      text: button.label,
-      sender: "user",
-    };
-    setMessages((prevMessages) => [...prevMessages, userMessage]);
+    if (button.label.slice(0, 4) === "@@##") {
+      const userMessage: Message = {
+        id: uuidv4(),
+        text: button.label.slice(4),
+        sender: "user",
+      };
+      setMessages((prevMessages) => [...prevMessages, userMessage]);
+    } else {
+      const userMessage: Message = {
+        id: uuidv4(),
+        text: button.label,
+        sender: "user",
+      };
+      setMessages((prevMessages) => [...prevMessages, userMessage]);
+    }
 
     // 로딩 메시지 추가
     const loadingMessage: Message = {
