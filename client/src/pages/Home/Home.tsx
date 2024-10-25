@@ -85,7 +85,7 @@ const Home: React.FC = () => {
       <div className="vertical-line"></div>
       <div className="right-side">
         <div className="project-name-container">
-          <h1 className="project-name">Project:{projectName}</h1>
+          <h1 className="project-name">Project:{project.projectName}</h1>
         </div>
         <div className="setting-container">
           <div className="setting-services set-up-complete">2</div>
