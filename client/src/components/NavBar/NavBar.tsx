@@ -37,6 +37,12 @@ const NavBar: React.FC = () => {
     fetchData();
   }, [token, navigate]);
 
+  const handleLogout = () => {
+    if (token) {
+      localStorage.removeItem("token");
+    }
+  };
+
   const handleBackClick = () => {
     navigate(-1); // 이전 페이지로 이동
   };
@@ -98,7 +104,7 @@ const NavBar: React.FC = () => {
         throw new Error("토큰이 존재하지 않습니다.");
       }
       const cid = await create(projectName, token); // token이 string임을 보장
-      navigate(`/home/${cid}`)
+      navigate(`/home/${cid}`);
     } catch (error) {
       console.log(error);
     }
@@ -133,7 +139,7 @@ const NavBar: React.FC = () => {
           <Link to="/profile" className="profile-button">
             {`안녕하세요,${userProfile}님`}
           </Link>
-          <Link to="/login" className="profile-button">
+          <Link to="/login" className="profile-button" onClick={handleLogout}>
             <FontAwesomeIcon
               icon={faRightFromBracket}
               className="logout-button"
