@@ -21,8 +21,11 @@ const Services: React.FC = () => {
   return (
     <div className="services">
       <div className="price-summary-header">
-        <span className="top-label">서비스</span>
-        <span className="top-label">예상 비용</span>
+        <span className="top-label-service">서비스</span>
+        <span className="top-label-price">예상 비용</span>
+        <button className="top-price-summary-btn" onClick={toggleModal}>
+          Price Summary
+        </button>
       </div>
       <hr />
       <div className="service-container">
@@ -64,9 +67,7 @@ const Services: React.FC = () => {
         </div>
       </div>
       <div className="middle-btn">
-        <button className="price-summary-btn" onClick={toggleModal}>
-          Price Summary
-        </button>
+
         {/* 모달이 열려 있을 때만 모달 컴포넌트 보여주기 */}
         {isModalOpen && (
           <div className="modal-overlay">
@@ -123,6 +124,24 @@ const Services: React.FC = () => {
         <button className="info-btn" onClick={handleGuide}>
           정보 입력하러 가기 →
         </button>
+      </div>
+      <div className="terms-and-conditions">
+        <div className="color-font-th">약관</div>
+        <textarea
+          className="readonly-input"
+          value="대충 AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEYU, AWS_REGION, key_pair Public key에 대한 정보 제공에 동의하냐는 내용의 약관 ..."
+          readOnly
+        />
+        <div className="consent-container">
+          <input
+            type="checkbox"
+            id="consent-checkbox"
+            className="consent-checkbox"
+          />
+          <label htmlFor="consent-checkbox" className="consent-label">
+            개인 정보 수집 및 이용에 동의합니다
+          </label>
+        </div>
       </div>
       <div className="right-btn">
         <button className="deploy-btn" onClick={handleDeploy}>

@@ -1,31 +1,6 @@
-.intro-section {
-    display: flex;
-    flex-direction: column;
-    position: relative;
-}
-
-.intro-content {
-    font-size: 1.2rem;
-    margin-bottom: 20px;
-    text-align: center;
-    transition: all 0.5s ease;
-}
-
-.intro-dots {
-    display: flex;
-    gap: 5px;
-    position: absolute;
-    bottom: 100px;
-}
-
-.dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background-color: #ccc;
-    cursor: pointer;
-}
-
-.dot.active {
-    background-color: #333;
+.contents {
+  margin-top: 40%;
+  text-align: center;
+  height: 15%;
+  background-color: transparent;
 }

@@ -48,11 +48,44 @@ hr {
   width: 100%;
 }
 
-.top-label {
+.top-label-service {
   font-size: 23px;
   width: 50%; /* 부모 너비의 50% */
   margin-left: 5%;
   margin-right: 30%; /* 부모 요소 너비의 5%만큼 마진 */
+}
+
+.top-label-price {
+  font-size: 23px;
+  width: 10%; /* 부모 너비의 50% */
+  margin-left: 5%;
+  margin-right: 14%;
+}
+
+.top-price-summary-btn,
+.deploy-btn {
+  font-family: "NanumSquareRound", sans-serif;
+  font-weight: bold;
+  font-size: 24px;
+  background-color: #f6b755;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  height: 67px;
+
+  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 13%);
+  transition: background-color 0.3s;
+  margin-bottom: 13px;
+}
+
+.top-price-summary-btn {
+  width: 200px;
+}
+
+.top-price-summary-btn:hover,
+.deploy-btn:hover,
+.close-btn:hover {
+  background-color: #f49a29;
 }
 
 .service-label,
@@ -69,34 +102,11 @@ hr {
   border-radius: 10px;
 }
 
-.price-summary-btn,
 .deploy-btn {
-  font-family: "NanumSquareRound", sans-serif;
-  font-weight: bold;
-  font-size: 24px;
-  background-color: #f6b755;
-  border: none;
-  border-radius: 20px;
-  cursor: pointer;
-  height: 67px;
-
-  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 13%);
-  transition: background-color 0.3s;
-  margin-bottom: 13px;
-}
-
-.deploy-btn {
+  margin-top: 10px;
   width: 137px;
 }
-.price-summary-btn {
-  width: 200px;
-}
 
-.price-summary-btn:hover,
-.deploy-btn:hover,
-.close-btn:hover {
-  background-color: #f49a29;
-}
 .right-btn {
   display: flex;
   justify-content: flex-end; /* 자식 요소를 오른쪽으로 정렬 */
