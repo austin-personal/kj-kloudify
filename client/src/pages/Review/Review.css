@@ -67,13 +67,12 @@
 
 .download-options button {
   font-family: "NanumSquareRound", sans-serif;
-  font-weight: bold;
   color: #312d26;
   background: none;
   border: none;
   padding: 10px 20px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 20px;
   width: 100%;
   text-align: left;
 }
