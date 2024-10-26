@@ -2,7 +2,11 @@ import React, { useState, useEffect, useRef } from "react";
 import { ask, open } from "../../services/conversations";
 import "./Chat.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCircleDown, faCloud, faPaperPlane, } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCircleDown,
+  faCloud,
+  faPaperPlane,
+} from "@fortawesome/free-solid-svg-icons";
 import { v4 as uuidv4 } from "uuid"; // UUID 가져오기
 import { useTemplates } from "./TemplateProvider";
 import { text } from "stream/consumers";
@@ -39,15 +43,17 @@ const Chat: React.FC<ChatProps> = ({ setIsOpen, projectCID, onParsedData }) => {
   const [input, setInput] = useState("");
   const [showScrollButton, setShowScrollButton] = useState(false);
   const scrollRef = useRef<HTMLDivElement | null>(null);
-  const [selectedChecks, setSelectedChecks] = useState<{ [key: string]: string[] }>({});
+  const [selectedChecks, setSelectedChecks] = useState<{
+    [key: string]: string[];
+  }>({});
 
   // 대화 로딩
-  useEffect(()=>{
+  useEffect(() => {
     const fetchMessages = async () => {
       try {
-        const token = localStorage.getItem('token') || "";
+        const token = localStorage.getItem("token") || "";
         const initialMessages = await open(projectCID, token);
-        console.log("으악!!", initialMessages)
+        console.log("으악!!", initialMessages);
         if (initialMessages && initialMessages.length > 0) {
           setMessages(
             initialMessages.map((msg: any) => ({
@@ -55,15 +61,15 @@ const Chat: React.FC<ChatProps> = ({ setIsOpen, projectCID, onParsedData }) => {
               text: msg.text,
               sender: msg.sender,
             }))
-          )
+          );
         } else {
-          setMessages([defaultBotMessage])
+          setMessages([defaultBotMessage]);
         }
-      } catch(error) {
-        console.log("대화 로딩 개박살!! : ", error)
-        setMessages([defaultBotMessage])
+      } catch (error) {
+        console.log("대화 로딩 개박살!! : ", error);
+        setMessages([defaultBotMessage]);
       }
-    }
+    };
 
     fetchMessages();
   }, [projectCID]);
@@ -71,7 +77,10 @@ const Chat: React.FC<ChatProps> = ({ setIsOpen, projectCID, onParsedData }) => {
   // 메시지 추가 후 자동으로 스크롤을 아래로 이동시키는 함수
   const scrollToBottom = () => {
     if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+      scrollRef.current.scrollTo({
+        top: scrollRef.current.scrollHeight,
+        behavior: "smooth", // 부드러운 스크롤을 위한 옵션
+      });
     }
   };
 
@@ -118,17 +127,20 @@ const Chat: React.FC<ChatProps> = ({ setIsOpen, projectCID, onParsedData }) => {
       } else {
         return {
           ...prevState,
-          [messageId]: [...currentChecks, label]
-        }
+          [messageId]: [...currentChecks, label],
+        };
       }
-    })
-  }
+    });
+  };
 
   // 체크박스 제출 핸들러
   const handleCheckSubmit = (messageId: string) => {
     const selectedLabels = selectedChecks[messageId] || [];
     if (selectedLabels.length > 0) {
-      handleButtonClick(messageId, { id: 0, label: `@@##${selectedLabels.join(", ")}` });
+      handleButtonClick(messageId, {
+        id: 0,
+        label: `@@##${selectedLabels.join(", ")}`,
+      });
     }
   };
 
@@ -252,11 +264,12 @@ const Chat: React.FC<ChatProps> = ({ setIsOpen, projectCID, onParsedData }) => {
     messageId: string,
     button: { id: number; label: string }
   ) => {
-
     // 해당 메시지에서 버튼 제거
     setMessages((prevMessages) =>
       prevMessages.map((msg) =>
-        msg.id === messageId ? { ...msg, buttons: undefined, checks: undefined } : msg
+        msg.id === messageId
+          ? { ...msg, buttons: undefined, checks: undefined }
+          : msg
       )
     );
 
@@ -345,22 +358,23 @@ const Chat: React.FC<ChatProps> = ({ setIsOpen, projectCID, onParsedData }) => {
               )}
 
               {/* 체크박스가 존재하면 렌더링 */}
-              {
-                message.checks &&
+              {message.checks &&
                 message.checks.map((check) => (
                   <>
                     <div className="checkbox-container-th">
                       <label className="custom-checkbox" key={check.label}>
-                        <input type="checkbox"
-                          onChange={() => handleCheckChange(message.id, check.label)}
+                        <input
+                          type="checkbox"
+                          onChange={() =>
+                            handleCheckChange(message.id, check.label)
+                          }
                         />
                         <span className="checkbox-mark"></span>
                         {check.label}
                       </label>
-                    </div >
+                    </div>
                   </>
-                ))
-              }
+                ))}
 
               {/* 버튼이 존재하면 렌더링 */}
               {message.buttons &&
@@ -383,7 +397,6 @@ const Chat: React.FC<ChatProps> = ({ setIsOpen, projectCID, onParsedData }) => {
                   제출
                 </button>
               )}
-
             </div>
           </React.Fragment>
         ))}
