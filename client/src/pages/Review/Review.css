@@ -29,6 +29,8 @@
 }
 
 .download-button {
+  font-family: "NanumSquareRound", sans-serif;
+  font-weight: bold;
   border-radius: 15px;
   background-color: #8ae37e;
   color: white;
@@ -36,19 +38,37 @@
   padding: 10px 20px;
   cursor: pointer;
   font-size: 24px;
+  z-index: 2;
+  position: relative;
+}
+
+.download-button:hover {
+  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 6%);
 }
 
 .download-options {
+  border-radius: 10px;
   position: absolute;
-  bottom: 100%;
+  bottom: 110%; /* 버튼 뒤에서 위로 펼쳐지도록 설정 */
   left: 0;
   background-color: white;
   border: 1px solid #ddd;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-  z-index: 1;
+  opacity: 0; /* 초기 상태에서 투명 */
+  transform: translateY(40px); /* 아래에서 위로 이동 */
+  transition: opacity 0.3s ease, transform 0.3s ease; /* 트랜지션 설정 */
+  z-index: 1; /* 버튼보다 낮은 z-index 설정 */
+}
+
+.download-container:hover .download-options {
+  opacity: 1; /* 보이도록 설정 */
+  transform: translateY(0); /* 원래 위치로 이동 */
+  pointer-events: auto; /* 보일 때 클릭 가능하도록 설정 */
 }
 
 .download-options button {
+  font-family: "NanumSquareRound", sans-serif;
+  font-weight: bold;
+  color: #312d26;
   background: none;
   border: none;
   padding: 10px 20px;

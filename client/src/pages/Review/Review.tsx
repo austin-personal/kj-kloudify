@@ -42,16 +42,14 @@ function Review() {
               />
               Download
             </button>
-            {showOptions && (
-              <div className="download-options">
-                <button onClick={() => handleDownload("terraform")}>
-                  Terraform Code
-                </button>
-                <button onClick={() => handleDownload("architecture")}>
-                  Architecture
-                </button>
-              </div>
-            )}
+            <div className={`download-options ${showOptions ? "show" : ""}`}>
+              <button onClick={() => handleDownload("terraform")}>
+                Terraform Code
+              </button>
+              <button onClick={() => handleDownload("architecture")}>
+                Architecture
+              </button>
+            </div>
           </div>
         </div>
       </div>
