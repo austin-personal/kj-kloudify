@@ -6,7 +6,7 @@
   border-width: 1px;
   border-color: #a09e8a;
   border-radius: 15px 0px 15px 15px;
-  margin: 0 25px 0 25px;
+  /* margin: 0 25px 0 25px; */
   background-color: white;
   box-shadow: inset 0px 0px 10px 0px rgba(0, 0, 0, 5%);
 }
