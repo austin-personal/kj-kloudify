@@ -24,6 +24,9 @@ export class Projects {
   @Column()
   UID: number;  // Foreign Key (Architecture)
 
+  @Column()
+  isDeployed: boolean; //배포 됬는지 확인: True = 배포됨
+
   @ManyToOne(() => Users, (users) => users.projects)
   user: Users;
 
