@@ -64,7 +64,13 @@ const History: React.FC = () => {
           >
             <FontAwesomeIcon className="bot-icon" icon={faCloud} />
           </button>
-          <div className="previous-chat-explanation-th">Previous chat</div>
+          <div
+            className={`previous-chat-explanation-th  ${
+              isChatting ? "hide" : "visible"
+            }`}
+          >
+            Previous chat
+          </div>
         </div>
         <div className="left-content">
           <div
@@ -87,7 +93,7 @@ const History: React.FC = () => {
         </div>
         <div className="architecture-box">
           <Board
-            height="400px"
+            height="100%"
             borderRadius="20px 20px 20px 20px"
             parsedData={[]}
           />

@@ -35,6 +35,21 @@ const Board: React.FC<BoardProps> = ({
     useEdgesState<Edge<Record<string, unknown>, string | undefined>>(
       initialEdges
     );
+  //테스트용
+  const testData = [
+    {
+      service: "ec2",
+      options: {
+        ami: "ami-02c329a4b4aba6a48",
+        instance_type: "t2.micro",
+        public: true,
+        subnet_id: "subnet-0189db2034ce49d30",
+      },
+    },
+  ];
+
+  const services: any = testData.map((item) => item.service);
+  console.log(services[0]);
   // 사용자 연결 이벤트를 처리하는 onConnect 핸들러
   const onConnect: OnConnect = useCallback(
     (connection) => setEdges((edges) => addEdge(connection, edges)),
@@ -94,8 +109,8 @@ const Board: React.FC<BoardProps> = ({
           <button onClick={handleReplaceNode} style={{ width: "200px" }}>
             노드 변신!
           </button>
-          {/* <button onClick={() => handleAddNode("EC2")}>노드 생성2</button>
-          <button onClick={handleConnectNode}>연결 생성</button> */}
+          <button onClick={() => handleAddNode(services[0])}>노드 생성2</button>
+          <button onClick={handleConnectNode}>연결 생성</button>
         </Panel>
         <Background />
         <Controls />
