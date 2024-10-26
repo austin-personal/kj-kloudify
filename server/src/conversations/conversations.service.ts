@@ -1,12 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import * as AWS from 'aws-sdk';
 import * as dotenv from 'dotenv';
+import { DynamoDBDocumentClient, QueryCommand } from '@aws-sdk/lib-dynamodb';
 
 dotenv.config();
 
 @Injectable()
 export class ConversationsService {
     private dynamoDB: AWS.DynamoDB.DocumentClient;
+    private readonly dynamoDbDocClient: DynamoDBDocumentClient;
 
     static modelSwitchCounter = 1;
 
@@ -99,7 +101,7 @@ export class ConversationsService {
         }
     }
 
-    async askBedrockModel(user_question: string, CID: string): Promise<any> {
+    async askBedrockModel(user_question: string, CID: number): Promise<any> {
         console.log(`CID received in askBedrockModel: ${CID}`);
     
         // 특정 입력에 대한 템플릿 응답 설정
@@ -146,7 +148,7 @@ export class ConversationsService {
         });
     
         // 기존 대화 내역 불러오기
-        const previousConversations = await this.getConversationsByCID(CID);
+        const previousConversations = await this.(CID);
         const conversationHistory = previousConversations
             .map((item) => `User: ${item.userMessage}\nBot: ${item.botResponse}`)
             .join('\n');
@@ -258,7 +260,7 @@ export class ConversationsService {
     }
 
     // DynamoDB에서 특정 CID의 대화 기록을 불러오는 함수
-    async getConversationsByCID(CID: string): Promise<any> {
+    async getConversationsByCID(CID: number): Promise<any> {
         const params = {
             TableName: 'Conversations',
             FilterExpression: 'CID = :cid',
@@ -284,7 +286,7 @@ export class ConversationsService {
 
     
 // CID에 따라 Archboard_keyword 테이블에서 키워드 가져오기
-  async getKeywordsByCID(CID: string): Promise<string[]> {
+  async getKeywordsByCID(CID: number): Promise<string[]> {
     const params = {
       TableName: 'Archboard_keyword',
       KeyConditionExpression: 'CID = :cid',

@@ -21,7 +21,7 @@ export class ConversationsController {
   }
 
   @Post('open')
-  async openConversation(@Body('CID') CID: string): Promise<any> {
+  async openConversation(@Body('CID') CID: number): Promise<any> {
     const chatHistory = await this.conversationsService.getConversationsByCID(CID); // 함수명 일치시킴
     return chatHistory;
   }
