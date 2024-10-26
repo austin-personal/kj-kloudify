@@ -9,7 +9,7 @@ import { text } from "stream/consumers";
 
 interface ChatProps {
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  projectCID: string;
+  projectCID: number;
   onParsedData?: (data: string[]) => void; // 새로운 prop 추가
 }
 

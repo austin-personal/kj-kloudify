@@ -8,7 +8,7 @@ import { projectOneInfo } from "../../services/projects";
 
 interface Project {
   PID: number;
-  CID: string;
+  CID: number;
   UID: number;
   ARCTID: number;
   projectName: string;
