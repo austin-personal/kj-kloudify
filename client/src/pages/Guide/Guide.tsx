@@ -9,11 +9,10 @@ const Guide: React.FC = () => {
   const [keyId, setKeyId] = useState("");
   const [secretKey, setSecretKey] = useState("");
   const [keyPair, setKeyPair] = useState("");
-  const [isConsentChecked, setIsConsentChecked] = useState(false);
   const navigate = useNavigate();
   // 모든 조건을 체크하는 함수
   const isFormValid = () => {
-    return keyId && secretKey && keyPair && isConsentChecked;
+    return keyId && secretKey && keyPair;
   };
 
   // submit 버튼 클릭 시 호출되는 함수
@@ -48,8 +47,6 @@ const Guide: React.FC = () => {
       />
       <div className="vertical-line"></div>
       <GuideForm
-        isConsentChecked={isConsentChecked}
-        setIsConsentChecked={setIsConsentChecked}
         handleSubmit={handleSubmit}
       />
     </div>

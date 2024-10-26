@@ -7,19 +7,13 @@ import Profile from "./pages/Profile/Profile";
 import History from "./pages/History/History";
 import Review from "./pages/Review/Review";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
 import Guide from "./pages/Guide/Guide";
 
 const App: React.FC = () => {
   const location = useLocation();
-  const [projectName, setProjectName] = useState<string>("");
-  const [projectCID, setProjectCID] = useState<string>("0");
-
-  // projectName을 업데이트하는 함수
-  const handleProjectNameUpdate = (name: string, cid: string) => {
-    setProjectName(name);
-    setProjectCID(cid);
-  };
 
   // 주소가 login인지 아닌지
   const showNavBar = location.pathname !== "/";
@@ -27,15 +21,15 @@ const App: React.FC = () => {
   return (
     <div className="app">
       {/* 주소가 login이면 NavBar 꺼져 */}
-      {showNavBar && <NavBar onProjectSubmit={handleProjectNameUpdate} />}
+      {showNavBar && <NavBar />}
       <Routes>
         <Route path="/" element={<Login />} />
 
         <Route
-          path="/home"
+          path="/home/:pid"
           element={
             <ProtectedRoute>
-              <Home projectName={projectName} projectCID={projectCID} />
+              <Home />
             </ProtectedRoute>
           }
         />

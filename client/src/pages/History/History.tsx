@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import Board from "../../components/Board/Board";
+import DonutChart from "../../components/HistoryPage/DonutChart";
 import { projectOneInfo } from "../../services/projects";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCloud } from "@fortawesome/free-solid-svg-icons";
 import "./History.css";
 
 // 프로젝트 타입 정의
 interface Project {
   PID: number;
-  CID: number;
+  CID: string;
   UID: number;
   ARCTID: number;
   projectName: string;
@@ -25,7 +28,6 @@ const History: React.FC = () => {
   const { pid } = useParams<{ pid: string }>();
   const [project, setProject] = useState<Project | null>(null);
   const [isChatting, setIsChatting] = useState(false);
-  const [isPriceSummary, setIsPriceSummary] = useState(false);
   const token = localStorage.getItem("token");
 
   useEffect(() => {
@@ -52,23 +54,6 @@ const History: React.FC = () => {
           Project Name :{" "}
           <span className="project-name-th">{project.projectName}</span>
         </p>
-        <div className="price-summary-frame">
-          <div
-            className={`price-summary-box ${isPriceSummary ? "open" : "close"}`}
-          >
-            {project.services?.map((service) => (
-              <div key={service.id}>
-                {service.name} : {service.price}
-              </div>
-            ))}
-          </div>
-          <button
-            className="price-summary-btn-th"
-            onClick={() => setIsPriceSummary(!isPriceSummary)}
-          >
-            Price Summary
-          </button>
-        </div>
       </div>
 
       <div className="main-content">
@@ -77,7 +62,7 @@ const History: React.FC = () => {
             className="chat-button"
             onClick={() => setIsChatting(!isChatting)}
           >
-            previous chat
+            <FontAwesomeIcon className="bot-icon" icon={faCloud} />
           </button>
           <div className="previous-chat-explanation-th">Previous chat</div>
         </div>
@@ -85,13 +70,14 @@ const History: React.FC = () => {
           <div
             className={`previous-chatting-th ${isChatting ? "open" : "close"}`}
           >
-            <h3>Previous Chat</h3>
+            <p>Previous Chat</p>
             {project.previousChats?.map((chat, index) => (
               <div key={index}>{chat}</div>
             ))}
           </div>
           <div className="service-status-th">
             <h3>Service Status</h3>
+            <DonutChart slices={[25, 35, 40]} />
             {project.services?.map((service) => (
               <div key={service.id} className={`service ${service.status}`}>
                 {service.name}: {service.status}
@@ -100,7 +86,6 @@ const History: React.FC = () => {
           </div>
         </div>
         <div className="architecture-box">
-          <h3>Architecture</h3>
           <Board
             height="400px"
             borderRadius="20px 20px 20px 20px"

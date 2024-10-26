@@ -8,7 +8,7 @@ export class ConversationsController {
   @Post('ask')
   async askModel(
     @Body('message') message: string, 
-    @Body('CID') CID: string // CID 추가
+    @Body('CID') CID: number // CID 추가
   ) {
     const response = await this.conversationsService.askBedrockModel(message, CID); // CID 전달
     return response;

@@ -73,15 +73,8 @@ export class ConversationsService {
                 return "당신은 사용자의 요구에 맞는 AWS 서비스 아키텍처를 단계별로 구성하는 안내자 역할을 합니다."
                 + "대화를 주도하며 필요한 경우 추가 질문을 통해 사용자의 요구사항을 명확히 하세요. "
                 + "답변에서 사용자가 특정 aws의 서비스를 단순히 언급하는게 아닌 '확실하게 사용하겠다고 확정 {ex)ec2를 사용할께 같은 경우}' 지은 경우에만 대답을 완료한 후 별도로 추출하기 쉽도록 텍스트 하단에 "
-                + `**[ {
-                    "service": "ec2",
-                    "options": {
-                        "ami": "ami-02c329a4b4aba6a48",
-                        "instance_type": "t2.micro",
-                        "public": true,
-                        "subnet_id": "subnet-0189db2034ce49d30"
-                    }
-                    } ] 이런 포맷으로 서비스 종류 하나씩 출력하세요.`
+                + `**[ { "service": "ec2", "options": { "ami": "ami-02c329a4b4aba6a48", "instance_type": "t2.micro", "public": true, "subnet_id": "subnet-0189db2034ce49d30" } } ] 
+                이런 포맷으로 서비스 종류 하나씩 출력하세요. 이스케이프 코드 넣지 마 앞에 **을 꼭 넣어줘`
                 ;
                 
             case 2:
@@ -106,9 +99,33 @@ export class ConversationsService {
     
         // 특정 입력에 대한 템플릿 응답 설정
         const templateResponses = {
+            //         인풋 : 아웃풋
+            // level 1
+            '간단한 웹사이트': 'templete1-5',
+            '간단한 게임': '이것은 템플릿 응답입니다. 질문 2에 대한 준비된 답변입니다.',
+            '데이터저장': '이것은 템플릿 응답입니다. 질문 2에 대한 준비된 답변입니다.',
+            '서버 운영': '이것은 템플릿 응답입니다. 질문 2에 대한 준비된 답변입니다.',
+            '개발 환경 제공': '이것은 템플릿 응답입니다. 질문 2에 대한 준비된 답변입니다.',
+            '예상 사용자 수 - X명': '이것은 템플릿 응답입니다. 질문 2에 대한 준비된 답변입니다.',
+            '그외 기타 사항 - XXX': '이것은 템플릿 응답입니다. 질문 2에 대한 준비된 답변입니다.',
+            '퍼블릭 통신 유무': '이것은 템플릿 응답입니다. 질문 2에 대한 준비된 답변입니다.',
 
-            '특정 대답 1': 'templete1-5',
-            '특정 질문 2': '이것은 템플릿 응답입니다. 질문 2에 대한 준비된 답변입니다.',
+            // level 2
+            '서버가 핵심': '이것은 템플릿 응답입니다. 질문 2에 대한 준비된 답변입니다.',
+            '간단한 웹서버': '이것은 템플릿 응답입니다. 질문 2에 대한 준비된 답변입니다.',
+            '데이터 저장 공간이 필요함 - xxx 유형의 데이터가 주로 저장': '이것은 템플릿 응답입니다. 질문 2에 대한 준비된 답변입니다.',
+            '스토리지 필요여부 - xxx': '이것은 템플릿 응답입니다. 질문 2에 대한 준비된 답변입니다.',
+            '네트워크 구성 - xxx': '이것은 템플릿 응답입니다. 질문 2에 대한 준비된 답변입니다.',
+            '그 외 필요한 기능': '이것은 템플릿 응답입니다. 질문 2에 대한 준비된 답변입니다.',
+
+            // level 3
+            '1': '이것은 템플릿 응답입니다. 질문 2에 대한 준비된 답변입니다.',
+            '2': '이것은 템플릿 응답입니다. 질문 2에 대한 준비된 답변입니다.',
+            '3': '이것은 템플릿 응답입니다. 질문 2에 대한 준비된 답변입니다.',
+            '4': '이것은 템플릿 응답입니다. 질문 2에 대한 준비된 답변입니다.',
+            '5': '이것은 템플릿 응답입니다. 질문 2에 대한 준비된 답변입니다.',
+            
+
 
         };
     
@@ -232,7 +249,7 @@ export class ConversationsService {
     
 
     // 대화 기록을 DynamoDB에 저장하는 함수
-    async saveConversation(CID: string, userMessage: string, botResponse: string): Promise<void> {
+    async saveConversation(CID: number, userMessage: string, botResponse: string): Promise<void> {
         const lastID = await this.getLastID(); // 마지막 ID 조회
         console.log(lastID);
         const newID = lastID + 1; // 마지막 ID에 1을 더해 새로운 ID 생성
@@ -382,7 +399,7 @@ export class ConversationsService {
     }
 
     // 기존 키워드와 새로 추출한 키워드를 모두 누적 저장하는 함수
-    async saveKeywords(keywords: string[], CID: string): Promise<void> {
+    async saveKeywords(keywords: string[], CID: number): Promise<void> {
         // 기존 키워드를 먼저 불러오기
         let existingKeywords = await this.fetchExistingKeywords(CID);
         
@@ -406,7 +423,7 @@ export class ConversationsService {
         }
     }
 
-    async processTextAndAddKeywords(outputText: string, inputText: string, CID: string): Promise<string> {
+    async processTextAndAddKeywords(outputText: string, inputText: string, CID: number): Promise<string> {
         // 키워드 추출 및 텍스트 업데이트
         const result = this.extractKeywords(outputText);
         const { keywords, updatedText } = result;  // 객체에서 키워드와 업데이트된 텍스트 분리
@@ -428,7 +445,7 @@ export class ConversationsService {
         return finalText;
     }
     
-    async fetchKeywordsByCID(CID: string): Promise<string[]> {
+    async fetchKeywordsByCID(CID: number): Promise<string[]> {
         const params = {
             TableName: 'Archboard_keyword',  // 원하는 테이블 이름
             KeyConditionExpression: 'CID = :cid',  // CID에 대해 쿼리
@@ -444,7 +461,7 @@ export class ConversationsService {
     }
     
     // CID로 기존에 저장된 키워드를 조회하는 함수
-    async fetchExistingKeywords(CID: string): Promise<string | null> {
+    async fetchExistingKeywords(CID: number): Promise<string | null> {
         const params = {
             TableName: 'Archboard_keyword',
             Key: {

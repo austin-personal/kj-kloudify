@@ -176,10 +176,12 @@
 }
 
 .custom-checkbox {
+  width: 280px;
   display: flex;
+  justify-content: start;
   align-items: center;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 22px;
   margin-bottom: 8px;
   position: relative;
 }

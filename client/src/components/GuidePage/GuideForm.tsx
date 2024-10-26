@@ -1,15 +1,17 @@
 import React from "react";
 import "./GuideForm.css";
+import img1 from "../../img/1.png"
+import img2 from "../../img/2.png"
+import img3 from "../../img/3.png"
+import img4 from "../../img/4.png"
+import img5 from "../../img/5.png"
+import img6 from "../../img/6.png"
 
 interface GuideFormProps {
-  isConsentChecked: boolean;
-  setIsConsentChecked: React.Dispatch<React.SetStateAction<boolean>>;
   handleSubmit: () => void;
 }
 
 const GuideForm: React.FC<GuideFormProps> = ({
-  isConsentChecked,
-  setIsConsentChecked,
   handleSubmit,
 }) => {
   return (
@@ -17,32 +19,25 @@ const GuideForm: React.FC<GuideFormProps> = ({
       <div className="instruction">
         <h2>Guide</h2>
         <p className="guide-line">
-          대충 가이드 내용이 엄청나게 무지하게 많이많이 이러쿵저러쿵 숄라숄라
-          김수한무거북이와두루미삼천갑자동방삭치치카포사리사리센타워리워리세브리깡무두셀라구름이허리케인에담벼락담벼락에서생원서생원에고양이고양이엔바둑이바둑이는돌돌이
-          아리랑 아리랑 아라리요 아리랑 고개를 넘어간다 날 버리고 가시는 님은
-          십리도 못가서 발병난다
+          <h4>aws_access_key_id와 aws_secret_access_key 생성하기</h4>
+          1. AWS Management Console에 로그인합니다.
+          <img src={img1} />
+          <br />
+          2. 상단의 검색창에 "IAM"을 입력하고 IAM 서비스를 선택합니다.
+          <img src={img2} />
+          <br />
+          3. 왼쪽 메뉴에서 Users를 선택한 후, 사용자 목록에서 키를 발급받을 사용자를 선택하거나 새 사용자를 생성합니다.
+          <img src={img3} />
+          <br />
+          4, 사용자를 선택한 후 Security credentials 탭으로 이동합니다.
+          <img src={img4} />
+          <br />
+          5. Create access key 버튼을 클릭합니다.
+          <img src={img5} />
+          <br />
+          6. 새로 생성된 aws_access_key_id와 aws_secret_access_key가 표시되며, 이 정보는 파일로 다운로드하거나 복사해두어야 합니다. (이후에 다시 볼 수 없으니 꼭 저장해두세요!)
+          <img src={img6} />
         </p>
-      </div>
-      <hr className="keyForm-line" />
-      <div className="terms-and-conditions">
-        <div className="color-font-th">약관</div>
-        <textarea
-          className="readonly-input"
-          value="대충 AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEYU, AWS_REGION, key_pair Public key에 대한 정보 제공에 동의하냐는 내용의 약관 ..."
-          readOnly
-        />
-        <div className="consent-container">
-          <input
-            type="checkbox"
-            id="consent-checkbox"
-            className="consent-checkbox"
-            checked={isConsentChecked}
-            onChange={(e) => setIsConsentChecked(e.target.checked)}
-          />
-          <label htmlFor="consent-checkbox" className="consent-label">
-            개인 정보 수집 및 이용에 동의합니다
-          </label>
-        </div>
       </div>
       <button className="submit" onClick={handleSubmit}>
         Submit

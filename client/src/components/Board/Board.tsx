@@ -15,7 +15,7 @@ import "@xyflow/react/dist/style.css";
 
 import "./Board.css";
 
-import { initialNodes, nodeTypes, addNode } from "./nodes";
+import { initialNodes, nodeTypes, addNode, replaceNode } from "./nodes";
 import { initialEdges, edgeTypes, addConnectEdge } from "./edges";
 
 // Props 타입 정의
@@ -66,6 +66,12 @@ const Board: React.FC<BoardProps> = ({
       });
     }
   }, [parsedData, handleAddNode]); // parsedData가 변경될 때마다 실행
+
+  const handleReplaceNode = () => {
+    const newNodes = replaceNode("EC2", "1", nodes);
+    setNodes(newNodes);
+  };
+
   return (
     <div
       className="board"
@@ -85,8 +91,10 @@ const Board: React.FC<BoardProps> = ({
         fitView
       >
         <Panel>
-          {/* <button onClick={() => handleAddNode("DynamoDB")}>노드 생성1</button>
-          <button onClick={() => handleAddNode("EC2")}>노드 생성2</button>
+          <button onClick={handleReplaceNode} style={{ width: "200px" }}>
+            노드 변신!
+          </button>
+          {/* <button onClick={() => handleAddNode("EC2")}>노드 생성2</button>
           <button onClick={handleConnectNode}>연결 생성</button> */}
         </Panel>
         <Background />

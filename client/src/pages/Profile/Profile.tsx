@@ -18,7 +18,7 @@ interface UserProfile {
 // 프로젝트 타입 정의
 interface Project {
   PID: number;
-  CID: number;
+  CID: string;
   UID: number;
   ARCTID: number;
   projectName: string;
