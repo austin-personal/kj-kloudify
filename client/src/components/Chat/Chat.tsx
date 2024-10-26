@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
-import { ask } from "../../services/conversations";
+import { ask, open } from "../../services/conversations";
 import "./Chat.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleDown, faCloud, faPaperPlane, } from "@fortawesome/free-solid-svg-icons";
 import { v4 as uuidv4 } from "uuid"; // UUID 가져오기
 import { useTemplates } from "./TemplateProvider";
+import { text } from "stream/consumers";
 
 interface ChatProps {
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -23,21 +24,49 @@ interface Message {
 
 const Chat: React.FC<ChatProps> = ({ setIsOpen, projectCID, onParsedData }) => {
   const templates = useTemplates();
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: uuidv4(),
-      text: "어떤것을 만들고 싶나요?",
-      sender: "bot",
-      checks: [
-        { id: 1, label: "웹사이트" },
-        { id: 2, label: "게임" },
-      ],
-    },
-  ]);
+
+  const defaultBotMessage: Message = {
+    id: uuidv4(),
+    text: "어떤것을 만들고 싶나요?",
+    sender: "bot",
+    checks: [
+      { id: 1, label: "웹사이트" },
+      { id: 2, label: "게임" },
+    ],
+  };
+
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [showScrollButton, setShowScrollButton] = useState(false);
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const [selectedChecks, setSelectedChecks] = useState<{ [key: string]: string[] }>({});
+
+  // 대화 로딩
+  useEffect(()=>{
+    const fetchMessages = async () => {
+      try {
+        const token = localStorage.getItem('token') || "";
+        const initialMessages = await open(projectCID, token);
+        console.log("으악!!", initialMessages.data)
+        if (initialMessages) {
+          // setMessages(
+          //   initialMessages.map((msg: any) => ({
+          //     id: uuidv4(),
+          //     text: msg.text,
+          //     sender: msg.sender,
+          //   }))
+          // )
+        } else {
+          setMessages([defaultBotMessage])
+        }
+      } catch(error) {
+        console.log("대화 로딩 개박살!! : ", error)
+        setMessages([defaultBotMessage])
+      }
+    }
+
+    fetchMessages();
+  }, [projectCID]);
 
   // 메시지 추가 후 자동으로 스크롤을 아래로 이동시키는 함수
   const scrollToBottom = () => {
