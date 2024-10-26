@@ -92,7 +92,7 @@ export class ConversationsService {
         }
     }
 
-    async askBedrockModel(user_question: string, CID: string): Promise<any> {
+    async askBedrockModel(user_question: string, CID: number): Promise<any> {
         console.log(`CID received in askBedrockModel: ${CID}`);
     
         // 특정 입력에 대한 템플릿 응답 설정
@@ -118,10 +118,10 @@ export class ConversationsService {
 
             // level 3
             '1': '이것은 템플릿 응답입니다. 질문 2에 대한 준비된 답변입니다.',
-            '1': '이것은 템플릿 응답입니다. 질문 2에 대한 준비된 답변입니다.',
-            '1': '이것은 템플릿 응답입니다. 질문 2에 대한 준비된 답변입니다.',
-            '1': '이것은 템플릿 응답입니다. 질문 2에 대한 준비된 답변입니다.',
-            '1': '이것은 템플릿 응답입니다. 질문 2에 대한 준비된 답변입니다.',
+            '2': '이것은 템플릿 응답입니다. 질문 2에 대한 준비된 답변입니다.',
+            '3': '이것은 템플릿 응답입니다. 질문 2에 대한 준비된 답변입니다.',
+            '4': '이것은 템플릿 응답입니다. 질문 2에 대한 준비된 답변입니다.',
+            '5': '이것은 템플릿 응답입니다. 질문 2에 대한 준비된 답변입니다.',
             
 
 
@@ -247,7 +247,7 @@ export class ConversationsService {
     
 
     // 대화 기록을 DynamoDB에 저장하는 함수
-    async saveConversation(CID: string, userMessage: string, botResponse: string): Promise<void> {
+    async saveConversation(CID: number, userMessage: string, botResponse: string): Promise<void> {
         const lastID = await this.getLastID(); // 마지막 ID 조회
         console.log(lastID);
         const newID = lastID + 1; // 마지막 ID에 1을 더해 새로운 ID 생성
@@ -275,7 +275,7 @@ export class ConversationsService {
     }
 
     // DynamoDB에서 특정 CID의 대화 기록을 불러오는 함수
-    async getConversationsByCID(CID: string): Promise<any> {
+    async getConversationsByCID(CID: number): Promise<any> {
         const params = {
             TableName: 'Conversations',
             FilterExpression: 'CID = :cid',
@@ -376,7 +376,7 @@ export class ConversationsService {
     }
 
     // 기존 키워드와 새로 추출한 키워드를 모두 누적 저장하는 함수
-    async saveKeywords(keywords: string[], CID: string): Promise<void> {
+    async saveKeywords(keywords: string[], CID: number): Promise<void> {
         // 기존 키워드를 먼저 불러오기
         let existingKeywords = await this.fetchExistingKeywords(CID);
         
@@ -400,7 +400,7 @@ export class ConversationsService {
         }
     }
 
-    async processTextAndAddKeywords(outputText: string, inputText: string, CID: string): Promise<string> {
+    async processTextAndAddKeywords(outputText: string, inputText: string, CID: number): Promise<string> {
         // 키워드 추출 및 텍스트 업데이트
         const result = this.extractKeywords(outputText);
         const { keywords, updatedText } = result;  // 객체에서 키워드와 업데이트된 텍스트 분리
@@ -422,7 +422,7 @@ export class ConversationsService {
         return finalText;
     }
     
-    async fetchKeywordsByCID(CID: string): Promise<string[]> {
+    async fetchKeywordsByCID(CID: number): Promise<string[]> {
         const params = {
             TableName: 'Archboard_keyword',  // 원하는 테이블 이름
             KeyConditionExpression: 'CID = :cid',  // CID에 대해 쿼리
@@ -438,7 +438,7 @@ export class ConversationsService {
     }
     
     // CID로 기존에 저장된 키워드를 조회하는 함수
-    async fetchExistingKeywords(CID: string): Promise<string | null> {
+    async fetchExistingKeywords(CID: number): Promise<string | null> {
         const params = {
             TableName: 'Archboard_keyword',
             Key: {
