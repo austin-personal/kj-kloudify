@@ -147,4 +147,25 @@ export class ConversationsService {
             throw new Error('대화 기록 불러오기 실패');
         }
     }
+
+    
+// CID에 따라 Archboard_keyword 테이블에서 키워드 가져오기
+  async getKeywordsByCID(CID: string): Promise<string[]> {
+    const params = {
+      TableName: 'Archboard_keyword',
+      KeyConditionExpression: 'CID = :cid',
+      ExpressionAttributeValues: {
+        ':cid': CID,
+      },
+    };
+
+    try {
+      const result = await this.dynamoDbDocClient.send(new QueryCommand(params));
+      const keywords = result.Items?.map(item => item.keyword) ?? []; // 키워드 필드 추출
+      return keywords;
+    } catch (error) {
+      console.error(`Failed to fetch keywords for CID ${CID}:`, error);
+      throw new Error('Error retrieving keywords');
+    }
+  }
 }

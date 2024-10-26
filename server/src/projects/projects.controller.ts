@@ -33,15 +33,26 @@ export class ProjectsController {
 
 
 
-// 모든 프로젝트 가져오기
+// 모든 배포된 프로젝트 가져오기
   @UseGuards(JwtAuthGuard)
-  @Get()
-  async findAll(@CurrentUser() user: any): Promise<Projects[]> {
+  @Get('deployed')
+  async findAllDeployed(@CurrentUser() user: any): Promise<Projects[]> {
     const email = user.email;
     const foundUser = await this.usersService.findOneByEmail(email);
     const userId = foundUser.UID; 
-    console.log("projects-findall: ", userId);
-    return this.projectsService.findAllByUserId(userId); // UID로 프로젝트 검색
+    console.log("projects-findAllDeployed: ", userId);
+    return this.projectsService.findDeployedByUserId(userId); // UID로 프로젝트 검색
+  }
+
+  // 모든 배포되지 않은 프로젝트 가져오기
+  @UseGuards(JwtAuthGuard)
+  @Get('resume')
+  async findAllResume(@CurrentUser() user: any): Promise<Projects[]> {
+    const email = user.email;
+    const foundUser = await this.usersService.findOneByEmail(email);
+    const userId = foundUser.UID; 
+    console.log("projects-findAllResume: ", userId);
+    return this.projectsService.findResumeByUserId(userId); // UID로 프로젝트 검색
   }
 
 //특정 프로젝트 가져오기
@@ -67,4 +78,28 @@ export class ProjectsController {
     
     return this.projectsService.remove(PID, userId); // 서비스로 전달
   }
+
+ // 특정 프로젝트 이어서 시작하기
+ @UseGuards(JwtAuthGuard)
+ @Get(':PID/resume')
+ async resumeProject(
+   @CurrentUser() user: any,
+   @Param('PID') PID: number
+ ): Promise<{ projectName: string; chattings: any[]; archBoardKeywords: any[] }> {
+   // 프로젝트 찾기
+   const project = await this.projectsService.findOneByPID(PID);
+   if (!project || project.isDeployed) {
+     throw new NotFoundException('Project not found or already deployed');
+   }
+
+   // 프로젝트 이름
+   const projectName = project.projectName;
+
+   // 채팅 기록 및 아키텍처 보드 키워드
+   const chattings = await this.conversationsService.getConversationsByCID(project.CID);  // 간략한 채팅 기록 반환
+   const archBoardKeywords = await this.conversationsService.getKeywordsByCID(project.CID);  // 아키텍처 보드의 주요 키워드
+
+   return { projectName, chattings, archBoardKeywords };
+ }
+
 }
