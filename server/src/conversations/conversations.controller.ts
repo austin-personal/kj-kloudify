@@ -8,7 +8,7 @@ export class ConversationsController {
   @Post('ask')
   async askModel(
     @Body('message') message: string, 
-    @Body('CID') CID: string // CID 추가
+    @Body('CID') CID: number // CID 추가
   ) {
     const response = await this.conversationsService.askBedrockModel(message, CID); // CID 전달
     return response;
@@ -21,7 +21,7 @@ export class ConversationsController {
   }
 
   @Post('open')
-  async openConversation(@Body('CID') CID: string): Promise<any> {
+  async openConversation(@Body('CID') CID: number): Promise<any> {
     const chatHistory = await this.conversationsService.getConversationsByCID(CID); // 함수명 일치시킴
     return chatHistory;
   }
