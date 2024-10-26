@@ -26,70 +26,91 @@ interface Message {
   checks?: { id: number; label: string }[];
 }
 
+const defaultBotMessages: Message[] = [
+  {
+    id: uuidv4(),
+    text: 'Kloudify 챗봇과 원활하게 소통하기 위해, 아래와 같은 방식으로 질문하고 정보를 제공해주세요.',
+    sender: "bot",
+  },
+  {
+    id: uuidv4(),
+    text: '필요한 목적을 명확히 작성하기 예시: "개인 프로젝트에 필요한 웹 애플리케이션을 위해 서버와 데이터베이스가 필요해요."',
+    sender: "bot",
+  },
+  {
+    id: uuidv4(),
+    text: '간단하고 구체적으로 설명하기 예시: "트래픽이 많은 웹사이트가 아닌, 일반적인 블로그 서비스 정도의 서버 성능이 필요해요."',
+    sender: "bot",
+  },
+  {
+    id: uuidv4(),
+    text: '자신의 클라우드 경험 레벨을 알려주기 예시: "클라우드는 처음이라 기본적인 설정부터 배우고 싶어요."',
+    sender: "bot",
+  },
+  {
+    id: uuidv4(),
+    text: '현재까지 구상한 구조를 공유하기(혹은 필요한 구성 요소만 열거해도 좋아요) 예시: "데이터베이스와 백엔드 서버만 있으면 됩니다."',
+    sender: "bot",
+  },
+  {
+    id: uuidv4(),
+    text: '챗봇 팁: 각 질문에 대한 답변을 바탕으로 클라우드 아키텍처가 단계별로 설계됩니다. 필요에 따라 질문에 추가 정보를 더하거나, 불필요한 부분을 생략해도 좋습니다.',
+    sender: "bot",
+  },
+];
+
 const Chat: React.FC<ChatProps> = ({ setIsOpen, projectCID, onParsedData }) => {
   const templates = useTemplates();
-
-  const defaultBotMessage: Message = {
-    id: uuidv4(),
-    text: "어떤것을 만들고 싶나요?",
-    sender: "bot",
-    checks: [
-      { id: 1, label: "웹사이트" },
-      { id: 2, label: "게임" },
-    ],
-  };
 
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [showScrollButton, setShowScrollButton] = useState(false);
   const scrollRef = useRef<HTMLDivElement | null>(null);
-  const [selectedChecks, setSelectedChecks] = useState<{
-    [key: string]: string[];
-  }>({});
+  const [selectedChecks, setSelectedChecks] = useState<{ [key: string]: string[]; }>({});
 
   // 대화 로딩
-useEffect(() => {
-  const fetchMessages = async () => {
-    try {
-      const token = localStorage.getItem("token") || "";
-      const initialMessages = await open(projectCID, token);
-      if (initialMessages && initialMessages.length > 0) {
-        const formattedMessages: Message[] = initialMessages.flatMap((msg: any) => {
-          // userMessage에서 @@## 이후의 부분만 가져오기
-          const parsedUserMessage = msg.userMessage.startsWith("@@##")
-            ? msg.userMessage.slice(4).trim()
-            : msg.userMessage;
+  useEffect(() => {
+    const fetchMessages = async () => {
+      try {
+        const token = localStorage.getItem("token") || "";
+        const initialMessages = await open(projectCID, token);
+        if (initialMessages && initialMessages.length > 0) {
+          const formattedMessages: Message[] = initialMessages.flatMap((msg: any) => {
+            // userMessage에서 @@## 이후의 부분만 가져오기
+            const parsedUserMessage = msg.userMessage.startsWith("@@##")
+              ? msg.userMessage.slice(4).trim()
+              : msg.userMessage;
 
-          // botResponse에서 ** 이전의 부분만 가져오기
-          const parsedBotResponse = msg.botResponse.includes("**")
-            ? msg.botResponse.split("**")[0].trim()
-            : msg.botResponse;
+            // botResponse에서 ** 이전의 부분만 가져오기
+            const parsedBotResponse = msg.botResponse.includes("**")
+              ? msg.botResponse.split("**")[0].trim()
+              : msg.botResponse;
 
-          return [
-            {
-              id: uuidv4(),
-              text: parsedUserMessage,
-              sender: "user",
-            },
-            {
-              id: uuidv4(),
-              text: parsedBotResponse,
-              sender: "bot",
-            },
-          ];
-        });
-        setMessages(formattedMessages);
-      } else {
-        setMessages([defaultBotMessage]);
+            return [
+              {
+                id: uuidv4(),
+                text: parsedUserMessage,
+                sender: "user",
+              },
+              {
+                id: uuidv4(),
+                text: parsedBotResponse,
+                sender: "bot",
+              },
+            ];
+          });
+          setMessages(formattedMessages);
+        } else {
+          setMessages(defaultBotMessages);
+        }
+      } catch (error) {
+        console.log("대화 로딩 오류:", error);
+        setMessages(defaultBotMessages);
       }
-    } catch (error) {
-      console.log("대화 로딩 오류:", error);
-      setMessages([defaultBotMessage]);
-    }
-  };
+    };
 
-  fetchMessages();
-}, [projectCID]);
+    fetchMessages();
+  }, [projectCID]);
 
   // 메시지 추가 후 자동으로 스크롤을 아래로 이동시키는 함수
   const scrollToBottom = () => {
