@@ -176,6 +176,9 @@
 
 .submit-btn,
 .cancel-btn {
+  font-family: "NanumSquareRound", sans-serif;
+  font-weight: 300;
+  font-size: 19px;
   padding: 10px 20px;
   border: none;
   border-radius: 10px;
