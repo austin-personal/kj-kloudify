@@ -79,7 +79,7 @@ export class ConversationsService {
                         "public": true,
                         "subnet_id": "subnet-0189db2034ce49d30"
                     }
-                    } ] 이런 포맷으로 서비스 종류 하나씩 출력하세요.` 
+                    } ] 이런 포맷으로 서비스 종류 하나씩 출력하세요.`
                 ;
                 
             case 2:
@@ -159,7 +159,7 @@ export class ConversationsService {
             대화 내역:
             ${conversationHistory}
     
-            현재 단계: 
+            현재 단계:
             ${customMessage}
     
             새로운 질문: 
@@ -167,26 +167,26 @@ export class ConversationsService {
         `;
     
         // 요청 바디 구성
-        // const requestBody = {
-        //     max_tokens: 1000,
-        //     anthropic_version: 'bedrock-2023-05-31',
-        //     messages: [
-        //         {
-        //             role: 'user',
-        //             content: prompt_content,
-        //         },
-        //     ],
-        // };
-
         const requestBody = {
-            input_text: prompt_content,  // 요청할 프롬프트 내용을 prompt_content로 지정
-            parameters: {
-                max_tokens: 1000,       // 생성할 최대 토큰 수
-                temperature: 0.7,       // 창의성 정도 조정
-                top_p: 0.9,             // 확률 분포 기반 선택 기준
-                stop_sequences: ["\n"]  // 응답을 멈추게 할 시퀀스 설정
-            },
+            max_tokens: 1000,
+            anthropic_version: 'bedrock-2023-05-31',
+            messages: [
+                {
+                    role: 'user',
+                    content: prompt_content,
+                },
+            ],
         };
+
+        // const requestBody = {
+        //     input_text: prompt_content,  // 요청할 프롬프트 내용을 prompt_content로 지정
+        //     parameters: {
+        //         max_tokens: 1000,       // 생성할 최대 토큰 수
+        //         temperature: 0.7,       // 창의성 정도 조정
+        //         top_p: 0.9,             // 확률 분포 기반 선택 기준
+        //         stop_sequences: ["\n"]  // 응답을 멈추게 할 시퀀스 설정
+        //     },
+        // };
         
     
         try {
@@ -204,6 +204,9 @@ export class ConversationsService {
     
             // 응답에서 'content' 필드의 'text' 값을 추출하여 botResponse로 사용
             const botResponse = parsedResponse.content?.[0]?.text;
+
+
+            
     
             // 키워드 처리 및 저장 (botResponse, user_question을 사용)
             const updatedResponse = await this.processTextAndAddKeywords(botResponse, user_question, CID);
@@ -429,5 +432,20 @@ export class ConversationsService {
         const result = await this.dynamoDB.get(params).promise();
         return result.Item ? result.Item.keyword : null;  // 기존 키워드 반환, 없으면 null
     }
+
+    // async getConversationsByCID(CID: string): Promise<any> {
+    //     const params = {
+    //       TableName: 'Conversations',
+    //       FilterExpression: 'CID = :cid',
+    //       ExpressionAttributeValues: {
+    //         ':cid': CID,
+    //       }
+    //     };
+    
+    //     const result = await this.dynamoDB.scan(params).promise(); // dynamoDB로 일치시킴
+    //     return result.Items;
+    //   }
+
+
 
 }

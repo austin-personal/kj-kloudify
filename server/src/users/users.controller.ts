@@ -16,7 +16,7 @@ export class UsersController {
   // 회원가입 엔드포인트
   @Post('signUp')
   async signUp(@Body() createUserDto: CreateUserDto) {
-    const user = await this.usersService.findOne(createUserDto.Email);
+    const user = await this.usersService.findOne(createUserDto.email);
     if (user) {
       throw new UnauthorizedException('User already exists');
     }
