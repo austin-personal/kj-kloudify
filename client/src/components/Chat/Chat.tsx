@@ -47,15 +47,15 @@ const Chat: React.FC<ChatProps> = ({ setIsOpen, projectCID, onParsedData }) => {
       try {
         const token = localStorage.getItem('token') || "";
         const initialMessages = await open(projectCID, token);
-        console.log("으악!!", initialMessages.data)
-        if (initialMessages) {
-          // setMessages(
-          //   initialMessages.map((msg: any) => ({
-          //     id: uuidv4(),
-          //     text: msg.text,
-          //     sender: msg.sender,
-          //   }))
-          // )
+        console.log("으악!!", initialMessages)
+        if (initialMessages && initialMessages.length > 0) {
+          setMessages(
+            initialMessages.map((msg: any) => ({
+              id: uuidv4(),
+              text: msg.text,
+              sender: msg.sender,
+            }))
+          )
         } else {
           setMessages([defaultBotMessage])
         }

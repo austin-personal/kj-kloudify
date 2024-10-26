@@ -26,7 +26,7 @@ export const open = async (cid: string, token: string) => {
                     Authorization: `Bearer ${token}`
                 }
             });
-        return response
+        return response.data
     } catch (error) {
         console.error('대화 실패!! : ', error);
         throw error;
