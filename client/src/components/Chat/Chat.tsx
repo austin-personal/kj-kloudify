@@ -48,31 +48,48 @@ const Chat: React.FC<ChatProps> = ({ setIsOpen, projectCID, onParsedData }) => {
   }>({});
 
   // 대화 로딩
-  useEffect(() => {
-    const fetchMessages = async () => {
-      try {
-        const token = localStorage.getItem("token") || "";
-        const initialMessages = await open(projectCID, token);
-        console.log("으악!!", initialMessages);
-        if (initialMessages && initialMessages.length > 0) {
-          setMessages(
-            initialMessages.map((msg: any) => ({
+useEffect(() => {
+  const fetchMessages = async () => {
+    try {
+      const token = localStorage.getItem("token") || "";
+      const initialMessages = await open(projectCID, token);
+      if (initialMessages && initialMessages.length > 0) {
+        const formattedMessages: Message[] = initialMessages.flatMap((msg: any) => {
+          // userMessage에서 @@## 이후의 부분만 가져오기
+          const parsedUserMessage = msg.userMessage.startsWith("@@##")
+            ? msg.userMessage.slice(4).trim()
+            : msg.userMessage;
+
+          // botResponse에서 ** 이전의 부분만 가져오기
+          const parsedBotResponse = msg.botResponse.includes("**")
+            ? msg.botResponse.split("**")[0].trim()
+            : msg.botResponse;
+
+          return [
+            {
               id: uuidv4(),
-              text: msg.text,
-              sender: msg.sender,
-            }))
-          );
-        } else {
-          setMessages([defaultBotMessage]);
-        }
-      } catch (error) {
-        console.log("대화 로딩 개박살!! : ", error);
+              text: parsedUserMessage,
+              sender: "user",
+            },
+            {
+              id: uuidv4(),
+              text: parsedBotResponse,
+              sender: "bot",
+            },
+          ];
+        });
+        setMessages(formattedMessages);
+      } else {
         setMessages([defaultBotMessage]);
       }
-    };
+    } catch (error) {
+      console.log("대화 로딩 오류:", error);
+      setMessages([defaultBotMessage]);
+    }
+  };
 
-    fetchMessages();
-  }, [projectCID]);
+  fetchMessages();
+}, [projectCID]);
 
   // 메시지 추가 후 자동으로 스크롤을 아래로 이동시키는 함수
   const scrollToBottom = () => {
