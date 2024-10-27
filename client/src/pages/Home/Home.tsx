@@ -78,7 +78,6 @@ const Home: React.FC = () => {
     <div className="home">
       <SideBar isOpen={isOpen} setIsOpen={setIsOpen} />
       <Chat
-        setIsOpen={setIsOpen}
         projectCID={project.CID}
         onParsedData={handleParsedData} // 새로운 prop 전달
       />
