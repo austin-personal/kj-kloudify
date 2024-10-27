@@ -33,9 +33,14 @@ export class ProjectsService {
   }
 
 
-// 유저ID로 모든 프로젝트 가져오기
-  async findAllByUserId(userId: number): Promise<Projects[]> {
-    return this.projectRepository.find({ where: { UID: userId } });
+// 유저ID로 모든 배포된 프로젝트 가져오기
+  async findDeployedByUserId(userId: number): Promise<Projects[]> {
+    return this.projectRepository.find({ where: { UID: userId, isDeployed: true } });
+  }
+
+// 유저ID로 모든 배포된 프로젝트 가져오기
+  async findResumeByUserId(userId: number): Promise<Projects[]> {
+    return this.projectRepository.find({ where: { UID: userId, isDeployed: false } });
   }
 
 
