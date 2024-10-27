@@ -3,7 +3,26 @@ import "./Services.css";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
-const Services: React.FC = () => {
+
+interface ServicesProps {
+  nodes: Node[]; // Node 타입의 배열로 정의
+}
+
+interface Node {
+  id: string;
+  type?: string;
+  position: {
+    x: number;
+    y: number;
+  };
+  data?: {
+    label?: string;
+    [key: string]: any;
+  };
+  style?: React.CSSProperties;
+}
+
+const Services: React.FC<ServicesProps> = ({ nodes }) => {
   // 모달 열림 상태 관리
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
@@ -11,10 +30,11 @@ const Services: React.FC = () => {
     sessionStorage.removeItem("nodes");
     navigate("/profile");
   };
+
+  console.log("노드 정보", nodes);
   const handleGuide = () => {
     navigate("/guide");
   };
-
   // 모달 열고 닫는 함수
   const toggleModal = () => {
     setIsModalOpen(!isModalOpen);
@@ -29,42 +49,23 @@ const Services: React.FC = () => {
         </button>
       </div>
       <div className="service-container">
-        <div className="service-element">
-          <img
-            src="https://icon.icepanel.io/AWS/svg/Compute/EC2.svg"
-            alt="ec2"
-            className="service-image"
-          />
-          <span className="service-label">RDS</span>
-          <span className="price-label">$9</span>
-        </div>
-        <div className="service-element">
-          <img
-            src="https://icon.icepanel.io/AWS/svg/Compute/EC2.svg"
-            alt="ec2"
-            className="service-image"
-          />
-          <span className="service-label">RDS</span>
-          <span className="price-label">$9</span>
-        </div>
-        <div className="service-element">
-          <img
-            src="https://icon.icepanel.io/AWS/svg/Compute/EC2.svg"
-            alt="ec2"
-            className="service-image"
-          />
-          <span className="service-label">RDS</span>
-          <span className="price-label">$9</span>
-        </div>
-        <div className="service-element">
-          <img
-            src="https://icon.icepanel.io/AWS/svg/Compute/EC2.svg"
-            alt="ec2"
-            className="service-image"
-          />
-          <span className="service-label">RDS</span>
-          <span className="price-label">$9</span>
-        </div>
+        {nodes.map((node) => (
+          <div key={node.id}>
+            {node.data && node.type === "position-logger" && (
+              <>
+                <div className="service-element">
+                  <img
+                    src={node.data.imgUrl}
+                    alt="ec2"
+                    className="service-image"
+                  />
+                  <span className="service-label">{node.data.label}</span>
+                  <span className="price-label">$9/per month</span>
+                </div>
+              </>
+            )}
+          </div>
+        ))}
       </div>
       <div className="middle-btn">
         {/* 모달이 열려 있을 때만 모달 컴포넌트 보여주기 */}

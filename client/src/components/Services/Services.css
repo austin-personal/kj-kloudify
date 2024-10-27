@@ -112,9 +112,12 @@ hr {
 .service-label,
 .price-label {
   font-size: 24px;
-  width: 50%; /* 부모 너비의 50% */
+  width: 20%; /* 부모 너비의 50% */
   margin-left: 2%;
   margin-right: 30%; /* 부모 요소 너비의 5%만큼 마진 */
+}
+.price-label {
+  width: 80%;
 }
 
 .service-image {

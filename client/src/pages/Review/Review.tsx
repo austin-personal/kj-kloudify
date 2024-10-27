@@ -76,7 +76,7 @@ function Review() {
       </div>
 
       <div className="vertical-line"></div>
-      <Services />
+      <Services nodes={nodes} />
     </div>
   );
 }
