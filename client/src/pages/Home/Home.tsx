@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { ReactFlowProvider } from "@xyflow/react";
 import { useNavigate, useParams } from "react-router-dom";
 import SideBar from "../../components/SideBar/SideBar";
 import Chat from "../../components/Chat/Chat";
@@ -28,6 +29,7 @@ const Home: React.FC = () => {
   const [isOpenSummary, setIsOpenSummary] = useState(false);
   const [project, setProject] = useState<Project | null>(null);
   const [parsedData, setParsedData] = useState<string[]>([]);
+  const [nodes, setNodes] = useState<any[]>([]); //board에 있던 node 상태 끌어올림
 
   const { pid } = useParams<{ pid: string }>();
   const navigate = useNavigate();
@@ -57,7 +59,13 @@ const Home: React.FC = () => {
     setIsOpenSummary(!isOpenSummary);
   };
 
+  // 세션 스토리지에 상태 저장
+  const saveNodesToSession = () => {
+    sessionStorage.setItem("nodes", JSON.stringify(nodes));
+    console.log("노드 상태가 세션 스토리지에 저장되었습니다.");
+  };
   const handleFinish = () => {
+    saveNodesToSession();
     navigate("/review");
   };
 
@@ -91,8 +99,9 @@ const Home: React.FC = () => {
           <div className="setting-services set-up-complete">2</div>
           <div className="setting-services setting-in-progress">2</div>
         </div>
-
-        <Board parsedData={parsedData} />
+        <ReactFlowProvider>
+          <Board parsedData={parsedData} nodes={nodes} setNodes={setNodes} />
+        </ReactFlowProvider>
         <div
           className={`popup ${isOpenSummary ? "visible" : "hidden"}`}
           onClick={togglePopup}

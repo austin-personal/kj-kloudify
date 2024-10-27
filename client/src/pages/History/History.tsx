@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { ReactFlowProvider } from "@xyflow/react";
 import { useParams } from "react-router-dom";
 import Board from "../../components/Board/Board";
 import DonutChart from "../../components/HistoryPage/DonutChart";
@@ -92,11 +93,15 @@ const History: React.FC = () => {
           </div>
         </div>
         <div className="architecture-box">
-          <Board
-            height="100%"
-            borderRadius="20px 20px 20px 20px"
-            parsedData={[]}
-          />
+          {/* <ReactFlowProvider>
+            <Board
+              height="100%"
+              borderRadius="20px 20px 20px 20px"
+              parsedData={[]}
+              nodes={nodes}
+              setNodes={setNodes}
+            />
+          </ReactFlowProvider> */}
         </div>
       </div>
     </div>

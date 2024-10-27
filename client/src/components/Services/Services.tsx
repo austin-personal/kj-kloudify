@@ -8,6 +8,7 @@ const Services: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
   const handleDeploy = () => {
+    sessionStorage.removeItem("nodes");
     navigate("/profile");
   };
   const handleGuide = () => {
