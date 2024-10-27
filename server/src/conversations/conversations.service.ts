@@ -206,23 +206,28 @@ export class ConversationsService {
         // 조건을 반복하며 인풋 텍스트에서 확인
         for (const option of options) {
             if (user_question.includes(option.keyword)) {
-                if (user_question.includes('선택안함')) {
+                if (user_question.includes('선택안함') && !user_question.includes('모니터링')) {
                     console.log(option.noSelectionLog);
                     
                     // '선택안함'에 대한 추가 로직 작성
-                    // 예: 특정 상태를 업데이트하거나 추가적인 처리를 할 수 있음
-                    
-                    // 인풋 텍스트(user_question)를 DB에 저장
                     await this.saveConversation(CID, user_question, templateResponse);
 
-                    // '선택안함'에 대한 응답 반환@@@@@@@@@@@@@@@@@@@@@@@@
+                    // '선택안함'에 대한 응답 반환
                     return this.createResponse(option.nextTem);
-                } else {
+                } 
+                else if (option.keyword === "모니터링") {
+                    // "모니터링" 키워드가 포함된 경우 처리
+                    const removedItem = ConversationsService.globalMatrix.shift();
+                    if (removedItem) {
+                        // 제거된 요소를 응답으로 반환
+                        return this.createResponse(`모니터링 선택 후 다음 항목: ${removedItem}`);
+                    } else {
+                        return this.createResponse("globalMatrix에 더 이상 항목이 없습니다.");
+                    }
+                } 
+                else {
                     console.log(option.selectionLog);
                     // 일반 선택에 대한 로직 추가
-                    // 예: 특정 프로세스 실행이나 상태 변경 등
-
-                    // 선택한 부분에 따른 텍스트를 globalMatrix에 저장
                     if (option.selectionLog) {
                         ConversationsService.globalMatrix.push(option.selectionLog);
                     }
