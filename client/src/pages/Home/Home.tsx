@@ -29,6 +29,7 @@ const Home: React.FC = () => {
   const [isOpenSummary, setIsOpenSummary] = useState(false);
   const [project, setProject] = useState<Project | null>(null);
   const [parsedData, setParsedData] = useState<string[]>([]);
+  const [finishData, setFinishData] = useState<string[]>([]);
   const [nodes, setNodes] = useState<any[]>([]); //board에 있던 node 상태 끌어올림
 
   const { pid } = useParams<{ pid: string }>();
@@ -74,6 +75,10 @@ const Home: React.FC = () => {
     console.log("Chat 컴포넌트로부터 받은 파싱된 데이터:", data);
     setParsedData(data);
   };
+  const handleFinishData = (data: string[]) => {
+    console.log("Chat 컴포넌트로부터 받은 파싱된 마무리 데이터:", data);
+    setFinishData(data);
+  };
 
   // 프로젝트 없으면 profile로 소환
   // 나중에는 경고알람으로 create project하라고 하면 좋을 것 같음.
@@ -88,6 +93,7 @@ const Home: React.FC = () => {
       <Chat
         projectCID={project.CID}
         onParsedData={handleParsedData} // 새로운 prop 전달
+        onFinishData={handleFinishData}
       />
       <div className="vertical-line"></div>
       <div className="right-side">

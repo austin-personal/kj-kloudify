@@ -240,7 +240,7 @@ export class ConversationsService {
         });
     
         // 기존 대화 내역 불러오기
-        const previousConversations = await this.(CID);
+        const previousConversations = await this.getConversationsByCID(CID);
         const conversationHistory = previousConversations
             .map((item) => `User: ${item.userMessage}\nBot: ${item.botResponse}`)
             .join('\n');
