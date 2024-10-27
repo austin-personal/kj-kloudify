@@ -1,29 +1,36 @@
 # kj-kloudify
-
 Kloudify - Cloud Architecture Automation Platform
 Kloudify enables users to design tailored cloud infrastructures through an interactive, conversational interface. 
 By progressively visualizing the evolving cloud architecture, Kloudify helps users clarify their cloud needs and see their ideal setup take shape in real time, leading to automated deployment.
 
-## Front & Backend
+## Problem to Solve
+- Resource Constraints: Small teams and solo developers often face limitations in resources such as manpower, time, and budget, which impedes efficient cloud infrastructure setup.
+- Complexity of AWS Configuration: AWS services come with numerous configuration options, making even a single service setup challenging. Building a cohesive multi-service architecture adds another layer of complexity, requiring a deep understanding of AWS options and integrations.
+
+
+### Front & Backend
 - React
 - Nest.JS
 - Container: Docker
   
-## Server
+### Server
 - AWS EC2
 - AWS Lambda: To deploy the user's terraform file independently
   
-## LLM
+### LLM
 - AWS Bedrock: FM model Claude 3.5 Sonnet
   
-## DB
+### DB
 - AWS RDS-postgres: Default DB
 - AWS DynamoDB: To store Chatting data
 - AWS OpenSearch: To store vector data for the LLM model to enhance LLM capacity
 
-## Storage  
+### Storage  
 - AWS S3: to store Terraform code and cloud arch image
 
+### Process
+![Screenshot 2024-10-27 at 19 28 30](https://github.com/user-attachments/assets/3e2acbbf-d665-414f-aeff-adcaf3c559f3)
 
-
+### Cloud Architecture
 ![kloudify-architecture drawio](https://github.com/user-attachments/assets/ef5e8065-c37a-4c4e-b987-3dd38c846d6a)
+
