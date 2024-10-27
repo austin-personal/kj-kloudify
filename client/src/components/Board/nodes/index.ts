@@ -13,56 +13,56 @@ export type PositionLoggerNode = Node<
 export type AppNode = BuiltInNode | PositionLoggerNode;
 
 export const initialNodes: AppNode[] = [
-  {  id:"1",
-    type:"default",
-    position: { x: 0, y: 0},
-    data: { label: "Server" },
-    style: {
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      width:"50px",
-      height:"50px",
-      background: 'transparent',
-      borderStyle: 'dashed',
-      borderWidth: 2,
-      borderRadius: "10px",
-      borderColor: 'gray', // 원하는 색상으로 설정
-    }, },
-    {  id:"2",
-      type:"default",
-      position: { x: 0, y: 100},
-      data: { label: "DB" },
-      style: {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        width:"50px",
-        height:"50px",
-        background: 'transparent',
-        borderStyle: 'dashed',
-        borderWidth: 2,
-        borderRadius: "10px",
-        borderColor: 'gray', // 원하는 색상으로 설정
-      }, },
-  {
-    id:"3",
-    type:"default",
-    position: { x: 0, y: 200 },
-    data: { label: "Storage" },
-    style: {
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      width:"50px",
-      height:"50px",
-      background: 'transparent',
-      borderStyle: 'dashed',
-      borderWidth: 2,
-      borderRadius: "10px",
-      borderColor: 'gray', // 원하는 색상으로 설정
-    },
-  }
+  // {  id:"1",
+  //   type:"default",
+  //   position: { x: 0, y: 0},
+  //   data: { label: "Server" },
+  //   style: {
+  //     display: 'flex',
+  //     alignItems: 'center',
+  //     justifyContent: 'center',
+  //     width:"50px",
+  //     height:"50px",
+  //     background: 'transparent',
+  //     borderStyle: 'dashed',
+  //     borderWidth: 2,
+  //     borderRadius: "10px",
+  //     borderColor: 'gray', // 원하는 색상으로 설정
+  //   }, },
+  //   {  id:"2",
+  //     type:"default",
+  //     position: { x: 0, y: 100},
+  //     data: { label: "DB" },
+  //     style: {
+  //       display: 'flex',
+  //       alignItems: 'center',
+  //       justifyContent: 'center',
+  //       width:"50px",
+  //       height:"50px",
+  //       background: 'transparent',
+  //       borderStyle: 'dashed',
+  //       borderWidth: 2,
+  //       borderRadius: "10px",
+  //       borderColor: 'gray', // 원하는 색상으로 설정
+  //     }, },
+  // {
+  //   id:"3",
+  //   type:"default",
+  //   position: { x: 0, y: 200 },
+  //   data: { label: "Storage" },
+  //   style: {
+  //     display: 'flex',
+  //     alignItems: 'center',
+  //     justifyContent: 'center',
+  //     width:"50px",
+  //     height:"50px",
+  //     background: 'transparent',
+  //     borderStyle: 'dashed',
+  //     borderWidth: 2,
+  //     borderRadius: "10px",
+  //     borderColor: 'gray', // 원하는 색상으로 설정
+  //   },
+  // }
 ];
 
 export const nodeTypes = {
