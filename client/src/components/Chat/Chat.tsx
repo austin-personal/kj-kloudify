@@ -14,6 +14,7 @@ import { useTemplates } from "./TemplateProvider";
 interface ChatProps {
   projectCID: number;
   onParsedData?: (data: string[]) => void; // 새로운 prop 추가
+  onFinishData?: (data: string[]) => void; // 새로운 prop 추가
 }
 
 interface Message {
@@ -31,9 +32,9 @@ const defaultBotMessage: Message = {
   sender: "bot",
 };
 
-const Chat: React.FC<ChatProps> = ({ projectCID, onParsedData }) => {
+const Chat: React.FC<ChatProps> = ({ projectCID, onParsedData, onFinishData }) => {
   const templates = useTemplates();
-  const targetTemplateNames = ["template1", "template2"];
+  const targetTemplateNames = ["서버", "디비", "네트워크", "스토리지", "모니터링"];
 
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
@@ -56,9 +57,9 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onParsedData }) => {
               ? msg.userMessage.slice(msg.userMessage.indexOf("-") + 1).trim()
               : msg.userMessage;
 
-            // botResponse에서 ** 이전의 부분만 가져오기
-            const parsedBotResponse = msg.botResponse.includes("**")
-              ? msg.botResponse.split("**")[0].trim()
+            // botResponse에서 !! 이전의 부분만 가져오기
+            const parsedBotResponse = msg.botResponse.includes("!!")
+              ? msg.botResponse.split("!!")[0].trim()
               : msg.botResponse;
 
             const matchingTemplate = Object.values(templates).find(
@@ -97,13 +98,13 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onParsedData }) => {
               ];
             }
           });
-          setMessages((prevMessages)=>[...prevMessages, ...formattedMessages]);
+          setMessages((prevMessages) => [...prevMessages, ...formattedMessages]);
 
-          // 마지막 botResponse에서 "**" 뒤의 부분을 파싱하여 onParsedData로 전달
+          // 마지막 botResponse에서 "!!" 뒤의 부분을 파싱하여 onParsedData로 전달
           const lastBotResponse = initialMessages[initialMessages.length - 1].botResponse;
 
-          if (lastBotResponse.includes("**")) {
-            const afterAsterisks = lastBotResponse.split("**")[1].trim();
+          if (lastBotResponse.includes("!!")) {
+            const afterAsterisks = lastBotResponse.split("!!")[1].trim();
 
             let parsedDataArray: string[] = [];
 
@@ -124,10 +125,32 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onParsedData }) => {
             if (onParsedData) {
               onParsedData(parsedDataArray);
             }
+          } else if (lastBotResponse.includes("**")) {
+            const afterAsterisks = lastBotResponse.split("**")[1].trim();
+
+            let parsedDataArray: string[] = [];
+
+            try {
+              // JSON 배열로 파싱 시도
+              parsedDataArray = JSON.parse(afterAsterisks);
+              if (!Array.isArray(parsedDataArray)) {
+                throw new Error("파싱된 데이터가 배열이 아님");
+              }
+            } catch (e) {
+              console.error("JSON 파싱 실패, 수동으로 파싱 시도:", e);
+              // 수동으로 파싱
+              let dataString = afterAsterisks.replace(/^\[|\]$/g, "");
+              parsedDataArray = dataString.split(",").map((item: string) => item.trim());
+            }
+
+            // 부모에게 파싱된 데이터 전달
+            if (onFinishData) {
+              onFinishData(parsedDataArray);
+            }
           }
 
         }
-         else {
+        else {
           setMessages([defaultBotMessage]);
         }
       } catch (error) {
@@ -211,12 +234,12 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onParsedData }) => {
 
   // 응답 메시지를 처리하는 함수
   const processResponseMessage = (responseMessage: string) => {
-    if (typeof responseMessage === "string" && responseMessage.includes("**")) {
+    if (responseMessage.includes("!!")) {
       const [beforeAsterisks, afterAsterisks] = responseMessage
-        .split("**")
+        .split("!!")
         .map((part) => part.trim());
 
-      // "**"뒤에 있는 데이터를 배열형태로 받기
+      // "!!"뒤에 있는 데이터를 배열형태로 받기
       let parsedDataArray: string[] = [];
 
       try {
@@ -226,7 +249,7 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onParsedData }) => {
           throw new Error("파싱된 데이터가 배열이 아님");
         }
       } catch (e) {
-        console.error("'**'뒤에있는 데이터를 JSON배열로 파싱하는거 실패 :", e);
+        console.error("'!!'뒤에있는 데이터를 JSON배열로 파싱하는거 실패 :", e);
         // 만약 JSON배열이 아니면 매뉴얼대로 파싱
         let dataString = afterAsterisks.replace(/^\[|\]$/g, "");
         parsedDataArray = dataString.split(",").map((item) => item.trim());
@@ -264,15 +287,85 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onParsedData }) => {
         };
         setMessages((prevMessages) => [...prevMessages, botMessage]);
       }
+    } else if (typeof responseMessage === "string" && responseMessage.includes("**")) {
+      const [beforeAsterisks, afterAsterisks] = responseMessage
+        .split("**")
+        .map((part) => part.trim());
+
+      // "**"뒤에 있는 데이터를 배열형태로 받기
+      let parsedDataArray: string[] = [];
+
+      try {
+        // JSON배열로 파싱
+        parsedDataArray = JSON.parse(afterAsterisks);
+        if (!Array.isArray(parsedDataArray)) {
+          throw new Error("파싱된 데이터가 배열이 아님");
+        }
+      } catch (e) {
+        console.error("'**'뒤에있는 데이터를 JSON배열로 파싱하는거 실패 :", e);
+        // 만약 JSON배열이 아니면 매뉴얼대로 파싱
+        let dataString = afterAsterisks.replace(/^\[|\]$/g, "");
+        parsedDataArray = dataString.split(",").map((item) => item.trim());
+      }
+
+      // 부모에게 파싱된 데이터 보내기
+      if (onFinishData) {
+        onFinishData(parsedDataArray);
+      }
+
+      // 이제 beforeAsterisks가 템플릿 이름과 매치하는지 찾기
+      const matchingTemplate = Object.values(templates).find(
+        (template) => template.name === beforeAsterisks
+      );
+
+      // 만약 일치한다면
+      if (matchingTemplate) {
+        // 템플릿을 묘사해라
+        const newBotMessage: Message = {
+          id: uuidv4(),
+          text: matchingTemplate.text,
+          sender: "bot",
+          buttons: matchingTemplate.buttons,
+          checks: matchingTemplate.checks,
+        };
+        setMessages((prevMessages) => [...prevMessages, newBotMessage]);
+        // 일치 안한다면
+      } else {
+        // 그냥 평범하게 메세지 출력해라
+        const botMessage: Message = {
+          id: uuidv4(),
+          text: beforeAsterisks,
+          sender: "bot",
+          maxLength: 50,
+        };
+        setMessages((prevMessages) => [...prevMessages, botMessage]);
+      }
     } else {
-      // 일반적인 응답 처리
-      const botMessage: Message = {
-        id: uuidv4(),
-        text: responseMessage,
-        sender: "bot",
-        maxLength: 50,
-      };
-      setMessages((prevMessages) => [...prevMessages, botMessage]);
+      const matchingTemplate = Object.values(templates).find(
+        (template) => template.name === responseMessage
+      );
+      // 만약 일치한다면
+      if (matchingTemplate) {
+        // 템플릿을 묘사해라
+        const newBotMessage: Message = {
+          id: uuidv4(),
+          text: matchingTemplate.text,
+          sender: "bot",
+          buttons: matchingTemplate.buttons,
+          checks: matchingTemplate.checks,
+        };
+        setMessages((prevMessages) => [...prevMessages, newBotMessage]);
+        // 일치 안한다면
+      } else {
+        // 일반적인 응답 처리
+        const botMessage: Message = {
+          id: uuidv4(),
+          text: responseMessage,
+          sender: "bot",
+          maxLength: 50,
+        };
+        setMessages((prevMessages) => [...prevMessages, botMessage]);
+      }
     }
   };
 
@@ -316,14 +409,13 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onParsedData }) => {
           matchingTemplate &&
           targetTemplateNames.includes(matchingTemplate.name)
         ) {
-          messageToSend = `${matchingTemplate.name}선택 - ${input}`;
+          messageToSend = `${lastBotMessage.text} = ${matchingTemplate.name}선택 - ${input}`;
         } else {
           messageToSend = `${lastBotMessage.text} - ${input}`;
         }
       } else {
         messageToSend = input;
       }
-      console.log("messageToSend:", messageToSend);
 
       const responseMessage = await ask(messageToSend, projectCID);
 
@@ -369,11 +461,7 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onParsedData }) => {
     // 사용자 메시지 추가
     let userMessageText: string;
 
-    if (button.label.slice(0, 4) === "@@##") {
-      userMessageText = button.label.slice(4);
-    } else {
-      userMessageText = button.label;
-    }
+    userMessageText = button.label;
 
     const userMessage: Message = {
       id: uuidv4(),
@@ -408,16 +496,15 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onParsedData }) => {
         // 특정 템플릿 이름과 일치하는지 확인
         if (
           matchingTemplate &&
-          ["template1", "template2"].includes(matchingTemplate.name)
+          targetTemplateNames.includes(matchingTemplate.name)
         ) {
-          messageToSend = `${matchingTemplate.name}선택 - ${userMessageText}`;
+          messageToSend = `${lastBotMessage.text} = ${matchingTemplate.name}선택 - ${userMessageText}`;
         } else {
           messageToSend = `${lastBotMessage.text} - ${userMessageText}`;
         }
       } else {
         messageToSend = userMessageText;
       }
-      console.log("messageToSend:", messageToSend);
 
       const responseMessage = await ask(messageToSend, projectCID);
 

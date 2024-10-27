@@ -9,66 +9,67 @@ interface Template {
 
 const templates: Record<number, Template> = {
     2: {
-        name: "template 8",
+        name: "template1-2",
         text: "클라우드에서 가장 필요한 기능이나 역할은 무엇인가요? (예: 데이터 저장, 서버 운영, 개발 환경 제공)",
     },
     3: {
-        name: "template 8",
+        name: "template1-3",
         text: "이 프로젝트를 이용할 예상 사용자 수는 얼마나 되나요? (예: 개인, 소규모 팀, 100명 이상)",
     },
     4: {
-        name: "template 8",
+        name: "template1-4",
         text:  "예산이나 기간 제한이 있나요? (예: 소규모 예산, 6개월 내로 개발 완성 목표)",
     },
     5: {
-        name: "template 8",
+        name: "template1-5",
         text: "특별히 고려하고 싶은 요소가 있다면 알려주세요. (예: 데이터 보안, 빠른 구축 속도)",
     },
     6: {
-        name: "template 8",
+        name: "template1-6",
         text: "당신의 서비스가 인터넷과 연결되어야 하나요?",
     },
     7: {
-        name: "template 8",
+        name: "서버",
         text: "서버가 프로젝트의 핵심인가요, 아니면 간단한 웹 서버 정도만 필요한가요?",
         buttons: [
             { id: 1, label: "필요없음"}
         ]
     },
     8: {
-        name: "template 8",
+        name: "디비",
         text: "데이터 저장 공간이 필요하신가요? 어떤 유형의 데이터가 주로 저장될 예정인가요? (예: 관계형 데이터베이스, NoSQL 데이터베이스)",
         buttons: [
             { id: 1, label: "필요없음"}
         ]
     },
     9: {
-        name: "template 8",
+        name: "네트워크",
         text: "프로젝트가 여러 네트워크 영역을 필요로 하나요? 혹은 안전한 네트워크 분리가 필요한가요?",
         buttons: [
             { id: 2, label: "필요없음"}
         ]
     },
     10: {
-        name: "template 8",
+        name: "스토리지",
         text: "이미지, 비디오, 문서 등 파일을 저장해야 하나요? 대량의 파일을 저장하고 관리하는 용도로 사용될 예정인가요?",
         buttons: [
             { id: 3, label: "필요없음"}
         ]
     },
     11: {
-        name: "template 8",
+        name: "모니터링",
         text: "시스템 성능을 추적하거나 로그를 관리할 필요가 있나요?",
         buttons: [
             { id: 4, label: "필요없음"}
         ]
     },
     12: {
-        name: "template 8",
+        name: "template3-3",
         text: "그 외에 필요한 기능이 있나요? (예: 데이터 분석, AI/ML 서비스)",
     },
+    // 분기 나누기
     13: {
-        name: "template 8",
+        name: "XXX",
         text: "데이터베이스의 주요 기준을 선택하세요",
         buttons: [
             { id: 5, label: "비용 최적화: 비용을 낮추고 저용량부터 시작할 수 있는 설정 (예: 작은 RDS 인스턴스, 온디맨드 가격 모델)" },
@@ -77,7 +78,7 @@ const templates: Record<number, Template> = {
         ]
     },
     14: {
-        name: "template 8",
+        name: "XXX",
         text: "서버의 주요 기준을 선택하세요",
         buttons: [
             { id: 8, label: "저비용 서버: 일반적인 웹 서비스나 소규모 트래픽을 위한 저비용 옵션 (예: 작은 EC2 인스턴스, Spot Instances)" },
@@ -86,7 +87,7 @@ const templates: Record<number, Template> = {
         ]
     },
     15: {
-        name: "template 8",
+        name: "XXX",
         text: "저장 공간의 주요 기준을 선택하세요",
         buttons: [
             { id: 11, label: "비용 절감: 장기 저장 및 저렴한 비용이 필요할 때 (예: S3 Standard-IA, S3 Glacier)" },
@@ -95,7 +96,7 @@ const templates: Record<number, Template> = {
         ]
     },
     16: {
-        name: "template 8",
+        name: "XXX",
         text: "네트워크 구성에서 중요하게 여기는 기준을 선택하세요",
         buttons: [
             { id: 14, label: "기본 보안: 기본적인 보안 구성으로 클라우드 네트워크 보호" },
@@ -104,7 +105,7 @@ const templates: Record<number, Template> = {
         ]
     },
     17: {
-        name: "template 8",
+        name: "XXX",
         text: "모니터링과 로그 관리의 주요 기준을 선택하세요",
         buttons: [
             { id: 17, label: "기본 모니터링: 기본적인 성능 모니터링과 에러 알림 (예: CloudWatch 기본 설정)" },
