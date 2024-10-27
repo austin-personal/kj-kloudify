@@ -7,7 +7,6 @@ By progressively visualizing the evolving cloud architecture, Kloudify helps use
 - Resource Constraints: Small teams and solo developers often face limitations in resources such as manpower, time, and budget, which impedes efficient cloud infrastructure setup.
 - Complexity of AWS Configuration: AWS services come with numerous configuration options, making even a single service setup challenging. Building a cohesive multi-service architecture adds another layer of complexity, requiring a deep understanding of AWS options and integrations.
 
-
 ### Front & Backend
 - React
 - Nest.JS
@@ -27,6 +26,10 @@ By progressively visualizing the evolving cloud architecture, Kloudify helps use
 
 ### Storage  
 - AWS S3: to store Terraform code and cloud arch image
+
+
+## Simple Flowchart with architectures
+![kloudify-flowchart drawio](https://github.com/user-attachments/assets/a58c484a-03f2-4aeb-999c-0f493d1c8e78)
 
 ### Process
 ![Screenshot 2024-10-27 at 19 28 30](https://github.com/user-attachments/assets/3e2acbbf-d665-414f-aeff-adcaf3c559f3)
