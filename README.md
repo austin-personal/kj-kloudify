@@ -7,6 +7,17 @@ By progressively visualizing the evolving cloud architecture, Kloudify helps use
 - Resource Constraints: Small teams and solo developers often face limitations in resources such as manpower, time, and budget, which impedes efficient cloud infrastructure setup.
 - Complexity of AWS Configuration: AWS services come with numerous configuration options, making even a single service setup challenging. Building a cohesive multi-service architecture adds another layer of complexity, requiring a deep understanding of AWS options and integrations.
 
+
+# Roles
+#### Austin(Minseok) Kim: Project Manager
+- DevOps
+- Design ERD
+- Designed Project Architecture
+- Designed Cloud Architecture
+- Built the cloud infra
+- Backend APIs 50/100
+- Adapted LLM
+
 ### Front & Backend
 - React
 - Nest.JS
