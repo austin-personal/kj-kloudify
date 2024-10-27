@@ -69,7 +69,7 @@ const templates: Record<number, Template> = {
     },
     // 분기 나누기
     13: {
-        name: "XXX",
+        name: "디비설정",
         text: "데이터베이스의 주요 기준을 선택하세요",
         buttons: [
             { id: 5, label: "비용 최적화: 비용을 낮추고 저용량부터 시작할 수 있는 설정 (예: 작은 RDS 인스턴스, 온디맨드 가격 모델)" },
@@ -78,7 +78,7 @@ const templates: Record<number, Template> = {
         ]
     },
     14: {
-        name: "XXX",
+        name: "서버설정",
         text: "서버의 주요 기준을 선택하세요",
         buttons: [
             { id: 8, label: "저비용 서버: 일반적인 웹 서비스나 소규모 트래픽을 위한 저비용 옵션 (예: 작은 EC2 인스턴스, Spot Instances)" },
@@ -87,7 +87,7 @@ const templates: Record<number, Template> = {
         ]
     },
     15: {
-        name: "XXX",
+        name: "스토리지설정",
         text: "저장 공간의 주요 기준을 선택하세요",
         buttons: [
             { id: 11, label: "비용 절감: 장기 저장 및 저렴한 비용이 필요할 때 (예: S3 Standard-IA, S3 Glacier)" },
@@ -96,7 +96,7 @@ const templates: Record<number, Template> = {
         ]
     },
     16: {
-        name: "XXX",
+        name: "네트워크설정",
         text: "네트워크 구성에서 중요하게 여기는 기준을 선택하세요",
         buttons: [
             { id: 14, label: "기본 보안: 기본적인 보안 구성으로 클라우드 네트워크 보호" },
@@ -105,7 +105,7 @@ const templates: Record<number, Template> = {
         ]
     },
     17: {
-        name: "XXX",
+        name: "모니터링설정",
         text: "모니터링과 로그 관리의 주요 기준을 선택하세요",
         buttons: [
             { id: 17, label: "기본 모니터링: 기본적인 성능 모니터링과 에러 알림 (예: CloudWatch 기본 설정)" },
