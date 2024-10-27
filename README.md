@@ -1,22 +1,29 @@
 # kj-kloudify
 
 Kloudify - Cloud Architecture Automation Platform
-Led the development of Kloudify, a platform utilizing a Large Language Model (LLM) to capture user cloud requirements and convert them into Terraform code for one-click deployment. Oversaw project direction, coordinated development efforts, and built teamwork to deliver a conversational interface simplifying cloud architecture setup. Enhanced skills in cloud automation, infrastructure as code (IaC), and LLM integration.
+Kloudify enables users to design tailored cloud infrastructures through an interactive, conversational interface. 
+By progressively visualizing the evolving cloud architecture, Kloudify helps users clarify their cloud needs and see their ideal setup take shape in real time, leading to automated deployment.
 
-Tech stacks
+## Front & Backend
 - React
 - Nest.JS
 - Container: Docker
-Server
-- EC2
-AI
-- AWS Bedrock: FM model
-DB
-- AWS RDS-postgres: Defualt DB
-- AWS DynamoDB : To store Chatting data
-- AWS OpenSearch: To store vector data for LLM model to enhance LLM capacity
-Storage
-- AWS S3: to store cloud arch image
+  
+## Server
+- AWS EC2
+- AWS Lambda: To deploy the user's terraform file independently
+  
+## LLM
+- AWS Bedrock: FM model Claude 3.5 Sonnet
+  
+## DB
+- AWS RDS-postgres: Default DB
+- AWS DynamoDB: To store Chatting data
+- AWS OpenSearch: To store vector data for the LLM model to enhance LLM capacity
+
+## Storage  
+- AWS S3: to store Terraform code and cloud arch image
 
 
-![kloudify_AWS_Arch](https://github.com/user-attachments/assets/cd0f3710-72ab-4448-b358-751ecd5e41a8)
+
+![kloudify-architecture drawio](https://github.com/user-attachments/assets/ef5e8065-c37a-4c4e-b987-3dd38c846d6a)
