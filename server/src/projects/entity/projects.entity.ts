@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'typeorm';
 import { Users } from '../../users/entity/users.entity';
-import { ArchBoards } from '../../archboards/entity/archboards.entity';
+// import { ArchBoards } from '../../archboards/entity/archboards.entity';
 
 @Entity()
 export class Projects {
@@ -24,9 +24,12 @@ export class Projects {
   @Column()
   UID: number;  // Foreign Key (Architecture)
 
+  @Column()
+  isDeployed: boolean; //배포 됬는지 확인: True = 배포됨
+
   @ManyToOne(() => Users, (users) => users.projects)
   user: Users;
 
-  @OneToMany(() => ArchBoards, (archBoard) => archBoard.projects)
-  archBoards: ArchBoards[];
+  // @OneToMany(() => ArchBoards, (archBoard) => archBoard.projects)
+  // archBoards: ArchBoards[];
 }
