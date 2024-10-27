@@ -196,11 +196,11 @@ export class ConversationsService {
         }
 
         const options = [
-            { keyword: '서버선택', noSelectionLog: "서버선택 안함 로직 실행", selectionLog: "서버" , nextTem: "디비"},
-            { keyword: '디비선택', noSelectionLog: "디비선택 안함 로직 실행", selectionLog: "디비" , nextTem: "스토리지"},
-            { keyword: '스토리지선택', noSelectionLog: "스토리지선택 안함 로직 실행", selectionLog: "스토리지" , nextTem: "네트워크"},
-            { keyword: '네트워크선택', noSelectionLog: "네트워크선택 안함 로직 실행", selectionLog: "네트워크" , nextTem: "모니터링"},
-            { keyword: '모니터링선택', noSelectionLog: "모니터링 선택 안함 로직 실행", selectionLog: "모니터링" , nextTem: "다음문항"}
+            { keyword: '서버선택', noSelectionLog: "서버선택 안함 로직 실행", selectionLog: "서버설정" , nextTem: "디비"},
+            { keyword: '디비선택', noSelectionLog: "디비선택 안함 로직 실행", selectionLog: "디비설정" , nextTem: "스토리지"},
+            { keyword: '스토리지선택', noSelectionLog: "스토리지선택 안함 로직 실행", selectionLog: "스토리지설정" , nextTem: "네트워크"},
+            { keyword: '네트워크선택', noSelectionLog: "네트워크선택 안함 로직 실행", selectionLog: "네트워크설정" , nextTem: "모니터링"},
+            { keyword: '모니터링선택', noSelectionLog: "모니터링 선택 안함 로직 실행", selectionLog: "모니터링설정" , nextTem: "다음문항"}
         ];
         
         // 조건을 반복하며 인풋 텍스트에서 확인
@@ -224,9 +224,9 @@ export class ConversationsService {
     
                         if (removedItem) {
                             // 제거된 요소를 응답으로 반환
-                            return this.createResponse(`모니터링 선택 후 다음 항목: ${removedItem}`);
+                            return this.createResponse(`templete3-3`);
                         } else {
-                            return this.createResponse("globalMatrix에 더 이상 항목이 없습니다.");
+                            return this.createResponse("이대로 선택하시겠습니까?");
                         }
                     }
                     // "모니터링" 키워드가 포함된 경우 처리
@@ -257,6 +257,41 @@ export class ConversationsService {
 
                     // 일반 선택에 대한 응답 반환
                     return this.createResponse(option.nextTem);
+                }
+            }
+        }
+
+        // 기존 로직 이후 추가 로직
+        const labels = [
+            "비용 최적화: 비용을 낮추고 저용량부터 시작할 수 있는 설정 (예: 작은 RDS 인스턴스, 온디맨드 가격 모델)",
+            "고성능: 높은 성능과 빠른 처리 속도를 위해 최적화된 설정 (예: 고성능 RDS 인스턴스, Provisioned IOPS 스토리지)",
+            "확장 가능성: 서비스 확장을 위한 자동 확장 옵션 (예: Aurora Serverless)",
+            "저비용 서버: 일반적인 웹 서비스나 소규모 트래픽을 위한 저비용 옵션 (예: 작은 EC2 인스턴스, Spot Instances)",
+            "성능 중심 서버: 트래픽이 많거나 성능이 중요한 경우 (예: 고성능 EC2 인스턴스, Enhanced Networking 지원)",
+            "서버리스: 관리가 필요 없는 자동 확장 서버리스 옵션 (예: AWS Lambda)",
+            "비용 절감: 장기 저장 및 저렴한 비용이 필요할 때 (예: S3 Standard-IA, S3 Glacier)",
+            "고성능: 빈번한 데이터 접근을 위한 높은 성능 (예: S3 Standard)",
+            "확장 및 내구성: 자동 확장 및 높은 데이터 내구성을 원하는 경우 (예: S3와 자동 확장 설정)",
+            "기본 보안: 기본적인 보안 구성으로 클라우드 네트워크 보호",
+            "고급 보안: 보안 강화를 위한 VPN 연결 및 세분화된 접근 제어 (예: VPC, Network ACL)",
+            "성능 최적화: 네트워크 성능을 높이기 위한 고성능 설정 (예: 고성능 네트워킹, 글로벌 가속기)",
+            "기본 모니터링: 기본적인 성능 모니터링과 에러 알림 (예: CloudWatch 기본 설정)",
+            "심화 모니터링: 더 상세한 성능 및 로그 데이터 수집 (예: CloudWatch와 고급 메트릭)",
+            "자동화된 경고 및 알림: 특정 조건이 발생할 때 자동으로 알림을 받는 설정 (예: 경고 알림 및 자동 조치 설정)"
+        ];
+
+        // label 값을 확인하고 globalMatrix에서 값을 pop하는 로직
+        for (const label of labels) {
+            if (user_question.includes(label)) {
+                // globalMatrix에서 다음 값을 pop하여 반환하거나 비어 있을 경우 "종료" 반환
+                const nextValue = ConversationsService.globalMatrix.shift();
+                if (nextValue) {
+                    // 인풋 텍스트(user_question)를 DB에 저장
+                    await this.saveConversation(CID, user_question, nextValue);
+
+                    return this.createResponse(nextValue);
+                } else {
+                    return this.createResponse("종료");
                 }
             }
         }
