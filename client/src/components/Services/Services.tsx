@@ -8,6 +8,7 @@ const Services: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
   const handleDeploy = () => {
+    sessionStorage.removeItem("nodes");
     navigate("/profile");
   };
   const handleGuide = () => {
@@ -27,7 +28,6 @@ const Services: React.FC = () => {
           Price Summary
         </button>
       </div>
-      <hr />
       <div className="service-container">
         <div className="service-element">
           <img
@@ -67,7 +67,6 @@ const Services: React.FC = () => {
         </div>
       </div>
       <div className="middle-btn">
-
         {/* 모달이 열려 있을 때만 모달 컴포넌트 보여주기 */}
         {isModalOpen && (
           <div className="modal-overlay">
@@ -109,7 +108,6 @@ const Services: React.FC = () => {
           </div>
         )}
       </div>
-      <hr />
       <div className="info-notice">
         <FontAwesomeIcon
           icon={faCircleExclamation}
@@ -143,7 +141,7 @@ const Services: React.FC = () => {
           </label>
         </div>
       </div>
-      <div className="right-btn">
+      <div className="middle-btn">
         <button className="deploy-btn" onClick={handleDeploy}>
           Deploy
         </button>

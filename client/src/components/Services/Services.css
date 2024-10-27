@@ -10,7 +10,7 @@
   flex-direction: column;
   gap: 10px;
   margin-bottom: 20px;
-  margin-top: 20px;
+
   overflow-y: auto;
 }
 
@@ -45,44 +45,65 @@ hr {
 }
 
 .price-summary-header {
+  display: flex;
+  justify-content: end;
   width: 100%;
+  height: 20px;
+  align-items: center;
+  margin-bottom: 10px;
 }
 
 .top-label-service {
   font-size: 23px;
   width: 50%; /* 부모 너비의 50% */
   margin-left: 5%;
-  margin-right: 30%; /* 부모 요소 너비의 5%만큼 마진 */
+  margin-right: 10%;
 }
 
 .top-label-price {
   font-size: 23px;
-  width: 10%; /* 부모 너비의 50% */
-  margin-left: 5%;
+  width: 20%; /* 부모 너비의 50% */
+  /* margin-left: 5%; */
   margin-right: 14%;
 }
 
-.top-price-summary-btn,
 .deploy-btn {
   font-family: "NanumSquareRound", sans-serif;
   font-weight: bold;
   font-size: 24px;
   background-color: #f6b755;
   border: none;
-  border-radius: 20px;
+  border-radius: 15px;
   cursor: pointer;
-  height: 67px;
+  height: 50px;
 
-  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 13%);
+  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 6%);
   transition: background-color 0.3s;
   margin-bottom: 13px;
 }
 
 .top-price-summary-btn {
-  width: 200px;
+  font-family: "NanumSquareRound", sans-serif;
+  color: #f49a29;
+  background-color: #ffffff;
+  border-style: solid;
+  border-width: 1px;
+  border-color: #f49a29;
+  border-radius: 10px;
+  padding: 5px;
+  width: 30%;
+  height: 30px;
+  font-weight: bold;
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.top-price-summary-btn:hover,
+.top-price-summary-btn:hover {
+  background-color: #f49a29;
+  color: white;
+}
+
 .deploy-btn:hover,
 .close-btn:hover {
   background-color: #f49a29;
@@ -103,13 +124,103 @@ hr {
 }
 
 .deploy-btn {
-  margin-top: 10px;
+  position: relative;
+  margin-top: 0px;
   width: 137px;
+  transition: all 0.2s ease;
+}
+
+.deploy-btn:active {
+  transform: scale(0.96);
+}
+
+.deploy-btn:before,
+.deploy-btn:after {
+  position: absolute;
+  content: "";
+  width: 150%;
+  left: 50%;
+  height: 100%;
+  transform: translateX(-50%);
+  z-index: -1000;
+  background-repeat: no-repeat;
+}
+
+.deploy-btn:hover:before {
+  top: -70%;
+  background-image: radial-gradient(circle, #f49a29 20%, transparent 20%),
+    radial-gradient(circle, transparent 20%, #f49a29 20%, transparent 30%),
+    radial-gradient(circle, #f49a29 20%, transparent 20%),
+    radial-gradient(circle, #f49a29 20%, transparent 20%),
+    radial-gradient(circle, transparent 10%, #f49a29 15%, transparent 20%),
+    radial-gradient(circle, #f49a29 20%, transparent 20%),
+    radial-gradient(circle, #f49a29 20%, transparent 20%),
+    radial-gradient(circle, #f49a29 20%, transparent 20%),
+    radial-gradient(circle, #f49a29 20%, transparent 20%);
+  background-size: 10% 10%, 20% 20%, 15% 15%, 20% 20%, 18% 18%, 10% 10%, 15% 15%,
+    10% 10%, 18% 18%;
+  background-position: 50% 120%;
+  animation: greentopBubbles 0.6s ease;
+}
+
+@keyframes greentopBubbles {
+  0% {
+    background-position: 5% 90%, 10% 90%, 10% 90%, 15% 90%, 25% 90%, 25% 90%,
+      40% 90%, 55% 90%, 70% 90%;
+  }
+
+  50% {
+    background-position: 0% 80%, 0% 20%, 10% 40%, 20% 0%, 30% 30%, 22% 50%,
+      50% 50%, 65% 20%, 90% 30%;
+  }
+
+  100% {
+    background-position: 0% 70%, 0% 10%, 10% 30%, 20% -10%, 30% 20%, 22% 40%,
+      50% 40%, 65% 10%, 90% 20%;
+    background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+  }
+}
+
+.deploy-btn:hover::after {
+  bottom: -70%;
+  background-image: radial-gradient(circle, #f49a29 20%, transparent 20%),
+    radial-gradient(circle, #f49a29 20%, transparent 20%),
+    radial-gradient(circle, transparent 10%, #f49a29 15%, transparent 20%),
+    radial-gradient(circle, #f49a29 20%, transparent 20%),
+    radial-gradient(circle, #f49a29 20%, transparent 20%),
+    radial-gradient(circle, #f49a29 20%, transparent 20%),
+    radial-gradient(circle, #f49a29, 20%, transparent 20%);
+  background-size: 15% 15%, 20% 20%, 18% 18%, 20% 20%, 15% 15%, 20% 20%, 18% 18%;
+  background-position: 50% 0%;
+  animation: greenbottomBubbles 0.6s ease;
+}
+
+@keyframes greenbottomBubbles {
+  0% {
+    background-position: 10% -10%, 30% 10%, 55% -10%, 70% -10%, 85% -10%,
+      70% -10%, 70% 0%;
+  }
+
+  50% {
+    background-position: 0% 80%, 20% 80%, 45% 60%, 60% 100%, 75% 70%, 95% 60%,
+      105% 0%;
+  }
+
+  100% {
+    background-position: 0% 90%, 20% 90%, 45% 70%, 60% 110%, 75% 80%, 95% 70%,
+      110% 10%;
+    background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+  }
 }
 
 .right-btn {
   display: flex;
   justify-content: flex-end; /* 자식 요소를 오른쪽으로 정렬 */
+}
+
+.middle-btn {
+  display: flex;
+  justify-content: center; /* 자식 요소를 오른쪽으로 정렬 */
 }
 
 .info-btn {
@@ -181,7 +292,6 @@ hr {
 
 .info-notice {
   font-size: 23px;
-  margin-top: 20px;
   display: flex;
   align-items: center;
   height: 30px;

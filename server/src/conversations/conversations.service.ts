@@ -1,12 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import * as AWS from 'aws-sdk';
 import * as dotenv from 'dotenv';
+import { DynamoDBDocumentClient, QueryCommand } from '@aws-sdk/lib-dynamodb';
 
 dotenv.config();
 
 @Injectable()
 export class ConversationsService {
     private dynamoDB: AWS.DynamoDB.DocumentClient;
+    private readonly dynamoDbDocClient: DynamoDBDocumentClient;
 
     static modelSwitchCounter = 1;
     static globalMatrix: string[] = [];
@@ -242,7 +244,7 @@ export class ConversationsService {
         });
     
         // 기존 대화 내역 불러오기
-        const previousConversations = await this.getConversationsByCID(CID);
+        const previousConversations = await this.(CID);
         const conversationHistory = previousConversations
             .map((item) => `User: ${item.userMessage}\nBot: ${item.botResponse}`)
             .join('\n');
@@ -363,6 +365,27 @@ export class ConversationsService {
             throw new Error('대화 기록 불러오기 실패');
         }
     }
+    
+// CID에 따라 Archboard_keyword 테이블에서 키워드 가져오기
+  async getKeywordsByCID(CID: number): Promise<string[]> {
+    const params = {
+      TableName: 'Archboard_keyword',
+      KeyConditionExpression: 'CID = :cid',
+      ExpressionAttributeValues: {
+        ':cid': CID,
+      },
+    };
+
+    try {
+      const result = await this.dynamoDbDocClient.send(new QueryCommand(params));
+      const keywords = result.Items?.map(item => item.keyword) ?? []; // 키워드 필드 추출
+      return keywords;
+    } catch (error) {
+      console.error(`Failed to fetch keywords for CID ${CID}:`, error);
+      throw new Error('Error retrieving keywords');
+    }
+  }
+
 
     // **로 감싸진 텍스트에서 키워드 추출
     extractKeywords(text: string): { keywords: string[], updatedText: string } {

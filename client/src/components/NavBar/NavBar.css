@@ -80,21 +80,70 @@
   margin-right: 30px;
 }
 
+/* From Uiverse.io by satyamchaudharydev */
 .new-project-btn {
-  display: flex; /* Flexbox 사용 */
-  justify-content: center; /* 가로 가운데 정렬 */
-  align-items: center; /* 세로 가운데 정렬 */
-  padding: 20px;
-  color: white;
   font-family: "NanumSquareRound", sans-serif;
-  font-weight: bold;
-  font-size: 18px;
+  position: relative;
+  transition: all 0.3s ease-in-out;
+  /* box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2); */
+  padding-block: 0.5rem;
+  padding-inline: 1.25rem;
   background-color: #f6b755;
-  border: none;
-  border-radius: 10px;
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffff;
+  gap: 10px;
+  font-weight: bold;
+  border: 3px solid #ffffff4d;
+  outline: none;
+  overflow: hidden;
+  font-size: 18px;
   cursor: pointer;
-  height: 30px;
-  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 13%);
+}
+
+.new-project-btn:hover {
+  transform: scale(1.05);
+  border-color: #fff9;
+}
+
+.new-project-btn:hover .icon {
+  transform: translate(4px);
+}
+
+.new-project-btn:hover::before {
+  animation: shine 1.5s ease-out infinite;
+}
+
+.new-project-btn::before {
+  content: "";
+  position: absolute;
+  width: 100px;
+  height: 100%;
+  background-image: linear-gradient(
+    120deg,
+    rgba(255, 255, 255, 0) 30%,
+    rgba(255, 255, 255, 0.8),
+    rgba(255, 255, 255, 0) 70%
+  );
+  top: 0;
+  left: -100px;
+  opacity: 0.6;
+}
+
+@keyframes shine {
+  0% {
+    left: -100px;
+  }
+
+  60% {
+    left: 100%;
+  }
+
+  to {
+    left: 100%;
+  }
 }
 
 .new-project-modal {
@@ -127,6 +176,9 @@
 
 .submit-btn,
 .cancel-btn {
+  font-family: "NanumSquareRound", sans-serif;
+  font-weight: 300;
+  font-size: 19px;
   padding: 10px 20px;
   border: none;
   border-radius: 10px;
