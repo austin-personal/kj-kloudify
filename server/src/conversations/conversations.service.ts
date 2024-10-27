@@ -200,13 +200,13 @@ export class ConversationsService {
             { keyword: '디비선택', noSelectionLog: "디비선택 안함 로직 실행", selectionLog: "디비" , nextTem: "스토리지"},
             { keyword: '스토리지선택', noSelectionLog: "스토리지선택 안함 로직 실행", selectionLog: "스토리지" , nextTem: "네트워크"},
             { keyword: '네트워크선택', noSelectionLog: "네트워크선택 안함 로직 실행", selectionLog: "네트워크" , nextTem: "모니터링"},
-            { keyword: '모니터링', noSelectionLog: "모니터링 선택 안함 로직 실행", selectionLog: "모니터링" , nextTem: "다음문항"}
+            { keyword: '모니터링선택', noSelectionLog: "모니터링 선택 안함 로직 실행", selectionLog: "모니터링" , nextTem: "다음문항"}
         ];
         
         // 조건을 반복하며 인풋 텍스트에서 확인
         for (const option of options) {
             if (user_question.includes(option.keyword)) {
-                if (user_question.includes('선택안함') && !user_question.includes('모니터링')) {
+                if (user_question.includes('선택안함')) {
                     console.log(option.noSelectionLog);
                     
                     // '선택안함'에 대한 추가 로직 작성
@@ -215,9 +215,29 @@ export class ConversationsService {
                     // '선택안함'에 대한 응답 반환
                     return this.createResponse(option.nextTem);
                 } 
-                else if (option.keyword === "모니터링") {
+                else if (option.keyword === "모니터링선택") {
+                    if (user_question.includes('선택안함')) {
+                        console.log(option.noSelectionLog);
+                        const removedItem = ConversationsService.globalMatrix.shift();
+                        // '선택안함'에 대한 추가 로직 작성
+                        await this.saveConversation(CID, user_question, templateResponse);
+    
+                        if (removedItem) {
+                            // 제거된 요소를 응답으로 반환
+                            return this.createResponse(`모니터링 선택 후 다음 항목: ${removedItem}`);
+                        } else {
+                            return this.createResponse("globalMatrix에 더 이상 항목이 없습니다.");
+                        }
+                    }
                     // "모니터링" 키워드가 포함된 경우 처리
+                    if (option.selectionLog) {
+                        ConversationsService.globalMatrix.push(option.selectionLog);
+                    }
                     const removedItem = ConversationsService.globalMatrix.shift();
+
+                    // 인풋 텍스트(user_question)를 DB에 저장
+                    await this.saveConversation(CID, user_question, templateResponse);
+
                     if (removedItem) {
                         // 제거된 요소를 응답으로 반환
                         return this.createResponse(`모니터링 선택 후 다음 항목: ${removedItem}`);
