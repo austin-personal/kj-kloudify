@@ -10,13 +10,14 @@ By progressively visualizing the evolving cloud architecture, Kloudify helps use
 
 # Roles
 #### Austin(Minseok) Kim: Project Manager
-- DevOps
-- Design ERD
-- Designed Project Architecture
-- Designed Cloud Architecture
-- Built the cloud infra
-- Backend APIs 50/100
-- Adapted LLM
+> - **Role**: DevOps, Project Manager, Backend Dev
+> - **Implementation**:
+>   - ERD Design
+>   - Project Architecture Design
+>   - Cloud Architecture Design
+>   - Built the Cloud Infrastructure
+>   - Backend APIs Progress: 50/100 complete
+>   - Adapted LLM for project needs
 
 ### Front & Backend
 - React
