@@ -77,9 +77,12 @@ export class ConversationsService {
                 + `**[ { "service": "ec2", "options": { "ami": "ami-02c329a4b4aba6a48", "instance_type": "t2.micro", "public": true, "subnet_id": "subnet-0189db2034ce49d30" } } ] 
                 이런 포맷으로 서비스 종류 하나씩 출력하세요. 이스케이프 코드 넣지 마 앞에 **을 꼭 넣어줘`
                 ;
-                
+
             case 2:
-                return "아웃풋 텍스트 제일 뒤에 **나와라제발 을 추가해줘";
+                return "당신은 사용자의 요구에 맞는 AWS 서비스 아키텍처를 단계별로 구성하는 안내자 역할을 합니다. "
+                    + "대화내역을 바탕으로 사용자에게 알맞은 서비스를 추천해주세요."
+                    + "이런 포맷으로 서비스 종류 하나씩 출력하세요. 이스케이프 코드 넣지 마 행렬 앞에 **을 꼭 넣어줘"
+                    + '그렇게 추천해준 서비스를 [ { "service": "ec2", "options": { "ami": "ami-02c329a4b4aba6a48", "instance_type": "t2.micro", "public": true, "subnet_id": "subnet-0189db2034ce49d30" } } ] 이런 포맷으로 서비스 종류 하나씩 행렬안에 넣어주세요. 이스케이프 코드 넣지말고 앞에 **을 꼭 넣어주세요';
             case 3:
                 return `{
                     "service": "ec2",
@@ -123,39 +126,39 @@ export class ConversationsService {
 
     async askBedrockModel(user_question: string, CID: number): Promise<any> {
         console.log(`CID received in askBedrockModel: ${CID}`);
-    
+
         // 특정 입력에 대한 템플릿 응답 설정
         const templateResponses = {
             //         인풋 : 아웃풋
             // level 1
             '이 프로젝트의 최종 목표는 무엇인가요': 'template1-2',
 
-            '클라우드에서 가장 필요한 기능이나 역할은 무엇인가요?': 'template1-3',
+            '클라우드에서 가장 필요한 기능이나 역할은 무엇인가요': 'template1-3',
 
-            '이 프로젝트를 이용할 예상 사용자 수는 얼마나 되나요?': 'template1-4',
+            '이 프로젝트를 이용할 예상 사용자 수는 얼마나 되나요': 'template1-4',
 
-            '예산이나 기간 제한이 있나요?': 'template1-5',
+            '예산이나 기간 제한이 있나요': 'template1-5',
 
-            '특별히 고려하고 싶은 요소가 있다면 알려주세요.': 'template1-6',
+            '특별히 고려하고 싶은 요소가 있다면 알려주세요': 'template1-6',
 
-            '당신의 서비스가 인터넷과 연결되어야 하나요?': 'template2-1',
+            '당신의 서비스가 인터넷과 연결되어야 하나요': 'template2-1',
 
             // level 2
-            '서버가 프로젝트의 핵심인가요, 아니면 간단한 웹 서버 정도만 필요한가요?': 'template2-2',
+            // '서버가 프로젝트의 핵심인가요, 아니면 간단한 웹 서버 정도만 필요한가요?': 'template2-2',
 
-            '데이터 저장 공간이 필요하신가요? 어떤 유형의 데이터가 주로 저장될 예정인가요?': 'template2-3',
+            // '데이터 저장 공간이 필요하신가요? 어떤 유형의 데이터가 주로 저장될 예정인가요?': 'template2-3',
 
-            '프로젝트가 여러 네트워크 영역을 필요로 하나요? 혹은 안전한 네트워크 분리가 필요한가요?': 'template3-1',
+            // '프로젝트가 여러 네트워크 영역을 필요로 하나요? 혹은 안전한 네트워크 분리가 필요한가요?': 'template3-1',
 
-            // level 3
-            '이미지, 비디오, 문서 등 파일을 저장해야 하나요? 대량의 파일을 저장하고 관리하는 용도로 사용될 예정인가요?': 'template3-2',
+            // '이미지, 비디오, 문서 등 파일을 저장해야 하나요? 대량의 파일을 저장하고 관리하는 용도로 사용될 예정인가요?': 'template3-2',
 
-            '시스템 성능을 추적하거나 로그를 관리할 필요가 있나요?': 'template3-3',
+            // '시스템 성능을 추적하거나 로그를 관리할 필요가 있나요?': 'template3-3',
 
-            '그 외에 필요한 기능이 있나요?': 'template3-4',
+            '그 외에 필요한 기능이 있나요': 'template3-4',
+            '다음문항': 'template3-4'
 
         };
-    
+
         const level4Questions = {
             '디비': '데이터베이스의 주요 기준을 선택하세요',
             '서버': '서버의 주요 기준을 선택하세요',
@@ -164,16 +167,17 @@ export class ConversationsService {
             '모니터링': '모니터링과 로그 관리의 주요 기준을 선택하세요',
         };
 
-        
-
         // 템플릿 키를 확인하고 응답 생성
         const templateKey = Object.keys(templateResponses).find(key => user_question.includes(key));
         let templateResponse: string = templateKey ? templateResponses[templateKey] : 'default response';
         if (templateKey) {
             // const templateResponse = templateResponses[templateKey];
 
+            const isNextQuestion = user_question.includes('다음문항');
+
+            console.log(isNextQuestion);
             // '그 외에 필요한 기능이 있나요?' 질문 처리
-            if (templateKey === '그 외에 필요한 기능이 있나요?' && ConversationsService.globalMatrix) {
+            if ((templateKey === '그 외에 필요한 기능이 있나요?' || isNextQuestion) && ConversationsService.globalMatrix) {
                 if (ConversationsService.globalMatrix.length === 0) {
                     return this.createResponse("종료");
                 }
@@ -192,11 +196,11 @@ export class ConversationsService {
         }
 
         const options = [
-            { keyword: '서버선택', noSelectionLog: "서버선택 안함 로직 실행", selectionLog: "서버" },
-            { keyword: '디비선택', noSelectionLog: "디비선택 안함 로직 실행", selectionLog: "디비" },
-            { keyword: '스토리지선택', noSelectionLog: "스토리지선택 안함 로직 실행", selectionLog: "스토리지" },
-            { keyword: '네트워크선택', noSelectionLog: "네트워크선택 안함 로직 실행", selectionLog: "네트워크" },
-            { keyword: '모니터링', noSelectionLog: "모니터링 선택 안함 로직 실행", selectionLog: "모니터링" }
+            { keyword: '서버선택', noSelectionLog: "서버선택 안함 로직 실행", selectionLog: "서버" , nextTem: "디비"},
+            { keyword: '디비선택', noSelectionLog: "디비선택 안함 로직 실행", selectionLog: "디비" , nextTem: "template2-3"},
+            { keyword: '스토리지선택', noSelectionLog: "스토리지선택 안함 로직 실행", selectionLog: "스토리지" , nextTem: "template3-1"},
+            { keyword: '네트워크선택', noSelectionLog: "네트워크선택 안함 로직 실행", selectionLog: "네트워크" , nextTem: "template3-2"},
+            { keyword: '모니터링', noSelectionLog: "모니터링 선택 안함 로직 실행", selectionLog: "모니터링" , nextTem: "template3-3"}
         ];
         
         // 조건을 반복하며 인풋 텍스트에서 확인
@@ -212,7 +216,7 @@ export class ConversationsService {
                     await this.saveConversation(CID, user_question, templateResponse);
 
                     // '선택안함'에 대한 응답 반환@@@@@@@@@@@@@@@@@@@@@@@@
-                    return this.createResponse(`${option.keyword}에 대한 선택을 하지 않았습니다.`);
+                    return this.createResponse(option.nextTem);
                 } else {
                     console.log(option.selectionLog);
                     // 일반 선택에 대한 로직 추가
@@ -227,7 +231,7 @@ export class ConversationsService {
                     await this.saveConversation(CID, user_question, templateResponse);
 
                     // 일반 선택에 대한 응답 반환
-                    return this.createResponse(`${option.keyword}에 대한 선택이 저장되었습니다.`);
+                    return this.createResponse(option.nextTem);
                 }
             }
         }

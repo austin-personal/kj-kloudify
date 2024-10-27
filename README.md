@@ -1,22 +1,51 @@
 # kj-kloudify
-
 Kloudify - Cloud Architecture Automation Platform
-Led the development of Kloudify, a platform utilizing a Large Language Model (LLM) to capture user cloud requirements and convert them into Terraform code for one-click deployment. Oversaw project direction, coordinated development efforts, and built teamwork to deliver a conversational interface simplifying cloud architecture setup. Enhanced skills in cloud automation, infrastructure as code (IaC), and LLM integration.
+Kloudify enables users to design tailored cloud infrastructures through an interactive, conversational interface. 
+By progressively visualizing the evolving cloud architecture, Kloudify helps users clarify their cloud needs and see their ideal setup take shape in real time, leading to automated deployment.
 
-Tech stacks
+## Problem to Solve
+- Resource Constraints: Small teams and solo developers often face limitations in resources such as manpower, time, and budget, which impedes efficient cloud infrastructure setup.
+- Complexity of AWS Configuration: AWS services come with numerous configuration options, making even a single service setup challenging. Building a cohesive multi-service architecture adds another layer of complexity, requiring a deep understanding of AWS options and integrations.
+
+
+# Roles
+#### Austin(Minseok) Kim: Project Manager
+> - **Role**: DevOps, Project Manager, Backend Dev
+> - **Implementation**:
+>   - ERD Design
+>   - Project Architecture Design
+>   - Cloud Architecture Design
+>   - Built the Cloud Infrastructure
+>   - Backend APIs Progress: 50/100 complete
+>   - Adapted LLM for project needs
+
+### Front & Backend
 - React
 - Nest.JS
 - Container: Docker
-Server
-- EC2
-AI
-- AWS Bedrock: FM model
-DB
-- AWS RDS-postgres: Defualt DB
-- AWS DynamoDB : To store Chatting data
-- AWS OpenSearch: To store vector data for LLM model to enhance LLM capacity
-Storage
-- AWS S3: to store cloud arch image
+  
+### Server
+- AWS EC2
+- AWS Lambda: To deploy the user's terraform file independently
+  
+### LLM
+- AWS Bedrock: FM model Claude 3.5 Sonnet
+  
+### DB
+- AWS RDS-postgres: Default DB
+- AWS DynamoDB: To store Chatting data
+- AWS OpenSearch: To store vector data for the LLM model to enhance LLM capacity
+
+### Storage  
+- AWS S3: to store Terraform code and cloud arch image
 
 
-![kloudify_AWS_Arch](https://github.com/user-attachments/assets/cd0f3710-72ab-4448-b358-751ecd5e41a8)
+## Simple Flowchart with architectures
+![kloudify-flowchart drawio](https://github.com/user-attachments/assets/a58c484a-03f2-4aeb-999c-0f493d1c8e78)
+
+### Process
+![Screenshot 2024-10-27 at 19 28 30](https://github.com/user-attachments/assets/3e2acbbf-d665-414f-aeff-adcaf3c559f3)
+
+### Cloud Architecture
+![kloudify-architecture drawio](https://github.com/user-attachments/assets/ef5e8065-c37a-4c4e-b987-3dd38c846d6a)
+
