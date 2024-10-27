@@ -102,7 +102,7 @@ export const addNode = (keyword: string, nodes: AppNode[]): AppNode[] => {
   return [...nodes, newNode];
 };
 
-export const replaceNode = (keyword: string, nodeId: string, nodes: AppNode[]): AppNode[] => {
+export const replaceNode = (keyword: string, nodeId: string, options:any[], nodes: AppNode[]): AppNode[] => {
    //require를 사용하여 이미지 경로를 가져옴
    let imageChange: string;
    try {
@@ -110,7 +110,7 @@ export const replaceNode = (keyword: string, nodeId: string, nodes: AppNode[]): 
    } catch (error) {
      imageChange = require(`../../../img/aws-icons/ec2.svg`); //경로에 없을 시 ec2 이미지가 디폴트로 나올것임.
    }
-
+ 
   return nodes.map((node) => {
     if (node.id === nodeId) {
       return {
@@ -120,7 +120,7 @@ export const replaceNode = (keyword: string, nodeId: string, nodes: AppNode[]): 
           ...node.data,
           label: keyword, // 필요시 새 label 설정
           imgUrl: imageChange,
-          description:`${keyword}는 AWS의 주요 컴퓨팅 서비스 중 하나입니다.`,
+          description: options.join("\n"),
         },
         style: {
           border:"none",

@@ -104,10 +104,14 @@ const Board = forwardRef(
       },
     ];
     //서비스 이름 추출
-    const services: any = testData.map((item) => item.service);
+    const service_values = testData[0].service;
+    //상세정보 띄우기 위한 option 추출
+    const options_values: any[] = Object.values(testData[0].options);
+    console.log(options_values);
+
     // 함수의 메모이제이션을 제공,함수의 의존성을 명시하여 최신 상태를 참조하도록 보장
     const handleAddNode = useCallback(() => {
-      const newNodes = addNode(services[0], nodes);
+      const newNodes = addNode(service_values, nodes);
       setNodes(newNodes);
       // 노드가 추가된 후 fitView 호출
       // 상태 업데이트 후 약간의 지연 시간을 두고 fitView 호출
@@ -129,7 +133,7 @@ const Board = forwardRef(
       }
     };
     const handleReplaceNode = useCallback(() => {
-      const newNodes = replaceNode(services[0], "1", nodes);
+      const newNodes = replaceNode(service_values, "1", options_values, nodes);
       setNodes(newNodes);
     }, [nodes, setNodes]);
 
