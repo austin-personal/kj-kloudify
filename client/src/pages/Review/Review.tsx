@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import Board from "../../components/Board/Board";
 import Services from "../../components/Services/Services";
 import "./Review.css";
@@ -6,6 +6,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCloudArrowDown } from "@fortawesome/free-solid-svg-icons";
 function Review() {
   const [showOptions, setShowOptions] = useState(false);
+  const boardRef = useRef<{ takeScreenshot: () => void } | null>(null);
+  const handleScreenshot = () => {
+    if (boardRef.current) {
+      boardRef.current.takeScreenshot();
+    }
+  };
 
   const handleMouseEnter = () => {
     setShowOptions(true);
@@ -25,6 +31,7 @@ function Review() {
     <div className="review">
       <div className="review-board">
         <Board
+          ref={boardRef}
           height="100%"
           borderRadius="20px 20px 20px 20px"
           parsedData={[]}
@@ -46,9 +53,7 @@ function Review() {
               <button onClick={() => handleDownload("terraform")}>
                 Terraform Code
               </button>
-              <button onClick={() => handleDownload("architecture")}>
-                Architecture
-              </button>
+              <button onClick={handleScreenshot}>Architecture</button>
             </div>
           </div>
         </div>
