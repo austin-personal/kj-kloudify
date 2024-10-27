@@ -141,7 +141,7 @@ export class ConversationsService {
 
             '특별히 고려하고 싶은 요소가 있다면 알려주세요': 'template1-6',
 
-            '당신의 서비스가 인터넷과 연결되어야 하나요': 'template2-1',
+            '당신의 서비스가 인터넷과 연결되어야 하나요': '서버',
 
             // level 2
             // '서버가 프로젝트의 핵심인가요, 아니면 간단한 웹 서버 정도만 필요한가요?': 'template2-2',
@@ -197,10 +197,10 @@ export class ConversationsService {
 
         const options = [
             { keyword: '서버선택', noSelectionLog: "서버선택 안함 로직 실행", selectionLog: "서버" , nextTem: "디비"},
-            { keyword: '디비선택', noSelectionLog: "디비선택 안함 로직 실행", selectionLog: "디비" , nextTem: "template2-3"},
-            { keyword: '스토리지선택', noSelectionLog: "스토리지선택 안함 로직 실행", selectionLog: "스토리지" , nextTem: "template3-1"},
-            { keyword: '네트워크선택', noSelectionLog: "네트워크선택 안함 로직 실행", selectionLog: "네트워크" , nextTem: "template3-2"},
-            { keyword: '모니터링', noSelectionLog: "모니터링 선택 안함 로직 실행", selectionLog: "모니터링" , nextTem: "template3-3"}
+            { keyword: '디비선택', noSelectionLog: "디비선택 안함 로직 실행", selectionLog: "디비" , nextTem: "스토리지"},
+            { keyword: '스토리지선택', noSelectionLog: "스토리지선택 안함 로직 실행", selectionLog: "스토리지" , nextTem: "네트워크"},
+            { keyword: '네트워크선택', noSelectionLog: "네트워크선택 안함 로직 실행", selectionLog: "네트워크" , nextTem: "모니터링"},
+            { keyword: '모니터링', noSelectionLog: "모니터링 선택 안함 로직 실행", selectionLog: "모니터링" , nextTem: "다음문항"}
         ];
         
         // 조건을 반복하며 인풋 텍스트에서 확인
