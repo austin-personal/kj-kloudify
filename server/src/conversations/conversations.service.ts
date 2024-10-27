@@ -240,7 +240,7 @@ export class ConversationsService {
 
                     if (removedItem) {
                         // 제거된 요소를 응답으로 반환
-                        return this.createResponse(`모니터링 선택 후 다음 항목: ${removedItem}`);
+                        return this.createResponse(`templete3-3`);
                     } else {
                         return this.createResponse("globalMatrix에 더 이상 항목이 없습니다.");
                     }
