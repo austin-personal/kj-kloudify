@@ -8,6 +8,8 @@ interface KeyFormProps {
   setSecretKey: React.Dispatch<React.SetStateAction<string>>;
   keyPair: string;
   setKeyPair: React.Dispatch<React.SetStateAction<string>>;
+  region: string;
+  setRegion: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const KeyForm: React.FC<KeyFormProps> = ({
@@ -17,6 +19,8 @@ const KeyForm: React.FC<KeyFormProps> = ({
   setSecretKey,
   keyPair,
   setKeyPair,
+  region,
+  setRegion,
 }) => {
   return (
     <div className="key-form">
@@ -37,6 +41,15 @@ const KeyForm: React.FC<KeyFormProps> = ({
             placeholder="ex)ABCD1234ABCD1234"
             value={secretKey}
             onChange={(e) => setSecretKey(e.target.value)}
+          />
+        </div>
+        <div className="input-box">
+          <div className="color-font-th">AWS_REGION</div>
+          <input
+            type="text"
+            placeholder="ex)ap-northeast-2"
+            value={region}
+            onChange={(e) => setRegion(e.target.value)}
           />
         </div>
       </div>
