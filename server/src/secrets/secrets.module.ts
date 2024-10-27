@@ -10,6 +10,7 @@ import { UsersModule } from '../users/users.module';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Secrets, Users]),UsersModule], 
+  exports: [SecretsService],
   providers: [SecretsService],  
   controllers: [SecretsController], 
 })

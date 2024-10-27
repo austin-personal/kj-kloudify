@@ -8,7 +8,7 @@ dotenv.config();
 @Injectable()
 export class ConversationsService {
     private dynamoDB: AWS.DynamoDB.DocumentClient;
-    private readonly dynamoDbDocClient: DynamoDBDocumentClient;
+    private dynamoDbDocClient: DynamoDBDocumentClient;
 
     static modelSwitchCounter = 1;
 
@@ -124,8 +124,9 @@ export class ConversationsService {
             '3': '이것은 템플릿 응답입니다. 질문 2에 대한 준비된 답변입니다.',
             '4': '이것은 템플릿 응답입니다. 질문 2에 대한 준비된 답변입니다.',
             '5': '이것은 템플릿 응답입니다. 질문 2에 대한 준비된 답변입니다.',
-            
 
+            // level 4
+            '6': '이것은 템플릿 응답입니다. 질문 2에 대한 준비된 답변입니다.',
 
         };
     
@@ -165,7 +166,7 @@ export class ConversationsService {
         });
     
         // 기존 대화 내역 불러오기
-        const previousConversations = await this.(CID);
+        const previousConversations = await this.getConversationsByCID(CID);
         const conversationHistory = previousConversations
             .map((item) => `User: ${item.userMessage}\nBot: ${item.botResponse}`)
             .join('\n');
@@ -301,81 +302,6 @@ export class ConversationsService {
         }
     }
 
-    
-// CID에 따라 Archboard_keyword 테이블에서 키워드 가져오기
-  async getKeywordsByCID(CID: number): Promise<string[]> {
-    const params = {
-      TableName: 'Archboard_keyword',
-      KeyConditionExpression: 'CID = :cid',
-      ExpressionAttributeValues: {
-        ':cid': CID,
-      },
-    };
-
-    try {
-      const result = await this.dynamoDbDocClient.send(new QueryCommand(params));
-      const keywords = result.Items?.map(item => item.keyword) ?? []; // 키워드 필드 추출
-      return keywords;
-    } catch (error) {
-      console.error(`Failed to fetch keywords for CID ${CID}:`, error);
-      throw new Error('Error retrieving keywords');
-    }
-  }
-
-
-
-    //     // 챗봇 응답을 받아와 특정 프롬프트와 함께 Bedrock 모델에 보내는 함수
-    // async sendResponseWithPrompt(chatbotResponse: string, promptMessage: string): Promise<any> {
-    //     // 프롬프트 메시지 구성
-    //     const prompt_content = `
-    //         이전 챗봇 응답:
-    //         ${chatbotResponse}
-
-    //         추가 프롬프트 메시지: 
-    //         ${promptMessage}
-    //     `;
-
-    //     // 요청 바디 구성
-    //     const requestBody = {
-    //         max_tokens: 1000,
-    //         anthropic_version: 'bedrock-2023-05-31',
-    //         messages: [
-    //             {
-    //                 role: 'user',
-    //                 content: prompt_content,
-    //             },
-    //         ],
-    //     };
-
-    //     try {
-    //         const client = new AWS.BedrockRuntime({
-    //             region: process.env.AWS_REGION,
-    //             accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    //             secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-    //         });
-
-    //         // Bedrock 모델 호출
-    //         const response = await client
-    //             .invokeModel({
-    //                 body: JSON.stringify(requestBody),
-    //                 contentType: 'application/json',
-    //                 modelId: 'anthropic.claude-3-haiku-20240307-v1:0',
-    //             })
-    //             .promise();
-
-    //         const responseBody = response.body.toString();
-    //         const parsedResponse = JSON.parse(responseBody);
-
-    //         // 응답에서 'content' 필드의 'text' 값을 추출하여 botResponse로 사용
-    //         const botResponse = parsedResponse.content?.[0]?.text;
-
-    //         // 결과 반환
-    //         return botResponse;
-    //     } catch (error) {
-    //         throw new Error(`Bedrock 모델 호출 실패: ${error.message}`);
-    //     }
-    // }
-
     // **로 감싸진 텍스트에서 키워드 추출
     extractKeywords(text: string): { keywords: string[], updatedText: string } {
         if (!text) {
@@ -473,19 +399,23 @@ export class ConversationsService {
         return result.Item ? result.Item.keyword : null;  // 기존 키워드 반환, 없으면 null
     }
 
-    // async getConversationsByCID(CID: string): Promise<any> {
-    //     const params = {
-    //       TableName: 'Conversations',
-    //       FilterExpression: 'CID = :cid',
-    //       ExpressionAttributeValues: {
-    //         ':cid': CID,
-    //       }
-    //     };
-    
-    //     const result = await this.dynamoDB.scan(params).promise(); // dynamoDB로 일치시킴
-    //     return result.Items;
-    //   }
+        // CID에 따라 Archboard_keyword 테이블에서 키워드 가져오기
+    async getKeywordsByCID(CID: number): Promise<string[]> {
+        const params = {
+        TableName: 'Archboard_keyword',
+        KeyConditionExpression: 'CID = :cid',
+        ExpressionAttributeValues: {
+            ':cid': CID,
+        },
+        };
 
-
-
+        try {
+        const result = await this.dynamoDbDocClient.send(new QueryCommand(params));
+        const keywords = result.Items?.map(item => item.keyword) ?? []; // 키워드 필드 추출
+        return keywords;
+        } catch (error) {
+        console.error(`Failed to fetch keywords for CID ${CID}:`, error);
+        throw new Error('Error retrieving keywords');
+        }
+    }
 }

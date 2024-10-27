@@ -1,156 +1,196 @@
-import { Injectable } from '@nestjs/common';
-import { exec } from 'child_process';
-import * as fs from 'fs';
+import { CIDR } from './../../node_modules/aws-sdk/clients/directconnect.d';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { ReviewDto } from './dto/review.dto';
+import { DeployDto } from './dto/deploy.dto';
+import { DownloadDto } from './dto/download.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+
+
+import { SecretsService } from '../secrets/secrets.service';
+
+// AWS 라이브러리
+import * as AWS from 'aws-sdk';
+import { S3 } from '@aws-sdk/client-s3';
+import { Lambda } from '@aws-sdk/client-lambda';
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { DynamoDBDocumentClient, GetCommand } from '@aws-sdk/lib-dynamodb';
+
+import * as fs from 'fs'; // 파일시스템 라이브러리. 동기적으로 폴더를 생성해주고 그 폴더를 사용할수 있다.
+import * as path from 'path';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class TerraformService {
+  private s3: S3;
+  private lambda: Lambda;
+  private dynamoDBClient: DynamoDBClient; 
+  private dynamoDbDocClient: DynamoDBDocumentClient;
 
-  // 키워드별로 필요한 Terraform 블록을 생성
-  private generateTerraformBlock(service: string, options: any): string {
-    let terraformBlock = '';
+  constructor(
+    private readonly secretsService: SecretsService,
+  ) {
+    this.s3 = new S3({ region: process.env.AWS_REGION });
+    this.lambda = new Lambda({ region: process.env.AWS_REGION });
+    this.dynamoDBClient = new DynamoDBClient({ region: process.env.AWS_REGION });
 
-    // EC2 인스턴스 생성 (퍼블릭/프라이빗 여부 조건에 따라 처리)
-    if (service === 'ec2') {
-      terraformBlock += `
-      resource "aws_instance" "example" {
-        ami           = "${options.ami || 'ami-0c55b159cbfafe1f0'}"
-        instance_type = "${options.instance_type || 't2.micro'}"
-        ${options.public ? 'associate_public_ip_address = true' : ''}
-        subnet_id     = "${options.subnet_id || 'subnet-123456'}"
-      }\n`;
-    }
-
-    // S3 버킷 생성 (파일 업로드 없이 버킷만 생성)
-    if (service === 's3') {
-      terraformBlock += `
-      provider "aws" {
-        alias       = "s3_provider"
-        access_key  = "${options.access_key || ''}"  // 자격 증명 전달
-        secret_key  = "${options.secret_key || ''}"
-        region      = "${options.region || 'ap-northeast-2'}"  // S3 리전 설정
-      }
-    
-      resource "aws_s3_bucket" "example" {
-        provider = aws.s3_provider  // 올바른 provider 참조
-        bucket   = "${options.bucket_name || 'example-bucket'}"
-      }\n`;
-  
-      // S3와 EC2 연결이 필요하지만 파일 업로드는 하지 않음
-      if (options.linked_to_ec2) {
-        terraformBlock += `
-        # S3와 EC2 연결을 위해 추가적인 설정이 필요할 경우 여기에 작성 가능 (업로드는 하지 않음)
-        `;
-      }
-    }
-  
-    // RDS DB 인스턴스 생성
-
-    if (service === 'rds') {
-      terraformBlock += `
-      resource "aws_db_instance" "example" {
-        allocated_storage    = ${options.storage || '20'}
-        engine               = "${options.engine || 'mysql'}"
-        instance_class       = "${options.instance_class || 'db.t2.micro'}"
-        name                 = "${options.db_name || 'exampledb'}"
-        username             = "${options.username || 'admin'}"
-        password             = "${options.password || 'password'}"
-      }\n`;
-
-      // 만약 DB와 연결된 EC2가 있다면
-      if (options.linked_to_ec2) {
-        terraformBlock += `
-        output "db_instance_endpoint" {
-          value = aws_db_instance.example.endpoint
-        }\n`;
-      }
-    }
-  
-    return terraformBlock;
+    this.dynamoDbDocClient = DynamoDBDocumentClient.from(this.dynamoDBClient);
   }
+  /**
+   * AWS Bedrock Claude 3.5 Sonnet을 사용하여 Terraform 코드 생성
+   */
+  private async generateTerraformCode(keywords: string[]): Promise<string> {
+    const prompt_content = `
+      Convert the following keywords into Terraform code:
+      ${JSON.stringify(keywords)}
+      Terraform 코드에서는 자격 증명을 변수로 정의하지 않고, 환경 변수에서 자동으로 가져오도록 합니다 provider.
+    `;
 
-  // 여러 서비스를 받아 Terraform configuration 파일 생성
-  private generateTerraformConfig(
-    services: Array<{ service: string; options: any }>, 
-    awsCredentials: { accessKeyId: string; secretAccessKey: string }
-  ): string {
-    let terraformConfig = `
-      provider "aws" {
-        access_key = "${awsCredentials.accessKeyId}"
-        secret_key = "${awsCredentials.secretAccessKey}"
-        region     = "${services[0]?.options?.region || 'ap-northeast-2'}"  // 서울 리전으로 설정
-      }\n`;
-
-    // 주어진 서비스 리스트에 따라 Terraform 블록을 생성하여 병합
-    for (const service of services) {
-      terraformConfig += this.generateTerraformBlock(service.service, {
-        ...service.options,
-        access_key: awsCredentials.accessKeyId,
-        secret_key: awsCredentials.secretAccessKey
-      }) + '\n';
-    }
-
-    return terraformConfig;
-  }
-
-  // 테라폼 생성 명령어 실행
-  async createTerraform(
-    services: Array<{ service: string; options: any }>, 
-    awsCredentials: { accessKeyId: string; secretAccessKey: string }
-  ): Promise<string> {
-    return new Promise((resolve, reject) => {
-      // 주어진 키워드에 맞는 Terraform configuration 파일 생성
-      const terraformConfig = this.generateTerraformConfig(services, awsCredentials);
-
-      fs.writeFileSync('main.tf', terraformConfig); // main.tf 파일 생성
-
-      // Terraform 명령어 실행
-      exec('terraform init && terraform apply -auto-approve', (error, stdout, stderr) => {
-        if (error) {
-          reject(`Error: ${error.message}`);
-          return;
-        }
-        if (stderr) {
-          reject(`Stderr: ${stderr}`);
-          return;
-        }
-        resolve(stdout); // 성공 시 stdout 로그 반환
-      });
+    // 베드락 설정
+    const client = new AWS.BedrockRuntime({
+        region: process.env.AWS_REGION,
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
     });
+
+    const requestBody = {
+      max_tokens: 1000,
+      anthropic_version: 'bedrock-2023-05-31',
+      messages: [
+          {
+              role: 'user',
+              content: prompt_content,
+          },
+      ],
+    };
+
+    try {
+      // Bedrock 모델 호출
+      const response = await client
+          .invokeModel({
+              body: JSON.stringify(requestBody),
+              contentType: 'application/json',
+              modelId: 'anthropic.claude-3-5-sonnet-20240620-v1:0',
+          })
+          .promise();
+
+      const responseBody = response.body.toString();
+      const parsedResponse = JSON.parse(responseBody);
+      // 최종적으로 업데이트된 텍스트와 함께 리턴 (키워드 리스트 포함)
+      return {
+          ...parsedResponse,
+          content: [
+              {
+                  type: "text",
+                  text: parsedResponse  // 업데이트된 텍스트 (키워드 리스트 포함)
+              }
+          ]
+      };
+  } catch (error) {
+      throw new Error(`Bedrock 모델 호출 실패: ${error.message}`);
   }
+}
 
-  // 테라폼 삭제 명령어 실행
-  async destroyTerraform(): Promise<string> {
-    return new Promise((resolve, reject) => {
-      exec('terraform destroy -auto-approve', (error, stdout, stderr) => {
-        if (error) {
-          reject(`Error: ${error.message}`);
-          return;
-        }
-        if (stderr && !stderr.includes('Warning')) {  // 경고를 제외한 stderr 처리
-          reject(`Stderr: ${stderr}`);
-          return;
-        }
-        resolve(stdout); // 성공 시 stdout 로그 반환
+  /**
+     * 리뷰: Terraform 코드 생성 및 S3에 저장
+     */
+  async reviewInfrastructure(reviewDto: ReviewDto): Promise<any> {
+    const { CID } = reviewDto;
 
-      });
+    // 1. DynamoDB에서 keyword 조회
+    const dynamoParams = {
+      TableName: process.env.DYNAMO_TABLE_NAME,
+      Key: { CID }, // CID를 기준으로 keyword 조회
+    };
+    const command = new GetCommand(dynamoParams);
+    const dynamoResult = await this.dynamoDbDocClient.send(command);
+    const keyword = dynamoResult.Item?.keyword?.S;
+    if (!keyword) {
+        throw new Error('Keyword not found in DynamoDB');
+    }
+
+    // 2. Terraform 코드 생성
+    const terraformCode = await this.generateTerraformCode([keyword]);
+
+    // 3. Terraform 코드를 S3에 저장
+    const tmpDir = `/tmp/${CID}`; // CID를 임시 디렉토리 이름으로 사용
+    fs.mkdirSync(tmpDir);
+    const terraformFilePath = path.join(tmpDir, 'main.tf');
+    fs.writeFileSync(terraformFilePath, terraformCode);
+
+    const s3Bucket = process.env.TERRAFORM_BUCKET;
+    const s3Key = `${CID}/main.tf`; // CID를 S3 키 값으로 사용
+
+    const fileContent = fs.readFileSync(terraformFilePath);
+
+    await this.s3.putObject({
+      Bucket: s3Bucket,
+      Key: s3Key,
+      Body: fileContent,
+      ContentType: 'application/octet-stream',
     });
+
+    // 4. 생성된 Terraform 코드를 반환
+    return {
+      status: 'Terraform code generated',
+      terraformCode,
+    };
+}
+
+
+  /**
+   * S3에 저장된 Terraform 코드를 실행하여 인프라를 배포하는 메서드
+   */
+  async deployInfrastructure(deployDto: DeployDto): Promise<any> {
+    const { userId, CID } = deployDto;
+
+    // S3에서 Terraform 파일 경로 설정
+    const s3Bucket = process.env.TERRAFORM_BUCKET;
+    const s3Key = `${CID}/main.tf`;
+
+    // Lambda 함수 트리거
+    const lambdaFunctionName = process.env.TERRAFORM_LAMBDA_FUNCTION;
+    const payload = {
+      userId,
+      CID,
+      s3Bucket,
+      s3Key,
+    };
+
+    try {
+      const lambdaResponse = this.lambda.invoke({
+        FunctionName: lambdaFunctionName,
+        InvocationType: 'Event', // 비동기 호출
+        Payload: JSON.stringify(payload),
+      });
+
+      return {
+        status: 'Deployment initiated',
+        lambdaResponse,
+      };
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to trigger Lambda function', error);
+    }
   }
+  /**
+   * S3에 저장된 Terraform 코드를 다운로드하는 메서드
+   */
+  async downloadInfrastructure(downloadDto: DownloadDto): Promise<any> {
+    const { CID } = downloadDto;
 
-  // 테라폼 상태 확인 명령어 실행
-  async showTerraformState(): Promise<string> {
-    return new Promise((resolve, reject) => {
-      exec('terraform show', (error, stdout, stderr) => {
-        if (error) {
-          reject(`Error: ${error.message}`);
-          return;
-        }
-        if (stderr && !stderr.includes('Warning')) {  // 경고를 제외한 stderr 처리
-          reject(`Stderr: ${stderr}`);
-          return;
-        }
-        resolve(stdout); // 성공 시 stdout 로그 반환
+    const s3Bucket = process.env.TERRAFORM_BUCKET;
+    const s3Key = `${CID}/main.tf`;
 
-      });
-    });
+    const params = {
+      Bucket: s3Bucket,
+      Key: s3Key,
+    };
+
+    try {
+      const fileStream = await this.s3.getObject(params);
+      return fileStream.Body;
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to download Terraform file', error);
+    }
   }
 }
