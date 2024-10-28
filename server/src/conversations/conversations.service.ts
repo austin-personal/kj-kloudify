@@ -11,6 +11,7 @@ export class ConversationsService {
     private dynamoDbDocClient: DynamoDBDocumentClient;
 
     static modelSwitchCounter = 1;
+    static globalMatrix: string[] = [];
 
     constructor() {
         this.dynamoDB = new AWS.DynamoDB.DocumentClient({
@@ -76,9 +77,12 @@ export class ConversationsService {
                 + `**[ { "service": "ec2", "options": { "ami": "ami-02c329a4b4aba6a48", "instance_type": "t2.micro", "public": true, "subnet_id": "subnet-0189db2034ce49d30" } } ] 
                 이런 포맷으로 서비스 종류 하나씩 출력하세요. 이스케이프 코드 넣지 마 앞에 **을 꼭 넣어줘`
                 ;
-                
+
             case 2:
-                return "아웃풋 텍스트 제일 뒤에 **나와라제발 을 추가해줘";
+                return "당신은 사용자의 요구에 맞는 AWS 서비스 아키텍처를 단계별로 구성하는 안내자 역할을 합니다. "
+                    + "대화내역을 바탕으로 사용자에게 알맞은 서비스를 추천해주세요."
+                    + "이런 포맷으로 서비스 종류 하나씩 출력하세요. 이스케이프 코드 넣지 마 행렬 앞에 **을 꼭 넣어줘"
+                    + '그렇게 추천해준 서비스를 [ { "service": "ec2", "options": { "ami": "ami-02c329a4b4aba6a48", "instance_type": "t2.micro", "public": true, "subnet_id": "subnet-0189db2034ce49d30" } } ] 이런 포맷으로 서비스 종류 하나씩 행렬안에 넣어주세요. 이스케이프 코드 넣지말고 앞에 **을 꼭 넣어주세요';
             case 3:
                 return `{
                     "service": "ec2",
@@ -94,68 +98,202 @@ export class ConversationsService {
         }
     }
 
+    static async saveConversation(CID: number, user_question: string, response: string) {
+        console.log(`Saving conversation: CID=${CID}, user_question=${user_question}, response=${response}`);
+    }
+
+    createResponse(text: string) {
+        return {
+            "id": "-",
+            "type": "message",
+            "role": "assistant",
+            "model": "-",
+            "content": [
+                {
+                    "type": "text",
+                    "text": text
+                }
+            ],
+            "stop_reason": "-",
+            "stop_sequence": null,
+            "usage": {
+                "input_tokens": "-",
+                "output_tokens": "-"
+            }
+        };
+    }
+
+
     async askBedrockModel(user_question: string, CID: number): Promise<any> {
         console.log(`CID received in askBedrockModel: ${CID}`);
-    
+
         // 특정 입력에 대한 템플릿 응답 설정
         const templateResponses = {
             //         인풋 : 아웃풋
             // level 1
-            '간단한 웹사이트': 'templete1-5',
-            '간단한 게임': '이것은 템플릿 응답입니다. 질문 2에 대한 준비된 답변입니다.',
-            '데이터저장': '이것은 템플릿 응답입니다. 질문 2에 대한 준비된 답변입니다.',
-            '서버 운영': '이것은 템플릿 응답입니다. 질문 2에 대한 준비된 답변입니다.',
-            '개발 환경 제공': '이것은 템플릿 응답입니다. 질문 2에 대한 준비된 답변입니다.',
-            '예상 사용자 수 - X명': '이것은 템플릿 응답입니다. 질문 2에 대한 준비된 답변입니다.',
-            '그외 기타 사항 - XXX': '이것은 템플릿 응답입니다. 질문 2에 대한 준비된 답변입니다.',
-            '퍼블릭 통신 유무': '이것은 템플릿 응답입니다. 질문 2에 대한 준비된 답변입니다.',
+            '이 프로젝트의 최종 목표는 무엇인가요': 'template1-2',
+
+            '클라우드에서 가장 필요한 기능이나 역할은 무엇인가요': 'template1-3',
+
+            '이 프로젝트를 이용할 예상 사용자 수는 얼마나 되나요': 'template1-4',
+
+            '예산이나 기간 제한이 있나요': 'template1-5',
+
+            '특별히 고려하고 싶은 요소가 있다면 알려주세요': 'template1-6',
+
+            '당신의 서비스가 인터넷과 연결되어야 하나요': '서버',
 
             // level 2
-            '서버가 핵심': '이것은 템플릿 응답입니다. 질문 2에 대한 준비된 답변입니다.',
-            '간단한 웹서버': '이것은 템플릿 응답입니다. 질문 2에 대한 준비된 답변입니다.',
-            '데이터 저장 공간이 필요함 - xxx 유형의 데이터가 주로 저장': '이것은 템플릿 응답입니다. 질문 2에 대한 준비된 답변입니다.',
-            '스토리지 필요여부 - xxx': '이것은 템플릿 응답입니다. 질문 2에 대한 준비된 답변입니다.',
-            '네트워크 구성 - xxx': '이것은 템플릿 응답입니다. 질문 2에 대한 준비된 답변입니다.',
-            '그 외 필요한 기능': '이것은 템플릿 응답입니다. 질문 2에 대한 준비된 답변입니다.',
+            // '서버가 프로젝트의 핵심인가요, 아니면 간단한 웹 서버 정도만 필요한가요?': 'template2-2',
 
-            // level 3
-            '1': '이것은 템플릿 응답입니다. 질문 2에 대한 준비된 답변입니다.',
-            '2': '이것은 템플릿 응답입니다. 질문 2에 대한 준비된 답변입니다.',
-            '3': '이것은 템플릿 응답입니다. 질문 2에 대한 준비된 답변입니다.',
-            '4': '이것은 템플릿 응답입니다. 질문 2에 대한 준비된 답변입니다.',
-            '5': '이것은 템플릿 응답입니다. 질문 2에 대한 준비된 답변입니다.',
+            // '데이터 저장 공간이 필요하신가요? 어떤 유형의 데이터가 주로 저장될 예정인가요?': 'template2-3',
 
-            // level 4
-            '6': '이것은 템플릿 응답입니다. 질문 2에 대한 준비된 답변입니다.',
+            // '프로젝트가 여러 네트워크 영역을 필요로 하나요? 혹은 안전한 네트워크 분리가 필요한가요?': 'template3-1',
+
+            // '이미지, 비디오, 문서 등 파일을 저장해야 하나요? 대량의 파일을 저장하고 관리하는 용도로 사용될 예정인가요?': 'template3-2',
+
+            // '시스템 성능을 추적하거나 로그를 관리할 필요가 있나요?': 'template3-3',
+
+            '그 외에 필요한 기능이 있나요': 'template3-4',
+            '다음문항': 'template3-4'
 
         };
-    
-        // 특정 질문이 들어오면 템플릿 응답 제공
-        if (templateResponses[user_question]) {
-            const templateResponse = templateResponses[user_question];
-    
-            // 대화 내용을 DynamoDB에 저장
-            await this.saveConversation(CID, user_question, templateResponse);
-    
-            // 템플릿 응답을 JSON 형식으로 반환
-            return {
-                "id": "-",
-                "type": "message",
-                "role": "assistant",
-                "model": "-",
-                "content": [
-                    {
-                        "type": "text",
-                        "text": templateResponse
-                    }
-                ],
-                "stop_reason": "-",
-                "stop_sequence": null,
-                "usage": {
-                    "input_tokens": "-",
-                    "output_tokens": "-"
+
+        const level4Questions = {
+            '디비': '데이터베이스의 주요 기준을 선택하세요',
+            '서버': '서버의 주요 기준을 선택하세요',
+            '스토리지': '저장 공간의 주요 기준을 선택하세요',
+            '네트워크': '네트워크 구성에서 중요하게 여기는 기준을 선택하세요',
+            '모니터링': '모니터링과 로그 관리의 주요 기준을 선택하세요',
+        };
+
+        // 템플릿 키를 확인하고 응답 생성
+        const templateKey = Object.keys(templateResponses).find(key => user_question.includes(key));
+        let templateResponse: string = templateKey ? templateResponses[templateKey] : 'default response';
+        if (templateKey) {
+            // const templateResponse = templateResponses[templateKey];
+
+            const isNextQuestion = user_question.includes('다음문항');
+
+            console.log(isNextQuestion);
+            // '그 외에 필요한 기능이 있나요?' 질문 처리
+            if ((templateKey === '그 외에 필요한 기능이 있나요?' || isNextQuestion) && ConversationsService.globalMatrix) {
+                if (ConversationsService.globalMatrix.length === 0) {
+                    return this.createResponse("종료");
                 }
-            };
+
+                const nextItem = ConversationsService.globalMatrix.shift();
+                if (nextItem && level4Questions[nextItem]) {
+                    return this.createResponse(level4Questions[nextItem]);
+                } else {
+                    return this.createResponse("다음 질문이 없습니다.");
+                }
+            }
+
+            // 템플릿 응답 반환
+            await this.saveConversation(CID, user_question, templateResponse);
+            return this.createResponse(templateResponse);
+        }
+
+        const options = [
+            { keyword: '서버선택', noSelectionLog: "서버선택 안함 로직 실행", selectionLog: "서버설정" , nextTem: "디비"},
+            { keyword: '디비선택', noSelectionLog: "디비선택 안함 로직 실행", selectionLog: "디비설정" , nextTem: "스토리지"},
+            { keyword: '스토리지선택', noSelectionLog: "스토리지선택 안함 로직 실행", selectionLog: "스토리지설정" , nextTem: "네트워크"},
+            { keyword: '네트워크선택', noSelectionLog: "네트워크선택 안함 로직 실행", selectionLog: "네트워크설정" , nextTem: "모니터링"},
+            { keyword: '모니터링선택', noSelectionLog: "모니터링 선택 안함 로직 실행", selectionLog: "모니터링설정" , nextTem: "다음문항"}
+        ];
+        
+        // 조건을 반복하며 인풋 텍스트에서 확인
+        for (const option of options) {
+            if (user_question.includes(option.keyword)) {
+                if (user_question.includes('선택안함')) {
+                    console.log(option.noSelectionLog);
+                    
+                    // '선택안함'에 대한 추가 로직 작성
+                    await this.saveConversation(CID, user_question, templateResponse);
+
+                    // '선택안함'에 대한 응답 반환
+                    return this.createResponse(option.nextTem);
+                } 
+                else if (option.keyword === "모니터링선택") {
+                    if (user_question.includes('선택안함')) {
+                        console.log(option.noSelectionLog);
+                        const removedItem = ConversationsService.globalMatrix.shift();
+                        // '선택안함'에 대한 추가 로직 작성
+                        await this.saveConversation(CID, user_question, templateResponse);
+    
+                        if (removedItem) {
+                            // 제거된 요소를 응답으로 반환
+                            return this.createResponse(`templete3-3`);
+                        } else {
+                            return this.createResponse("이대로 선택하시겠습니까?");
+                        }
+                    }
+                    // "모니터링" 키워드가 포함된 경우 처리
+                    if (option.selectionLog) {
+                        ConversationsService.globalMatrix.push(option.selectionLog);
+                    }
+                    const removedItem = ConversationsService.globalMatrix.shift();
+
+                    // 인풋 텍스트(user_question)를 DB에 저장
+                    await this.saveConversation(CID, user_question, templateResponse);
+
+                    if (removedItem) {
+                        // 제거된 요소를 응답으로 반환
+                        return this.createResponse(`모니터링 선택 후 다음 항목: ${removedItem}`);
+                    } else {
+                        return this.createResponse("globalMatrix에 더 이상 항목이 없습니다.");
+                    }
+                } 
+                else {
+                    console.log(option.selectionLog);
+                    // 일반 선택에 대한 로직 추가
+                    if (option.selectionLog) {
+                        ConversationsService.globalMatrix.push(option.selectionLog);
+                    }
+
+                    // 인풋 텍스트(user_question)를 DB에 저장
+                    await this.saveConversation(CID, user_question, templateResponse);
+
+                    // 일반 선택에 대한 응답 반환
+                    return this.createResponse(option.nextTem);
+                }
+            }
+        }
+
+        // 기존 로직 이후 추가 로직
+        const labels = [
+            "비용 최적화: 비용을 낮추고 저용량부터 시작할 수 있는 설정 (예: 작은 RDS 인스턴스, 온디맨드 가격 모델)",
+            "고성능: 높은 성능과 빠른 처리 속도를 위해 최적화된 설정 (예: 고성능 RDS 인스턴스, Provisioned IOPS 스토리지)",
+            "확장 가능성: 서비스 확장을 위한 자동 확장 옵션 (예: Aurora Serverless)",
+            "저비용 서버: 일반적인 웹 서비스나 소규모 트래픽을 위한 저비용 옵션 (예: 작은 EC2 인스턴스, Spot Instances)",
+            "성능 중심 서버: 트래픽이 많거나 성능이 중요한 경우 (예: 고성능 EC2 인스턴스, Enhanced Networking 지원)",
+            "서버리스: 관리가 필요 없는 자동 확장 서버리스 옵션 (예: AWS Lambda)",
+            "비용 절감: 장기 저장 및 저렴한 비용이 필요할 때 (예: S3 Standard-IA, S3 Glacier)",
+            "고성능: 빈번한 데이터 접근을 위한 높은 성능 (예: S3 Standard)",
+            "확장 및 내구성: 자동 확장 및 높은 데이터 내구성을 원하는 경우 (예: S3와 자동 확장 설정)",
+            "기본 보안: 기본적인 보안 구성으로 클라우드 네트워크 보호",
+            "고급 보안: 보안 강화를 위한 VPN 연결 및 세분화된 접근 제어 (예: VPC, Network ACL)",
+            "성능 최적화: 네트워크 성능을 높이기 위한 고성능 설정 (예: 고성능 네트워킹, 글로벌 가속기)",
+            "기본 모니터링: 기본적인 성능 모니터링과 에러 알림 (예: CloudWatch 기본 설정)",
+            "심화 모니터링: 더 상세한 성능 및 로그 데이터 수집 (예: CloudWatch와 고급 메트릭)",
+            "자동화된 경고 및 알림: 특정 조건이 발생할 때 자동으로 알림을 받는 설정 (예: 경고 알림 및 자동 조치 설정)"
+        ];
+
+        // label 값을 확인하고 globalMatrix에서 값을 pop하는 로직
+        for (const label of labels) {
+            if (user_question.includes(label)) {
+                // globalMatrix에서 다음 값을 pop하여 반환하거나 비어 있을 경우 "종료" 반환
+                const nextValue = ConversationsService.globalMatrix.shift();
+                if (nextValue) {
+                    // 인풋 텍스트(user_question)를 DB에 저장
+                    await this.saveConversation(CID, user_question, nextValue);
+
+                    return this.createResponse(nextValue);
+                } else {
+                    return this.createResponse("종료");
+                }
+            }
         }
     
         // 이 아래는 기존 Bedrock 모델 호출 로직 그대로 유지
@@ -197,18 +335,7 @@ export class ConversationsService {
                 },
             ],
         };
-
-        // const requestBody = {
-        //     input_text: prompt_content,  // 요청할 프롬프트 내용을 prompt_content로 지정
-        //     parameters: {
-        //         max_tokens: 1000,       // 생성할 최대 토큰 수
-        //         temperature: 0.7,       // 창의성 정도 조정
-        //         top_p: 0.9,             // 확률 분포 기반 선택 기준
-        //         stop_sequences: ["\n"]  // 응답을 멈추게 할 시퀀스 설정
-        //     },
-        // };
         
-    
         try {
             // Bedrock 모델 호출
             const response = await client
@@ -245,9 +372,6 @@ export class ConversationsService {
             throw new Error(`Bedrock 모델 호출 실패: ${error.message}`);
         }
     }
-    
-    
-    
 
     // 대화 기록을 DynamoDB에 저장하는 함수
     async saveConversation(CID: number, userMessage: string, botResponse: string): Promise<void> {
@@ -301,6 +425,27 @@ export class ConversationsService {
             throw new Error('대화 기록 불러오기 실패');
         }
     }
+    
+// CID에 따라 Archboard_keyword 테이블에서 키워드 가져오기
+  async getKeywordsByCID(CID: number): Promise<string[]> {
+    const params = {
+      TableName: 'Archboard_keyword',
+      KeyConditionExpression: 'CID = :cid',
+      ExpressionAttributeValues: {
+        ':cid': CID,
+      },
+    };
+
+    try {
+      const result = await this.dynamoDbDocClient.send(new QueryCommand(params));
+      const keywords = result.Items?.map(item => item.keyword) ?? []; // 키워드 필드 추출
+      return keywords;
+    } catch (error) {
+      console.error(`Failed to fetch keywords for CID ${CID}:`, error);
+      throw new Error('Error retrieving keywords');
+    }
+  }
+
 
     // **로 감싸진 텍스트에서 키워드 추출
     extractKeywords(text: string): { keywords: string[], updatedText: string } {

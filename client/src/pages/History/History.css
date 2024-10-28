@@ -95,8 +95,8 @@
   padding: 20px;
   width: 146px;
   position: absolute;
-  bottom: 50px;
-  left: 140px;
+  bottom: 12%;
+  left: 100%;
   border-radius: 25px 25px 25px 0;
   background-color: #b6d6ed;
   opacity: 0;
@@ -111,8 +111,13 @@
   cursor: pointer;
 }
 
-.chat-button:hover ~ .previous-chat-explanation-th {
+.chat-button:hover ~ .visible {
+  position: absolute;
   opacity: 1;
+}
+
+.hide {
+  opacity: 0;
 }
 
 .left-content {

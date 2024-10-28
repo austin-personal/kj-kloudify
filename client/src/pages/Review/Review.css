@@ -2,3 +2,81 @@
   display: flex;
   margin: 90px 50px 0 50px;
 }
+
+.vertical-line {
+  height: 100vh;
+}
+
+.review-board {
+  flex: 2;
+  margin-right: 20px;
+  margin-bottom: 80px;
+}
+
+.download {
+  display: flex;
+  justify-content: flex-end; /* 오른쪽 끝으로 정렬 */
+  margin-top: 20px;
+}
+
+.download-icon {
+  margin-right: 10px;
+}
+
+.download-container {
+  position: relative;
+  display: inline-block;
+}
+
+.download-button {
+  font-family: "NanumSquareRound", sans-serif;
+  font-weight: bold;
+  border-radius: 15px;
+  background-color: #8ae37e;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 24px;
+  z-index: 2;
+  position: relative;
+}
+
+.download-button:hover {
+  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 6%);
+}
+
+.download-options {
+  border-radius: 10px;
+  position: absolute;
+  bottom: 110%; /* 버튼 뒤에서 위로 펼쳐지도록 설정 */
+  left: 0;
+  background-color: white;
+  border: 1px solid #ddd;
+  opacity: 0; /* 초기 상태에서 투명 */
+  transform: translateY(40px); /* 아래에서 위로 이동 */
+  transition: opacity 0.3s ease, transform 0.3s ease; /* 트랜지션 설정 */
+  z-index: 1; /* 버튼보다 낮은 z-index 설정 */
+}
+
+.download-container:hover .download-options {
+  opacity: 1; /* 보이도록 설정 */
+  transform: translateY(0); /* 원래 위치로 이동 */
+  pointer-events: auto; /* 보일 때 클릭 가능하도록 설정 */
+}
+
+.download-options button {
+  font-family: "NanumSquareRound", sans-serif;
+  color: #312d26;
+  background: none;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 20px;
+  width: 100%;
+  text-align: left;
+}
+
+.download-options button:hover {
+  background-color: #f0f0f0;
+}
