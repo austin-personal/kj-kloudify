@@ -67,7 +67,7 @@ const Home: React.FC = () => {
   };
   const handleFinish = () => {
     saveNodesToSession();
-    navigate("/review");
+    navigate(`/review/${project?.CID}`);
   };
 
   // Chat 컴포넌트로부터 파싱된 데이터를 받는 함수
