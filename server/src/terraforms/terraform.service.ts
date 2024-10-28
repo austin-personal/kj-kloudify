@@ -79,8 +79,7 @@ export class TerraformService {
 
       const responseBody = response.body.toString();
       const parsedResponse = JSON.parse(responseBody);
-      // 최종적으로 업데이트된 텍스트와 함께 리턴 (키워드 리스트 포함)
-      return {
+      return { // ... = 스프레드 연산자: 객체 안에 있는 모든 속성을 복사하여 새로운 객체에 포함
           ...parsedResponse,
           content: [
               {
@@ -196,6 +195,7 @@ export class TerraformService {
       return fileStream.Body;
     } catch (error) {
       throw new InternalServerErrorException('Failed to download Terraform file', error);
+      }
     }
   }
 }
