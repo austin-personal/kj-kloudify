@@ -553,5 +553,4 @@ export class ConversationsService {
         const result = await this.dynamoDB.get(params).promise();
         return result.Item ? result.Item.keyword : null;  // 기존 키워드 반환, 없으면 null
     }
-
 }
