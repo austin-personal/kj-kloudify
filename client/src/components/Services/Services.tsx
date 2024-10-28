@@ -34,6 +34,7 @@ const Services: React.FC<ServicesProps> = ({ nodes, cid }) => {
     try {
       // deploy 함수 호출 (딱히 반환값을 사용하지 않으므로 await로만 호출)
       const response = await deploy(cid, token);
+      console.log(response)
       console.log("배포가 성공적으로 시작되었습니다.");
 
       // 세션 스토리지에서 노드 정보 삭제
