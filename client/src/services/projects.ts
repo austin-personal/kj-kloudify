@@ -51,17 +51,33 @@ export const projectOneInfo = async (pid: number, token: string | null) => {
     }
 };
 
-export const projectAllInfo = async (token: string) => {
+//배포되지 않은 프로젝트 가져오기
+export const projectResumeInfo = async (token: string) => {
     try {
         // 태현 api 주소 확인!!!
-        const response = await axios.get(`${API_URL}`, {
+        const response = await axios.get(`${API_URL}/resume`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
         });
         return response;
     } catch (error) {
-        console.error('프로젝트 정보 개박살!! :', error);
+        console.error('배포안된 프로젝트 정보 개박살!! :', error);
+        throw error;
+    }
+};
+//배포 완료된 프로젝트 가져오기
+export const projectDeployedInfo = async (token: string) => {
+    try {
+        // 태현 api 주소 확인!!!
+        const response = await axios.get(`${API_URL}/deployed`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        return response;
+    } catch (error) {
+        console.error('배포된 프로젝트 정보 개박살!! :', error);
         throw error;
     }
 };

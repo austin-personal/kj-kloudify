@@ -1,11 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Profile.css";
-import { projectAllInfo, deleteProject } from "../../services/projects";
+import {
+  projectResumeInfo,
+  projectDeployedInfo,
+  deleteProject,
+} from "../../services/projects";
 import { deleteSecret, checkSecret } from "../../services/secrets";
 import { info } from "../../services/users";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
+import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 
 // 유저 프로필 타입 정의
 interface UserProfile {
@@ -23,6 +28,7 @@ interface Project {
   ARCTID: number;
   projectName: string;
   createdDate: string;
+  isDeployed: boolean;
 }
 
 const Profile: React.FC = () => {
@@ -34,6 +40,8 @@ const Profile: React.FC = () => {
   const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [hasSecret, setHasSecret] = useState(false);
+  const [filterType, setFilterType] = useState("all"); // 필터링 타입 상태 추가
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false); // 드롭다운 상태 추가
   const itemsPerPage = 5; // 한 페이지에 보여줄 항목 수
   const token = localStorage.getItem("token");
 
@@ -47,8 +55,14 @@ const Profile: React.FC = () => {
           const userData = await info(token);
           setUserProfile(userData.user);
           // 유저의 프로젝트 리스트 가져오기
-          const projectData = await projectAllInfo(token);
-          setProjects(projectData.data); // 응답 데이터에 따라 수정 필요
+          const projectResumeData = await projectResumeInfo(token);
+          const projecDeployedtData = await projectDeployedInfo(token);
+          const combinedProjects = [
+            ...projectResumeData.data,
+            ...projecDeployedtData.data,
+          ];
+          setProjects(combinedProjects); // 응답 데이터에 따라 수정 필요
+          console.log(combinedProjects);
         } else {
           // 토큰이 없으면 로그인 페이지로 이동
           navigate("/");
@@ -64,17 +78,27 @@ const Profile: React.FC = () => {
   // 페이지가 변경될 때 currentPage를 조정하는 useEffect 추가
   useEffect(() => {
     // 현재 페이지가 총 페이지 수보다 클 경우, 총 페이지 수에 맞춰 currentPage 수정
-    const totalPages = Math.ceil(projects.length / itemsPerPage);
+    const totalPages = Math.ceil(filteredProjects().length / itemsPerPage);
     if (currentPage > totalPages) {
       setCurrentPage(totalPages > 0 ? totalPages : 1);
     }
-  }, [projects, currentPage, itemsPerPage]);
+  }, [projects, currentPage, itemsPerPage, filterType]);
 
+  // 필터링된 프로젝트 목록 반환
+  const filteredProjects = () => {
+    if (filterType === "deployed") {
+      return projects.filter((project) => project.isDeployed);
+    } else if (filterType === "inProgress") {
+      return projects.filter((project) => !project.isDeployed);
+    } else {
+      return projects;
+    }
+  };
   // 페이지에 맞춰서 보여줄 프로젝트 목록 계산
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
 
-  const sortedProjects = projects.sort((a, b) => {
+  const sortedProjects = filteredProjects().sort((a, b) => {
     const dateA = new Date(a.createdDate || 0).getTime(); // createdDate가 없을 경우 1970년 1월 1일로 기본 설정
     const dateB = new Date(b.createdDate || 0).getTime(); // createdDate가 없을 경우 1970년 1월 1일로 기본 설정
     return dateB - dateA; // 최신순 정렬 (타임스탬프 기반 비교)
@@ -89,7 +113,7 @@ const Profile: React.FC = () => {
   const emptyRows = itemsPerPage - currentProjects.length; // 남은 빈 행의 개수 계산
 
   // 총 페이지 수 계산
-  const totalPages = Math.ceil(projects.length / itemsPerPage);
+  const totalPages = Math.ceil(filteredProjects().length / itemsPerPage);
 
   const handleNextPage = () => {
     if (currentPage < totalPages) {
@@ -105,8 +129,12 @@ const Profile: React.FC = () => {
 
   if (!userProfile) return <div>Loading...</div>;
 
-  const handleProjectClick = (PID: number) => {
-    navigate(`/history/${PID}`);
+  const handleProjectClick = (PID: number, isDeployed: boolean) => {
+    if (isDeployed) {
+      navigate(`/history/${PID}`);
+    } else {
+      navigate(`/home/${PID}`);
+    }
   };
   const handleDeleteClick = (project: Project) => {
     setProjectToDelete(project); // project 객체 전체를 설정
@@ -146,6 +174,16 @@ const Profile: React.FC = () => {
     setShowDeleteModal(false);
     setProjectToDelete(null); // 모달 닫기
   };
+
+  const handleFilterChange = (type: string) => {
+    setFilterType(type);
+    setIsDropdownOpen(false); // 드롭다운 닫기
+    setCurrentPage(1); // 필터 변경 시 첫 페이지로 돌아가기
+  };
+
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
   return (
     <div className="profile-page">
       {/* 상단 프로필 섹션 */}
@@ -169,15 +207,49 @@ const Profile: React.FC = () => {
         </div>
       </div>
       <hr className="userProfile-line-th" />
+
       {/* 하단 프로젝트 리스트 섹션 */}
       <div className="project-list-container">
         <table className="project-list-table">
           <thead>
             <tr>
               <th className="project-name">Project Name</th>
-              <th className="status">Status</th>
+              <th className="status">&nbsp;&nbsp;Status</th>
               <th className="created-date">Date</th>
-              <th></th>
+              {/* 필터링 드롭다운 버튼 섹션 */}
+              <th className="filter-dropdown">
+                <button className="dropdown-button" onClick={toggleDropdown}>
+                  {filterType === "all"
+                    ? "All"
+                    : filterType === "deployed"
+                    ? "완료"
+                    : "진행중"}{" "}
+                  &nbsp;
+                  <FontAwesomeIcon icon={faChevronDown} />
+                </button>
+                {isDropdownOpen && (
+                  <div className="dropdown-menu">
+                    <div
+                      className="dropdown-item"
+                      onClick={() => handleFilterChange("all")}
+                    >
+                      모두 보기
+                    </div>
+                    <div
+                      className="dropdown-item"
+                      onClick={() => handleFilterChange("deployed")}
+                    >
+                      Deployed 보기
+                    </div>
+                    <div
+                      className="dropdown-item"
+                      onClick={() => handleFilterChange("inProgress")}
+                    >
+                      In-progress 보기
+                    </div>
+                  </div>
+                )}
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -185,10 +257,20 @@ const Profile: React.FC = () => {
               currentProjects.map((project) => (
                 <tr
                   key={project.PID}
-                  onClick={() => handleProjectClick(project.PID)}
+                  onClick={() =>
+                    handleProjectClick(project.PID, project.isDeployed)
+                  }
                 >
                   <td>{project.projectName}</td>
-                  <td className="status">ON🟢</td>
+                  <td className="status">
+                    <div
+                      className={`status-common ${
+                        project.isDeployed ? "completed" : "in-progress"
+                      }`}
+                    >
+                      {project.isDeployed ? "완료" : "진행중"}
+                    </div>
+                  </td>
                   <td>{new Date(project.createdDate).toLocaleDateString()}</td>
                   <td className="button-cell">
                     <button

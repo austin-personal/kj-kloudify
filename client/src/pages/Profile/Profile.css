@@ -88,15 +88,41 @@
   background-color: #f2eed1; /* 짝수 행의 배경색 */
 }
 
-.project-name,
-.status,
-.created-date {
-  width: 20%;
+.project-name {
+  width: 30%;
 }
 
+.status {
+  width: 30%;
+}
+
+.created-date {
+  width: 25%;
+}
+
+.filter-dropdown {
+  width: 15%;
+  position: sticky; /* 고정 위치로 설정 */
+  right: 0;
+}
+
+.status-common {
+  text-align: center;
+  border-radius: 50px;
+  padding: 8px;
+  width: 23%;
+  color: white;
+}
+
+.completed {
+  background-color: #8ae37e;
+}
+.in-progress {
+  background-color: #e37e7e;
+}
 .button-cell {
-  text-align: right; /* 버튼이 오른쪽에 정렬되도록 설정 */
-  width: 1%; /* 셀 크기를 자동으로 확장하지 않도록 설정 */
+  text-align: right;
+  width: 1%;
 }
 .pagination {
   display: flex;
@@ -268,4 +294,62 @@
 .page-number.active {
   background-color: #b6d6ed;
   color: white;
+}
+
+/* 드롭다운 컨테이너 */
+.filter-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+/* 드롭다운 버튼 스타일 */
+.dropdown-button {
+  font-family: "NanumSquareRound", sans-serif;
+  font-weight: bold;
+  color: #312d26;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100px;
+  height: 35px;
+  background-color: #b6d6ed; /* 버튼 색상, 필요 시 수정 */
+  padding: 5px 5px;
+  font-size: 18px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+/* 드롭다운 메뉴 */
+.dropdown-menu {
+  position: absolute;
+  top: 80%;
+  left: 40%;
+  background-color: #2e2e2e; /* 드롭다운 배경색, 필요 시 수정 */
+  border-radius: 8px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15); /* 그림자 효과 */
+  padding: 8px 0;
+  margin-top: 5px;
+  min-width: 200px; /* 메뉴 최소 너비 */
+  z-index: 1;
+}
+
+/* 드롭다운 항목 스타일 */
+.dropdown-item {
+  padding: 12px 16px;
+  color: #ffffff; /* 글자 색상 */
+  text-decoration: none;
+  font-size: 14px;
+  display: block;
+  transition: background-color 0.3s ease;
+  cursor: pointer;
+}
+
+.dropdown-item:hover {
+  background-color: #444444; /* 항목에 마우스 올릴 시 배경색 */
+}
+
+.dropdown-item:not(:last-child) {
+  border-bottom: 1px solid #444444; /* 항목 사이 구분선 */
 }
