@@ -37,7 +37,7 @@ const Home: React.FC = () => {
 
   // 프로젝트 정보를 가져오는 함수
   useEffect(() => {
-    console.log("화면 체인지!!!!")
+    console.log("화면 체인지!!!!");
     const fetchProjectData = async () => {
       try {
         if (pid) {
@@ -106,7 +106,12 @@ const Home: React.FC = () => {
           <div className="setting-services setting-in-progress">2</div>
         </div>
         <ReactFlowProvider>
-          <Board parsedData={parsedData} nodes={nodes} setNodes={setNodes} />
+          <Board
+            parsedData={parsedData}
+            finishData={finishData}
+            nodes={nodes}
+            setNodes={setNodes}
+          />
         </ReactFlowProvider>
         <div
           className={`popup ${isOpenSummary ? "visible" : "hidden"}`}

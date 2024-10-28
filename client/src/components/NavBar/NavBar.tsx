@@ -96,7 +96,7 @@ const NavBar: React.FC = () => {
     event.preventDefault();
     const projectName = (event.target as HTMLFormElement).projectName.value;
     console.log("New Project Name:", projectName);
-
+    sessionStorage.removeItem("nodes"); // 세션 스토리지에서 노드 데이터 삭제
     //prohectName을 DB에 넘김
     try {
       const token = localStorage.getItem("token");

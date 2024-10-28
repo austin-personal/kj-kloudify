@@ -14,7 +14,7 @@ function Review() {
   const [showOptions, setShowOptions] = useState(false);
   const [nodes, setNodes] = useState<any[]>([]); //node 정보 저장된 것 불러오기위해 상태끌어올림
   const boardRef = useRef<{ takeScreenshot: () => void } | null>(null);
-  const token = localStorage.getItem('token') ?? '';
+  const token = localStorage.getItem("token") ?? "";
 
   const handleScreenshot = () => {
     if (boardRef.current) {
@@ -69,6 +69,7 @@ function Review() {
             height="100%"
             borderRadius="20px 20px 20px 20px"
             parsedData={[]}
+            finishData={[]}
             nodes={nodes}
             setNodes={setNodes}
           />

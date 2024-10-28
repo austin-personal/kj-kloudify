@@ -80,7 +80,7 @@ export const addNode = (keyword: string, nodes: AppNode[]): AppNode[] => {
   const newNodeX = lastNodeX+ 80;
 
   const newNode: AppNode =
-    {  id:(nodes.length + 1).toString(),
+    {  id:(nodes.length).toString(),
       type:"default",
       position: { x: newNodeX, y: lastNodeY},
       data: { label: keyword },
@@ -104,6 +104,10 @@ export const addNode = (keyword: string, nodes: AppNode[]): AppNode[] => {
 
 export const replaceNode = (keyword: string, nodeId: string, options:any[], nodes: AppNode[]): AppNode[] => {
    //require를 사용하여 이미지 경로를 가져옴
+   // keyword를 소문자로 변환
+   console.log("keyword:",keyword);
+   console.log("nodeId:", nodeId);
+
    let imageChange: string;
    try {
      imageChange = require(`../../../img/aws-icons/${keyword}.svg`);
@@ -120,7 +124,7 @@ export const replaceNode = (keyword: string, nodeId: string, options:any[], node
           ...node.data,
           label: keyword, // 필요시 새 label 설정
           imgUrl: imageChange,
-          description: options.join("\n"),
+          description: Array.isArray(options) ? options.join(", ") : JSON.stringify(options),
         },
         style: {
           border:"none",
