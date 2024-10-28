@@ -224,7 +224,7 @@ export class ConversationsService {
     
                         if (removedItem) {
                             // 제거된 요소를 응답으로 반환
-                            return this.createResponse(`templete3-3`);
+                            return this.createResponse(`template3-3`);
                         } else {
                             return this.createResponse("이대로 선택하시겠습니까?");
                         }
@@ -240,7 +240,7 @@ export class ConversationsService {
 
                     if (removedItem) {
                         // 제거된 요소를 응답으로 반환
-                        return this.createResponse(`templete3-3`);
+                        return this.createResponse(`template3-3`);
                     } else {
                         return this.createResponse("globalMatrix에 더 이상 항목이 없습니다.");
                     }
