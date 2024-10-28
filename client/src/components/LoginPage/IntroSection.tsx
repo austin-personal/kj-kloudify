@@ -8,6 +8,7 @@ const IntroSection = () => {
     { id: 3, content: "Experience seamless integration and powerful tools." },
   ];
   const settings = {
+    arrows: false,
     dots: true,
     infinite: true,
     speed: 500,
@@ -18,21 +19,13 @@ const IntroSection = () => {
   };
 
   return (
-    <div
-      style={{
-        width: "50%",
-        height: "85%",
-        borderRadius: "10px",
-      }}
-    >
-      <Slider {...settings} className="contents">
-        {introData.map((slide) => (
-          <div key={slide.id} className="intro-content">
-            <p>{slide.content}</p>
-          </div>
-        ))}
-      </Slider>
-    </div>
+    <Slider {...settings} className="contents">
+      {introData.map((slide) => (
+        <div key={slide.id} className="intro-content">
+          <p>{slide.content}</p>
+        </div>
+      ))}
+    </Slider>
   );
 };
 
