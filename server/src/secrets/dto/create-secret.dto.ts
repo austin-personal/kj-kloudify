@@ -3,4 +3,5 @@ export class CreateSecretDto {
     accessKey: string;
     secretAccessKey: string;
     securityKey: string;
+    region: string;
   }

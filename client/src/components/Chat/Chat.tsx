@@ -287,7 +287,7 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onParsedData, onFinishData }) =
         };
         setMessages((prevMessages) => [...prevMessages, botMessage]);
       }
-    } else if (typeof responseMessage === "string" && responseMessage.includes("**")) {
+    } else if (responseMessage.includes("**")) {
       const [beforeAsterisks, afterAsterisks] = responseMessage
         .split("**")
         .map((part) => part.trim());

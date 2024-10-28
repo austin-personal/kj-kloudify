@@ -1,31 +1,43 @@
 import { Return } from './../../node_modules/aws-sdk/clients/cloudsearchdomain.d';
 import { Injectable } from '@nestjs/common';
+import { InternalServerErrorException } from '@nestjs/common';
+
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Secrets } from './entity/secrets.entity';
 import { Users } from '../users/entity/users.entity';
 
+import * as crypto from 'crypto';
+
+
 @Injectable()
 export class SecretsService {
+  private encryptionKey: Buffer;
 // TypeORM 연결: User, Secrets entity
   constructor(
     @InjectRepository(Secrets)
     private secretsRepository: Repository<Secrets>,
     @InjectRepository(Users)
     private usersRepository: Repository<Users>,
-  ) {}
+  ) {
+    this.encryptionKey = Buffer.from(process.env.ENCRYPTION_KEY!, 'hex');
+  }
 
 // 새로운 Secrets 생성 함수
   async createSecret(userId: number, AccessKey: string, SecretAccessKey: string, SecurityKey: string) {
+    const encryptedAccessKey = this.encrypt(AccessKey);
+    const encryptedSecretAccessKey = this.encrypt(SecretAccessKey);
+    const encryptedSecurityKey = this.encrypt(SecurityKey);
+    
     const user = await this.usersRepository.findOne({ where: { UID: userId } });
     if (!user) {
       throw new Error('User not found');
     }
 
     const secret = this.secretsRepository.create({
-      accessKey: AccessKey,
-      secretAccessKey: SecretAccessKey,
-      securityKey: SecurityKey,
+      AccessKey: encryptedAccessKey,
+      SecretAccessKey: encryptedSecretAccessKey,
+      SecurityKey: encryptedSecurityKey,
       UID: userId,
     });
     await this.secretsRepository.save(secret);
@@ -46,5 +58,46 @@ export class SecretsService {
     const secret = await this.secretsRepository.findOne({ where: { UID: userId } });
 
     return !!secret;
+  }
+    /**
+   * 사용자 자격 증명 조회 및 복호화
+   */
+  async getUserCredentials(userId: number): Promise<{ accessKey: string; secretAccessKey: string; securitKey?: string }> {
+    const secrets = await this.secretsRepository.findOne({ where: { UID:userId } });
+    if (!secrets) {
+      throw new InternalServerErrorException('User credentials not found');
+    }
+
+    const decryptedAccessKeyId = this.decrypt(secrets.AccessKey);
+    const decryptedSecretAccessKey = this.decrypt(secrets.SecretAccessKey);
+    const decryptedSecurityKey = secrets.SecurityKey ? this.decrypt(secrets.SecurityKey) : undefined;
+
+    return {
+      accessKey: decryptedAccessKeyId,
+      secretAccessKey: decryptedSecretAccessKey,
+      securitKey: decryptedSecurityKey,
+    };
+  }
+  /**
+   * 암호화 메서드
+   */
+  encrypt(text: string): string {
+    const iv = crypto.randomBytes(16);
+    const cipher = crypto.createCipheriv('aes-256-cbc', this.encryptionKey, iv);
+    let encrypted = cipher.update(text, 'utf8', 'hex');
+    encrypted += cipher.final('hex');
+    return iv.toString('hex') + ':' + encrypted;
+  }
+
+  /**
+   * 복호화 메서드
+   */
+  decrypt(encryptedText: string): string {
+    const [ivHex, encrypted] = encryptedText.split(':');
+    const iv = Buffer.from(ivHex, 'hex');
+    const decipher = crypto.createDecipheriv('aes-256-cbc', this.encryptionKey, iv);
+    let decrypted = decipher.update(encrypted, 'hex', 'utf8');
+    decrypted += decipher.final('utf8');
+    return decrypted;
   }
 }

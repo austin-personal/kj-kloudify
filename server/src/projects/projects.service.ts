@@ -112,7 +112,5 @@ export class ProjectsService {
       throw new InternalServerErrorException('Failed to delete items from DynamoDB');
     }
   }
-  
-  
 
 }
