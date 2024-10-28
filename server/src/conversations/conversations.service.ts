@@ -217,7 +217,7 @@ export class ConversationsService {
                         console.log(option.noSelectionLog, "Is here??");
                         // const removedItem = ConversationsService.globalMatrix.shift();
                         // '선택안함'에 대한 추가 로직 작성
-                        await this.saveConversation(CID, user_question, templateResponse);
+                        await this.saveConversation(CID, user_question, 'template3-3');
     
 
                         // 제거된 요소를 응답으로 반환
@@ -232,7 +232,7 @@ export class ConversationsService {
                     // const removedItem = ConversationsService.globalMatrix.shift();
 
                     // 인풋 텍스트(user_question)를 DB에 저장
-                    await this.saveConversation(CID, user_question, templateResponse);
+                    await this.saveConversation(CID, user_question, 'template3-3');
 
                     console.log(`template3-3 !![${ConversationsService.globalMatrix.join(', ')}]`);
                     return this.createResponse(`template3-3 !![${ConversationsService.globalMatrix.join(', ')}]`);
@@ -242,7 +242,7 @@ export class ConversationsService {
                     console.log(option.noSelectionLog);
                     
                     // '선택안함'에 대한 추가 로직 작성
-                    await this.saveConversation(CID, user_question, templateResponse);
+                    await this.saveConversation(CID, user_question, option.nextTem);
 
                     // '선택안함'에 대한 응답 반환
                     console.log(`template3-3 !![${ConversationsService.globalMatrix.join(', ')}]`);
@@ -258,7 +258,7 @@ export class ConversationsService {
                     }
 
                     // 인풋 텍스트(user_question)를 DB에 저장
-                    await this.saveConversation(CID, user_question, templateResponse);
+                    await this.saveConversation(CID, user_question, option.nextTem);
 
                     // 일반 선택에 대한 응답 반환
                     console.log(`template3-3 !![${ConversationsService.globalMatrix.join(', ')}]`);
@@ -420,7 +420,7 @@ export class ConversationsService {
                 ':cid': CID,
             }
         };
-
+        console.log("hi my name is CID");
         try {
             console.log('쿼리 파라미터:', params);
             const result = await this.dynamoDB.scan(params).promise(); // scan을 사용하여 CID 필터링
