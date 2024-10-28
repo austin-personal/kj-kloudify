@@ -72,11 +72,13 @@ export class ConversationsService {
                     + "만약 사용자가 특정 서비스를 선택하는 메세지를 전송 시 긍정해주는 메세지를 보내줘.";
             case 1:
                 return "당신은 사용자의 요구에 맞는 AWS 서비스 아키텍처를 단계별로 구성하는 안내자 역할을 합니다."
-                + "대화를 주도하며 필요한 경우 추가 질문을 통해 사용자의 요구사항을 명확히 하세요. "
+                + "대화를 주도하며 필요한 경우 추가 질문을 통해 사용자의 요구사항을 명확히 하세요."
                 + "답변에서 사용자가 특정 aws의 서비스를 단순히 언급하는게 아닌 '확실하게 사용하겠다고 확정 {ex)ec2를 사용할께 같은 경우}' 지은 경우에만 대답을 완료한 후 별도로 추출하기 쉽도록 텍스트 하단에 "
-                + `**[ { "service": "ec2", "options": { "ami": "ami-02c329a4b4aba6a48", "instance_type": "t2.micro", "public": true, "subnet_id": "subnet-0189db2034ce49d30" } } ] 
+                + `**[ { "service": "", "options": { "ami": "", "instance_type": "", "public": ""} } ]
                 이런 포맷으로 서비스 종류 하나씩 출력하세요. \\n 없이 한줄로 출력해줘. 앞에 **을 꼭 넣어줘`
                 + "혹시 사용자가 aws와 관련없는 주제로 대답할 경우 aws 선택을 할 수 있도록 주제를 상기시켜줘"
+                + "aws 기본 지역은 서울 지역이야."
+                + "ec2의 ami와 subnet_id도 내가 구성한 내용을 바탕으로 실제로 사용할 수 있도록 구성해줘. subnet은 별도의 언급이 없다면 기본값으로 설정하고"
                 ;
 
             case 2:
@@ -218,8 +220,9 @@ export class ConversationsService {
                         await this.saveConversation(CID, user_question, templateResponse);
     
 
-                            // 제거된 요소를 응답으로 반환
-                        return this.createResponse(`template3-3`);
+                        // 제거된 요소를 응답으로 반환
+                        console.log(`template3-3 !![${ConversationsService.globalMatrix.join(', ')}]`);
+                        return this.createResponse(`template3-3 !![${ConversationsService.globalMatrix.join(', ')}]`);
 
                     }
                     // "모니터링" 키워드가 포함된 경우 처리
@@ -231,8 +234,8 @@ export class ConversationsService {
                     // 인풋 텍스트(user_question)를 DB에 저장
                     await this.saveConversation(CID, user_question, templateResponse);
 
-
-                    return this.createResponse(`template3-3`);
+                    console.log(`template3-3 !![${ConversationsService.globalMatrix.join(', ')}]`);
+                    return this.createResponse(`template3-3 !![${ConversationsService.globalMatrix.join(', ')}]`);
 
                 }
                 else if (user_question.includes('필요없음')) {
@@ -242,7 +245,8 @@ export class ConversationsService {
                     await this.saveConversation(CID, user_question, templateResponse);
 
                     // '선택안함'에 대한 응답 반환
-                    return this.createResponse(option.nextTem);
+                    console.log(`template3-3 !![${ConversationsService.globalMatrix.join(', ')}]`);
+                    return this.createResponse(`${option.nextTem} !![${ConversationsService.globalMatrix.join(', ')}]`);
                 }
                 else {
                     console.log(option.selectionLog);
@@ -250,14 +254,15 @@ export class ConversationsService {
                     if (option.selectionLog) {
                         
                         ConversationsService.globalMatrix.push(option.selectionLog);
-                        console.log("matrix에 추가", option.keyword, ConversationsService.globalMatrix);
+                        // console.log("matrix에 추가", option.keyword, ConversationsService.globalMatrix);
                     }
 
                     // 인풋 텍스트(user_question)를 DB에 저장
                     await this.saveConversation(CID, user_question, templateResponse);
 
                     // 일반 선택에 대한 응답 반환
-                    return this.createResponse(option.nextTem);
+                    console.log(`template3-3 !![${ConversationsService.globalMatrix.join(', ')}]`);
+                    return this.createResponse(`${option.nextTem} !![${ConversationsService.globalMatrix.join(', ')}]`);
                 }
             }
         }
@@ -549,23 +554,4 @@ export class ConversationsService {
         return result.Item ? result.Item.keyword : null;  // 기존 키워드 반환, 없으면 null
     }
 
-    //     // CID에 따라 Archboard_keyword 테이블에서 키워드 가져오기
-    // async getKeywordsByCID(CID: number): Promise<string[]> {
-    //     const params = {
-    //     TableName: 'Archboard_keyword',
-    //     KeyConditionExpression: 'CID = :cid',
-    //     ExpressionAttributeValues: {
-    //         ':cid': CID,
-    //     },
-    //     };
-
-    //     try {
-    //     const result = await this.dynamoDbDocClient.send(new QueryCommand(params));
-    //     const keywords = result.Items?.map(item => item.keyword) ?? []; // 키워드 필드 추출
-    //     return keywords;
-    //     } catch (error) {
-    //     console.error(`Failed to fetch keywords for CID ${CID}:`, error);
-    //     throw new Error('Error retrieving keywords');
-    //     }
-    // }
 }
