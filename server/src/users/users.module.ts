@@ -20,6 +20,6 @@ import { Users } from './entity/users.entity'; // UserEntity 가져오기
   ],
   providers: [UsersService, JwtStrategy, JwtAuthGuard],
   controllers: [UsersController],
-  exports: [UsersService],  // UsersService를 다른 모듈에서 사용 가능하도록 export
+  exports: [UsersService],
 })
 export class UsersModule {}

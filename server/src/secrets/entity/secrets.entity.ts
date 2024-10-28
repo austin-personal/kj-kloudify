@@ -6,17 +6,20 @@ export class Secrets {
   @PrimaryGeneratedColumn()
   SID: number;  // Primary Key
 
-  @Column()
-  accessKey: string;
+  @Column({ type: 'text' })
+  AccessKey: string;
 
-  @Column()
-  secretAccessKey: string;
+  @Column({ type: 'text' })
+  SecretAccessKey: string;
+
+  @Column({ type: 'text' })
+  region: string;
 
   @Column({ nullable: true })  // key-pair for access to EC2. It is now optional
-  securityKey: string;
+  SecurityKey: string;
 
   @Column()
-  UID: number;  // Foreign Key (Architecture)
+  UID: number;  
 
   @OneToOne(() => Users, (user) => user.secrets)
   user: Users;
