@@ -196,6 +196,5 @@ export class TerraformService {
     } catch (error) {
       throw new InternalServerErrorException('Failed to download Terraform file', error);
       }
-    }
   }
 }
