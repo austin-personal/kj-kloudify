@@ -58,9 +58,13 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onParsedData, onFinishData }) =
               : msg.userMessage;
 
             // botResponse에서 !! 이전의 부분만 가져오기
-            const parsedBotResponse = msg.botResponse.includes("!!")
+            let parsedBotResponse = msg.botResponse.includes("!!")
               ? msg.botResponse.split("!!")[0].trim()
               : msg.botResponse;
+
+            if (parsedBotResponse.includes("**")) {
+              parsedBotResponse = parsedBotResponse.split("**")[0].trim()
+            }
 
             const matchingTemplate = Object.values(templates).find(
               (template) => template.name === parsedBotResponse
@@ -154,7 +158,6 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onParsedData, onFinishData }) =
           setMessages([defaultBotMessage]);
         }
       } catch (error) {
-        console.log("대화 로딩 오류:", error);
         setMessages([defaultBotMessage]);
       }
     };
