@@ -75,7 +75,7 @@ export class ConversationsService {
                 + "대화를 주도하며 필요한 경우 추가 질문을 통해 사용자의 요구사항을 명확히 하세요. "
                 + "답변에서 사용자가 특정 aws의 서비스를 단순히 언급하는게 아닌 '확실하게 사용하겠다고 확정 {ex)ec2를 사용할께 같은 경우}' 지은 경우에만 대답을 완료한 후 별도로 추출하기 쉽도록 텍스트 하단에 "
                 + `**[ { "service": "ec2", "options": { "ami": "ami-02c329a4b4aba6a48", "instance_type": "t2.micro", "public": true, "subnet_id": "subnet-0189db2034ce49d30" } } ] 
-                이런 포맷으로 서비스 종류 하나씩 출력하세요. 이스케이프 코드 넣지 마 앞에 **을 꼭 넣어줘`
+                이런 포맷으로 서비스 종류 하나씩 출력하세요. \\n 없이 한줄로 출력해줘. 앞에 **을 꼭 넣어줘`
                 ;
 
             case 2:
@@ -154,7 +154,7 @@ export class ConversationsService {
 
             // '시스템 성능을 추적하거나 로그를 관리할 필요가 있나요?': 'template3-3',
 
-            '그 외에 필요한 기능이 있나요': 'template3-4',
+            // '그 외에 필요한 기능이 있나요': 'template3-4',
             '다음문항': 'template3-4'
 
         };
@@ -175,13 +175,14 @@ export class ConversationsService {
 
             const isNextQuestion = user_question.includes('다음문항');
 
+            console.log("hi", templateResponse);
+
             console.log(isNextQuestion);
             // '그 외에 필요한 기능이 있나요?' 질문 처리
             if ((templateKey === '그 외에 필요한 기능이 있나요?' || isNextQuestion) && ConversationsService.globalMatrix) {
                 if (ConversationsService.globalMatrix.length === 0) {
                     return this.createResponse("종료");
                 }
-
                 const nextItem = ConversationsService.globalMatrix.shift();
                 if (nextItem && level4Questions[nextItem]) {
                     return this.createResponse(level4Questions[nextItem]);
@@ -198,36 +199,27 @@ export class ConversationsService {
         const options = [
             { keyword: '서버선택', noSelectionLog: "서버선택 안함 로직 실행", selectionLog: "서버설정" , nextTem: "디비"},
             { keyword: '디비선택', noSelectionLog: "디비선택 안함 로직 실행", selectionLog: "디비설정" , nextTem: "스토리지"},
-            { keyword: '스토리지선택', noSelectionLog: "스토리지선택 안함 로직 실행", selectionLog: "스토리지설정" , nextTem: "네트워크"},
-            { keyword: '네트워크선택', noSelectionLog: "네트워크선택 안함 로직 실행", selectionLog: "네트워크설정" , nextTem: "모니터링"},
+            { keyword: '스토리지선택', noSelectionLog: "스토리지 선택 안함 로직 실행", selectionLog: "스토리지설정" , nextTem: "네트워크"},
+            { keyword: '네트워크선택', noSelectionLog: "네트워크 선택 안함 로직 실행", selectionLog: "네트워크설정" , nextTem: "모니터링"},
             { keyword: '모니터링선택', noSelectionLog: "모니터링 선택 안함 로직 실행", selectionLog: "모니터링설정" , nextTem: "다음문항"}
         ];
         
+
         // 조건을 반복하며 인풋 텍스트에서 확인
         for (const option of options) {
             if (user_question.includes(option.keyword)) {
-                if (user_question.includes('선택안함')) {
-                    console.log(option.noSelectionLog);
-                    
-                    // '선택안함'에 대한 추가 로직 작성
-                    await this.saveConversation(CID, user_question, templateResponse);
 
-                    // '선택안함'에 대한 응답 반환
-                    return this.createResponse(option.nextTem);
-                } 
-                else if (option.keyword === "모니터링선택") {
-                    if (user_question.includes('선택안함')) {
-                        console.log(option.noSelectionLog);
-                        const removedItem = ConversationsService.globalMatrix.shift();
+                if (option.keyword === "모니터링선택") {
+                    if (user_question.includes('필요없음')) {
+                        console.log(option.noSelectionLog, "Is here??");
+                        // const removedItem = ConversationsService.globalMatrix.shift();
                         // '선택안함'에 대한 추가 로직 작성
                         await this.saveConversation(CID, user_question, templateResponse);
     
-                        if (removedItem) {
+
                             // 제거된 요소를 응답으로 반환
-                            return this.createResponse(`template3-3`);
-                        } else {
-                            return this.createResponse("이대로 선택하시겠습니까?");
-                        }
+                        return this.createResponse(`template3-3`);
+
                     }
                     // "모니터링" 키워드가 포함된 경우 처리
                     if (option.selectionLog) {
@@ -240,16 +232,27 @@ export class ConversationsService {
 
                     if (removedItem) {
                         // 제거된 요소를 응답으로 반환
-                        return this.createResponse(`templete3-3`);
+                        return this.createResponse(`template3-3`);
                     } else {
                         return this.createResponse("globalMatrix에 더 이상 항목이 없습니다.");
                     }
-                } 
+                }
+                else if (user_question.includes('필요없음')) {
+                    console.log(option.noSelectionLog);
+                    
+                    // '선택안함'에 대한 추가 로직 작성
+                    await this.saveConversation(CID, user_question, templateResponse);
+
+                    // '선택안함'에 대한 응답 반환
+                    return this.createResponse(option.nextTem);
+                }
                 else {
                     console.log(option.selectionLog);
                     // 일반 선택에 대한 로직 추가
                     if (option.selectionLog) {
+                        
                         ConversationsService.globalMatrix.push(option.selectionLog);
+                        console.log("matrix에 추가", option.keyword, ConversationsService.globalMatrix);
                     }
 
                     // 인풋 텍스트(user_question)를 DB에 저장
@@ -260,9 +263,10 @@ export class ConversationsService {
                 }
             }
         }
-
+        
         // 기존 로직 이후 추가 로직
         const labels = [
+            "그 외에 필요한 기능이 있나요",
             "비용 최적화: 비용을 낮추고 저용량부터 시작할 수 있는 설정 (예: 작은 RDS 인스턴스, 온디맨드 가격 모델)",
             "고성능: 높은 성능과 빠른 처리 속도를 위해 최적화된 설정 (예: 고성능 RDS 인스턴스, Provisioned IOPS 스토리지)",
             "확장 가능성: 서비스 확장을 위한 자동 확장 옵션 (예: Aurora Serverless)",
@@ -284,14 +288,17 @@ export class ConversationsService {
         for (const label of labels) {
             if (user_question.includes(label)) {
                 // globalMatrix에서 다음 값을 pop하여 반환하거나 비어 있을 경우 "종료" 반환
+                // if (!user_question.includes("그 외에 필요한 기능이 있나요")){
                 const nextValue = ConversationsService.globalMatrix.shift();
+                // }
                 if (nextValue) {
                     // 인풋 텍스트(user_question)를 DB에 저장
                     await this.saveConversation(CID, user_question, nextValue);
 
                     return this.createResponse(nextValue);
                 } else {
-                    return this.createResponse("종료");
+                    
+                    return this.createResponse("선택이 완료되었습니다.");
                 }
             }
         }
