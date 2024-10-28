@@ -5,9 +5,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { SecretsModule } from '../secrets/secrets.module';
 import { Secrets } from '../secrets/entity/secrets.entity';
 import { UsersModule } from '../users/users.module';
+import { Projects } from '../projects/entity/projects.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Secrets]), SecretsModule, UsersModule],
+  imports: [TypeOrmModule.forFeature([Secrets,Projects]), SecretsModule, UsersModule],
   controllers: [TerraformController],
   providers: [TerraformService],
 })

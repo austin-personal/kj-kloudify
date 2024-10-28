@@ -6,6 +6,7 @@ import { DownloadDto } from './dto/download.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
+import { Projects } from '../projects/entity/projects.entity';
 
 import { SecretsService } from '../secrets/secrets.service';
 
@@ -29,6 +30,8 @@ export class TerraformService {
 
   constructor(
     private readonly secretsService: SecretsService,
+    @InjectRepository(Projects)
+    private readonly projectRepository: Repository<Projects>,
   ) {
     this.s3 = new S3({ region: process.env.AWS_REGION });
     this.lambda = new Lambda({ region: process.env.AWS_REGION });
@@ -163,6 +166,8 @@ export class TerraformService {
         InvocationType: 'Event', // 비동기 호출
         Payload: JSON.stringify(payload),
       });
+      // 프로젝트가 배포 됬으면, Postgres Project entity에도 isDeployed True로 바꾸기
+      await this.projectRepository.update({ CID }, { isDeployed: true });
 
       return {
         status: 'Deployment initiated',
