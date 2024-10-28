@@ -113,6 +113,13 @@ const templates: Record<number, Template> = {
             { id: 20, label: "자동화된 경고 및 알림: 특정 조건이 발생할 때 자동으로 알림을 받는 설정 (예: 경고 알림 및 자동 조치 설정)"}
         ]
     },
+    18: {
+        name: "선택이 완료되었습니다.",
+        text: "",
+        buttons: [
+            { id: 21, label: "이대로 설정해주세요" },
+        ]
+    },
 };
 
 export const TemplateProvider: React.FC = (children) => {

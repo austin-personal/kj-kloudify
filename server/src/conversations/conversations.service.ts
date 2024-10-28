@@ -225,17 +225,14 @@ export class ConversationsService {
                     if (option.selectionLog) {
                         ConversationsService.globalMatrix.push(option.selectionLog);
                     }
-                    const removedItem = ConversationsService.globalMatrix.shift();
+                    // const removedItem = ConversationsService.globalMatrix.shift();
 
                     // 인풋 텍스트(user_question)를 DB에 저장
                     await this.saveConversation(CID, user_question, templateResponse);
 
-                    if (removedItem) {
-                        // 제거된 요소를 응답으로 반환
-                        return this.createResponse(`template3-3`);
-                    } else {
-                        return this.createResponse("globalMatrix에 더 이상 항목이 없습니다.");
-                    }
+
+                    return this.createResponse(`template3-3`);
+
                 }
                 else if (user_question.includes('필요없음')) {
                     console.log(option.noSelectionLog);
@@ -549,25 +546,5 @@ export class ConversationsService {
 
         const result = await this.dynamoDB.get(params).promise();
         return result.Item ? result.Item.keyword : null;  // 기존 키워드 반환, 없으면 null
-    }
-
-        // CID에 따라 Archboard_keyword 테이블에서 키워드 가져오기
-    async getKeywordsByCID(CID: number): Promise<string[]> {
-        const params = {
-        TableName: 'Archboard_keyword',
-        KeyConditionExpression: 'CID = :cid',
-        ExpressionAttributeValues: {
-            ':cid': CID,
-        },
-        };
-
-        try {
-        const result = await this.dynamoDbDocClient.send(new QueryCommand(params));
-        const keywords = result.Items?.map(item => item.keyword) ?? []; // 키워드 필드 추출
-        return keywords;
-        } catch (error) {
-        console.error(`Failed to fetch keywords for CID ${CID}:`, error);
-        throw new Error('Error retrieving keywords');
-        }
     }
 }
