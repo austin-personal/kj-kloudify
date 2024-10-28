@@ -16,7 +16,7 @@ By progressively visualizing the evolving cloud architecture, Kloudify helps use
 >   - Project Architecture Design
 >   - Cloud Architecture Design
 >   - Built the Cloud Infrastructure
->   - Backend APIs Progress: 50/100 complete
+>   - Backend APIs Progress: 50/100
 >   - Adapted LLM for project needs
 
 ### Front & Backend
