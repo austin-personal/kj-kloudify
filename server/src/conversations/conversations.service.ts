@@ -218,10 +218,8 @@ export class ConversationsService {
     
 
                             // 제거된 요소를 응답으로 반환
-                            return this.createResponse(`templete3-3`);
-                        } else {
-                            return this.createResponse("이대로 선택하시겠습니까?");
-                        }
+                        return this.createResponse(`template3-3`);
+
                     }
                     // "모니터링" 키워드가 포함된 경우 처리
                     if (option.selectionLog) {
