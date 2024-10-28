@@ -225,17 +225,14 @@ export class ConversationsService {
                     if (option.selectionLog) {
                         ConversationsService.globalMatrix.push(option.selectionLog);
                     }
-                    const removedItem = ConversationsService.globalMatrix.shift();
+                    // const removedItem = ConversationsService.globalMatrix.shift();
 
                     // 인풋 텍스트(user_question)를 DB에 저장
                     await this.saveConversation(CID, user_question, templateResponse);
 
-                    if (removedItem) {
-                        // 제거된 요소를 응답으로 반환
-                        return this.createResponse(`template3-3`);
-                    } else {
-                        return this.createResponse("globalMatrix에 더 이상 항목이 없습니다.");
-                    }
+
+                    return this.createResponse(`template3-3`);
+
                 }
                 else if (user_question.includes('필요없음')) {
                     console.log(option.noSelectionLog);
