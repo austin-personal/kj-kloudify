@@ -99,9 +99,11 @@ export class ProjectsController {
 
    // 채팅 기록 및 아키텍처 보드 키워드
    const chattings = await this.conversationsService.getConversationsByCID(project.CID);  // 간략한 채팅 기록 반환
-   const archBoardKeywords = await this.conversationsService.getKeywordsByCID(project.CID);  // 아키텍처 보드의 주요 키워드
+   const archBoardKeywords = await this.conversationsService.fetchKeywordsByCID(project.CID);  // 아키텍처 보드의 주요 키워드
 
    return { projectName, chattings, archBoardKeywords };
  }
 
+
+ 
 }
