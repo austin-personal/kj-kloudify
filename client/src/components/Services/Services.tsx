@@ -3,9 +3,11 @@ import "./Services.css";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
+import { deploy } from "../../services/terraforms";
 
 interface ServicesProps {
   nodes: Node[]; // Node 타입의 배열로 정의
+  cid: number;
 }
 
 interface Node {
@@ -22,13 +24,26 @@ interface Node {
   style?: React.CSSProperties;
 }
 
-const Services: React.FC<ServicesProps> = ({ nodes }) => {
+const Services: React.FC<ServicesProps> = ({ nodes, cid }) => {
   // 모달 열림 상태 관리
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
-  const handleDeploy = () => {
-    sessionStorage.removeItem("nodes");
-    navigate("/profile");
+  const token = localStorage.getItem('token')??''
+
+  const handleDeploy = async() => {
+    try {
+      // deploy 함수 호출 (딱히 반환값을 사용하지 않으므로 await로만 호출)
+      const response = await deploy(cid, token);
+      console.log("배포가 성공적으로 시작되었습니다.");
+
+      // 세션 스토리지에서 노드 정보 삭제
+      sessionStorage.removeItem("nodes");
+
+      // 페이지 이동
+      navigate("/profile");
+    } catch (error) {
+      console.error("배포 중 오류 발생:", error);
+    }
   };
 
   console.log("노드 정보", nodes);
