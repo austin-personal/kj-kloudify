@@ -37,6 +37,7 @@ const Home: React.FC = () => {
 
   // 프로젝트 정보를 가져오는 함수
   useEffect(() => {
+    console.log("화면 체인지!!!!")
     const fetchProjectData = async () => {
       try {
         if (pid) {
@@ -67,7 +68,7 @@ const Home: React.FC = () => {
   };
   const handleFinish = () => {
     saveNodesToSession();
-    navigate("/review");
+    navigate(`/review/${project?.CID}`);
   };
 
   // Chat 컴포넌트로부터 파싱된 데이터를 받는 함수

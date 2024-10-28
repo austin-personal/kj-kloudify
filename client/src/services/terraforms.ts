@@ -35,3 +35,41 @@ export const show = async () => {
         throw error;
     }
 };
+
+export const review = async (cid: number, token: string) => {
+    try {
+        const response = await axios.post(`${API_URL}/review`,
+            {
+                cid
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            }
+        );
+        return response.data;
+    } catch (error) {
+        console.error('리뷰 개박살!! :', error);
+        throw error;
+    }
+}
+
+export const deploy = async (cid: number, token: string) => {
+    try {
+        const response = await axios.post(`${API_URL}/deploy`,
+            {
+                cid
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            }
+        );
+        return response.data;
+    } catch (error) {
+        console.error('디플로이 개박살!! :', error);
+        throw error;
+    }
+}

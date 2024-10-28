@@ -188,10 +188,29 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onParsedData, onFinishData }) =
     }
   };
 
-  // messages 배열이 변경될 때마다 스크롤을 아래로 이동
+  // messages 배열이 변경될 때마다 스크롤을 아래로 이동하고, 이전 봇 메시지의 버튼을 제거
   useEffect(() => {
+    setMessages((prevMessages) => {
+      const updatedMessages = prevMessages.map((message, index) => {
+        // 마지막 메시지를 제외한 봇 메시지에서만 buttons를 undefined로 설정
+        if (index !== prevMessages.length - 1 && message.sender === "bot" && message.buttons) {
+          return { ...message, buttons: undefined };
+        }
+        return message;
+      });
+
+      // 만약 업데이트가 필요하지 않다면 원래 배열을 반환하여 상태 변화를 방지
+      if (JSON.stringify(updatedMessages) === JSON.stringify(prevMessages)) {
+        return prevMessages;
+      }
+
+      return updatedMessages;
+    });
+
+    // 스크롤을 아래로 이동
     scrollToBottom();
   }, [messages]);
+
 
   // 스크롤 이벤트 추가
   useEffect(() => {

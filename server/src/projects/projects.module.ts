@@ -7,7 +7,6 @@ import { Users } from '../users/entity/users.entity';
 import { UsersModule } from '../users/users.module';
 import { ConversationsModule } from '../conversations/conversations.module';
 
-
 @Module({
 
   imports: [TypeOrmModule.forFeature([Projects, Users]), UsersModule, ConversationsModule], 
