@@ -37,6 +37,7 @@ const Home: React.FC = () => {
 
   // 프로젝트 정보를 가져오는 함수
   useEffect(() => {
+    console.log("화면 체인지!!!!")
     const fetchProjectData = async () => {
       try {
         if (pid) {
