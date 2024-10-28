@@ -76,6 +76,7 @@ export class ConversationsService {
                 + "답변에서 사용자가 특정 aws의 서비스를 단순히 언급하는게 아닌 '확실하게 사용하겠다고 확정 {ex)ec2를 사용할께 같은 경우}' 지은 경우에만 대답을 완료한 후 별도로 추출하기 쉽도록 텍스트 하단에 "
                 + `**[ { "service": "ec2", "options": { "ami": "ami-02c329a4b4aba6a48", "instance_type": "t2.micro", "public": true, "subnet_id": "subnet-0189db2034ce49d30" } } ] 
                 이런 포맷으로 서비스 종류 하나씩 출력하세요. \\n 없이 한줄로 출력해줘. 앞에 **을 꼭 넣어줘`
+                + "혹시 사용자가 aws와 관련없는 주제로 대답할 경우 aws 선택을 할 수 있도록 주제를 상기시켜줘"
                 ;
 
             case 2:
@@ -548,23 +549,23 @@ export class ConversationsService {
         return result.Item ? result.Item.keyword : null;  // 기존 키워드 반환, 없으면 null
     }
 
-        // CID에 따라 Archboard_keyword 테이블에서 키워드 가져오기
-    async getKeywordsByCID(CID: number): Promise<string[]> {
-        const params = {
-        TableName: 'Archboard_keyword',
-        KeyConditionExpression: 'CID = :cid',
-        ExpressionAttributeValues: {
-            ':cid': CID,
-        },
-        };
+    //     // CID에 따라 Archboard_keyword 테이블에서 키워드 가져오기
+    // async getKeywordsByCID(CID: number): Promise<string[]> {
+    //     const params = {
+    //     TableName: 'Archboard_keyword',
+    //     KeyConditionExpression: 'CID = :cid',
+    //     ExpressionAttributeValues: {
+    //         ':cid': CID,
+    //     },
+    //     };
 
-        try {
-        const result = await this.dynamoDbDocClient.send(new QueryCommand(params));
-        const keywords = result.Items?.map(item => item.keyword) ?? []; // 키워드 필드 추출
-        return keywords;
-        } catch (error) {
-        console.error(`Failed to fetch keywords for CID ${CID}:`, error);
-        throw new Error('Error retrieving keywords');
-        }
-    }
+    //     try {
+    //     const result = await this.dynamoDbDocClient.send(new QueryCommand(params));
+    //     const keywords = result.Items?.map(item => item.keyword) ?? []; // 키워드 필드 추출
+    //     return keywords;
+    //     } catch (error) {
+    //     console.error(`Failed to fetch keywords for CID ${CID}:`, error);
+    //     throw new Error('Error retrieving keywords');
+    //     }
+    // }
 }
