@@ -10,6 +10,7 @@ const Guide: React.FC = () => {
   const [secretKey, setSecretKey] = useState("");
   const [keyPair, setKeyPair] = useState("");
   const [region, setRegion] = useState("");
+  
   const navigate = useNavigate();
   // 모든 조건을 체크하는 함수
   const isFormValid = () => {
@@ -38,7 +39,7 @@ const Guide: React.FC = () => {
       alert("성공!");
       navigate(-1);
     } else {
-      alert("아직 안한게 있음");
+      alert("아직 입력하지 않은 정보가 있습니다.");
     }
   };
 

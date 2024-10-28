@@ -27,8 +27,17 @@ interface Node {
 const Services: React.FC<ServicesProps> = ({ nodes, cid }) => {
   // 모달 열림 상태 관리
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isChecked, setIsChecked] = useState(false);
   const navigate = useNavigate();
   const token = localStorage.getItem('token')??''
+
+  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setIsChecked(e.target.checked)
+  }
+
+  const handleDisabledBtn = () => {
+    return !isChecked
+  }
 
   const handleDeploy = async() => {
     try {
@@ -152,6 +161,8 @@ const Services: React.FC<ServicesProps> = ({ nodes, cid }) => {
             type="checkbox"
             id="consent-checkbox"
             className="consent-checkbox"
+            checked={isChecked}
+            onChange={handleCheckboxChange}
           />
           <label htmlFor="consent-checkbox" className="consent-label">
             개인 정보 수집 및 이용에 동의합니다
@@ -159,7 +170,7 @@ const Services: React.FC<ServicesProps> = ({ nodes, cid }) => {
         </div>
       </div>
       <div className="middle-btn">
-        <button className="deploy-btn" onClick={handleDeploy}>
+        <button className="deploy-btn" onClick={handleDeploy} disabled={handleDisabledBtn()}>
           Deploy
         </button>
       </div>
