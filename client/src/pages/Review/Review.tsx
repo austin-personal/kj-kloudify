@@ -98,7 +98,7 @@ function Review() {
       </div>
 
       <div className="vertical-line"></div>
-      <Services nodes={nodes} />
+      <Services nodes={nodes} cid={cid ?? 0} />
     </div>
   );
 }

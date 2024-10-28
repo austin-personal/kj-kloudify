@@ -278,6 +278,7 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onParsedData, onFinishData }) =
       }
 
       // 부모에게 파싱된 데이터 보내기
+      console.log("!! 파싱: ",parsedDataArray)
       if (onParsedData) {
         onParsedData(parsedDataArray);
       }
@@ -331,6 +332,7 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onParsedData, onFinishData }) =
       }
 
       // 부모에게 파싱된 데이터 보내기
+      console.log("** 파싱: ", parsedDataArray)
       if (onFinishData) {
         onFinishData(parsedDataArray);
       }

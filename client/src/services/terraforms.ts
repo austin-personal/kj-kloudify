@@ -40,7 +40,7 @@ export const review = async (cid: number, token: string) => {
     try {
         const response = await axios.post(`${API_URL}/review`,
             {
-                cid
+                CID: cid
             },
             {
                 headers: {
@@ -59,7 +59,7 @@ export const deploy = async (cid: number, token: string) => {
     try {
         const response = await axios.post(`${API_URL}/deploy`,
             {
-                cid
+                CID: cid
             },
             {
                 headers: {

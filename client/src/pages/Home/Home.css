@@ -59,12 +59,12 @@
   border-color: #c16b6b;
 }
 
-.review-btn {
+.review-btn-enabled {
   font-family: "NanumSquareRound", sans-serif;
   font-weight: bold;
   color: #312d26;
   width: 125px;
-  height: 87px;
+  height: 65px;
   position: absolute;
   bottom: 3%;
   right: 1.7%;
@@ -74,6 +74,23 @@
   border-radius: 20px;
   box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 10%);
 }
+
+.review-btn-disabled {
+  font-family: "NanumSquareRound", sans-serif;
+  font-weight: bold;
+  color: white;
+  width: 125px;
+  height: 65px;
+  position: absolute;
+  bottom: 3%;
+  right: 1.7%;
+  font-size: 25px;
+  background-color: gray;
+  border: none;
+  border-radius: 20px;
+  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 10%);
+}
+
 .popup {
   font-size: 22px;
   position: absolute;
