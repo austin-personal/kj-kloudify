@@ -44,10 +44,21 @@ export class TerraformService {
    */
   private async generateTerraformCode(keywords: string[]): Promise<string> {
     const prompt_content = `
-      Convert the following keywords into Terraform code:
+      Generate Terraform code based on the following keywords:
       ${JSON.stringify(keywords)}
-      Terraform 코드에서는 자격 증명을 변수로 정의하지 않고, 환경 변수에서 자동으로 가져오도록 합니다 provider.
-    `;
+
+      The generated Terraform code should:
+      1. You must produce Output only the complete Terraform code without additional explanations, ensuring it is fully deployable with just the AWS credentials and other essential variables specified.
+      2. Use variables only for essential credentials or dynamic values that must be configurable at runtime. Specifically, define variables for:
+        - \`aws_access_key\` and \`aws_secret_key\` to allow secure credential configuration
+        - Any other critical dynamic values specified in the keywords list that must be adjustable.
+
+      3. Other configurations, such as instance types, AMIs, and static setup values, can be hardcoded directly into the Terraform code to simplify deployment.
+
+      4. Avoid including AWS credentials directly in the code; assume credentials will be provided through environment variables, such as process.env.AWS_ACCESS_KEY_ID and process.env.AWS_SECRET_ACCESS_KEY, or set up securely through Lambda configuration.
+
+      5. Only produces one code snippet.
+      `;
 
     // 베드락 설정
     const client = new AWS.BedrockRuntime({
@@ -79,50 +90,53 @@ export class TerraformService {
 
       const responseBody = response.body.toString();
       const parsedResponse = JSON.parse(responseBody);
-      return { // ... = 스프레드 연산자: 객체 안에 있는 모든 속성을 복사하여 새로운 객체에 포함
-          ...parsedResponse,
-          content: [
-              {
-                  type: "text",
-                  text: parsedResponse  // 업데이트된 텍스트 (키워드 리스트 포함)
-              }
-          ]
-      };
+      console.log("parsedResponse: ",parsedResponse);
+      return parsedResponse;
   } catch (error) {
       throw new Error(`Bedrock 모델 호출 실패: ${error.message}`);
     }
   }
 
-  /**
-     * 리뷰: Terraform 코드 생성 및 S3에 저장
-     */
+    /**
+   * 리뷰: Terraform 코드 생성 및 S3에 저장
+   */
   async reviewInfrastructure(reviewDto: ReviewDto): Promise<any> {
     const { CID } = reviewDto;
 
     // 1. DynamoDB에서 keyword 조회
     const dynamoParams = {
       TableName: process.env.DYNAMO_TABLE_NAME,
-      Key: { CID }, // CID를 기준으로 keyword 조회
+      Key: { CID: CID }, // CID를 기준으로 keyword 조회
     };
     const command = new GetCommand(dynamoParams);
     const dynamoResult = await this.dynamoDbDocClient.send(command);
-    const keyword = dynamoResult.Item?.keyword?.S;
+    const keyword = dynamoResult.Item?.keyword;
     if (!keyword) {
         throw new Error('Keyword not found in DynamoDB');
     }
 
     // 2. Terraform 코드 생성
     const terraformCode = await this.generateTerraformCode([keyword]);
+    const codeContent = terraformCode["content"][0].text;
 
-    // 3. Terraform 코드를 S3에 저장
-    const tmpDir = `/tmp/${CID}`; // CID를 임시 디렉토리 이름으로 사용
-    fs.mkdirSync(tmpDir);
+    // 3. ``` ``` 사이의 Terraform 코드만 추출
+    const codeBlock = codeContent.match(/```(?:hcl)?\n([\s\S]*?)\n```/);
+    if (!codeBlock) {
+        throw new Error('Terraform code block not found');
+    }
+    const extractedCode = codeBlock[1];
+
+    // 4. Terraform 코드를 임시 디렉토리에 저장
+    const tmpDir = `/tmp/${CID}`;
+    if (!fs.existsSync(tmpDir)) {  // 디렉토리 존재 확인
+      fs.mkdirSync(tmpDir);
+    }
     const terraformFilePath = path.join(tmpDir, 'main.tf');
-    fs.writeFileSync(terraformFilePath, terraformCode);
+    fs.writeFileSync(terraformFilePath, extractedCode);
 
+    // 5. S3에 Terraform 파일 업로드
     const s3Bucket = process.env.TERRAFORM_BUCKET;
-    const s3Key = `${CID}/main.tf`; // CID를 S3 키 값으로 사용
-
+    const s3Key = `${CID}/main.tf`;
     const fileContent = fs.readFileSync(terraformFilePath);
 
     await this.s3.putObject({
@@ -132,10 +146,10 @@ export class TerraformService {
       ContentType: 'application/octet-stream',
     });
 
-    // 4. 생성된 Terraform 코드를 반환
+    // 6. 생성된 Terraform 코드를 반환
     return {
       status: 'Terraform code generated',
-      terraformCode,
+      terraformCode: extractedCode,
     };
   }
 
