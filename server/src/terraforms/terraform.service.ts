@@ -91,8 +91,8 @@ export class TerraformService {
       };
   } catch (error) {
       throw new Error(`Bedrock 모델 호출 실패: ${error.message}`);
+    }
   }
-}
 
   /**
      * 리뷰: Terraform 코드 생성 및 S3에 저장
@@ -138,7 +138,7 @@ export class TerraformService {
       status: 'Terraform code generated',
       terraformCode,
     };
-}
+  }
 
 
   /**
