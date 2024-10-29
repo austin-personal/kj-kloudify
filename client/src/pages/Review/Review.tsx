@@ -41,13 +41,13 @@ const Review: React.FC<ReviewProps> = ({ finishData }) => {
         const data = await download(cid, token);
 
         // 데이터를 Blob으로 변환
-        const blob = new Blob([data], { type: "application/zip" }); // 다운로드 파일의 MIME 타입 설정
+        const blob = new Blob([data], { type: "text/plain" }); // 다운로드 파일의 MIME 타입 설정
         const fileURL = URL.createObjectURL(blob);
 
         // 다운로드 링크 생성 및 트리거
         const link = document.createElement("a");
         link.href = fileURL;
-        link.download = `terraform_code_${cid}.zip`; // 다운로드 파일명 설정
+        link.download = `terraform_code_${cid}.tf`; // 다운로드 파일명 설정
         link.click();
 
         // 메모리 정리

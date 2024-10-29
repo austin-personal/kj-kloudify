@@ -15,8 +15,9 @@ const LoginPage: React.FC = () => {
     return (
         <div className="login-page">
             {/* 왼쪽 소개 폼 */}
-            <IntroSection />
-            
+            <div className="intro-section">
+                <IntroSection />
+            </div>
             {/* 오른쪽 폼: 로그인 또는 회원가입 폼을 조건부로 렌더링 */}
             <div className="auth-section">
                 {isSignup ? (
