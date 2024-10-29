@@ -274,7 +274,6 @@ export class TerraformService {
     }
   }
 
-<<<<<<< HEAD
     // Helper function to convert stream to string
   async streamToString(stream: Readable): Promise<string> {
     const chunks: any[] = [];
