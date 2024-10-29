@@ -29,21 +29,21 @@ const Services: React.FC<ServicesProps> = ({ nodes, cid }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const navigate = useNavigate();
-  const token = localStorage.getItem('token')??''
+  const token = localStorage.getItem("token") ?? "";
 
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setIsChecked(e.target.checked)
-  }
+    setIsChecked(e.target.checked);
+  };
 
   const handleDisabledBtn = () => {
-    return !isChecked
-  }
+    return !isChecked;
+  };
 
-  const handleDeploy = async() => {
+  const handleDeploy = async () => {
     try {
       // deploy 함수 호출 (딱히 반환값을 사용하지 않으므로 await로만 호출)
       const response = await deploy(cid, token);
-      console.log(response)
+      console.log(response);
       console.log("배포가 성공적으로 시작되었습니다.");
 
       // 세션 스토리지에서 노드 정보 삭제
@@ -56,7 +56,6 @@ const Services: React.FC<ServicesProps> = ({ nodes, cid }) => {
     }
   };
 
-  console.log("노드 정보", nodes);
   const handleGuide = () => {
     navigate("/guide");
   };
@@ -170,7 +169,11 @@ const Services: React.FC<ServicesProps> = ({ nodes, cid }) => {
         </div>
       </div>
       <div className="middle-btn">
-        <button className="deploy-btn" onClick={handleDeploy} disabled={handleDisabledBtn()}>
+        <button
+          className="deploy-btn"
+          onClick={handleDeploy}
+          disabled={handleDisabledBtn()}
+        >
           Deploy
         </button>
       </div>

@@ -81,7 +81,6 @@ const Board = forwardRef(
     );
     //프레임 노드 생성
     useEffect(() => {
-      console.log("왜비어있지", parsedData);
       if (parsedData.length > 0) {
         const lastElement = parsedData[parsedData.length - 1];
         console.log("초기화됐나확인", parsedData);
