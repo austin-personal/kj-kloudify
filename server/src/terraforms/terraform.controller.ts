@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Req, UseGuards, Res, Query } from '@nestjs/common';
+import { Controller, Post, Body, Req, UseGuards, Res, Query , InternalServerErrorException } from '@nestjs/common';
 import { Response } from 'express';
 import { TerraformService } from './terraform.service';
 import { UsersService } from '../users/users.service';
@@ -6,6 +6,10 @@ import { ReviewDto } from './dto/review.dto';
 import { DeployDto } from './dto/deploy.dto';
 import { DownloadDto } from './dto/download.dto';
 import { JwtAuthGuard } from '../users/jwt-auth.guard';
+
+class DestroyDto {
+  CID: number;
+}
 
 @Controller('terraforms')
 export class TerraformController {
@@ -44,4 +48,20 @@ export class TerraformController {
     const result = await this.terraformService.downloadInfrastructure(downloadDto, res);
     return result;
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('destroy')
+  async destroy(@Body() destroyDto: DestroyDto, @Req() req) {
+    const email = req.user.email;
+    const userInfo = await this.usersService.findOneByEmail(email);  // 이메일로 사용자 조회
+    const userId = userInfo.UID;
+
+    try {
+      const result = await this.terraformService.destroyInfrastructure(destroyDto.CID, userId);
+      return result;
+    } catch (error) {
+      throw new InternalServerErrorException(`Failed to destroy infrastructure for CID: ${destroyDto.CID}`);
+    }
+  }
+
 }

@@ -6,6 +6,7 @@ import Chat from "../../components/Chat/Chat";
 import Board from "../../components/Board/Board";
 import "./Home.css";
 import { projectOneInfo } from "../../services/projects";
+import { review } from "../../services/terraforms";
 
 interface Project {
   PID: number;
@@ -34,9 +35,9 @@ const Home: React.FC<HomeProps> = ({ finishData, setFinishData }) => {
   const [isOpenSummary, setIsOpenSummary] = useState(false);
   const [project, setProject] = useState<Project | null>(null);
   const [parsedData, setParsedData] = useState<string[]>([]);
-  const [nodes, setNodes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const token = localStorage.getItem('token');
   const { pid } = useParams<{ pid: string }>();
   const navigate = useNavigate();
 
@@ -77,8 +78,14 @@ const Home: React.FC<HomeProps> = ({ finishData, setFinishData }) => {
     setIsOpenSummary(!isOpenSummary);
   };
 
-  const handleFinish = () => {
-    navigate(`/review/${project?.CID}`);
+  const handleFinish = async () => {
+    try {
+      const response = await review(Number(pid), token); // cid를 이용해 review 호출
+      console.log("review API 호출 성공:", response);
+      navigate(`/review/${project?.CID}`);
+    } catch (error) {
+      console.error("review API 호출 실패:", error);
+    }
   };
 
   const handleParsedData = (data: string[]) => {
@@ -112,12 +119,7 @@ const Home: React.FC<HomeProps> = ({ finishData, setFinishData }) => {
           <div className="setting-services setting-in-progress">2</div>
         </div>
         <ReactFlowProvider>
-          <Board
-            parsedData={parsedData}
-            finishData={finishData}
-            nodes={nodes}
-            setNodes={setNodes}
-          />
+          <Board parsedData={parsedData} finishData={finishData} />
         </ReactFlowProvider>
         <div
           className={`popup ${isOpenSummary ? "visible" : "hidden"}`}
@@ -132,9 +134,8 @@ const Home: React.FC<HomeProps> = ({ finishData, setFinishData }) => {
         </div>
         <button
           onClick={handleFinish}
-          className={`review-btn-${
-            finishData.length === 0 ? "disabled" : "enabled"
-          }`}
+          className={`review-btn-${finishData.length === 0 ? "disabled" : "enabled"
+            }`}
           disabled={finishData.length === 0}
         >
           Review

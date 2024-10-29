@@ -8,13 +8,12 @@ import { useNavigate } from "react-router-dom";
 const Guide: React.FC = () => {
   const [keyId, setKeyId] = useState("");
   const [secretKey, setSecretKey] = useState("");
-  const [keyPair, setKeyPair] = useState("");
   const [region, setRegion] = useState("");
   
   const navigate = useNavigate();
   // 모든 조건을 체크하는 함수
   const isFormValid = () => {
-    return keyId && secretKey && keyPair && region;
+    return keyId && secretKey && region;
   };
 
   // submit 버튼 클릭 시 호출되는 함수
@@ -27,7 +26,6 @@ const Guide: React.FC = () => {
       const response = await createSecret(
         keyId,
         secretKey,
-        keyPair,
         region,
         token
       ); // token이 string임을 보장
@@ -50,8 +48,6 @@ const Guide: React.FC = () => {
         setKeyId={setKeyId}
         secretKey={secretKey}
         setSecretKey={setSecretKey}
-        keyPair={keyPair}
-        setKeyPair={setKeyPair}
         region={region}
         setRegion={setRegion}
       />
