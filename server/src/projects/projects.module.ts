@@ -12,5 +12,6 @@ import { ConversationsModule } from '../conversations/conversations.module';
   imports: [TypeOrmModule.forFeature([Projects, Users]), UsersModule, ConversationsModule], 
   providers: [ProjectsService],
   controllers: [ProjectsController],
+  exports: [ProjectsService],
 })
 export class ProjectsModule {}

@@ -20,24 +20,37 @@ export class SecretsService {
     @InjectRepository(Users)
     private usersRepository: Repository<Users>,
   ) {
-    this.encryptionKey = Buffer.from(process.env.ENCRYPTION_KEY!, 'hex');
+    const key = process.env.ENCRYPTION_KEY;
+    if (!key || key.length !== 32) {  // AES-256 needs a 32-byte key
+      throw new Error('Invalid encryption key. It must be 32 characters long.');
+    }
+    this.encryptionKey = Buffer.from(key, 'utf-8');
   }
 
 // 새로운 Secrets 생성 함수
-  async createSecret(userId: number, AccessKey: string, SecretAccessKey: string, SecurityKey: string) {
-    const encryptedAccessKey = this.encrypt(AccessKey);
-    const encryptedSecretAccessKey = this.encrypt(SecretAccessKey);
-    const encryptedSecurityKey = this.encrypt(SecurityKey);
-    
+  async createSecret(userId: number, AccessKey: string, SecretAccessKey: string, Region: string) {
     const user = await this.usersRepository.findOne({ where: { UID: userId } });
     if (!user) {
       throw new Error('User not found');
     }
 
+    if (!AccessKey || !SecretAccessKey) {
+      throw new Error('One or more keys are missing');
+    }
+
+    const alreadySecret = await this.secretsRepository.findOne({ where: { UID: userId } });
+    if (alreadySecret) {
+      throw new Error('이미 AWS credential이 있습니다');
+    }
+
+    const encryptedAccessKey = this.encrypt(AccessKey);
+    const encryptedSecretAccessKey = this.encrypt(SecretAccessKey);
+  
+
     const secret = this.secretsRepository.create({
       AccessKey: encryptedAccessKey,
       SecretAccessKey: encryptedSecretAccessKey,
-      SecurityKey: encryptedSecurityKey,
+      region: Region,
       UID: userId,
     });
     await this.secretsRepository.save(secret);
@@ -62,25 +75,21 @@ export class SecretsService {
     /**
    * 사용자 자격 증명 조회 및 복호화
    */
-  async getUserCredentials(userId: number): Promise<{ accessKey: string; secretAccessKey: string; securityKey?: string }> {
-    const secrets = await this.secretsRepository.findOne({ where: { UID:userId } });
-    if (!secrets) {
-      throw new InternalServerErrorException('User credentials not found');
+    async getUserCredentials(userId: number): Promise<{ accessKey: string; secretAccessKey: string; }> {
+      const secrets = await this.secretsRepository.findOne({ where: { UID: userId } });
+      if (!secrets) {
+        throw new InternalServerErrorException('User credentials not found');
+      }
+    
+      // Decrypt the stored access keys
+      const decryptedAccessKeyId = this.decrypt(secrets.AccessKey);
+      const decryptedSecretAccessKey = this.decrypt(secrets.SecretAccessKey);
+    
+      return {
+        accessKey: decryptedAccessKeyId,
+        secretAccessKey: decryptedSecretAccessKey,
+      };
     }
-
-    // const decryptedAccessKeyId = this.decrypt(secrets.AccessKey);
-    // const decryptedSecretAccessKey = this.decrypt(secrets.SecretAccessKey);
-    // const decryptedSecurityKey = secrets.SecurityKey ? this.decrypt(secrets.SecurityKey) : undefined;
-
-    return {
-      // accessKey: decryptedAccessKeyId,
-      // secretAccessKey: decryptedSecretAccessKey,
-      // securitKey: decryptedSecurityKey,
-      accessKey: secrets.AccessKey,
-      secretAccessKey: secrets.SecretAccessKey,
-      securityKey: secrets.SecurityKey,
-    };
-  }
   /**
    * 암호화 메서드
    */

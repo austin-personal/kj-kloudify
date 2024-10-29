@@ -15,9 +15,6 @@ export class Secrets {
   @Column({ type: 'text' })
   region: string;
 
-  @Column({ nullable: true })  // key-pair for access to EC2. It is now optional
-  SecurityKey: string;
-
   @Column()
   UID: number;  
 
