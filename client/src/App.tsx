@@ -14,7 +14,7 @@ import Guide from "./pages/Guide/Guide";
 
 const App: React.FC = () => {
   const location = useLocation();
-
+  const [finishData, setFinishData] = useState<string[]>([]);
   // 주소가 login인지 아닌지
   const showNavBar = location.pathname !== "/";
 
@@ -29,7 +29,7 @@ const App: React.FC = () => {
           path="/home/:pid"
           element={
             <ProtectedRoute>
-              <Home />
+              <Home finishData={finishData} setFinishData={setFinishData} />
             </ProtectedRoute>
           }
         />
@@ -39,7 +39,7 @@ const App: React.FC = () => {
           path="/review/:cid"
           element={
             <ProtectedRoute>
-              <Review />
+              <Review finishData={finishData} />
             </ProtectedRoute>
           }
         />

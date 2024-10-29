@@ -163,7 +163,7 @@ const Board = forwardRef(
           fitView
         >
           <Panel>
-            <button onClick={handleConnectNode}>연결 생성</button>
+            {/* <button onClick={handleConnectNode}>연결 생성</button> */}
           </Panel>
           <Background />
           <Controls />

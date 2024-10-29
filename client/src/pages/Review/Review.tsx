@@ -8,7 +8,11 @@ import { faCloudArrowDown } from "@fortawesome/free-solid-svg-icons";
 import { review } from "../../services/terraforms";
 import { useParams } from "react-router-dom";
 
-function Review() {
+interface ReviewProps {
+  finishData: string[];
+}
+
+const Review: React.FC<ReviewProps> = ({ finishData }) => {
   const { cid: cidParam } = useParams<{ cid: string }>(); // useParams로 cid 가져오기
   const cid = cidParam ? parseInt(cidParam, 10) : null; // cid가 존재할 때만 number로 변환
   const [showOptions, setShowOptions] = useState(false);
@@ -69,7 +73,7 @@ function Review() {
             height="100%"
             borderRadius="20px 20px 20px 20px"
             parsedData={[]}
-            finishData={[]}
+            finishData={finishData}
             nodes={nodes}
             setNodes={setNodes}
           />
@@ -101,6 +105,6 @@ function Review() {
       <Services nodes={nodes} cid={cid ?? 0} />
     </div>
   );
-}
+};
 
 export default Review;
