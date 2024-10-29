@@ -73,3 +73,21 @@ export const deploy = async (cid: number, token: string) => {
         throw error;
     }
 }
+
+export const download = async (cid: number, token: string) => {
+    try {
+        const response = await axios.post(`${API_URL}/download`,
+            {
+                CID: cid
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+        return response.data;
+    } catch (error) {
+        console.error('다운로드 개박살!! ;', error)
+        throw error;
+    }
+}
