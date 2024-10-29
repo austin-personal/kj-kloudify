@@ -93,7 +93,7 @@ const Board = forwardRef(
           fitView({ padding: 0.5, duration: 500 });
         }, 50);
       }
-    }, [parsedData, fitView]);
+    }, [parsedData[parsedData.length - 1], fitView]);
     //서비스 노드로 변경
     useEffect(() => {
       setNodes([]); //노드 초기화
