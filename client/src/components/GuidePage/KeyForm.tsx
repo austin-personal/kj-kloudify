@@ -6,8 +6,6 @@ interface KeyFormProps {
   setKeyId: React.Dispatch<React.SetStateAction<string>>;
   secretKey: string;
   setSecretKey: React.Dispatch<React.SetStateAction<string>>;
-  keyPair: string;
-  setKeyPair: React.Dispatch<React.SetStateAction<string>>;
   region: string;
   setRegion: React.Dispatch<React.SetStateAction<string>>;
 }
@@ -17,8 +15,6 @@ const KeyForm: React.FC<KeyFormProps> = ({
   setKeyId,
   secretKey,
   setSecretKey,
-  keyPair,
-  setKeyPair,
   region,
   setRegion,
 }) => {
@@ -93,19 +89,6 @@ const KeyForm: React.FC<KeyFormProps> = ({
               </option>
             ))}
           </select>
-        </div>
-
-      </div>
-      <hr className="keyForm-line" />
-      <div className="bottom-key-form-th">
-        <div className="input-box">
-          <div className="color-font-th">Key pairs</div>
-          <input
-            type="text"
-            placeholder="ex)배포에 필요한 공개 키 정보"
-            value={keyPair}
-            onChange={(e) => setKeyPair(e.target.value)}
-          />
         </div>
       </div>
     </div>

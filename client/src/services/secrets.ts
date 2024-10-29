@@ -3,13 +3,12 @@ import axios from 'axios';
 // 태현 api 주소 확인!!!
 const API_URL = 'http://localhost:3000/secrets';
 
-export const createSecret = async (accessKey: string, secretAccessKey: string, securityKey: string, region: string, token: string) => {
+export const createSecret = async (accessKey: string, secretAccessKey: string, region: string, token: string) => {
     try {
         const response = await axios.post(`${API_URL}`,
             {
                 accessKey,
                 secretAccessKey,
-                securityKey,
             },  // createProjectDto로 보내질 부분
             {
                 headers: {
