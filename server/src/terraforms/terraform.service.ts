@@ -20,6 +20,8 @@ import { DynamoDBDocumentClient, GetCommand } from '@aws-sdk/lib-dynamodb';
 import * as fs from 'fs'; // 파일시스템 라이브러리. 동기적으로 폴더를 생성해주고 그 폴더를 사용할수 있다.
 import * as path from 'path';
 import { v4 as uuidv4 } from 'uuid';
+import { Response } from 'express';
+import { Readable } from 'stream';
 
 import { exec } from 'child_process';
 import { promisify } from 'util';
@@ -272,6 +274,7 @@ export class TerraformService {
     }
   }
 
+<<<<<<< HEAD
     // Helper function to convert stream to string
   async streamToString(stream: Readable): Promise<string> {
     const chunks: any[] = [];
@@ -285,7 +288,7 @@ export class TerraformService {
   /**
    * S3에 저장된 Terraform 코드를 다운로드하는 메서드
    */
-  async downloadInfrastructure(downloadDto: DownloadDto): Promise<any> {
+  async downloadInfrastructure(downloadDto: DownloadDto, res: Response): Promise<void> {
     const { CID } = downloadDto;
 
     const s3Bucket = process.env.TERRAFORM_BUCKET;
@@ -298,10 +301,20 @@ export class TerraformService {
 
     try {
       const fileStream = await this.s3.getObject(params);
-      return fileStream.Body;
+
+      // 파일을 다운로드로 전송하기 위해 응답 헤더 설정
+      res.setHeader('Content-Disposition', `attachment; filename="${CID}_main.tf"`);
+      res.setHeader('Content-Type', 'application/octet-stream');
+
+      if (fileStream.Body instanceof Readable) {
+        // Body를 Buffer로 변환하여 전송
+        fileStream.Body.pipe(res);
+      } else {
+        throw new Error("File content is empty");
+      }
     } catch (error) {
       throw new InternalServerErrorException('Failed to download Terraform file', error);
-      }
+    }
   }
 
 

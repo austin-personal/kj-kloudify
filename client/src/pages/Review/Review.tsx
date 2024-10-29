@@ -5,7 +5,7 @@ import Services from "../../components/Services/Services";
 import "./Review.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCloudArrowDown } from "@fortawesome/free-solid-svg-icons";
-import { review } from "../../services/terraforms";
+import { download, review } from "../../services/terraforms";
 import { useParams } from "react-router-dom";
 
 interface ReviewProps {
@@ -34,11 +34,28 @@ const Review: React.FC<ReviewProps> = ({ finishData }) => {
     setShowOptions(false);
   };
 
-  const handleDownload = (type: string) => {
-    const fileUrl =
-      type === "terraform"
-        ? "/path/to/terraform.zip"
-        : "/path/to/architecture.zip";
+  const handleDownload = async () => {
+    if (cid !== null) {
+      try {
+        // 백엔드 API 호출
+        const data = await download(cid, token);
+
+        // 데이터를 Blob으로 변환
+        const blob = new Blob([data], { type: "application/zip" }); // 다운로드 파일의 MIME 타입 설정
+        const fileURL = URL.createObjectURL(blob);
+
+        // 다운로드 링크 생성 및 트리거
+        const link = document.createElement("a");
+        link.href = fileURL;
+        link.download = `terraform_code_${cid}.zip`; // 다운로드 파일명 설정
+        link.click();
+
+        // 메모리 정리
+        URL.revokeObjectURL(fileURL);
+      } catch (error) {
+        console.error("Terraform code download failed:", error);
+      }
+    }
   };
 
   useEffect(() => {
@@ -52,13 +69,6 @@ const Review: React.FC<ReviewProps> = ({ finishData }) => {
         }
       }
     };
-
-    // 세션 스토리지에서 노드 데이터 불러오기
-    const savedNodes = sessionStorage.getItem("nodes");
-    if (savedNodes) {
-      setNodes(JSON.parse(savedNodes));
-      console.log("세션 스토리지에서 노드 상태를 불러왔습니다.");
-    }
 
     // 항상 review API 호출하여 최신 데이터 불러오기
     fetchReviewData();
@@ -92,7 +102,7 @@ const Review: React.FC<ReviewProps> = ({ finishData }) => {
               Download
             </button>
             <div className={`download-options ${showOptions ? "show" : ""}`}>
-              <button onClick={() => handleDownload("terraform")}>
+              <button onClick={() => handleDownload()}>
                 Terraform Code
               </button>
               <button onClick={handleScreenshot}>Architecture</button>
