@@ -12,7 +12,7 @@ import { SecretsService } from '../secrets/secrets.service';
 
 // AWS 라이브러리
 import * as AWS from 'aws-sdk';
-import { S3 } from '@aws-sdk/client-s3';
+import { S3 , GetObjectCommand , GetObjectCommandOutput } from '@aws-sdk/client-s3';
 import { Lambda } from '@aws-sdk/client-lambda';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient, GetCommand } from '@aws-sdk/lib-dynamodb';
@@ -20,6 +20,11 @@ import { DynamoDBDocumentClient, GetCommand } from '@aws-sdk/lib-dynamodb';
 import * as fs from 'fs'; // 파일시스템 라이브러리. 동기적으로 폴더를 생성해주고 그 폴더를 사용할수 있다.
 import * as path from 'path';
 import { v4 as uuidv4 } from 'uuid';
+
+import { exec } from 'child_process';
+import { promisify } from 'util';
+import { writeFile , mkdir } from 'fs/promises';
+import { Readable } from 'stream';
 
 @Injectable()
 export class TerraformService {
@@ -157,39 +162,126 @@ export class TerraformService {
   /**
    * S3에 저장된 Terraform 코드를 실행하여 인프라를 배포하는 메서드
    */
-  async deployInfrastructure(deployDto: DeployDto): Promise<any> {
-    const { userId, CID } = deployDto;
+  // async deployInfrastructure(deployDto: DeployDto): Promise<any> {
+  //   const { userId, CID } = deployDto;
 
-    // S3에서 Terraform 파일 경로 설정
+  //   // S3에서 Terraform 파일 경로 설정
+  //   const s3Bucket = process.env.TERRAFORM_BUCKET;
+  //   const s3Key = `${CID}/main.tf`;
+
+  //   // Lambda 함수 트리거
+  //   const lambdaFunctionName = process.env.TERRAFORM_LAMBDA_FUNCTION;
+  //   const payload = {
+  //     userId,
+  //     CID,
+  //     s3Bucket,
+  //     s3Key,
+  //   };
+
+  //   try {
+  //     const lambdaResponse = this.lambda.invoke({
+  //       FunctionName: lambdaFunctionName,
+  //       InvocationType: 'Event', // 비동기 호출
+  //       Payload: JSON.stringify(payload),
+  //     });
+  //     // 프로젝트가 배포 됬으면, Postgres Project entity에도 isDeployed True로 바꾸기
+  //     await this.projectRepository.update({ CID }, { isDeployed: true });
+
+  //     return {
+  //       status: 'Deployment initiated',
+  //       lambdaResponse,
+  //     };
+  //   } catch (error) {
+  //     throw new InternalServerErrorException('Failed to trigger Lambda function', error);
+  //   }
+  // }
+
+  async deployInfrastructure(deployDto: DeployDto): Promise<any> {
+    const { CID, userId } = deployDto;  // userId를 추가로 받아옴
+    const execAsync = promisify(exec);
+    
     const s3Bucket = process.env.TERRAFORM_BUCKET;
     const s3Key = `${CID}/main.tf`;
-
-    // Lambda 함수 트리거
-    const lambdaFunctionName = process.env.TERRAFORM_LAMBDA_FUNCTION;
-    const payload = {
-      userId,
-      CID,
-      s3Bucket,
-      s3Key,
-    };
-
+    const localTerraformPath = `/temp`;
+    const mainTfFilePath = `${localTerraformPath}/${CID}.tf`;
+  
     try {
-      const lambdaResponse = this.lambda.invoke({
-        FunctionName: lambdaFunctionName,
-        InvocationType: 'Event', // 비동기 호출
-        Payload: JSON.stringify(payload),
-      });
-      // 프로젝트가 배포 됬으면, Postgres Project entity에도 isDeployed True로 바꾸기
-      await this.projectRepository.update({ CID }, { isDeployed: true });
+      console.log(`Starting deployment for CID: ${CID}`);
 
+      // AWS 자격 증명 조회
+      const credentials = await this.secretsService.getUserCredentials(userId);
+      if (!credentials) {
+        throw new Error(`User credentials not found for user ID: ${userId}`);
+      }
+
+      const { accessKey, secretAccessKey } = credentials;
+
+      // AWS S3 클라이언트 설정
+      const s3 = new S3({
+        region: process.env.AWS_REGION,
+        credentials: {
+          accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+          secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+        },
+      });
+      
+      // 환경 변수 확인
+      if (!process.env.AWS_REGION || !s3Bucket) {
+        throw new Error("AWS_REGION or TERRAFORM_BUCKET environment variable is not set.");
+      }
+  
+      // 디렉토리 생성
+      await fs.promises.mkdir(localTerraformPath, { recursive: true });
+      console.log(`Directory created or already exists: ${localTerraformPath}`);
+  
+      // S3에서 Terraform 파일 다운로드
+      const command = new GetObjectCommand({ Bucket: s3Bucket, Key: s3Key });
+      const fileData: GetObjectCommandOutput = await s3.send(command);
+      if (!fileData.Body) throw new Error('S3 파일 데이터가 없습니다.');
+      console.log('S3 파일 다운로드 성공');
+  
+      // 파일 내용 읽기 및 저장
+      const bodyContent = await this.streamToString(fileData.Body as Readable);
+      await fs.promises.writeFile(mainTfFilePath, bodyContent);
+      console.log(`Terraform file saved at ${mainTfFilePath}`);
+  
+      // Terraform 초기화 및 적용
+      await execAsync(`terraform -chdir=${localTerraformPath} init`);
+      console.log('Terraform 초기화 완료');
+  
+      const { stdout, stderr } = await execAsync(
+        `terraform -chdir=${localTerraformPath} apply -auto-approve -var "aws_access_key=${accessKey}" -var "aws_secret_key=${secretAccessKey}"`
+      );
+      console.log('Terraform 적용 완료:', stdout);
+  
+      if (stderr) {
+        console.warn('Terraform Warning:', stderr);
+      }
+  
+      // 성공적으로 배포된 경우 프로젝트 엔티티 상태 업데이트
+      await this.projectRepository.update({ CID }, { isDeployed: true });
+      console.log(`Project deployment status updated for CID: ${CID}`);
+  
       return {
-        status: 'Deployment initiated',
-        lambdaResponse,
+        status: 'Deployment successful',
+        terraformOutput: stdout,
       };
     } catch (error) {
-      throw new InternalServerErrorException('Failed to trigger Lambda function', error);
+      console.error('Deployment error:', error);
+      throw new InternalServerErrorException(`Failed to deploy infrastructure: ${error.message}`);
     }
   }
+
+    // Helper function to convert stream to string
+  async streamToString(stream: Readable): Promise<string> {
+    const chunks: any[] = [];
+    for await (const chunk of stream) {
+      chunks.push(chunk);
+    }
+    return Buffer.concat(chunks).toString('utf-8');
+  }
+  
+
   /**
    * S3에 저장된 Terraform 코드를 다운로드하는 메서드
    */
@@ -211,4 +303,7 @@ export class TerraformService {
       throw new InternalServerErrorException('Failed to download Terraform file', error);
       }
   }
+
+
+
 }
