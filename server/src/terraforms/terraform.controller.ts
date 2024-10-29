@@ -1,4 +1,5 @@
-import { Controller, Post, Body, Req, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, Req, UseGuards, Res, Query } from '@nestjs/common';
+import { Response } from 'express';
 import { TerraformService } from './terraform.service';
 import { UsersService } from '../users/users.service';
 import { ReviewDto } from './dto/review.dto';
@@ -39,8 +40,8 @@ export class TerraformController {
    * 다운로드 엔드포인트: Terraform 파일 다운로드
    */
   @Post('download')
-  async download(@Body() downloadDto: DownloadDto) {
-    const result = await this.terraformService.downloadInfrastructure(downloadDto);
+  async download(@Body() downloadDto: DownloadDto, @Res() res: Response):Promise<void> {
+    const result = await this.terraformService.downloadInfrastructure(downloadDto, res);
     return result;
   }
 }
