@@ -26,7 +26,6 @@ import { Readable } from 'stream';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import { writeFile , mkdir } from 'fs/promises';
-import { Readable } from 'stream';
 
 @Injectable()
 export class TerraformService {
@@ -199,25 +198,26 @@ export class TerraformService {
   // }
 
   async deployInfrastructure(deployDto: DeployDto): Promise<any> {
-    const { CID, userId } = deployDto;  // userId를 추가로 받아옴
+    const { CID, userId } = deployDto;
     const execAsync = promisify(exec);
-    
+  
     const s3Bucket = process.env.TERRAFORM_BUCKET;
     const s3Key = `${CID}/main.tf`;
-    const localTerraformPath = `/temp`;
-    const mainTfFilePath = `${localTerraformPath}/${CID}.tf`;
+    const localTerraformPath = `/temp/${CID}`;  // CID별 디렉토리 생성
+    const mainTfFilePath = `${localTerraformPath}/main.tf`;
   
     try {
       console.log(`Starting deployment for CID: ${CID}`);
-
-      // AWS 자격 증명 조회
+  
+      // 사용자별 AWS 자격 증명 조회
       const credentials = await this.secretsService.getUserCredentials(userId);
+      console.log('Retrieved credentials:', credentials);
       if (!credentials) {
         throw new Error(`User credentials not found for user ID: ${userId}`);
       }
-
+  
       const { accessKey, secretAccessKey } = credentials;
-
+  
       // AWS S3 클라이언트 설정
       const s3 = new S3({
         region: process.env.AWS_REGION,
@@ -226,21 +226,16 @@ export class TerraformService {
           secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
         },
       });
-      
-      // 환경 변수 확인
-      if (!process.env.AWS_REGION || !s3Bucket) {
-        throw new Error("AWS_REGION or TERRAFORM_BUCKET environment variable is not set.");
-      }
-  
-      // 디렉토리 생성
-      await fs.promises.mkdir(localTerraformPath, { recursive: true });
-      console.log(`Directory created or already exists: ${localTerraformPath}`);
   
       // S3에서 Terraform 파일 다운로드
       const command = new GetObjectCommand({ Bucket: s3Bucket, Key: s3Key });
       const fileData: GetObjectCommandOutput = await s3.send(command);
       if (!fileData.Body) throw new Error('S3 파일 데이터가 없습니다.');
       console.log('S3 파일 다운로드 성공');
+  
+      // CID별 디렉토리 생성
+      await fs.promises.mkdir(localTerraformPath, { recursive: true });
+      console.log(`Directory created or already exists: ${localTerraformPath}`);
   
       // 파일 내용 읽기 및 저장
       const bodyContent = await this.streamToString(fileData.Body as Readable);
@@ -273,6 +268,7 @@ export class TerraformService {
       throw new InternalServerErrorException(`Failed to deploy infrastructure: ${error.message}`);
     }
   }
+  
 
     // Helper function to convert stream to string
   async streamToString(stream: Readable): Promise<string> {
@@ -316,6 +312,55 @@ export class TerraformService {
     }
   }
 
+  async destroyInfrastructure(CID: number, userId: number): Promise<any> {
+    const execAsync = promisify(exec);
+    const localTerraformPath = `/temp/${CID}`;  // CID별 디렉토리 경로
+    const mainTfFilePath = `${localTerraformPath}/main.tf`;
+  
+    try {
+      console.log(`Starting destruction for CID: ${CID}`);
+  
+      // 사용자별 AWS 자격 증명 조회
+      const credentials = await this.secretsService.getUserCredentials(userId);
+      console.log('Retrieved credentials:', credentials);
+      if (!credentials) {
+        throw new Error(`User credentials not found for user ID: ${userId}`);
+      }
+  
+      const { accessKey, secretAccessKey } = credentials;
+  
+      // 해당 경로에 Terraform 파일이 존재하는지 확인
+      if (!fs.existsSync(mainTfFilePath)) {
+        throw new Error(`Terraform file not found for CID: ${CID}`);
+      }
+  
+      // Terraform 초기화 (init) - 이미 적용된 상태에서도 destroy를 위해 필요
+      await execAsync(`terraform -chdir=${localTerraformPath} init`);
+      console.log('Terraform 초기화 완료');
+  
+      // Terraform destroy 명령 실행 (자격 증명 전달)
+      const { stdout, stderr } = await execAsync(
+        `terraform -chdir=${localTerraformPath} destroy -auto-approve -var "aws_access_key=${accessKey}" -var "aws_secret_key=${secretAccessKey}"`
+      );
+      console.log('Terraform 삭제 완료:', stdout);
+  
+      if (stderr) {
+        console.warn('Terraform Warning:', stderr);
+      }
+  
+      // CID 디렉토리 전체 삭제
+      await fs.promises.rmdir(localTerraformPath, { recursive: true });
+      console.log(`Terraform directory deleted: ${localTerraformPath}`);
+  
+      return {
+        status: 'Destruction successful',
+        terraformOutput: stdout,
+      };
+    } catch (error) {
+      console.error('Destruction error:', error);
+      throw new InternalServerErrorException(`Failed to destroy infrastructure: ${error.message}`);
+    }
+  }
 
 
 }

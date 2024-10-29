@@ -63,6 +63,8 @@ export class SecretsService {
    * 사용자 자격 증명 조회 및 복호화
    */
   async getUserCredentials(userId: number): Promise<{ accessKey: string; secretAccessKey: string; securityKey?: string }> {
+
+    console.log("hhhhhh",userId);
     const secrets = await this.secretsRepository.findOne({ where: { UID:userId } });
     if (!secrets) {
       throw new InternalServerErrorException('User credentials not found');
