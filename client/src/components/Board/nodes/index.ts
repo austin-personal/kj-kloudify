@@ -154,7 +154,7 @@ export const addServiceNode = (keyword: string, options:any[],nodes: AppNode[]):
     imageChange = require("../../../img/aws-icons/default.svg").default; //경로에 없을 시 ec2 이미지가 디폴트로 나올것임.
   }
   const newNode : PositionLoggerNode ={
-    id: (nodes.length + 1).toString(),
+    id: keyword,
     type: "position-logger",
     position: { x: newNodeX, y: lastNodeY},  
     data: {

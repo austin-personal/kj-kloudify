@@ -39,8 +39,6 @@ interface BoardProps {
   borderRadius?: string; // border-radius도 선택적이며 문자열로 받을 것
   parsedData: string[]; //여기 안에 채팅 답변에 포함된 필요한 요소들이 들어올것임.
   finishData: string[]; // finishData의 타입을 명시 //여기 안에 채팅 답변에 포함된 요소들의 결정된 서비스가 한번에 들어올것임.
-  nodes: any[]; // 노드 배열을 상위 컴포넌트에서 전달받음
-  setNodes: (nodes: any[]) => void; // 노드 상태 업데이트 함수
 }
 
 const Board = forwardRef(
@@ -49,12 +47,11 @@ const Board = forwardRef(
       height = "540px",
       borderRadius = "15px 0px 15px 15px",
       parsedData,
-      nodes,
-      setNodes,
       finishData,
     }: BoardProps,
     ref
   ) => {
+    const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
     const [edges, setEdges, onEdgesChange] =
       useEdgesState<Edge<Record<string, unknown>, string | undefined>>(
         initialEdges
@@ -94,6 +91,14 @@ const Board = forwardRef(
         }, 50);
       }
     }, [parsedData[parsedData.length - 1], fitView]);
+
+    // 새로운 엣지 추가 핸들러
+    const handleAddEdge = (sourceNodeId: string, targetNodeId: string) => {
+      setEdges((prevEdges) =>
+        addConnectEdge(sourceNodeId, targetNodeId, prevEdges)
+      );
+    };
+
     //서비스 노드로 변경
     useEffect(() => {
       setNodes([]); //노드 초기화
@@ -119,6 +124,9 @@ const Board = forwardRef(
             updatedNodes
           );
         }
+        handleAddEdge("ec2", "s3");
+        handleAddEdge("ec2", "rds");
+        handleAddEdge("cloudwatch", "ec2");
         setNodes(updatedNodes);
       }
     }, [finishData]);
@@ -158,6 +166,7 @@ const Board = forwardRef(
           nodeTypes={nodeTypes}
           edges={edges}
           edgeTypes={edgeTypes}
+          onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
           fitView

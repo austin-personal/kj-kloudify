@@ -84,8 +84,6 @@ const Review: React.FC<ReviewProps> = ({ finishData }) => {
             borderRadius="20px 20px 20px 20px"
             parsedData={[]}
             finishData={finishData}
-            nodes={nodes}
-            setNodes={setNodes}
           />
         </ReactFlowProvider>
         <div className="download">
@@ -102,9 +100,7 @@ const Review: React.FC<ReviewProps> = ({ finishData }) => {
               Download
             </button>
             <div className={`download-options ${showOptions ? "show" : ""}`}>
-              <button onClick={() => handleDownload()}>
-                Terraform Code
-              </button>
+              <button onClick={() => handleDownload()}>Terraform Code</button>
               <button onClick={handleScreenshot}>Architecture</button>
             </div>
           </div>

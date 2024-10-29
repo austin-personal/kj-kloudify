@@ -34,7 +34,6 @@ const Home: React.FC<HomeProps> = ({ finishData, setFinishData }) => {
   const [isOpenSummary, setIsOpenSummary] = useState(false);
   const [project, setProject] = useState<Project | null>(null);
   const [parsedData, setParsedData] = useState<string[]>([]);
-  const [nodes, setNodes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   const { pid } = useParams<{ pid: string }>();
@@ -112,12 +111,7 @@ const Home: React.FC<HomeProps> = ({ finishData, setFinishData }) => {
           <div className="setting-services setting-in-progress">2</div>
         </div>
         <ReactFlowProvider>
-          <Board
-            parsedData={parsedData}
-            finishData={finishData}
-            nodes={nodes}
-            setNodes={setNodes}
-          />
+          <Board parsedData={parsedData} finishData={finishData} />
         </ReactFlowProvider>
         <div
           className={`popup ${isOpenSummary ? "visible" : "hidden"}`}

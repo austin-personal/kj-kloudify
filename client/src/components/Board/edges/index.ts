@@ -33,10 +33,11 @@ export const addConnectEdge = (
   edges: Edge[],
 ): Edge[] => {
   const newEdge: Edge<any> = {
-    id: `edge-${sourceNodeId}-${targetNodeId}`,  // 엣지의 고유 ID
+    id: `${sourceNodeId}-${targetNodeId}`,  // 엣지의 고유 ID
     source: sourceNodeId,  // 시작 노드의 ID
     target: targetNodeId,  // 연결할 대상 노드의 ID
-    type: "step",  // 엣지 타입 지정
+    type: "step", 
+    animated: true, // 엣지 타입 지정
     markerEnd: {
       type: MarkerType.ArrowClosed,  // 화살표 끝 표시
     },
