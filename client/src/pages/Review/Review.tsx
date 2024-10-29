@@ -58,22 +58,6 @@ const Review: React.FC<ReviewProps> = ({ finishData }) => {
     }
   };
 
-  useEffect(() => {
-    const fetchReviewData = async () => {
-      if (cid !== null && !isNaN(cid)) {
-        try {
-          const response = await review(cid, token); // cid를 이용해 review 호출
-          console.log("review API 호출 성공:", response);
-        } catch (error) {
-          console.error("review API 호출 실패:", error);
-        }
-      }
-    };
-
-    // 항상 review API 호출하여 최신 데이터 불러오기
-    fetchReviewData();
-  }, []);
-
   return (
     <div className="review">
       <div className="review-board">
