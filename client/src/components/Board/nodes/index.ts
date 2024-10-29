@@ -140,8 +140,8 @@ export const replaceNode = (keyword: string, nodeId: string, options:any[], node
 // 서비스 노드 생성 버전
 export const addServiceNode = (keyword: string, options:any[],nodes: AppNode[]): AppNode[] => {
   // 백엔드에서 전달된 키워드에 따라 새로운 노드 생성
-
   // 마지막 노드의 y축 위치를 참조하여 50씩 증가시킴
+  console.log(keyword);
   const lastNodeY = nodes.length > 0 ? nodes[nodes.length - 1].position.y : 0;
   const lastNodeX = nodes.length > 0 ? nodes[nodes.length - 1].position.x : 0;
   const newNodeX = lastNodeX+ 80;
@@ -150,10 +150,11 @@ export const addServiceNode = (keyword: string, options:any[],nodes: AppNode[]):
   try {
     imageChange = require(`../../../img/aws-icons/${keyword}.svg`);
   } catch (error) {
-    imageChange = require(`../../../img/aws-icons/ec2.svg`); //경로에 없을 시 ec2 이미지가 디폴트로 나올것임.
+    console.log("????");
+    imageChange = require("../../../img/aws-icons/default.svg").default; //경로에 없을 시 ec2 이미지가 디폴트로 나올것임.
   }
   const newNode : PositionLoggerNode ={
-    id: (nodes.length + 1).toString(),
+    id: keyword,
     type: "position-logger",
     position: { x: newNodeX, y: lastNodeY},  
     data: {

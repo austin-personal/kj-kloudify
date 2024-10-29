@@ -41,13 +41,13 @@ const Review: React.FC<ReviewProps> = ({ finishData }) => {
         const data = await download(cid, token);
 
         // 데이터를 Blob으로 변환
-        const blob = new Blob([data], { type: "application/zip" }); // 다운로드 파일의 MIME 타입 설정
+        const blob = new Blob([data], { type: "text/plain" }); // 다운로드 파일의 MIME 타입 설정
         const fileURL = URL.createObjectURL(blob);
 
         // 다운로드 링크 생성 및 트리거
         const link = document.createElement("a");
         link.href = fileURL;
-        link.download = `terraform_code_${cid}.zip`; // 다운로드 파일명 설정
+        link.download = `terraform_code_${cid}.tf`; // 다운로드 파일명 설정
         link.click();
 
         // 메모리 정리
@@ -57,22 +57,6 @@ const Review: React.FC<ReviewProps> = ({ finishData }) => {
       }
     }
   };
-
-  useEffect(() => {
-    const fetchReviewData = async () => {
-      if (cid !== null && !isNaN(cid)) {
-        try {
-          const response = await review(cid, token); // cid를 이용해 review 호출
-          console.log("review API 호출 성공:", response);
-        } catch (error) {
-          console.error("review API 호출 실패:", error);
-        }
-      }
-    };
-
-    // 항상 review API 호출하여 최신 데이터 불러오기
-    fetchReviewData();
-  }, []);
 
   return (
     <div className="review">
@@ -84,8 +68,6 @@ const Review: React.FC<ReviewProps> = ({ finishData }) => {
             borderRadius="20px 20px 20px 20px"
             parsedData={[]}
             finishData={finishData}
-            nodes={nodes}
-            setNodes={setNodes}
           />
         </ReactFlowProvider>
         <div className="download">
@@ -102,9 +84,7 @@ const Review: React.FC<ReviewProps> = ({ finishData }) => {
               Download
             </button>
             <div className={`download-options ${showOptions ? "show" : ""}`}>
-              <button onClick={() => handleDownload()}>
-                Terraform Code
-              </button>
+              <button onClick={() => handleDownload()}>Terraform Code</button>
               <button onClick={handleScreenshot}>Architecture</button>
             </div>
           </div>

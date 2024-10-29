@@ -1,8 +1,21 @@
-import React, { useState } from 'react';
+import React, { ReactNode, useState } from 'react';
+import { useMediaQuery } from 'react-responsive';
 import IntroSection from './IntroSection';
 import LoginForm from './LoginForm';
 import SignupForm from './SignupForm';
 import './LoginPage.css';
+
+interface TabletProps {
+    children: ReactNode;
+}
+
+export const Tablet: React.FC<TabletProps> = ({ children }) => {
+    const isTablet = useMediaQuery({
+        query: "(min-width:1250px)"
+    });
+
+    return <>{isTablet && children}</>
+}
 
 const LoginPage: React.FC = () => {
     // 로그인 폼인지, 회원가입 폼인지 야바위
@@ -15,8 +28,11 @@ const LoginPage: React.FC = () => {
     return (
         <div className="login-page">
             {/* 왼쪽 소개 폼 */}
-            <IntroSection />
-            
+            <Tablet>
+                <div className="intro-section">
+                    <IntroSection />
+                </div>
+            </Tablet>
             {/* 오른쪽 폼: 로그인 또는 회원가입 폼을 조건부로 렌더링 */}
             <div className="auth-section">
                 {isSignup ? (

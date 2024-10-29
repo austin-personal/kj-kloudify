@@ -59,9 +59,9 @@ export function PositionLoggerNode({
       onMouseLeave={handleMouseLeave}
     >
       {/* {data.label && <div>{data.label}</div>} */}
-      {/* <Handle type="source" position={Position.Right} id="a" /> */}
+      <Handle type="source" position={Position.Right} id="a" />
       <img src={data.imgUrl} alt="ec2" className="node-img" />
-      {/* <Handle type="target" position={Position.Left} id="b" /> */}
+      <Handle type="target" position={Position.Left} id="b" />
       {descriptionPortal /* 설명창이 document.body 위에 포탈로 렌더링됨 */}
     </div>
   );
