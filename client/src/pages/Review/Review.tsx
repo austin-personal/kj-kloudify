@@ -70,13 +70,6 @@ const Review: React.FC<ReviewProps> = ({ finishData }) => {
       }
     };
 
-    // 세션 스토리지에서 노드 데이터 불러오기
-    const savedNodes = sessionStorage.getItem("nodes");
-    if (savedNodes) {
-      setNodes(JSON.parse(savedNodes));
-      console.log("세션 스토리지에서 노드 상태를 불러왔습니다.");
-    }
-
     // 항상 review API 호출하여 최신 데이터 불러오기
     fetchReviewData();
   }, []);

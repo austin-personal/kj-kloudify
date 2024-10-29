@@ -77,12 +77,7 @@ const Home: React.FC<HomeProps> = ({ finishData, setFinishData }) => {
     setIsOpenSummary(!isOpenSummary);
   };
 
-  const saveNodesToSession = () => {
-    sessionStorage.setItem("nodes", JSON.stringify(nodes));
-    console.log("노드 상태가 세션 스토리지에 저장되었습니다.");
-  };
   const handleFinish = () => {
-    saveNodesToSession();
     navigate(`/review/${project?.CID}`);
   };
 
