@@ -29,19 +29,23 @@ export class SecretsService {
 
 // 새로운 Secrets 생성 함수
   async createSecret(userId: number, AccessKey: string, SecretAccessKey: string, Region: string) {
-    if (!AccessKey || !SecretAccessKey) {
-      throw new Error('One or more keys are missing');
-    }
-    if (secret) {
-      throw new Error('이미 AWS credential이 있습니다');
-    }
-    const encryptedAccessKey = this.encrypt(AccessKey);
-    const encryptedSecretAccessKey = this.encrypt(SecretAccessKey);
-    
     const user = await this.usersRepository.findOne({ where: { UID: userId } });
     if (!user) {
       throw new Error('User not found');
     }
+
+    if (!AccessKey || !SecretAccessKey) {
+      throw new Error('One or more keys are missing');
+    }
+
+    const alreadySecret = await this.secretsRepository.findOne({ where: { UID: userId } });
+    if (alreadySecret) {
+      throw new Error('이미 AWS credential이 있습니다');
+    }
+
+    const encryptedAccessKey = this.encrypt(AccessKey);
+    const encryptedSecretAccessKey = this.encrypt(SecretAccessKey);
+  
 
     const secret = this.secretsRepository.create({
       AccessKey: encryptedAccessKey,

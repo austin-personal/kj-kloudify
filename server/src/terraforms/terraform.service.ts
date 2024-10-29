@@ -63,7 +63,10 @@ export class TerraformService {
 
       4. Avoid including AWS credentials directly in the code; assume credentials will be provided through environment variables, such as process.env.AWS_ACCESS_KEY_ID and process.env.AWS_SECRET_ACCESS_KEY, or set up securely through Lambda configuration.
 
-      5. Only produces one code snippet.
+      5. Only produces one code snippet. Be enclosed within triple backticks with 'hcl' specified for syntax highlighting, like:
+     \`\`\`hcl
+     <Terraform Code>
+     \`\`\`
       `;
 
     // 베드락 설정
@@ -126,11 +129,32 @@ export class TerraformService {
     const codeContent = terraformCode["content"][0].text;
 
     // 3. ``` ``` 사이의 Terraform 코드만 추출
-    const codeBlock = codeContent.match(/```(?:hcl)?\n([\s\S]*?)\n```/);
+    // const codeBlock = codeContent.match(/```(?:hcl)?\n([\s\S]*?)\n```/);
+
+    // if (!codeBlock) {
+    //     throw new Error('Terraform code block not found');
+    // }
+    
+    // const extractedCode = codeBlock[1];
+    let codeBlock = codeContent.match(/```(?:hcl)?\s*\n([\s\S]*?)\n```/i);
+
+    // If the first regex doesn't match, try without specifying 'hcl'
     if (!codeBlock) {
-        throw new Error('Terraform code block not found');
+        codeBlock = codeContent.match(/```\s*\n([\s\S]*?)\n```/i);
     }
+    
+    if (!codeBlock) {
+        // As a last resort, assume the entire content is Terraform code
+        console.warn('Terraform code block not found using regex. Assuming entire content is code.');
+        return {
+          status: 'Terraform code generated',
+          terraformCode: codeContent,
+        };
+    }
+    
     const extractedCode = codeBlock[1];
+
+    /////
 
     // 4. Terraform 코드를 임시 디렉토리에 저장
     const tmpDir = `/tmp/${CID}`;
