@@ -17,7 +17,7 @@ export const ask = async (msg: string, cid: number) => {
     }
 };
 
-export const open = async (cid: number, token: string) => {
+export const open = async (cid: number, token: string | null) => {
     try {
         const response = await axios.post(`${API_URL}/open`,
             { CID: cid },

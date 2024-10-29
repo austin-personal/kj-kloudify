@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { ReactFlowProvider } from "@xyflow/react";
 import { useParams } from "react-router-dom";
+import { v4 as uuidv4 } from "uuid";
 import Board from "../../components/Board/Board";
 import DonutChart from "../../components/HistoryPage/DonutChart";
 import { projectOneInfo } from "../../services/projects";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCloud } from "@fortawesome/free-solid-svg-icons";
 import "./History.css";
+import { open } from "../../services/conversations";
+import { useTemplates } from "../../components/Chat/TemplateProvider";
 
-// 프로젝트 타입 정의
 interface Project {
   PID: number;
   CID: string;
@@ -22,13 +24,20 @@ interface Project {
     status: string;
     price: number;
   }[];
-  previousChats: string[];
+}
+
+interface ChatMessage {
+  id: string;
+  text: string;
+  sender: "bot" | "user";
 }
 
 const History: React.FC = () => {
+  const templates = useTemplates();
   const { pid } = useParams<{ pid: string }>();
   const [project, setProject] = useState<Project | null>(null);
   const [isChatting, setIsChatting] = useState(false);
+  const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
   const token = localStorage.getItem("token");
 
   useEffect(() => {
@@ -36,15 +45,65 @@ const History: React.FC = () => {
       try {
         if (pid) {
           const response = await projectOneInfo(Number(pid), token);
-          setProject(response.data);
+          const projectData = response.data;
+          setProject(projectData);
+
+          // Chat history를 불러올 때 CID를 사용
+          if (projectData.CID && isChatting) {
+            await openChatHistory(projectData.CID);
+          }
         }
       } catch (error) {
         console.error("프로젝트 정보를 가져오는 중 오류 발생:", error);
       }
     };
 
+    const openChatHistory = async (cid: number) => {
+      try {
+        const response = await open(cid, token);
+        const formattedChat = response.flatMap((msg: any) => {
+          // userMessage에서 첫 번째 '-' 이후의 부분만 가져오기
+          const parsedUserMessage = msg.userMessage.includes("-")
+            ? msg.userMessage.slice(msg.userMessage.indexOf("-") + 1).trim()
+            : msg.userMessage;
+
+          // botResponse에서 '!!'나 '**' 앞의 부분을 가져오기
+          let parsedBotResponse = msg.botResponse.includes("!!")
+            ? msg.botResponse.split("!!")[0].trim()
+            : msg.botResponse;
+
+          if (parsedBotResponse.includes("**")) {
+            parsedBotResponse = parsedBotResponse.split("**")[0].trim();
+          }
+
+          // templates에서 botResponse가 존재하는지 확인하고 매칭되는 텍스트 사용
+          const matchingTemplate = Object.values(templates).find(
+            (template) => template.name === parsedBotResponse
+          );
+
+          const botText = matchingTemplate ? matchingTemplate.text : parsedBotResponse;
+
+          return [
+            {
+              id: uuidv4(),
+              text: parsedUserMessage,
+              sender: "user",
+            },
+            {
+              id: uuidv4(),
+              text: botText,
+              sender: "bot",
+            },
+          ];
+        });
+        setChatHistory(formattedChat);
+      } catch (error) {
+        console.error("채팅 내역을 가져오는 중 오류 발생:", error);
+      }
+    };
+
     fetchProjectData();
-  }, [pid, token]);
+  }, [pid, token, isChatting]);
 
   if (!project) return <div>Loading...</div>;
 
@@ -52,8 +111,7 @@ const History: React.FC = () => {
     <div className="history-page">
       <div className="project-header">
         <p className="project-name-title-th">
-          Project Name :{" "}
-          <span className="project-name-th">{project.projectName}</span>
+          Project Name : <span className="project-name-th">{project.projectName}</span>
         </p>
       </div>
 
@@ -66,21 +124,23 @@ const History: React.FC = () => {
             <FontAwesomeIcon className="bot-icon" icon={faCloud} />
           </button>
           <div
-            className={`previous-chat-explanation-th  ${
-              isChatting ? "hide" : "visible"
-            }`}
+            className={`previous-chat-explanation-th  ${isChatting ? "hide" : "visible"}`}
           >
             Previous chat
           </div>
         </div>
         <div className="left-content">
-          <div
-            className={`previous-chatting-th ${isChatting ? "open" : "close"}`}
-          >
-            <p>Previous Chat</p>
-            {project.previousChats?.map((chat, index) => (
-              <div key={index}>{chat}</div>
-            ))}
+          <div className={`previous-chatting-th ${isChatting ? "open" : "close"}`}>
+            <div className="chat-history">
+              {chatHistory.map((message) => (
+                <div
+                  key={message.id}
+                  className={`chat-message ${message.sender === "bot" ? "bot-message" : "user-message"}`}
+                >
+                  <span>{message.text}</span>
+                </div>
+              ))}
+            </div>
           </div>
           <div className="service-status-th">
             <h3>Service Status</h3>
@@ -93,15 +153,7 @@ const History: React.FC = () => {
           </div>
         </div>
         <div className="architecture-box">
-          {/* <ReactFlowProvider>
-            <Board
-              height="100%"
-              borderRadius="20px 20px 20px 20px"
-              parsedData={[]}
-              nodes={nodes}
-              setNodes={setNodes}
-            />
-          </ReactFlowProvider> */}
+          {/* 스크린샷 들어갈 예정 */}
         </div>
       </div>
     </div>
