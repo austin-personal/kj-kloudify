@@ -137,32 +137,32 @@ export const replaceNode = (keyword: string, nodeId: string, options:any[], node
 
 
 // 새로운 노드를 추가하는 함수
-//서비스 노드 생성 버전
-// export const addNode = (keyword: string, nodes: AppNode[]): AppNode[] => {
-//   // 백엔드에서 전달된 키워드에 따라 새로운 노드 생성
+// 서비스 노드 생성 버전
+export const addServiceNode = (keyword: string, options:any[],nodes: AppNode[]): AppNode[] => {
+  // 백엔드에서 전달된 키워드에 따라 새로운 노드 생성
 
-//   // 마지막 노드의 y축 위치를 참조하여 50씩 증가시킴
-//   const lastNodeY = nodes.length > 0 ? nodes[nodes.length - 1].position.y : 0;
-//   const lastNodeX = nodes.length > 0 ? nodes[nodes.length - 1].position.x : 0;
-//   const newNodeX = lastNodeX+ 80;
-//   //require를 사용하여 이미지 경로를 가져옴
-//   let imageChange;
-//   try {
-//     imageChange = require(`../../../img/aws-icons/${keyword}.svg`);
-//   } catch (error) {
-//     imageChange = require(`../../../img/aws-icons/ec2.svg`); //경로에 없을 시 ec2 이미지가 디폴트로 나올것임.
-//   }
-//   const newNode : PositionLoggerNode ={
-//     id: (nodes.length + 1).toString(),
-//     type: "position-logger",
-//     position: { x: newNodeX, y: lastNodeY},  
-//     data: {
-//       label: keyword,
-//       imgUrl: imageChange,
-//       description: `${keyword}는 AWS의 주요 컴퓨팅 서비스 중 하나입니다.`
-//     }
-//   };
+  // 마지막 노드의 y축 위치를 참조하여 50씩 증가시킴
+  const lastNodeY = nodes.length > 0 ? nodes[nodes.length - 1].position.y : 0;
+  const lastNodeX = nodes.length > 0 ? nodes[nodes.length - 1].position.x : 0;
+  const newNodeX = lastNodeX+ 80;
+  //require를 사용하여 이미지 경로를 가져옴
+  let imageChange;
+  try {
+    imageChange = require(`../../../img/aws-icons/${keyword}.svg`);
+  } catch (error) {
+    imageChange = require(`../../../img/aws-icons/ec2.svg`); //경로에 없을 시 ec2 이미지가 디폴트로 나올것임.
+  }
+  const newNode : PositionLoggerNode ={
+    id: (nodes.length + 1).toString(),
+    type: "position-logger",
+    position: { x: newNodeX, y: lastNodeY},  
+    data: {
+      label: keyword,
+      imgUrl: imageChange,
+      description: Array.isArray(options) ? options.join(", ") : JSON.stringify(options),
+    }
+  };
   
-//   // 기존 노드 배열에 새 노드를 추가한 배열을 반환
-//   return [...nodes, newNode];
-// };
+  // 기존 노드 배열에 새 노드를 추가한 배열을 반환
+  return [...nodes, newNode];
+};

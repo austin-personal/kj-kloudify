@@ -24,12 +24,16 @@ interface Project {
   isDeployed: boolean;
 }
 
-const Home: React.FC = () => {
+interface HomeProps {
+  finishData: string[];
+  setFinishData: React.Dispatch<React.SetStateAction<string[]>>;
+}
+
+const Home: React.FC<HomeProps> = ({ finishData, setFinishData }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenSummary, setIsOpenSummary] = useState(false);
   const [project, setProject] = useState<Project | null>(null);
   const [parsedData, setParsedData] = useState<string[]>([]);
-  const [finishData, setFinishData] = useState<string[]>([]);
   const [nodes, setNodes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 

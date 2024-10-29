@@ -24,7 +24,13 @@ import "@xyflow/react/dist/style.css";
 
 import "./Board.css";
 
-import { initialNodes, nodeTypes, addNode, replaceNode } from "./nodes";
+import {
+  initialNodes,
+  nodeTypes,
+  addNode,
+  replaceNode,
+  addServiceNode,
+} from "./nodes";
 import { initialEdges, edgeTypes, addConnectEdge } from "./edges";
 
 // Props 타입 정의
@@ -55,6 +61,7 @@ const Board = forwardRef(
       );
     const reactFlowWrapper = useRef<HTMLDivElement | null>(null);
     const { fitView } = useReactFlow(); // fitView 메서드 사용
+
     // 스크린샷 기능을 상위 컴포넌트에서 사용할 수 있게 제공
     useImperativeHandle(ref, () => ({
       takeScreenshot() {
@@ -72,8 +79,9 @@ const Board = forwardRef(
       (connection) => setEdges((edges) => addEdge(connection, edges)),
       [setEdges]
     );
-
+    //프레임 노드 생성
     useEffect(() => {
+      console.log("왜비어있지", parsedData);
       if (parsedData.length > 0) {
         const lastElement = parsedData[parsedData.length - 1];
         console.log("초기화됐나확인", parsedData);
@@ -87,32 +95,33 @@ const Board = forwardRef(
         }, 50);
       }
     }, [parsedData, fitView]);
-
+    //서비스 노드로 변경
     useEffect(() => {
+      setNodes([]); //노드 초기화
       if (!finishData || finishData.length === 0) {
         console.log("finishData가 아직 로드되지 않았습니다.");
         return; // finishData가 없는 경우, 더 이상 실행하지 않습니다.
+      } else {
+        // 새로운 노드 배열을 생성합니다.
+        let updatedNodes: any[] = [];
+
+        for (let i = 0; i < finishData[0].length; i++) {
+          const services = finishData.map((item: any) =>
+            String(item[i].service)
+          );
+          const optionsValues = finishData.map((item: any) => item[i].options);
+          // console.log("서비스 잘 왔나???", services[0]);
+          // console.log("옵션 값 잘 왔나???", optionsValues[0]);
+          const normalizedKeyword = services[0].toLowerCase();
+
+          updatedNodes = addServiceNode(
+            normalizedKeyword,
+            optionsValues[0],
+            updatedNodes
+          );
+        }
+        setNodes(updatedNodes);
       }
-
-      // 새로운 노드 배열을 생성합니다.
-      let updatedNodes = [...nodes];
-
-      for (let i = 0; i < finishData[0].length; i++) {
-        const services = finishData.map((item: any) => String(item[i].service));
-        const optionsValues = finishData.map((item: any) => item[i].options);
-        console.log("서비스 잘 왔나???", services[0]);
-        console.log("옵션 값 잘 왔나???", optionsValues[0]);
-        const normalizedKeyword = services[0].toLowerCase();
-
-        updatedNodes = replaceNode(
-          normalizedKeyword,
-          String(i),
-          optionsValues[0],
-          updatedNodes
-        );
-      }
-
-      setNodes(updatedNodes);
     }, [finishData]);
 
     const handleConnectNode = () => {
@@ -155,7 +164,7 @@ const Board = forwardRef(
           fitView
         >
           <Panel>
-            <button onClick={handleConnectNode}>연결 생성</button>
+            {/* <button onClick={handleConnectNode}>연결 생성</button> */}
           </Panel>
           <Background />
           <Controls />
