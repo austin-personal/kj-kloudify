@@ -15,7 +15,6 @@ export class SecretsController {
   async createSecret(
     @Body('accessKey') accessKey: string,
     @Body('secretAccessKey') secretAccessKey: string,
-    @Body('securityKey') securityKey: string,
     @Body('region') region: string,
     @Req() req
   ): Promise<{ message: string }> {
@@ -30,7 +29,7 @@ export class SecretsController {
   
     const userInfo = await this.usersService.findOneByEmail(email);  // 이메일로 사용자 조회
     const userId = userInfo.UID;
-    await this.secretsService.createSecret(userId, accessKey, secretAccessKey,region, securityKey);
+    await this.secretsService.createSecret(userId, accessKey, secretAccessKey,region);
     // secretsService를 호출하여 새로운 Secret 생성
     return { message: 'Secret successfully created' };
   }

@@ -20,14 +20,21 @@ export class SecretsService {
     @InjectRepository(Users)
     private usersRepository: Repository<Users>,
   ) {
-    this.encryptionKey = Buffer.from(process.env.ENCRYPTION_KEY!, 'hex');
+    const key = process.env.ENCRYPTION_KEY;
+    if (!key || key.length !== 32) {  // AES-256 needs a 32-byte key
+      throw new Error('Invalid encryption key. It must be 32 characters long.');
+    }
+    this.encryptionKey = Buffer.from(key, 'utf-8');
   }
 
 // 새로운 Secrets 생성 함수
-  async createSecret(userId: number, AccessKey: string, SecretAccessKey: string, Region: string, SecurityKey: string ) {
+  async createSecret(userId: number, AccessKey: string, SecretAccessKey: string, Region: string) {
+    if (!AccessKey || !SecretAccessKey) {
+      throw new Error('One or more keys are missing');
+    }
+
     const encryptedAccessKey = this.encrypt(AccessKey);
     const encryptedSecretAccessKey = this.encrypt(SecretAccessKey);
-    const encryptedSecurityKey = this.encrypt(SecurityKey);
     
     const user = await this.usersRepository.findOne({ where: { UID: userId } });
     if (!user) {
@@ -37,7 +44,6 @@ export class SecretsService {
     const secret = this.secretsRepository.create({
       AccessKey: encryptedAccessKey,
       SecretAccessKey: encryptedSecretAccessKey,
-      SecurityKey: encryptedSecurityKey,
       region: Region,
       UID: userId,
     });
@@ -69,17 +75,14 @@ export class SecretsService {
       throw new InternalServerErrorException('User credentials not found');
     }
 
-    // const decryptedAccessKeyId = this.decrypt(secrets.AccessKey);
-    // const decryptedSecretAccessKey = this.decrypt(secrets.SecretAccessKey);
-    // const decryptedSecurityKey = secrets.SecurityKey ? this.decrypt(secrets.SecurityKey) : undefined;
+    const decryptedAccessKeyId = this.decrypt(secrets.AccessKey);
+    const decryptedSecretAccessKey = this.decrypt(secrets.SecretAccessKey);
 
     return {
-      // accessKey: decryptedAccessKeyId,
-      // secretAccessKey: decryptedSecretAccessKey,
-      // securitKey: decryptedSecurityKey,
+      accessKey: decryptedAccessKeyId,
+      secretAccessKey: decryptedSecretAccessKey,
       accessKey: secrets.AccessKey,
-      secretAccessKey: secrets.SecretAccessKey,
-      securityKey: secrets.SecurityKey,
+      secretAccessKey: secrets.SecretAccessKey
     };
   }
   /**
