@@ -61,6 +61,7 @@ const Board = forwardRef(
       );
     const reactFlowWrapper = useRef<HTMLDivElement | null>(null);
     const { fitView } = useReactFlow(); // fitView 메서드 사용
+
     // 스크린샷 기능을 상위 컴포넌트에서 사용할 수 있게 제공
     useImperativeHandle(ref, () => ({
       takeScreenshot() {
