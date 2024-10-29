@@ -24,7 +24,7 @@ export class SecretsService {
   }
 
 // 새로운 Secrets 생성 함수
-  async createSecret(userId: number, AccessKey: string, SecretAccessKey: string, SecurityKey: string) {
+  async createSecret(userId: number, AccessKey: string, SecretAccessKey: string, Region: string, SecurityKey: string ) {
     const encryptedAccessKey = this.encrypt(AccessKey);
     const encryptedSecretAccessKey = this.encrypt(SecretAccessKey);
     const encryptedSecurityKey = this.encrypt(SecurityKey);
@@ -38,6 +38,7 @@ export class SecretsService {
       AccessKey: encryptedAccessKey,
       SecretAccessKey: encryptedSecretAccessKey,
       SecurityKey: encryptedSecurityKey,
+      region: Region,
       UID: userId,
     });
     await this.secretsRepository.save(secret);
