@@ -9,6 +9,7 @@ export const createSecret = async (accessKey: string, secretAccessKey: string, r
             {
                 accessKey,
                 secretAccessKey,
+                region
             },  // createProjectDto로 보내질 부분
             {
                 headers: {
