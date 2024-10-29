@@ -12,6 +12,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 
+import MermaidChart from "../../components/MermaidTest/mermaid";
+
 // 유저 프로필 타입 정의
 interface UserProfile {
   UID: number;
@@ -44,7 +46,19 @@ const Profile: React.FC = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false); // 드롭다운 상태 추가
   const itemsPerPage = 5; // 한 페이지에 보여줄 항목 수
   const token = localStorage.getItem("token");
+  const chartCode = `
+  architecture-beta
+    group api()[API]
 
+    service db(logos:aws-aurora)[Database] in api
+    service disk1()[Storage] in api
+    service disk2()[Storage] in api
+    service server()[Server] in api
+
+    db:L -- R:server
+    disk1:T -- B:server
+    disk2:T -- B:db
+`;
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -368,6 +382,7 @@ const Profile: React.FC = () => {
           </div>
         </div>
       )}
+      <MermaidChart chartCode={chartCode} />
     </div>
   );
 };

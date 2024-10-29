@@ -22,6 +22,8 @@ import {
 
 import "@xyflow/react/dist/style.css";
 
+import { getLayoutedElements } from "./autoLayout";
+
 import "./Board.css";
 
 import {
@@ -127,7 +129,13 @@ const Board = forwardRef(
         handleAddEdge("ec2", "s3");
         handleAddEdge("ec2", "rds");
         handleAddEdge("cloudwatch", "ec2");
-        setNodes(updatedNodes);
+        // setNodes(updatedNodes);
+
+        const { nodes: layoutedNodes, edges: layoutedEdges } =
+          getLayoutedElements(updatedNodes, edges);
+        // layoutedNodes와 layoutedEdges를 기존 상태에 추가
+        setNodes((prevNodes) => [...prevNodes, ...layoutedNodes]);
+        setEdges((prevEdges) => [...prevEdges, ...layoutedEdges]);
       }
     }, [finishData]);
 
