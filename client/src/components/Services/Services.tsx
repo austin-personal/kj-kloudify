@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./Services.css";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
 import { deploy } from "../../services/terraforms";
+import { checkSecret } from "../../services/secrets";
 
 interface ServicesProps {
   nodes: Node[]; // Node 타입의 배열로 정의
@@ -28,6 +29,7 @@ const Services: React.FC<ServicesProps> = ({ nodes, cid }) => {
   // 모달 열림 상태 관리
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
+  const [hasCredentials, setHasCredentials] = useState(false);
   const navigate = useNavigate();
   const token = localStorage.getItem('token')??''
 
@@ -41,6 +43,14 @@ const Services: React.FC<ServicesProps> = ({ nodes, cid }) => {
 
   const handleDeploy = async() => {
     try {
+
+      const hasCredentials = await checkSecret(token);
+      if (!hasCredentials) {
+        alert("AWS 자격 증명 정보를 입력해야 합니다.");
+        navigate("/guide")
+        return;
+      }
+
       // deploy 함수 호출 (딱히 반환값을 사용하지 않으므로 await로만 호출)
       const response = await deploy(cid, token);
       console.log(response)
