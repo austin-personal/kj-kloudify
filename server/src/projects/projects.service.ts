@@ -113,4 +113,17 @@ export class ProjectsService {
     }
   }
 
+  async getProjectNameByPID(pid: number): Promise<string | null> {
+    
+    const project = await this.projectRepository.findOne({
+        where: { PID: pid },
+        select: ['projectName'], // projectName 컬럼만 선택
+    });
+    if (!project) {
+        throw new NotFoundException('Project not found');
+    }
+    
+    return project.projectName;
+}
+
 }

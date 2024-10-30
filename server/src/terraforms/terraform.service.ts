@@ -26,6 +26,7 @@ import { Readable } from 'stream';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import { writeFile , mkdir } from 'fs/promises';
+import { ProjectsService } from '../projects/projects.service';
 
 @Injectable()
 export class TerraformService {
@@ -35,6 +36,7 @@ export class TerraformService {
   private dynamoDbDocClient: DynamoDBDocumentClient;
 
   constructor(
+    private readonly projectsService: ProjectsService,
     private readonly secretsService: SecretsService,
     @InjectRepository(Projects)
     private readonly projectRepository: Repository<Projects>,
@@ -48,7 +50,11 @@ export class TerraformService {
   /**
    * AWS Bedrock Claude 3.5 Sonnet을 사용하여 Terraform 코드 생성
    */
-  private async generateTerraformCode(keywords: string[]): Promise<string> {
+  private async generateTerraformCode(keywords: string[], projectName: string): Promise<string> {
+
+    const randomInt = Math.floor(Math.random() * (999999999 - 0 + 1)) + 0;
+    const randomName = "AWS - " + projectName + randomInt.toString();
+
     const prompt_content = `
       Generate Terraform code based on the following keywords:
       ${JSON.stringify(keywords)}
@@ -58,6 +64,7 @@ export class TerraformService {
       2. Use variables only for essential credentials or dynamic values that must be configurable at runtime. Specifically, define variables for:
         - \`aws_access_key\` and \`aws_secret_key\` to allow secure credential configuration
         - Any other critical dynamic values specified in the keywords list that must be adjustable.
+        - ${randomName} to specify the name of resources created by this Terraform code
 
       3. Other configurations, such as instance types, AMIs, and static setup values, can be hardcoded directly into the Terraform code to simplify deployment.
 
@@ -110,7 +117,7 @@ export class TerraformService {
    * 리뷰: Terraform 코드 생성 및 S3에 저장
    */
   async reviewInfrastructure(reviewDto: ReviewDto): Promise<any> {
-    const { CID } = reviewDto;
+    const { CID , PID } = reviewDto;
 
     // 1. DynamoDB에서 keyword 조회
     const dynamoParams = {
@@ -124,8 +131,15 @@ export class TerraformService {
         throw new Error('Keyword not found in DynamoDB');
     }
 
+
+    const projectName = await this.getProjectName(PID);
+    let terraformCode: any;
     // 2. Terraform 코드 생성
-    const terraformCode = await this.generateTerraformCode([keyword]);
+    if (projectName) {
+      terraformCode = await this.generateTerraformCode([keyword], projectName);
+    } else {
+        throw new Error('Project name not found');
+    }
     const codeContent = terraformCode["content"][0].text;
 
     // 3. ``` ``` 사이의 Terraform 코드만 추출
@@ -386,5 +400,10 @@ export class TerraformService {
     }
   }
 
+  async getProjectName(pid: number): Promise<string | null> {
+    const projectName = await this.projectsService.getProjectNameByPID(pid);
+    console.log('Project Name:', projectName);
+    return projectName;
+  }
 
 }
