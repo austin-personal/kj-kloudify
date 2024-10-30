@@ -7,11 +7,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
 import { deploy } from "../../services/terraforms";
 import { checkSecret } from "../../services/secrets";
-import store from "../../store/store";
 
 interface ServicesProps {
   nodes: Node[]; // Node 타입의 배열로 정의
   cid: number;
+  isReviewReady: boolean;
 }
 
 interface Node {
@@ -28,7 +28,7 @@ interface Node {
   style?: React.CSSProperties;
 }
 
-const Services: React.FC<ServicesProps> = ({ nodes, cid }) => {
+const Services: React.FC<ServicesProps> = ({ nodes, cid, isReviewReady }) => {
   // 모달 열림 상태 관리
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
@@ -160,13 +160,20 @@ const Services: React.FC<ServicesProps> = ({ nodes, cid }) => {
         </div>
       </div>
       <div className="middle-btn">
-        <button
-          className="deploy-btn"
-          onClick={handleDeploy}
-          disabled={handleDisabledBtn()}
-        >
-          Deploy
-        </button>
+        {isReviewReady ? (
+          <button
+            className="deploy-btn"
+            onClick={handleDeploy}
+            disabled={handleDisabledBtn()}
+          >
+            Deploy
+          </button>
+        ) : (
+          <button className="loading-btn" disabled>
+            <div className="spinner"></div>
+            <div className="tooltip">아직 진행중입니다</div>
+          </button>
+        )}
       </div>
     </div>
   );
