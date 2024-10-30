@@ -36,10 +36,11 @@ export const show = async () => {
     }
 };
 
-export const review = async (pid: number, token: string | null) => {
+export const review = async (cid: number | 0, pid: number, token: string | null) => {
     try {
         const response = await axios.post(`${API_URL}/review`,
             {
+                CID: cid,
                 PID: pid
             },
             {
