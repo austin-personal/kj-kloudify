@@ -114,15 +114,17 @@ const Home: React.FC<HomeProps> = ({ finishData, setFinishData }) => {
         <ReactFlowProvider>
           <Board parsedData={parsedData} finishData={finishData} />
         </ReactFlowProvider>
-        <button
-          onClick={handleFinish}
-          className={`review-btn-${
-            finishData.length === 0 ? "disabled" : "enabled"
-          }`}
-          disabled={finishData.length === 0}
-        >
-          Review
-        </button>
+        <div className="review-btn-container">
+          <button
+            onClick={handleFinish}
+            className={`review-btn-${
+              finishData.length === 0 ? "disabled" : "enabled"
+            }`}
+            disabled={finishData.length === 0}
+          >
+            Review
+          </button>
+        </div>
       </div>
     </div>
   );
