@@ -84,6 +84,8 @@ const Home: React.FC<HomeProps> = ({ finishData, setFinishData }) => {
       navigate(`/review/${cid}`, { state: { isReviewReady: false } });
     } catch (error) {
       console.error("review API 호출 실패:", error);
+      alert("Terraform 상태 업데이트에 실패했습니다. 네트워크 연결을 확인하거나, 잠시 후 다시 시도해 주세요.");
+      navigate(`/home/${pid}`);
     }
   };
 
