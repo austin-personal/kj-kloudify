@@ -112,9 +112,9 @@
 }
 
 .chat-form {
-  display: flex; /* Flexbox 사용 */
+  display: flex;
+  align-items: flex-end; /* textarea와 버튼의 하단을 맞춤 */
   width: 100%;
-  height: 52px;
   background-color: white;
   border-radius: 50px;
   box-shadow: 5px 4px 20px 0px rgba(0, 0, 0, 13%);
@@ -123,13 +123,18 @@
 /* 입력 필드 및 버튼 스타일 */
 .input-container {
   display: flex;
-  align-items: center;
-  padding: 20px;
+  align-items: flex-end;
+  padding: 0px 20px 20px 20px;
 }
 
 .chat-input {
   font-family: "NanumSquareRound", sans-serif;
+  overflow: hidden;
   width: 100%;
+  overflow-y: auto;
+  max-height: 200px; /* 원하는 최대 높이로 설정 */
+  resize: none;
+  min-height: 40px; /* 원하는 최소 높이로 설정 */
   margin-left: 20px;
   flex-grow: 1;
   font-size: 22px;
@@ -137,7 +142,12 @@
   border-radius: 5px;
   padding: 10px;
   border: none;
+  line-height: 1.5;
   background: none;
+}
+
+.chat-input::placeholder {
+  padding-top: 5px; /* placeholder를 약간 아래로 이동 */
 }
 
 .chat-input:focus {
@@ -154,6 +164,7 @@
   color: #ffb546;
   border: none;
   cursor: pointer;
+  margin-bottom: 15px;
 }
 
 .scroll-to-bottom {

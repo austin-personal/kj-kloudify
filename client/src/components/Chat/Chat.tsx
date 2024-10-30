@@ -57,6 +57,20 @@ const Chat: React.FC<ChatProps> = ({
   }>({});
   const [isHovered, setIsHovered] = useState(false);
 
+  const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
+
+  const handleInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    if (textAreaRef.current) {
+      textAreaRef.current.style.height = "auto"; // 높이를 초기화
+      textAreaRef.current.style.height = `${textAreaRef.current.scrollHeight}px`; // 내용에 맞게 높이 설정
+
+      // 입력이 비어 있으면 최소 높이로 돌아가도록 설정
+      if (e.target.value === "") {
+        textAreaRef.current.style.height = "40px";
+      }
+    }
+  };
+
   // 대화 로딩
   useEffect(() => {
     const fetchMessages = async () => {
@@ -96,9 +110,7 @@ const Chat: React.FC<ChatProps> = ({
                     text: matchingTemplate.text,
                     subtext: matchingTemplate.subtext,
                     sender: "bot",
-                    checks: isLastMessage
-                      ? matchingTemplate.checks
-                      : undefined,
+                    checks: isLastMessage ? matchingTemplate.checks : undefined,
                     buttons: isLastMessage
                       ? matchingTemplate.buttons
                       : undefined,
@@ -344,8 +356,10 @@ const Chat: React.FC<ChatProps> = ({
   };
 
   // 메시지 전송 핸들러 (인풋 필드용)
-  const handleSendMessage = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const handleSendMessage = async (
+    event?: React.FormEvent | React.MouseEvent
+  ) => {
+    event?.preventDefault();
     if (input.trim() === "") return;
 
     const userMessage: Message = {
@@ -415,6 +429,13 @@ const Chat: React.FC<ChatProps> = ({
         sender: "bot",
       };
       setMessages((prevMessages) => [...prevMessages, errorMessage]);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault(); // 기본 Enter 동작 방지 (줄바꿈 방지)
+      handleSendMessage(); // 메시지 전송 함수 호출
     }
   };
 
@@ -588,13 +609,9 @@ const Chat: React.FC<ChatProps> = ({
                 ))}
 
               {/* 서브텍스트가 존재하면 렌더링 */}
-              {message.subtext &&
-                <p
-                  className="template-sub-th"
-                >
-                  {message.subtext}
-                </p>
-              }
+              {message.subtext && (
+                <p className="template-sub-th">{message.subtext}</p>
+              )}
 
               {/* 버튼이 존재하면 렌더링 */}
               {message.buttons &&
@@ -634,15 +651,22 @@ const Chat: React.FC<ChatProps> = ({
         </div>
       )}
       <div className="input-container">
-        <form className="chat-form" onSubmit={handleSendMessage}>
-          <input
+        <form className="chat-form">
+          <textarea
+            ref={textAreaRef}
             className="chat-input"
-            type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
+            onInput={handleInput}
+            onKeyDown={handleKeyDown}
             placeholder="메시지를 입력하세요..."
+            rows={1} // 기본 줄 수
           />
-          <button type="submit" className="chat-button-sa">
+          <button
+            type="button"
+            className="chat-button-sa"
+            onClick={handleSendMessage}
+          >
             <FontAwesomeIcon
               icon={faPaperPlane}
               size="2xl"
