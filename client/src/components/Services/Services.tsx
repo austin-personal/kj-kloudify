@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
 import { deploy } from "../../services/terraforms";
 import { checkSecret } from "../../services/secrets";
+import Loading from "../../components/Loading/Loading"
 
 interface ServicesProps {
   nodes: Node[]; // Node 타입의 배열로 정의
@@ -32,6 +33,7 @@ const Services: React.FC<ServicesProps> = ({ nodes, cid }) => {
   const [hasCredentials, setHasCredentials] = useState(false);
   const navigate = useNavigate();
   const token = localStorage.getItem("token") ?? "";
+  const [isLoading, setIsLoading] = useState(false); // 로딩 상태 추가
 
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setIsChecked(e.target.checked);
@@ -43,13 +45,15 @@ const Services: React.FC<ServicesProps> = ({ nodes, cid }) => {
 
   const handleDeploy = async () => {
     try {
-
+      
       const hasCredentials = await checkSecret(token);
       if (!hasCredentials) {
         alert("AWS 자격 증명 정보를 입력해야 합니다.");
         navigate("/guide")
         return;
       }
+      
+      setIsLoading(true); // 로딩 시작
 
       // deploy 함수 호출 (딱히 반환값을 사용하지 않으므로 await로만 호출)
       const response = await deploy(cid, token);
@@ -63,6 +67,8 @@ const Services: React.FC<ServicesProps> = ({ nodes, cid }) => {
       navigate("/profile");
     } catch (error) {
       console.error("배포 중 오류 발생:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
