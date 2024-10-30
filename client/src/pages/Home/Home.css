@@ -1,7 +1,7 @@
 .home {
   display: flex;
   align-items: stretch;
-  margin: 90px 50px 0 50px;
+  margin: 0px 50px 0px 50px;
   height: 100vh;
 }
 .right-side {
@@ -10,7 +10,7 @@
   overflow: hidden;
   width: 100%;
   height: 100%;
-  margin: 0 25px 0 50px;
+  margin: 0 25px 0px 50px;
 }
 .vertical-line {
   border-left: 1px solid rgba(49, 45, 38, 0.2);
@@ -18,6 +18,7 @@
 }
 
 .project-name-container {
+  margin-top: 90px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -29,35 +30,11 @@
   flex: 2;
   color: #312d26;
 }
-.setting-container {
-  display: flex;
-  justify-content: flex-end;
-}
-.setting-services {
-  margin-left: 20px;
-  display: flex;
-  justify-content: center; /* 수평 가운데 정렬 */
-  align-items: center; /* 수직 가운데 정렬 */
-  width: 72px;
-  height: 33px;
-  border-radius: 10px 10px 0px 0px;
-  font-size: 22px;
-  font-style: bold;
-  padding-top: 5px;
-  color: white;
-  border-style: solid;
-  border-width: 1px;
-  border-bottom-style: none;
-}
+
 .set-up-complete {
   right: 120px;
   background-color: #8ae37e;
   border-color: #75c16b;
-}
-.setting-in-progress {
-  right: 25px;
-  background-color: #e37e7e;
-  border-color: #c16b6b;
 }
 
 .review-btn-enabled {
@@ -66,14 +43,12 @@
   color: #312d26;
   width: 125px;
   height: 65px;
-  position: absolute;
-  bottom: 3%;
-  right: 1.7%;
   font-size: 25px;
   background-color: #fdc36d;
   border: none;
   border-radius: 20px;
   box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 10%);
+  float: right;
 }
 
 .review-btn-disabled {
@@ -82,49 +57,10 @@
   color: white;
   width: 125px;
   height: 65px;
-  position: absolute;
-  bottom: 3%;
-  right: 1.7%;
   font-size: 25px;
   background-color: gray;
   border: none;
   border-radius: 20px;
   box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 10%);
-}
-
-.popup {
-  font-size: 22px;
-  position: absolute;
-  padding: 10px 10px 0 10px;
-  top: 15.8%;
-  left: 1%;
-  width: 100px;
-
-  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 10%);
-  background-color: #b6d6ed;
-  cursor: pointer;
-  transition: width 0.3s ease, height 0.3s ease;
-}
-
-.popup.visible {
-  width: 96%;
-  border-radius: 15px;
-  height: 20%;
-}
-
-.popup.hidden {
-  border-radius: 30px;
-  width: 100px;
-  height: 35px;
-}
-
-/* 추가 텍스트 스타일 */
-.extra-content {
-  margin-top: 20px;
-  opacity: 1;
-  transition: opacity 0.3s ease; /* 추가 텍스트가 부드럽게 나타나도록 설정 */
-}
-
-.popup.hidden .extra-content {
-  opacity: 0; /* 팝업이 닫힐 때 추가 텍스트 숨기기 */
+  float: right;
 }

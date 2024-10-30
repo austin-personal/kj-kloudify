@@ -32,7 +32,6 @@ interface HomeProps {
 
 const Home: React.FC<HomeProps> = ({ finishData, setFinishData }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isOpenSummary, setIsOpenSummary] = useState(false);
   const [project, setProject] = useState<Project | null>(null);
   const [parsedData, setParsedData] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
@@ -74,10 +73,6 @@ const Home: React.FC<HomeProps> = ({ finishData, setFinishData }) => {
     }
   }, [loading, project, navigate]);
 
-  const togglePopup = () => {
-    setIsOpenSummary(!isOpenSummary);
-  };
-
   const handleFinish = async () => {
     try {
       const response = await review(Number(pid), token); // cid를 이용해 review 호출
@@ -115,24 +110,10 @@ const Home: React.FC<HomeProps> = ({ finishData, setFinishData }) => {
         <div className="project-name-container">
           <h1 className="project-name">Project: {project!.projectName}</h1>
         </div>
-        <div className="setting-container">
-          <div className="setting-services set-up-complete">2</div>
-          <div className="setting-services setting-in-progress">2</div>
-        </div>
+
         <ReactFlowProvider>
           <Board parsedData={parsedData} finishData={finishData} />
         </ReactFlowProvider>
-        <div
-          className={`popup ${isOpenSummary ? "visible" : "hidden"}`}
-          onClick={togglePopup}
-        >
-          {!isOpenSummary ? "Summary" : "Close"}
-          {isOpenSummary && (
-            <div className="extra-content">
-              <p>확장된 영역의 추가 텍스트 1</p>
-            </div>
-          )}
-        </div>
         <button
           onClick={handleFinish}
           className={`review-btn-${

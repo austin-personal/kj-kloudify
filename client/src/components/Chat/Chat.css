@@ -4,12 +4,12 @@
   display: flex;
   flex-direction: column;
   flex: 3;
-  height: 100%;
   font-size: 22px;
   color: #312d26;
 }
 
 .notice-text {
+  margin-top: 90px;
   position: relative;
   display: flex;
   justify-content: center;
@@ -31,6 +31,7 @@
 
 .home-chat-guide-th {
   position: absolute;
+  left: 20px;
   border: 1px solid black;
   width: 620px;
   border-radius: 8px;
@@ -51,7 +52,6 @@
   flex-direction: column; /* 메시지들이 세로로 쌓이게 함 */
   gap: 10px; /* 메시지 간의 간격 */
   overflow-y: auto;
-  max-height: "400px";
 }
 
 /* 크롬 및 사파리에서 스크롤바 숨기기 */
