@@ -74,8 +74,12 @@ const Home: React.FC<HomeProps> = ({ finishData, setFinishData }) => {
   }, [loading, project, navigate]);
 
   const handleFinish = async () => {
+    let cid = 0
+    if (project?.CID) {
+      cid = project.CID
+    }
     try {
-      const response = await review(Number(pid), token); // cid를 이용해 review 호출
+      const response = await review(cid, Number(pid), token); // cid를 이용해 review 호출
       console.log("review API 호출 성공:", response);
       navigate(`/review/${project?.CID}`);
     } catch (error) {
