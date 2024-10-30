@@ -34,7 +34,6 @@ interface HomeProps {
 
 const Home: React.FC<HomeProps> = ({ finishData, setFinishData }) => {
   const [project, setProject] = useState<Project | null>(null);
-  const [parsedData, setParsedData] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
 
   const token = localStorage.getItem("token");
@@ -63,7 +62,6 @@ const Home: React.FC<HomeProps> = ({ finishData, setFinishData }) => {
       }
     };
 
-    setParsedData([]);
     setFinishData([]);
     fetchProjectData();
   }, [pid, navigate]);
@@ -89,9 +87,6 @@ const Home: React.FC<HomeProps> = ({ finishData, setFinishData }) => {
     }
   };
 
-  const handleParsedData = (data: string[]) => {
-    setParsedData(data);
-  };
   const handleFinishData = (data: string[]) => {
     setFinishData(data);
   };
@@ -106,7 +101,6 @@ const Home: React.FC<HomeProps> = ({ finishData, setFinishData }) => {
       {/* <SideBar isOpen={isOpen} setIsOpen={setIsOpen} /> */}
       <Chat
         projectCID={project!.CID}
-        onParsedData={handleParsedData}
         onFinishData={handleFinishData}
       />
       <div className="vertical-line"></div>
@@ -115,9 +109,9 @@ const Home: React.FC<HomeProps> = ({ finishData, setFinishData }) => {
           <h1 className="project-name">Project: {project!.projectName}</h1>
         </div>
 
-        <ReactFlowProvider>
+        {/* <ReactFlowProvider>
           <Board parsedData={parsedData} finishData={finishData} />
-        </ReactFlowProvider>
+        </ReactFlowProvider> */}
         <div className="review-btn-container">
           <button
             onClick={handleFinish}
