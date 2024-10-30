@@ -31,16 +31,22 @@
 
 .home-chat-guide-th {
   position: absolute;
-  left: 20px;
-  border: 1px solid black;
+  left: 77%;
   width: 620px;
   border-radius: 8px;
   background-color: white;
+  border: 3px dashed #c16b6b;
   margin-left: 10px;
-  padding: 10px;
   font-size: 22px;
-  color: black;
-  z-index: 2;
+  padding: 10px;
+  z-index: 2000;
+  color: #312d26;
+  box-shadow: 5px 4px 20px 0px rgba(0, 0, 0, 13%);
+}
+
+.home-chat-guide-th h4 {
+  margin: 0;
+  padding: 0;
 }
 
 /* 메시지 목록 스타일 */
