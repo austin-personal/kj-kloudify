@@ -1,7 +1,6 @@
 .board {
   position: relative;
   flex: 2;
-  height: 68%;
   border-style: solid;
   border-width: 1px;
   border-color: #a09e8a;
