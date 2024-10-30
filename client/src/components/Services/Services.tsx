@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import "./Services.css";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { setLoading } from "../../store/loadingSlice";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
 import { deploy } from "../../services/terraforms";
 import { checkSecret } from "../../services/secrets";
-import Loading from "../../components/Loading/Loading"
+import store from "../../store/store";
 
 interface ServicesProps {
   nodes: Node[]; // Node 타입의 배열로 정의
@@ -30,10 +32,9 @@ const Services: React.FC<ServicesProps> = ({ nodes, cid }) => {
   // 모달 열림 상태 관리
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
-  const [hasCredentials, setHasCredentials] = useState(false);
   const navigate = useNavigate();
   const token = localStorage.getItem("token") ?? "";
-  const [isLoading, setIsLoading] = useState(false); // 로딩 상태 추가
+  const dispatch = useDispatch();
 
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setIsChecked(e.target.checked);
@@ -45,15 +46,14 @@ const Services: React.FC<ServicesProps> = ({ nodes, cid }) => {
 
   const handleDeploy = async () => {
     try {
-      
       const hasCredentials = await checkSecret(token);
       if (!hasCredentials) {
         alert("AWS 자격 증명 정보를 입력해야 합니다.");
         navigate("/guide")
         return;
       }
-      
-      setIsLoading(true); // 로딩 시작
+
+      dispatch(setLoading(true));
 
       // deploy 함수 호출 (딱히 반환값을 사용하지 않으므로 await로만 호출)
       const response = await deploy(cid, token);
@@ -62,13 +62,11 @@ const Services: React.FC<ServicesProps> = ({ nodes, cid }) => {
 
       // 세션 스토리지에서 노드 정보 삭제
       sessionStorage.removeItem("nodes");
-
-      // 페이지 이동
       navigate("/profile");
     } catch (error) {
       console.error("배포 중 오류 발생:", error);
     } finally {
-      setIsLoading(false);
+      dispatch(setLoading(false));
     }
   };
 
@@ -79,6 +77,7 @@ const Services: React.FC<ServicesProps> = ({ nodes, cid }) => {
   const toggleModal = () => {
     setIsModalOpen(!isModalOpen);
   };
+
   return (
     <div className="services">
       <div className="price-summary-header">
@@ -115,31 +114,7 @@ const Services: React.FC<ServicesProps> = ({ nodes, cid }) => {
               <h2>Price Summary Details</h2>
               <div className="modal-container">
                 <p>
-                  물론! 여기 500자 정도의 텍스트를 만들어봤어. 어느 날, 하늘을
-                  바라보며 생각에 잠긴 나는 구름이 얼마나 아름다운지 새삼
-                  깨달았다. 구름은 끊임없이 모양을 바꾸며 떠다니고, 그 안에는
-                  수많은 이야기들이 담겨 있는 것 같았다. 내가 자주 가는 공원
-                  벤치에 앉아, 책 한 권을 펴 들고 조용히 구름을 바라보는 시간이
-                  얼마나 소중한지 느껴졌다. 그 순간을 놓치지 않기 위해 핸드폰을
-                  꺼내 사진을 찍었지만, 구름의 모습은 눈으로 직접 보는 것과는
-                  사뭇 달랐다. 그제서야 나는 구름을 보고 느끼는 감정이
-                  사진으로는 완전히 전달될 수 없다는 걸 알게 되었다. 자연의
-                  아름다움은 그 순간에 직접 느껴야만 하는 감각일지도 모른다.
-                  책을 읽으면서도 내 마음은 하늘로 향해 있었다. 구름은 시간이
-                  지나면 사라지지만, 그 기억은 오래오래 내 안에 남아 있기를
-                  바랐다. 물론! 여기 500자 정도의 텍스트를 만들어봤어. 어느 날,
-                  하늘을 바라보며 생각에 잠긴 나는 구름이 얼마나 아름다운지 새삼
-                  깨달았다. 구름은 끊임없이 모양을 바꾸며 떠다니고, 그 안에는
-                  수많은 이야기들이 담겨 있는 것 같았다. 내가 자주 가는 공원
-                  벤치에 앉아, 책 한 권을 펴 들고 조용히 구름을 바라보는 시간이
-                  얼마나 소중한지 느껴졌다. 그 순간을 놓치지 않기 위해 핸드폰을
-                  꺼내 사진을 찍었지만, 구름의 모습은 눈으로 직접 보는 것과는
-                  사뭇 달랐다. 그제서야 나는 구름을 보고 느끼는 감정이
-                  사진으로는 완전히 전달될 수 없다는 걸 알게 되었다. 자연의
-                  아름다움은 그 순간에 직접 느껴야만 하는 감각일지도 모른다.
-                  책을 읽으면서도 내 마음은 하늘로 향해 있었다. 구름은 시간이
-                  지나면 사라지지만, 그 기억은 오래오래 내 안에 남아 있기를
-                  바랐다.
+                  ㅎㅇ
                 </p>
               </div>
               <button className="close-btn" onClick={toggleModal}>
