@@ -37,7 +37,7 @@ const Home: React.FC<HomeProps> = ({ finishData, setFinishData }) => {
   const [parsedData, setParsedData] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
   const { pid } = useParams<{ pid: string }>();
   const navigate = useNavigate();
 
@@ -103,7 +103,8 @@ const Home: React.FC<HomeProps> = ({ finishData, setFinishData }) => {
 
   return (
     <div className="home">
-      <SideBar isOpen={isOpen} setIsOpen={setIsOpen} />
+      {/* 슬라이드바 삭제 */}
+      {/* <SideBar isOpen={isOpen} setIsOpen={setIsOpen} /> */}
       <Chat
         projectCID={project!.CID}
         onParsedData={handleParsedData}
@@ -134,8 +135,9 @@ const Home: React.FC<HomeProps> = ({ finishData, setFinishData }) => {
         </div>
         <button
           onClick={handleFinish}
-          className={`review-btn-${finishData.length === 0 ? "disabled" : "enabled"
-            }`}
+          className={`review-btn-${
+            finishData.length === 0 ? "disabled" : "enabled"
+          }`}
           disabled={finishData.length === 0}
         >
           Review
