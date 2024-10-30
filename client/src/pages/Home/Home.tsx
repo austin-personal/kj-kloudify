@@ -34,7 +34,6 @@ interface HomeProps {
 
 const Home: React.FC<HomeProps> = ({ finishData, setFinishData }) => {
   const [project, setProject] = useState<Project | null>(null);
-  const [parsedData, setParsedData] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
 
   const token = localStorage.getItem("token");
@@ -63,7 +62,6 @@ const Home: React.FC<HomeProps> = ({ finishData, setFinishData }) => {
       }
     };
 
-    setParsedData([]);
     setFinishData([]);
     fetchProjectData();
   }, [pid, navigate]);
@@ -84,12 +82,11 @@ const Home: React.FC<HomeProps> = ({ finishData, setFinishData }) => {
       navigate(`/review/${cid}`, { state: { isReviewReady: false } });
     } catch (error) {
       console.error("review API 호출 실패:", error);
+      alert("Terraform 상태 업데이트에 실패했습니다. 네트워크 연결을 확인하거나, 잠시 후 다시 시도해 주세요.");
+      navigate(`/home/${pid}`);
     }
   };
 
-  const handleParsedData = (data: string[]) => {
-    setParsedData(data);
-  };
   const handleFinishData = (data: string[]) => {
     setFinishData(data);
   };
@@ -104,7 +101,6 @@ const Home: React.FC<HomeProps> = ({ finishData, setFinishData }) => {
       {/* <SideBar isOpen={isOpen} setIsOpen={setIsOpen} /> */}
       <Chat
         projectCID={project!.CID}
-        onParsedData={handleParsedData}
         onFinishData={handleFinishData}
       />
       <div className="vertical-line"></div>
@@ -113,9 +109,9 @@ const Home: React.FC<HomeProps> = ({ finishData, setFinishData }) => {
           <h1 className="project-name">Project: {project!.projectName}</h1>
         </div>
 
-        <ReactFlowProvider>
+        {/* <ReactFlowProvider>
           <Board parsedData={parsedData} finishData={finishData} />
-        </ReactFlowProvider>
+        </ReactFlowProvider> */}
         <div className="review-btn-container">
           <button
             onClick={handleFinish}

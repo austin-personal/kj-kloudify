@@ -10,11 +10,9 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { v4 as uuidv4 } from "uuid"; // UUID 가져오기
 import { useTemplates } from "./TemplateProvider";
-import { match } from "assert";
 
 interface ChatProps {
   projectCID: number;
-  onParsedData?: (data: string[]) => void; // 새로운 prop 추가
   onFinishData?: (data: string[]) => void; // 새로운 prop 추가
 }
 
@@ -36,7 +34,6 @@ const defaultBotMessage: Message = {
 
 const Chat: React.FC<ChatProps> = ({
   projectCID,
-  onParsedData,
   onFinishData,
 }) => {
   const templates = useTemplates();
@@ -162,8 +159,8 @@ const Chat: React.FC<ChatProps> = ({
             }
 
             // 부모에게 파싱된 데이터 전달
-            if (onParsedData) {
-              onParsedData(parsedDataArray);
+            if (onFinishData) {
+              onFinishData(parsedDataArray);
             }
           } else {
             setMessages([defaultBotMessage]);
@@ -294,8 +291,8 @@ const Chat: React.FC<ChatProps> = ({
 
       // 부모에게 파싱된 데이터 보내기
       console.log("** 파싱: ", parsedDataArray);
-      if (onParsedData) {
-        onParsedData(parsedDataArray);
+      if (onFinishData) {
+        onFinishData(parsedDataArray);
       }
 
       // 이제 beforeAsterisks가 템플릿 이름과 매치하는지 찾기
