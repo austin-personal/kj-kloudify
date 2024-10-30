@@ -3,8 +3,8 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  height: 638px;
-  width: 492px;
+  flex: 3;
+  height: 100%;
   font-size: 22px;
   color: #312d26;
 }
@@ -13,6 +13,7 @@
   position: relative;
   display: flex;
   justify-content: center;
+  align-items: center;
   font-size: 18px;
 }
 
@@ -22,8 +23,6 @@
 }
 
 .download-button-th {
-  position: absolute;
-  left: 460px;
   color: #c16b6b;
   cursor: pointer;
   font-size: 28px;
@@ -31,6 +30,7 @@
 }
 
 .home-chat-guide-th {
+  position: absolute;
   border: 1px solid black;
   width: 620px;
   border-radius: 8px;
@@ -64,7 +64,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  max-width: 300px;
+  max-width: 80%;
   margin: 5px 0;
   padding: 10px;
   border-radius: 15px;
@@ -125,7 +125,6 @@
   border: 1px solid #ccc;
   border-radius: 5px;
   padding: 10px;
-  padding-bottom: 20px;
   border: none;
   background: none;
 }
@@ -148,25 +147,34 @@
 
 .scroll-to-bottom {
   position: absolute;
-  bottom: 10%; /* 세로 중앙 */
-  left: 50%; /* 가로 중앙 */
-  transform: translate(-50%, -50%); /* 정확한 중앙을 맞추기 위해 변환 */
-  color: #fdc36d;
-
-  padding: 10px;
+  bottom: 20%; /* 원하는 위치로 조정 */
+  left: 50%;
+  transform: translateX(-50%); /* 가로 중앙 맞추기 */
   cursor: pointer;
-  z-index: 900;
+  width: 40px; /* 부모 요소의 크기를 아이콘과 배경에 맞게 설정 */
+  height: 40px;
+}
+
+.scroll-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* 아이콘을 배경의 중앙에 위치 */
+  color: #fdc36d;
+  z-index: 901; /* 배경 위로 오도록 설정 */
 }
 
 .scroll-background {
   position: absolute;
-  bottom: 16%; /* 세로 중앙 */
-  left: 50%; /* 가로 중앙 */
-  transform: translate(-50%, -50%);
-  width: 25px;
-  height: 25px;
+  top: 0;
+  left: 0;
+  width: 100%; /* 부모 요소 크기만큼 배경 채우기 */
+  height: 100%;
   background-color: white;
+  border-radius: 50%; /* 원형 배경 */
+  z-index: 900; /* 아이콘 뒤로 위치 */
 }
+
 .bot-icon {
   color: #fdc36d;
   padding: 10px;

@@ -687,20 +687,18 @@ const Chat: React.FC<ChatProps> = ({
           </React.Fragment>
         ))}
       </div>
-
       {/* 스크롤을 아래로 이동하는 버튼 */}
       {showScrollButton && (
-        <>
+        <div className="scroll-to-bottom">
           <FontAwesomeIcon
-            className="scroll-to-bottom"
+            className="scroll-icon"
             onClick={scrollToBottom}
             icon={faCircleDown}
             size="2xl"
           />
           <div className="scroll-background"></div>
-        </>
+        </div>
       )}
-
       <div className="input-container">
         <form className="chat-form" onSubmit={handleSendMessage}>
           <input
