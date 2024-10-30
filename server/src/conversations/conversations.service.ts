@@ -91,7 +91,7 @@ export class ConversationsService {
                     }
                 }`;
             default:
-                return "기본 프롬프트 메시지입니다.";
+                return "이 출력값은 버그이므로 어떤 인풋이 들어오든 '에러. 새로고침 필요' 메세지를 출력해야 함";
         }
     }
 
