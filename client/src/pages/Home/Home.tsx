@@ -7,6 +7,8 @@ import Board from "../../components/Board/Board";
 import "./Home.css";
 import { projectOneInfo } from "../../services/projects";
 import { review } from "../../services/terraforms";
+import { setReviewReady } from "../../store/loadingSlice";
+import { useDispatch } from "react-redux";
 
 interface Project {
   PID: number;
@@ -31,14 +33,13 @@ interface HomeProps {
 }
 
 const Home: React.FC<HomeProps> = ({ finishData, setFinishData }) => {
-  const [isOpen, setIsOpen] = useState(false);
   const [project, setProject] = useState<Project | null>(null);
-  const [parsedData, setParsedData] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
 
   const token = localStorage.getItem("token");
   const { pid } = useParams<{ pid: string }>();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const fetchProjectData = async () => {
@@ -61,9 +62,7 @@ const Home: React.FC<HomeProps> = ({ finishData, setFinishData }) => {
       }
     };
 
-    setParsedData([]);
     setFinishData([]);
-
     fetchProjectData();
   }, [pid, navigate]);
 
@@ -74,25 +73,21 @@ const Home: React.FC<HomeProps> = ({ finishData, setFinishData }) => {
   }, [loading, project, navigate]);
 
   const handleFinish = async () => {
-    let cid = 0
-    if (project?.CID) {
-      cid = project.CID
-    }
+    const cid = project?.CID || 0;
     try {
-      const response = await review(cid, Number(pid), token); // cid를 이용해 review 호출
-      console.log("review API 호출 성공:", response);
-      navigate(`/review/${project?.CID}`);
+      dispatch(setReviewReady(false));
+      review(cid, Number(pid), token).then(() => {
+        dispatch(setReviewReady(true));
+      });
+      navigate(`/review/${cid}`, { state: { isReviewReady: false } });
     } catch (error) {
       console.error("review API 호출 실패:", error);
+      alert("Terraform 상태 업데이트에 실패했습니다. 네트워크 연결을 확인하거나, 잠시 후 다시 시도해 주세요.");
+      navigate(`/home/${pid}`);
     }
   };
 
-  const handleParsedData = (data: string[]) => {
-    console.log("Chat 컴포넌트로부터 받은 파싱된 데이터:", data);
-    setParsedData(data);
-  };
   const handleFinishData = (data: string[]) => {
-    console.log("Chat 컴포넌트로부터 받은 파싱된 마무리 데이터:", data);
     setFinishData(data);
   };
 
@@ -106,7 +101,6 @@ const Home: React.FC<HomeProps> = ({ finishData, setFinishData }) => {
       {/* <SideBar isOpen={isOpen} setIsOpen={setIsOpen} /> */}
       <Chat
         projectCID={project!.CID}
-        onParsedData={handleParsedData}
         onFinishData={handleFinishData}
       />
       <div className="vertical-line"></div>
@@ -115,18 +109,19 @@ const Home: React.FC<HomeProps> = ({ finishData, setFinishData }) => {
           <h1 className="project-name">Project: {project!.projectName}</h1>
         </div>
 
-        <ReactFlowProvider>
+        {/* <ReactFlowProvider>
           <Board parsedData={parsedData} finishData={finishData} />
-        </ReactFlowProvider>
-        <button
-          onClick={handleFinish}
-          className={`review-btn-${
-            finishData.length === 0 ? "disabled" : "enabled"
-          }`}
-          disabled={finishData.length === 0}
-        >
-          Review
-        </button>
+        </ReactFlowProvider> */}
+        <div className="review-btn-container">
+          <button
+            onClick={handleFinish}
+            className={`review-btn-${finishData.length === 0 ? "disabled" : "enabled"
+              }`}
+            disabled={finishData.length === 0}
+          >
+            Review
+          </button>
+        </div>
       </div>
     </div>
   );
