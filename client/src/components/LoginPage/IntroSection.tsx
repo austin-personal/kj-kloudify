@@ -1,6 +1,7 @@
 import React from "react";
 import Slider from "react-slick";
 import "./IntroSection.css";
+import loginImg from "../../img/login3.svg";
 const IntroSection = () => {
   const introData = [
     { id: 1, content: "Welcome to our platform! Discover amazing features." },
@@ -19,13 +20,16 @@ const IntroSection = () => {
   };
 
   return (
-    <Slider {...settings} className="contents">
-      {introData.map((slide) => (
-        <div key={slide.id} className="intro-content">
-          <p>{slide.content}</p>
-        </div>
-      ))}
-    </Slider>
+    <>
+      <img src={loginImg} className="login-img" />
+      {/* <Slider {...settings} className="contents">
+        {introData.map((slide) => (
+          <div key={slide.id} className="intro-content">
+            <p>{slide.content}</p>
+          </div>
+        ))}
+      </Slider> */}
+    </>
   );
 };
 
