@@ -32,10 +32,7 @@ const defaultBotMessage: Message = {
   sender: "bot",
 };
 
-const Chat: React.FC<ChatProps> = ({
-  projectCID,
-  onFinishData,
-}) => {
+const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
   const templates = useTemplates();
   const targetTemplateNames = [
     "서버",
@@ -433,6 +430,9 @@ const Chat: React.FC<ChatProps> = ({
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault(); // 기본 Enter 동작 방지 (줄바꿈 방지)
       handleSendMessage(); // 메시지 전송 함수 호출
+      if (textAreaRef.current) {
+        textAreaRef.current.style.height = "40px";
+      }
     }
   };
 

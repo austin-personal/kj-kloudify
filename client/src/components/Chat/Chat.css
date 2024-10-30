@@ -118,6 +118,7 @@
   background-color: white;
   border-radius: 50px;
   box-shadow: 5px 4px 20px 0px rgba(0, 0, 0, 13%);
+  padding: 10px 10px 0px 10px;
 }
 
 /* 입력 필드 및 버튼 스타일 */
@@ -133,16 +134,14 @@
   width: 100%;
   overflow-y: auto;
   max-height: 200px; /* 원하는 최대 높이로 설정 */
+  min-height: 35px;
   resize: none;
-  min-height: 40px; /* 원하는 최소 높이로 설정 */
   margin-left: 20px;
   flex-grow: 1;
   font-size: 22px;
   border: 1px solid #ccc;
   border-radius: 5px;
-  padding: 10px;
   border: none;
-  line-height: 1.5;
   background: none;
 }
 
@@ -164,7 +163,7 @@
   color: #ffb546;
   border: none;
   cursor: pointer;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
 }
 
 .scroll-to-bottom {
