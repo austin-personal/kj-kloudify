@@ -21,14 +21,23 @@
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  height: 150px;
   width: 800px;
   margin-top: 25px;
 }
+.profile-left {
+  display: flex;
+  align-items: start;
+}
+
+.profile-photo {
+  width: 128px;
+  height: 128px;
+  margin-right: 50px;
+}
+
 .profile-text {
   display: flex;
   flex-direction: column;
-  align-items: start;
 }
 
 .profile-info h2 {
@@ -134,7 +143,7 @@
 .next-btn {
   padding: 10px;
   border: none;
-  background-color: #f3f4f6;
+  background-color: #cbe8f8;
   cursor: pointer;
 }
 
@@ -144,7 +153,7 @@
 }
 
 .page-number {
-  padding: 5px 10px;
+  padding: 5px 14px;
   border: 1px solid #e5e7eb;
   border-radius: 5px;
   cursor: pointer;
@@ -238,22 +247,25 @@
   cursor: pointer;
 }
 
-.hidden-btn {
-  display: none;
-}
-
-.visible-btn {
+.AWS-Credential-btn {
+  height: 45px;
   padding: 10px;
   font-family: "NanumSquareRound", sans-serif;
   font-weight: bold;
   font-size: 18px;
-  background-color: #e37e7e;
   border: none;
   border-radius: 10px;
   cursor: pointer;
   color: white;
-  transition: background-color 0.3s;
   margin-bottom: 13px;
+}
+
+.delete {
+  background-color: #e37e7e;
+}
+
+.create {
+  background-color: #fdc36d;
 }
 
 .pagination {
@@ -264,24 +276,20 @@
 
 .prev-btn,
 .next-btn {
-  color: gray;
+  font-family: "NanumSquareRound", sans-serif;
+  color: #312d26;
   border-radius: 5px;
   font-size: 20px;
   padding: 10px;
   border: none;
-  background-color: #f3f4f6;
+  background-color: #cbe8f8;
   cursor: pointer;
 }
 
 .prev-btn:disabled,
 .next-btn:disabled {
-  background-color: #ddd;
+  background-color: #f2eed1;
   cursor: not-allowed;
-}
-
-.page-numbers {
-  display: flex;
-  gap: 5px;
 }
 
 .page-number {
@@ -292,8 +300,8 @@
 }
 
 .page-number.active {
-  background-color: #b6d6ed;
-  color: white;
+  background-color: #cbe8f8;
+  color: #312d26;
 }
 
 /* 드롭다운 컨테이너 */
@@ -312,7 +320,7 @@
   align-items: center;
   width: 100px;
   height: 35px;
-  background-color: #b6d6ed; /* 버튼 색상, 필요 시 수정 */
+  background-color: #cbe8f8; /* 버튼 색상, 필요 시 수정 */
   padding: 5px 5px;
   font-size: 18px;
   border: none;
@@ -326,19 +334,18 @@
   position: absolute;
   top: 80%;
   left: 40%;
-  background-color: #2e2e2e; /* 드롭다운 배경색, 필요 시 수정 */
+  background-color: #fff; /* 드롭다운 배경색, 필요 시 수정 */
   border-radius: 8px;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15); /* 그림자 효과 */
-  padding: 8px 0;
   margin-top: 5px;
-  min-width: 200px; /* 메뉴 최소 너비 */
+  min-width: 120px; /* 메뉴 최소 너비 */
   z-index: 1;
 }
 
 /* 드롭다운 항목 스타일 */
 .dropdown-item {
   padding: 12px 16px;
-  color: #ffffff; /* 글자 색상 */
+  color: #312d26; /* 글자 색상 */
   text-decoration: none;
   font-size: 14px;
   display: block;
@@ -347,9 +354,9 @@
 }
 
 .dropdown-item:hover {
-  background-color: #444444; /* 항목에 마우스 올릴 시 배경색 */
+  background-color: #f5f5f5; /* 항목에 마우스 올릴 시 배경색 */
 }
 
 .dropdown-item:not(:last-child) {
-  border-bottom: 1px solid #444444; /* 항목 사이 구분선 */
+  border-bottom: 1px solid #d6d6d6; /* 항목 사이 구분선 */
 }
