@@ -240,13 +240,13 @@ const Profile: React.FC = () => {
                       className="dropdown-item"
                       onClick={() => handleFilterChange("deployed")}
                     >
-                      Deployed 보기
+                      Deploy 완료
                     </div>
                     <div
                       className="dropdown-item"
                       onClick={() => handleFilterChange("inProgress")}
                     >
-                      In-progress 보기
+                      Deploy 진행중
                     </div>
                   </div>
                 )}

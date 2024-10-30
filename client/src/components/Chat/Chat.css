@@ -98,7 +98,8 @@
 .bot-message {
   align-self: flex-start;
   text-align: left;
-  background-color: #b6d6ed;
+  /* background-color: #b6d6ed; */
+  background-color: #cbe8f8;
   border-top-left-radius: 0;
 }
 
