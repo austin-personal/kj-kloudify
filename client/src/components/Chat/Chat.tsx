@@ -32,15 +32,27 @@ const defaultBotMessage: Message = {
   sender: "bot",
 };
 
-const Chat: React.FC<ChatProps> = ({ projectCID, onParsedData, onFinishData }) => {
+const Chat: React.FC<ChatProps> = ({
+  projectCID,
+  onParsedData,
+  onFinishData,
+}) => {
   const templates = useTemplates();
-  const targetTemplateNames = ["서버", "디비", "네트워크", "스토리지", "모니터링"];
+  const targetTemplateNames = [
+    "서버",
+    "디비",
+    "네트워크",
+    "스토리지",
+    "모니터링",
+  ];
 
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [showScrollButton, setShowScrollButton] = useState(false);
   const scrollRef = useRef<HTMLDivElement | null>(null);
-  const [selectedChecks, setSelectedChecks] = useState<{ [key: string]: string[]; }>({});
+  const [selectedChecks, setSelectedChecks] = useState<{
+    [key: string]: string[];
+  }>({});
   const [isHovered, setIsHovered] = useState(false);
 
   // 대화 로딩
@@ -51,61 +63,69 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onParsedData, onFinishData }) =
         const initialMessages = await open(projectCID, token);
         if (initialMessages && initialMessages.length > 0) {
           setMessages([defaultBotMessage]);
-          const formattedMessages: Message[] = initialMessages.flatMap((msg: any, index: number) => {
-            // userMessage에서 - 이후의 부분만 가져오기
-            const parsedUserMessage = msg.userMessage.includes("-")
-              ? msg.userMessage.slice(msg.userMessage.indexOf("-") + 1).trim()
-              : msg.userMessage;
+          const formattedMessages: Message[] = initialMessages.flatMap(
+            (msg: any, index: number) => {
+              // userMessage에서 - 이후의 부분만 가져오기
+              const parsedUserMessage = msg.userMessage.includes("-")
+                ? msg.userMessage.slice(msg.userMessage.indexOf("-") + 1).trim()
+                : msg.userMessage;
 
-            // botResponse에서 !! 이전의 부분만 가져오기
-            let parsedBotResponse = msg.botResponse.includes("!!")
-              ? msg.botResponse.split("!!")[0].trim()
-              : msg.botResponse;
+              // botResponse에서 !! 이전의 부분만 가져오기
+              let parsedBotResponse = msg.botResponse.includes("!!")
+                ? msg.botResponse.split("!!")[0].trim()
+                : msg.botResponse;
 
-            if (parsedBotResponse.includes("**")) {
-              parsedBotResponse = parsedBotResponse.split("**")[0].trim()
+              if (parsedBotResponse.includes("**")) {
+                parsedBotResponse = parsedBotResponse.split("**")[0].trim();
+              }
+
+              const matchingTemplate = Object.values(templates).find(
+                (template) => template.name === parsedBotResponse
+              );
+
+              // 마지막 메시지인지 확인
+              const isLastMessage = index === initialMessages.length - 1;
+
+              if (matchingTemplate) {
+                return [
+                  {
+                    id: uuidv4(),
+                    text: parsedUserMessage,
+                    sender: "user",
+                  },
+                  {
+                    id: uuidv4(),
+                    text: matchingTemplate.text,
+                    sender: "bot",
+                    buttons: isLastMessage
+                      ? matchingTemplate.buttons
+                      : undefined,
+                  },
+                ];
+              } else {
+                return [
+                  {
+                    id: uuidv4(),
+                    text: parsedUserMessage,
+                    sender: "user",
+                  },
+                  {
+                    id: uuidv4(),
+                    text: parsedBotResponse,
+                    sender: "bot",
+                  },
+                ];
+              }
             }
-
-            const matchingTemplate = Object.values(templates).find(
-              (template) => template.name === parsedBotResponse
-            );
-
-            // 마지막 메시지인지 확인
-            const isLastMessage = index === initialMessages.length - 1;
-
-            if (matchingTemplate) {
-              return [
-                {
-                  id: uuidv4(),
-                  text: parsedUserMessage,
-                  sender: "user",
-                },
-                {
-                  id: uuidv4(),
-                  text: matchingTemplate.text,
-                  sender: "bot",
-                  buttons: isLastMessage ? matchingTemplate.buttons : undefined,
-                },
-              ];
-            } else {
-              return [
-                {
-                  id: uuidv4(),
-                  text: parsedUserMessage,
-                  sender: "user",
-                },
-                {
-                  id: uuidv4(),
-                  text: parsedBotResponse,
-                  sender: "bot",
-                },
-              ];
-            }
-          });
-          setMessages((prevMessages) => [...prevMessages, ...formattedMessages]);
+          );
+          setMessages((prevMessages) => [
+            ...prevMessages,
+            ...formattedMessages,
+          ]);
 
           // 마지막 botResponse에서 "!!" 뒤의 부분을 파싱하여 onParsedData로 전달
-          const lastBotResponse = initialMessages[initialMessages.length - 1].botResponse;
+          const lastBotResponse =
+            initialMessages[initialMessages.length - 1].botResponse;
 
           if (lastBotResponse.includes("!!")) {
             const afterAsterisks = lastBotResponse.split("!!")[1].trim();
@@ -122,7 +142,9 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onParsedData, onFinishData }) =
               console.error("JSON 파싱 실패, 수동으로 파싱 시도:", e);
               // 수동으로 파싱
               let dataString = afterAsterisks.replace(/^\[|\]$/g, "");
-              parsedDataArray = dataString.split(",").map((item: string) => item.trim());
+              parsedDataArray = dataString
+                .split(",")
+                .map((item: string) => item.trim());
             }
 
             // 부모에게 파싱된 데이터 전달
@@ -144,7 +166,9 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onParsedData, onFinishData }) =
               console.error("JSON 파싱 실패, 수동으로 파싱 시도:", e);
               // 수동으로 파싱
               let dataString = afterAsterisks.replace(/^\[|\]$/g, "");
-              parsedDataArray = dataString.split(",").map((item: string) => item.trim());
+              parsedDataArray = dataString
+                .split(",")
+                .map((item: string) => item.trim());
             }
 
             // 부모에게 파싱된 데이터 전달
@@ -152,9 +176,7 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onParsedData, onFinishData }) =
               onFinishData(parsedDataArray);
             }
           }
-
-        }
-        else {
+        } else {
           setMessages([defaultBotMessage]);
         }
       } catch (error) {
@@ -193,7 +215,11 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onParsedData, onFinishData }) =
     setMessages((prevMessages) => {
       const updatedMessages = prevMessages.map((message, index) => {
         // 마지막 메시지를 제외한 봇 메시지에서만 buttons를 undefined로 설정
-        if (index !== prevMessages.length - 1 && message.sender === "bot" && message.buttons) {
+        if (
+          index !== prevMessages.length - 1 &&
+          message.sender === "bot" &&
+          message.buttons
+        ) {
           return { ...message, buttons: undefined };
         }
         return message;
@@ -210,7 +236,6 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onParsedData, onFinishData }) =
     // 스크롤을 아래로 이동
     scrollToBottom();
   }, [messages]);
-
 
   // 스크롤 이벤트 추가
   useEffect(() => {
@@ -278,7 +303,7 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onParsedData, onFinishData }) =
       }
 
       // 부모에게 파싱된 데이터 보내기
-      console.log("!! 파싱: ",parsedDataArray)
+      console.log("!! 파싱: ", parsedDataArray);
       if (onParsedData) {
         onParsedData(parsedDataArray);
       }
@@ -332,7 +357,7 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onParsedData, onFinishData }) =
       }
 
       // 부모에게 파싱된 데이터 보내기
-      console.log("** 파싱: ", parsedDataArray)
+      console.log("** 파싱: ", parsedDataArray);
       if (onFinishData) {
         onFinishData(parsedDataArray);
       }
@@ -557,28 +582,34 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onParsedData, onFinishData }) =
     }
   };
 
-
   return (
     <div className="chat-container">
       <div className="notice-text">
-        우측 상단의 <FontAwesomeIcon className="space" icon={faCircleQuestion} />에 마우스를 올리면 가이드를 볼 수 있어요.
+        우측 상단의{" "}
+        <FontAwesomeIcon className="space" icon={faCircleQuestion} />에 마우스를
+        올리면 가이드를 볼 수 있어요.
         <div className="download-button-th">
           <FontAwesomeIcon
             icon={faCircleQuestion}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
           />
-          {isHovered &&
+          {isHovered && (
             <div className="home-chat-guide-th">
-              <h4>안내: Kloudify 챗봇과 원활하게 소통하기 위해, 아래와 같은 방식으로 질문하고 정보를 제공해주세요.</h4>
+              <h4>
+                안내: Kloudify 챗봇과 원활하게 소통하기 위해, 아래와 같은
+                방식으로 질문하고 정보를 제공해주세요.
+              </h4>
               1. 필요한 목적을 명확히 작성하기
               <br />
-              예시: “개인 프로젝트에 필요한 웹 애플리케이션을 위해 서버와 데이터베이스가 필요해요.”
+              예시: “개인 프로젝트에 필요한 웹 애플리케이션을 위해 서버와
+              데이터베이스가 필요해요.”
               <br />
               <br />
               2. 간단하고 구체적으로 설명하기
               <br />
-              예시: “트래픽이 많은 웹사이트가 아닌, 일반적인 블로그 서비스 정도의 서버 성능이 필요해요.”
+              예시: “트래픽이 많은 웹사이트가 아닌, 일반적인 블로그 서비스
+              정도의 서버 성능이 필요해요.”
               <br />
               <br />
               3. 자신의 클라우드 경험 레벨을 알려주기
@@ -586,16 +617,19 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onParsedData, onFinishData }) =
               예시: “클라우드는 처음이라 기본적인 설정부터 배우고 싶어요.”
               <br />
               <br />
-              4. 현재까지 구상한 구조를 공유하기 (혹은 필요한 구성 요소만 열거해도 좋아요)
+              4. 현재까지 구상한 구조를 공유하기 (혹은 필요한 구성 요소만
+              열거해도 좋아요)
               <br />
               예시: “데이터베이스와 백엔드 서버만 있으면 됩니다.”
               <br />
               <br />
-              챗봇 팁: 각 질문에 대한 답변을 바탕으로 클라우드 아키텍처가 단계별로 설계됩니다. 필요에 따라 질문에 추가 정보를 더하거나, 불필요한 부분을 생략해도 좋습니다.
+              챗봇 팁: 각 질문에 대한 답변을 바탕으로 클라우드 아키텍처가
+              단계별로 설계됩니다. 필요에 따라 질문에 추가 정보를 더하거나,
+              불필요한 부분을 생략해도 좋습니다.
             </div>
-          }
+          )}
         </div>
-      </div >
+      </div>
       <div className="message-list" ref={scrollRef}>
         {messages.map((message) => (
           <React.Fragment key={message.id}>
@@ -604,18 +638,7 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onParsedData, onFinishData }) =
             )}
             <div className={`message ${message.sender}-message`}>
               {message.sender === "bot" ? (
-                <div
-                  className="message-content"
-                >
-                  {typeof message.text === "string" ? (
-                    <TypingMessage
-                      text={message.text}
-                      maxLength={message.maxLength || 100}
-                    />
-                  ) : (
-                    message.text
-                  )}
-                </div>
+                <div className="message-content">{message.text}</div>
               ) : (
                 message.text
               )}
@@ -700,30 +723,30 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onParsedData, onFinishData }) =
   );
 };
 
-interface TypingMessageProps {
-  text: string;
-  maxLength: number;
-}
+// interface TypingMessageProps {
+//   text: string;
+//   maxLength: number;
+// }
 
-const TypingMessage: React.FC<TypingMessageProps> = ({ text, maxLength }) => {
-  const [typedText, setTypedText] = useState("");
-  const [typingStopped, setTypingStopped] = useState(false);
+// const TypingMessage: React.FC<TypingMessageProps> = ({ text, maxLength }) => {
+//   const [typedText, setTypedText] = useState("");
+//   const [typingStopped, setTypingStopped] = useState(false);
 
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      if (typedText.length < maxLength) {
-        setTypedText(text.slice(0, typedText.length + 1));
-      } else {
-        setTypingStopped(true);
-        setTypedText(text);
-        clearInterval(intervalId);
-      }
-    }, 50);
+//   useEffect(() => {
+//     const intervalId = setInterval(() => {
+//       if (typedText.length < maxLength) {
+//         setTypedText(text.slice(0, typedText.length + 1));
+//       } else {
+//         setTypingStopped(true);
+//         setTypedText(text);
+//         clearInterval(intervalId);
+//       }
+//     }, 50);
 
-    return () => clearInterval(intervalId);
-  }, [typedText, maxLength, text]);
+//     return () => clearInterval(intervalId);
+//   }, [typedText, maxLength, text]);
 
-  return <div>{typingStopped ? <p>{text}</p> : <p>{typedText}|</p>}</div>;
-};
+//   return <div>{typingStopped ? <p>{text}</p> : <p>{typedText}|</p>}</div>;
+// };
 
 export default Chat;
