@@ -3,3 +3,11 @@
   text-align: center;
   height: auto;
 }
+
+.login-img {
+  height: 590px;
+  width: 440px;
+  border-radius: 10px;
+  object-fit: cover;
+  /* background-color: #cbe8f8; */
+}
