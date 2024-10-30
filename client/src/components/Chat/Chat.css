@@ -82,6 +82,10 @@
   cursor: pointer;
 }
 
+.template-sub-th {
+  font-size: 18px;
+}
+
 .user-message {
   align-self: flex-end;
   background-color: #ffffff;
