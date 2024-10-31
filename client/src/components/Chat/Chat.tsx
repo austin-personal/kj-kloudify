@@ -80,7 +80,7 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
                 ? msg.userMessage.slice(msg.userMessage.indexOf("-") + 1).trim()
                 : msg.userMessage;
 
-              // botResponse에서 !! 이전의 부분만 가져오기
+              // botResponse에서 ** 이전의 부분만 가져오기
               const parsedBotResponse = msg.botResponse.includes("**")
                 ? msg.botResponse.split("**")[0].trim()
                 : msg.botResponse;
