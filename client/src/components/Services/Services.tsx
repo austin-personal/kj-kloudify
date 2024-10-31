@@ -49,7 +49,7 @@ const Services: React.FC<ServicesProps> = ({ nodes, cid, isReviewReady }) => {
       const hasCredentials = await checkSecret(token);
       if (!hasCredentials) {
         alert("AWS 자격 증명 정보를 입력해야 합니다.");
-        navigate("/guide")
+        navigate("/guide");
         return;
       }
 
@@ -113,9 +113,7 @@ const Services: React.FC<ServicesProps> = ({ nodes, cid, isReviewReady }) => {
             <div className="modal">
               <h2>Price Summary Details</h2>
               <div className="modal-container">
-                <p>
-                  ㅎㅇ
-                </p>
+                <p>ㅎㅇ</p>
               </div>
               <button className="close-btn" onClick={toggleModal}>
                 Close
@@ -123,21 +121,6 @@ const Services: React.FC<ServicesProps> = ({ nodes, cid, isReviewReady }) => {
             </div>
           </div>
         )}
-      </div>
-      <div className="info-notice">
-        <FontAwesomeIcon
-          icon={faCircleExclamation}
-          size="2xl"
-          style={{ color: "#E37E7E" }}
-        />
-        <h3 className="info-title">배포 전 마지막 단계</h3>
-      </div>
-
-      <p className="info-contents">배포를 위한 AWS 관련 정보가 필요합니다.</p>
-      <div className="right-btn">
-        <button className="info-btn" onClick={handleGuide}>
-          정보 입력하러 가기 →
-        </button>
       </div>
       <div className="terms-and-conditions">
         <div className="color-font-th">약관</div>
