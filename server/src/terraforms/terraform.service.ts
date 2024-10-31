@@ -27,6 +27,8 @@ import { exec } from 'child_process';
 import { promisify } from 'util';
 import { writeFile , mkdir } from 'fs/promises';
 import { ProjectsService } from '../projects/projects.service';
+import { execSync } from 'child_process';
+
 
 @Injectable()
 export class TerraformService {
@@ -74,6 +76,7 @@ export class TerraformService {
      \`\`\`hcl
      <Terraform Code>
      \`\`\`
+      6. region is np-northeast-2.
       `;
 
     // 베드락 설정
@@ -131,7 +134,6 @@ export class TerraformService {
         throw new Error('Keyword not found in DynamoDB');
     }
 
-
     const projectName = await this.getProjectName(PID);
     let terraformCode: any;
     // 2. Terraform 코드 생성
@@ -163,6 +165,7 @@ export class TerraformService {
         return {
           status: 'Terraform code generated',
           terraformCode: codeContent,
+          bool : true
         };
     }
     
@@ -177,6 +180,39 @@ export class TerraformService {
     }
     const terraformFilePath = path.join(tmpDir, 'main.tf');
     fs.writeFileSync(terraformFilePath, extractedCode);
+
+
+    const execAsync = promisify(exec);
+    // const credentials = await this.secretsService.getUserCredentials(userId);
+
+    // console.log('Retrieved credentials:', credentials);
+    // if (!credentials) {
+    //   throw new Error(`User credentials not found for user ID: ${userId}`);
+    // }
+
+    try {
+    const uid = await this.projectsService.getUIDByPID(PID);
+    if (uid === null) {
+      throw new Error('UID not found'); // UID가 null일 경우에 대한 예외 처리
+    }
+  
+  const { accessKey, secretAccessKey } = await this.secretsService.getUserCredentials(uid);
+
+    // Terraform plan 명령어 실행 (async/await 사용)
+    const { stdout, stderr } = await execAsync(
+      `terraform -chdir=${tmpDir} plan -var "aws_access_key=${accessKey}" -var "aws_secret_key=${secretAccessKey}"`
+    );
+
+    console.log('Terraform plan 결과:', stdout);
+    if (stderr) {
+      console.error('Terraform plan 중 오류:', stderr);
+      return {message :stderr,
+              bool : false}
+    }
+  } catch (error) {
+    console.error('Terraform plan 실행 중 오류가 발생했습니다:', error.message);
+  }
+
 
     // 5. S3에 Terraform 파일 업로드
     const s3Bucket = process.env.TERRAFORM_BUCKET;
@@ -194,6 +230,7 @@ export class TerraformService {
     return {
       status: 'Terraform code generated',
       terraformCode: extractedCode,
+      bool : true
     };
   }
 

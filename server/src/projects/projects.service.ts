@@ -124,6 +124,20 @@ export class ProjectsService {
     }
     
     return project.projectName;
-}
+  }
+
+  async getUIDByPID(pid: number): Promise<number | null> {
+    
+    const project = await this.projectRepository.findOne({
+        where: { PID: pid },
+        select: ['UID'], // UID 컬럼만 선택
+    });
+    if (!project) {
+        throw new NotFoundException('Project not found');
+    }
+    
+    return project.UID;
+  }
+
 
 }
