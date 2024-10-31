@@ -131,7 +131,7 @@ const Profile: React.FC = () => {
 
   const handleProjectClick = (PID: number, isDeployed: boolean) => {
     if (isDeployed) {
-      navigate(`/history/${PID}`);
+      navigate(`/detail/${PID}`);
     } else {
       navigate(`/home/${PID}`);
     }
