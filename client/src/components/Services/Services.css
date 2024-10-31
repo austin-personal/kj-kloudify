@@ -378,3 +378,49 @@ hr {
   visibility: visible;
   opacity: 1;
 }
+
+.terms-and-conditions {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #b1b1b1;
+  background-color: #f2eed1;
+  border-radius: 20px;
+  padding: 20px;
+  width: 90%;
+  height: 180px;
+}
+
+.readonly-input {
+  font-size: 22px;
+  outline: none;
+  width: 100%;
+  height: 100px;
+  margin-top: 10px;
+  border-radius: 4px;
+  overflow-y: auto;
+  resize: none;
+  white-space: pre-wrap;
+}
+
+.consent-container {
+  display: inline-flex;
+  justify-content: end;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.color-font-th {
+  font-weight: bold;
+}
+
+.consent-checkbox {
+  width: 24px;
+  height: 24px;
+  margin-right: 10px;
+}
+
+.consent-label {
+  font-size: 20px;
+  color: #333;
+  white-space: nowrap;
+}
