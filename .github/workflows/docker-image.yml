@@ -24,8 +24,9 @@ jobs:
       # Build and push server image
       - name: Build and push server Docker image
         run: |
-          docker build ./server -t ${{ secrets.DOCKER_USERNAME }}/server:$APP_VERSION
-          docker push ${{ secrets.DOCKER_USERNAME }}/server:latest
+          docker build ./server -t ${{ secrets.DOCKER_USERNAME }}/server:$APP_VERSION 
+          docker push ${{ secrets.DOCKER_USERNAME }}/server:$APP_VERSION
+
           
       - name: List docker image
         run: docker image ls
@@ -66,4 +67,4 @@ jobs:
             docker pull ${{ secrets.DOCKER_USERNAME }}/server:latest
             docker pull ${{ secrets.DOCKER_USERNAME }}/client:latest
             
-            docker-compose -f /home/ubuntu/kj-kloudify/docker-compose.yml up -d
+            docker-compose -f docker-compose.yml up -d
