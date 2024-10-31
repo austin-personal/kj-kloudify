@@ -1,5 +1,4 @@
-name: Docker Image CI/CD
-
+name: Deploy
 on:
   push:
     branches: [ "deploy" ]
@@ -50,7 +49,6 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             cd ~/kj-kloudify
-            
             DATABASE_HOST=${{ secrets.DATABASE_HOST }} \
             DATABASE_PORT=${{ secrets.DATABASE_PORT }} \
             DATABASE_USER=${{ secrets.DATABASE_USER }} \
@@ -63,8 +61,6 @@ jobs:
             TERRAFORM_BUCKET=${{ secrets.TERRAFORM_BUCKET }} \
             TERRAFORM_LAMBDA_FUNCTION=${{ secrets.TERRAFORM_LAMBDA_FUNCTION }} \
             ENCRYPTION_KEY=${{ secrets.ENCRYPTION_KEY }} \
-            
             docker pull ${{ secrets.DOCKER_USERNAME }}/server:latest
             docker pull ${{ secrets.DOCKER_USERNAME }}/client:latest
-            
             docker-compose -f docker-compose.yml up -d
