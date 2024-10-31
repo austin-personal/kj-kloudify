@@ -7,11 +7,13 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 100%;
+  height: calc(100vh - var(--navbar-height));
 }
 
 .userProfile-line-th {
   border: none;
-  width: 1000px;
+  width: 66%;
   border-top: 1px solid #cccaba;
   margin-bottom: 20px;
 }
@@ -21,8 +23,8 @@
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  width: 800px;
-  margin-top: 25px;
+  width: 60%;
+  margin-top: 2%;
 }
 .profile-left {
   display: flex;
@@ -55,7 +57,7 @@
 .project-list-container {
   color: #312d26;
   font-size: 22px;
-  width: 1000px;
+  width: 66%;
 }
 
 .project-list-table {
