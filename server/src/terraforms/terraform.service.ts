@@ -67,6 +67,8 @@ export class TerraformService {
      \`\`\`hcl
      <Terraform Code>
      \`\`\`
+      6. region is np-northeast-2
+
       `;
 
     // 베드락 설정
@@ -159,6 +161,7 @@ export class TerraformService {
     // 4. Terraform 코드를 임시 디렉토리에 저장
     const tmpDir = `/tmp/${CID}`;
     if (!fs.existsSync(tmpDir)) {  // 디렉토리 존재 확인
+      console.log("폴더 생성");
       fs.mkdirSync(tmpDir);
     }
     const terraformFilePath = path.join(tmpDir, 'main.tf');

@@ -73,13 +73,15 @@ export class ConversationsService {
                     + `**[ { "service": "", "options": { "ami": "", "instance_type": "", "public": ""} } ]
                     이런 포맷으로 서비스 종류 하나씩 출력하세요. \\n 없이 한줄로 출력해줘. 앞에 **을 꼭 넣어줘`
                     + "혹시 사용자가 aws와 관련없는 주제로 대답할 경우 aws 선택을 할 수 있도록 주제를 계속해서 상기시켜줘"
-                    + "aws 기본 지역은 서울 지역이야."
-                    + "ec2의 ami와 subnet_id도 내가 구성한 내용을 바탕으로 실제로 사용할 수 있도록 구성해줘. subnet은 별도의 언급이 없다면 기본값으로 설정하고";
+                    + "ami는 ami-040c33c6a51fd5d96 값으로 고정해줘. s3의 네임은 dkssudelwlahs1234333 으로 해줘"
+                    
+                    // + "aws 기본 지역은 서울 지역이야. ec2의 ami를 만들때 실제로 사용할 수 있도록 해주세요.  "
+                    ;
             case 2:
                 return "당신은 사용자의 요구에 맞는 AWS 서비스 아키텍처를 단계별로 구성하는 안내자 역할을 합니다. "
                     + "대화내역을 바탕으로 사용자에게 알맞은 서비스를 추천해주세요."
                     + "이런 포맷으로 서비스 종류 하나씩 출력하세요. 이스케이프 코드 넣지 마 행렬 앞에 **을 꼭 넣어줘"
-                    + '그렇게 추천해준 서비스를 [ { "service": "ec2", "options": { "ami": "ami-02c329a4b4aba6a48", "instance_type": "t2.micro", "public": true, "subnet_id": "subnet-0189db2034ce49d30" } } ] 이런 포맷으로 서비스 종류 하나씩 행렬안에 넣어주세요. 이스케이프 코드 넣지말고 앞에 **을 꼭 넣어주세요';
+                    + '그렇게 추천해준 서비스를 [ { "service": "ec2", "options": { "ami": "", "instance_type": "t2.micro", "public": true, "subnet_id": "subnet-0189db2034ce49d30" } } ] 이런 포맷으로 서비스 종류 하나씩 행렬안에 넣어주세요. 이스케이프 코드 넣지말고 앞에 **을 꼭 넣어주세요';
             case 3:
                 return `{
                     "service": "ec2",
