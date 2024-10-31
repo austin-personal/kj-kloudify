@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { setHasSecret } from "../../store/loadingSlice";
 import "./Profile.css";
 import {
   projectResumeInfo,
@@ -33,13 +35,15 @@ interface Project {
 
 const Profile: React.FC = () => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const hasSecret = useAppSelector((state) => state.loading.hasSecret); // Redux에서 가져옴
+
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [projects, setProjects] = useState<Project[]>([]);
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
   const [modalType, setModalType] = useState<string>(""); // 모달 타입을 구분하는 상태
   const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [hasSecret, setHasSecret] = useState(false);
   const [filterType, setFilterType] = useState("all"); // 필터링 타입 상태 추가
   const [isDropdownOpen, setIsDropdownOpen] = useState(false); // 드롭다운 상태 추가
   const itemsPerPage = 5; // 한 페이지에 보여줄 항목 수
@@ -50,7 +54,7 @@ const Profile: React.FC = () => {
       try {
         if (token) {
           const result = await checkSecret(token);
-          setHasSecret(result);
+          dispatch(setHasSecret(result));
           // 유저 정보 가져오기
           const userData = await info(token);
           setUserProfile(userData.user);
@@ -167,7 +171,7 @@ const Profile: React.FC = () => {
       // AWS Key 삭제 로직
       const response = await deleteSecret(token);
       alert(response);
-      setHasSecret(false);
+      dispatch(setHasSecret(false));
     }
 
     setShowDeleteModal(false);
