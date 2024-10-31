@@ -51,18 +51,6 @@ jobs:
           script: |
             cd ~/home/ubuntu/kj-kloudify
             
-            # DATABASE_HOST=${{ secrets.DATABASE_HOST }} \
-            # DATABASE_PORT=${{ secrets.DATABASE_PORT }} \
-            # DATABASE_USER=${{ secrets.DATABASE_USER }} \
-            # DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }} \
-            # DATABASE_NAME=${{ secrets.DATABASE_NAME }} \
-            # AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
-            # AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
-            # AWS_REGION=${{ secrets.AWS_REGION }} \
-            # DYNAMO_TABLE_NAME=${{ secrets.DYNAMO_TABLE_NAME }} \
-            # TERRAFORM_BUCKET=${{ secrets.TERRAFORM_BUCKET }} \
-            # TERRAFORM_LAMBDA_FUNCTION=${{ secrets.TERRAFORM_LAMBDA_FUNCTION }} \
-            # ENCRYPTION_KEY=${{ secrets.ENCRYPTION_KEY }} \
             
             docker pull ${{ secrets.DOCKER_USERNAME }}/server:latest
             docker pull ${{ secrets.DOCKER_USERNAME }}/client:latest
