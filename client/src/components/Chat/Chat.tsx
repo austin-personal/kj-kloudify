@@ -635,19 +635,19 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
           </React.Fragment>
         ))}
       </div>
-      {/* 스크롤을 아래로 이동하는 버튼 */}
-      {showScrollButton && (
-        <div className="scroll-to-bottom">
-          <FontAwesomeIcon
-            className="scroll-icon"
-            onClick={scrollToBottom}
-            icon={faCircleDown}
-            size="2xl"
-          />
-          <div className="scroll-background"></div>
-        </div>
-      )}
       <div className="input-container">
+        {/* 스크롤을 아래로 이동하는 버튼 */}
+        {showScrollButton && (
+          <div className="scroll-to-bottom">
+            <FontAwesomeIcon
+              className="scroll-icon"
+              onClick={scrollToBottom}
+              icon={faCircleDown}
+              size="2xl"
+            />
+            <div className="scroll-background"></div>
+          </div>
+        )}
         <form className="chat-form">
           <textarea
             ref={textAreaRef}

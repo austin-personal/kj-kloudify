@@ -10,6 +10,7 @@
 
 .notice-text {
   margin-top: 90px;
+  margin-bottom: 10px;
   position: relative;
   display: flex;
   justify-content: center;
@@ -116,7 +117,7 @@
   align-items: flex-end; /* textarea와 버튼의 하단을 맞춤 */
   width: 100%;
   background-color: white;
-  border-radius: 50px;
+  border-radius: 30px;
   box-shadow: 5px 4px 20px 0px rgba(0, 0, 0, 13%);
   padding: 10px 10px 0px 10px;
 }
@@ -126,12 +127,14 @@
   display: flex;
   align-items: flex-end;
   padding: 0px 20px 20px 20px;
+  position: relative;
 }
 
 .chat-input {
   font-family: "NanumSquareRound", sans-serif;
   overflow: hidden;
   width: 100%;
+  line-height: 1.5;
   overflow-y: auto;
   max-height: 200px; /* 원하는 최대 높이로 설정 */
   min-height: 35px;
@@ -143,10 +146,11 @@
   border-radius: 5px;
   border: none;
   background: none;
+  margin-bottom: 5px;
 }
 
 .chat-input::placeholder {
-  padding-top: 5px; /* placeholder를 약간 아래로 이동 */
+  padding-top: 1px; /* placeholder를 약간 아래로 이동 */
 }
 
 .chat-input:focus {
@@ -163,17 +167,33 @@
   color: #ffb546;
   border: none;
   cursor: pointer;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
+  transition: all 0.3s ease 0s;
+}
+
+.chat-button-sa:active {
+  transform: scale(0.9);
 }
 
 .scroll-to-bottom {
   position: absolute;
-  bottom: 20%; /* 원하는 위치로 조정 */
+  top: -80px; /* 원하는 위치로 조정 */
   left: 50%;
   transform: translateX(-50%); /* 가로 중앙 맞추기 */
   cursor: pointer;
   width: 40px; /* 부모 요소의 크기를 아이콘과 배경에 맞게 설정 */
   height: 40px;
+  animation: bounce 1s ease-in-out infinite; /* 애니메이션 반복 */
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translate(-50%, 0);
+  }
+  50% {
+    transform: translate(-50%, -5px);
+  }
 }
 
 .scroll-icon {
