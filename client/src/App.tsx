@@ -5,7 +5,7 @@ import Home from "./pages/Home/Home";
 import Login from "./pages/Login/Login";
 import NavBar from "./components/NavBar/NavBar";
 import Profile from "./pages/Profile/Profile";
-import History from "./pages/History/History";
+import Detail from "./pages/Detail/Detail";
 import Review from "./pages/Review/Review";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import Guide from "./pages/Guide/Guide";
@@ -62,10 +62,10 @@ const App: React.FC = () => {
             />
 
             <Route
-              path="/history/:pid"
+              path="/detail/:pid"
               element={
                 <ProtectedRoute>
-                  <History />
+                  <Detail />
                 </ProtectedRoute>
               }
             />

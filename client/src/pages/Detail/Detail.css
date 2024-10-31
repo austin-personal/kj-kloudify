@@ -4,7 +4,7 @@
 }
 
 /* 전체 페이지에 NavBar 높이만큼의 여백 추가 */
-.history-page {
+.detail-page {
   margin-top: var(--navbar-height);
   padding: 20px;
   box-sizing: border-box;
@@ -146,7 +146,8 @@
 
 /* 스크롤바 감추기 */
 .previous-chatting-th::-webkit-scrollbar {
-  display: none; /* 웹킷 기반 브라우저 (크롬, 사파리) */
+  display: none;
+  /* 웹킷 기반 브라우저 (크롬, 사파리) */
 }
 
 .chat-history {
@@ -158,7 +159,8 @@
 
 .chat-message {
   max-width: 80%;
-  word-break: break-word; /* 긴 텍스트 줄바꿈 */
+  word-break: break-word;
+  /* 긴 텍스트 줄바꿈 */
   padding: 10px;
   border-radius: 8px;
 }
@@ -180,4 +182,34 @@
 .architecture-box {
   width: 860px;
   /* border: 1px solid black; */
+}
+
+/* Detail.css */
+
+.loading-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.spinner {
+  width: 30px;
+  height: 30px;
+  border: 4px solid #ddd;
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 10px;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }

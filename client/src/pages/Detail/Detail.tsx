@@ -3,11 +3,11 @@ import { ReactFlowProvider } from "@xyflow/react";
 import { useParams } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import Board from "../../components/Board/Board";
-import DonutChart from "../../components/HistoryPage/DonutChart";
+import DonutChart from "../../components/DetailPage/DonutChart";
 import { projectOneInfo } from "../../services/projects";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCloud } from "@fortawesome/free-solid-svg-icons";
-import "./History.css";
+import "./Detail.css";
 import { open } from "../../services/conversations";
 import { useTemplates } from "../../components/Chat/TemplateProvider";
 
@@ -32,13 +32,14 @@ interface ChatMessage {
   sender: "bot" | "user";
 }
 
-const History: React.FC = () => {
+const Detail: React.FC = () => {
   const templates = useTemplates();
   const { pid } = useParams<{ pid: string }>();
   const [project, setProject] = useState<Project | null>(null);
   const [isChatting, setIsChatting] = useState(false);
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
   const token = localStorage.getItem("token");
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchProjectData = async () => {
@@ -50,7 +51,9 @@ const History: React.FC = () => {
 
           // Chat history를 불러올 때 CID를 사용
           if (projectData.CID && isChatting) {
-            await openChatHistory(projectData.CID);
+            openChatHistory(projectData.CID).then(() => {
+              setIsLoading(false)
+            });
           }
         }
       } catch (error) {
@@ -108,7 +111,7 @@ const History: React.FC = () => {
   if (!project) return <div>Loading...</div>;
 
   return (
-    <div className="history-page">
+    <div className="detail-page">
       <div className="project-header">
         <p className="project-name-title-th">
           Project Name : <span className="project-name-th">{project.projectName}</span>
@@ -131,16 +134,23 @@ const History: React.FC = () => {
         </div>
         <div className="left-content">
           <div className={`previous-chatting-th ${isChatting ? "open" : "close"}`}>
-            <div className="chat-history">
-              {chatHistory.map((message) => (
-                <div
-                  key={message.id}
-                  className={`chat-message ${message.sender === "bot" ? "bot-message" : "user-message"}`}
-                >
-                  <span>{message.text}</span>
-                </div>
-              ))}
-            </div>
+            {isLoading ? (
+              <div className="loading-indicator">
+                <div className="spinner"></div> {/* 로딩 스피너 */}
+                <p>Loading chat history...</p>
+              </div>
+            ) : (
+              <div className="chat-history">
+                {chatHistory.map((message) => (
+                  <div
+                    key={message.id}
+                    className={`chat-message ${message.sender === "bot" ? "bot-message" : "user-message"}`}
+                  >
+                    <span>{message.text}</span>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
           <div className="service-status-th">
             <h3>Service Status</h3>
@@ -160,4 +170,4 @@ const History: React.FC = () => {
   );
 };
 
-export default History;
+export default Detail;
