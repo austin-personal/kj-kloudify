@@ -3,8 +3,9 @@ name: Docker Image CI/CD
 on:
   push:
     branches: [ "deploy" ]
-  pull_request:
-    branches: [ "deploy" ]
+
+env:
+  APP_VERSION: "${{ github.run_number }}"
 
 jobs:
   build-and-push:
@@ -23,14 +24,17 @@ jobs:
       # Build and push server image
       - name: Build and push server Docker image
         run: |
-          docker build ./server -t my-dockerhub-username/server:latest
-          docker push my-dockerhub-username/server:latest
-
+          docker build ./server -t ${{ secrets.DOCKER_USERNAME }}/server:$APP_VERSION
+          docker push ${{ secrets.DOCKER_USERNAME }}/server:latest
+          
+      - name: List docker image
+        run: docker image ls
+      
       # Build and push client image
       - name: Build and push client Docker image
         run: |
-          docker build ./client -t my-dockerhub-username/client:latest
-          docker push my-dockerhub-username/client:latest
+          docker build ./client -t ${{ secrets.DOCKER_USERNAME }}/client:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/client:latest
 
   deploy:
     needs: build-and-push
@@ -44,6 +48,22 @@ jobs:
           username: ec2-user
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            docker pull my-dockerhub-username/server:latest
-            docker pull my-dockerhub-username/client:latest
-            docker-compose -f /path/to/your/docker-compose.yml up -d
+            cd ~/home/ubuntu/kj-kloudify
+            
+            DATABASE_HOST=${{ secrets.DATABASE_HOST }} \
+            DATABASE_PORT=${{ secrets.DATABASE_PORT }} \
+            DATABASE_USER=${{ secrets.DATABASE_USER }} \
+            DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }} \
+            DATABASE_NAME=${{ secrets.DATABASE_NAME }} \
+            AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
+            AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
+            AWS_REGION=${{ secrets.AWS_REGION }} \
+            DYNAMO_TABLE_NAME=${{ secrets.DYNAMO_TABLE_NAME }} \
+            TERRAFORM_BUCKET=${{ secrets.TERRAFORM_BUCKET }} \
+            TERRAFORM_LAMBDA_FUNCTION=${{ secrets.TERRAFORM_LAMBDA_FUNCTION }} \
+            ENCRYPTION_KEY=${{ secrets.ENCRYPTION_KEY }} \
+            
+            docker pull ${{ secrets.DOCKER_USERNAME }}/server:latest
+            docker pull ${{ secrets.DOCKER_USERNAME }}/client:latest
+            
+            docker-compose -f /home/ubuntu/kj-kloudify/docker-compose.yml up -d
