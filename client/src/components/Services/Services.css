@@ -48,6 +48,7 @@ hr {
 }
 
 .price-summary-header {
+  margin-top: 90px;
   display: flex;
   justify-content: end;
   width: 100%;
@@ -266,6 +267,7 @@ hr {
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 1;
 }
 
 .modal {
@@ -368,7 +370,7 @@ hr {
   transform: translateX(-50%);
   white-space: nowrap;
   font-size: 0.9rem;
-  z-index: 10;
+  z-index: 0;
   opacity: 0;
   transition: opacity 0.3s;
 }
