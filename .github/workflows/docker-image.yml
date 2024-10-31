@@ -1,0 +1,49 @@
+name: Docker Image CI/CD
+
+on:
+  push:
+    branches: [ "deploy" ]
+  pull_request:
+    branches: [ "deploy" ]
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Log in to Docker Hub or another registry (assumes using Docker Hub)
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # Build and push server image
+      - name: Build and push server Docker image
+        run: |
+          docker build ./server -t my-dockerhub-username/server:latest
+          docker push my-dockerhub-username/server:latest
+
+      # Build and push client image
+      - name: Build and push client Docker image
+        run: |
+          docker build ./client -t my-dockerhub-username/client:latest
+          docker push my-dockerhub-username/client:latest
+
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: SSH and Deploy on EC2
+        uses: appleboy/ssh-action@v0.1.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ec2-user
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            docker pull my-dockerhub-username/server:latest
+            docker pull my-dockerhub-username/client:latest
+            docker-compose -f /path/to/your/docker-compose.yml up -d
