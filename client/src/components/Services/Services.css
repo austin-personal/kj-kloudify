@@ -4,6 +4,7 @@
   height: 60%;
   color: #312d26;
 }
+
 .service-container {
   display: flex;
   height: 190px;
@@ -40,8 +41,10 @@ hr {
   border-color: #a09e8a;
   border-radius: 20px;
   display: flex;
-  align-items: center; /* 아이콘과 텍스트를 세로 중앙 정렬 */
-  justify-content: space-between; /* 아이콘과 텍스트 사이 공간 확보 */
+  align-items: center;
+  /* 아이콘과 텍스트를 세로 중앙 정렬 */
+  justify-content: space-between;
+  /* 아이콘과 텍스트 사이 공간 확보 */
 }
 
 .price-summary-header {
@@ -55,7 +58,8 @@ hr {
 
 .top-label-service {
   font-size: 23px;
-  width: 50%; /* 부모 너비의 50% */
+  width: 50%;
+  /* 부모 너비의 50% */
   margin-left: 5%;
   margin-right: 10%;
 }
@@ -112,10 +116,13 @@ hr {
 .service-label,
 .price-label {
   font-size: 24px;
-  width: 30%; /* 부모 너비의 50% */
+  width: 30%;
+  /* 부모 너비의 50% */
   margin-left: 2%;
-  margin-right: 0; /* 부모 요소 너비의 5%만큼 마진 */
+  margin-right: 0;
+  /* 부모 요소 너비의 5%만큼 마진 */
 }
+
 .price-label {
   width: 80%;
 }
@@ -218,12 +225,14 @@ hr {
 
 .right-btn {
   display: flex;
-  justify-content: flex-end; /* 자식 요소를 오른쪽으로 정렬 */
+  justify-content: flex-end;
+  /* 자식 요소를 오른쪽으로 정렬 */
 }
 
 .middle-btn {
   display: flex;
-  justify-content: center; /* 자식 요소를 오른쪽으로 정렬 */
+  justify-content: center;
+  /* 자식 요소를 오른쪽으로 정렬 */
 }
 
 .info-btn {
@@ -239,7 +248,8 @@ hr {
 }
 
 .middle-btn {
-  text-align: center; /* 버튼을 수평 중앙으로 정렬 */
+  text-align: center;
+  /* 버튼을 수평 중앙으로 정렬 */
   margin-top: 20px;
 }
 
@@ -251,7 +261,8 @@ hr {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5); /* 모달 배경 어둡게 */
+  background-color: rgba(0, 0, 0, 0.5);
+  /* 모달 배경 어둡게 */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -307,4 +318,109 @@ hr {
 .info-contents {
   height: 10px;
   font-size: 23px;
+}
+
+.loading-btn {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: none;
+  border-radius: 15px;
+  height: 50px;
+  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 6%);
+  margin-bottom: 13px;
+  width: 137px;
+  background-color: #f49a29;
+  cursor: not-allowed;
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 3px solid #fff;
+  border-top: 3px solid #f49a29;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* 툴팁 스타일 */
+.loading-btn .tooltip {
+  visibility: hidden; /* 기본적으로 보이지 않도록 설정 */
+  background-color: #333;
+  color: #ffffff;
+  text-align: center;
+  padding: 5px 10px;
+  border-radius: 5px;
+  position: absolute;
+  top: -35px; /* 버튼 위에 툴팁 표시 */
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-size: 0.9rem;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+/* 버튼에 마우스가 올라갔을 때 툴팁 보이게 하기 */
+.loading-btn:hover .tooltip {
+  visibility: visible;
+  opacity: 1;
+}
+
+.terms-and-conditions {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #b1b1b1;
+  background-color: #f2eed1;
+  border-radius: 20px;
+  padding: 20px;
+  width: 90%;
+  height: 180px;
+}
+
+.readonly-input {
+  font-size: 22px;
+  outline: none;
+  width: 100%;
+  height: 100px;
+  margin-top: 10px;
+  border-radius: 4px;
+  overflow-y: auto;
+  resize: none;
+  white-space: pre-wrap;
+}
+
+.consent-container {
+  display: inline-flex;
+  justify-content: end;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.color-font-th {
+  font-weight: bold;
+}
+
+.consent-checkbox {
+  width: 24px;
+  height: 24px;
+  margin-right: 10px;
+}
+
+.consent-label {
+  font-size: 20px;
+  color: #333;
+  white-space: nowrap;
 }

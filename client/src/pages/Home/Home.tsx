@@ -7,6 +7,9 @@ import Board from "../../components/Board/Board";
 import "./Home.css";
 import { projectOneInfo } from "../../services/projects";
 import { review } from "../../services/terraforms";
+import { setReviewReady } from "../../store/loadingSlice";
+import { useDispatch } from "react-redux";
+import MermaidChart from "../../components/Mermaid/mermaid";
 
 interface Project {
   PID: number;
@@ -31,16 +34,26 @@ interface HomeProps {
 }
 
 const Home: React.FC<HomeProps> = ({ finishData, setFinishData }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [isOpenSummary, setIsOpenSummary] = useState(false);
   const [project, setProject] = useState<Project | null>(null);
-  const [parsedData, setParsedData] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
   const { pid } = useParams<{ pid: string }>();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const chartCode: string = `
+  architecture-beta
+    group api(cloud)[API]
 
+    service db(database)[Database] in api
+    service disk1(disk)[Storage] in api
+    service disk2(disk)[Storage] in api
+    service server(server)[Server] in api
+
+    db:L -- R:server
+    disk1:T -- B:server
+    disk2:T -- B:db
+`;
   useEffect(() => {
     const fetchProjectData = async () => {
       try {
@@ -62,9 +75,7 @@ const Home: React.FC<HomeProps> = ({ finishData, setFinishData }) => {
       }
     };
 
-    setParsedData([]);
     setFinishData([]);
-
     fetchProjectData();
   }, [pid, navigate]);
 
@@ -74,30 +85,24 @@ const Home: React.FC<HomeProps> = ({ finishData, setFinishData }) => {
     }
   }, [loading, project, navigate]);
 
-  const togglePopup = () => {
-    setIsOpenSummary(!isOpenSummary);
-  };
-
   const handleFinish = async () => {
-    let cid = 0
-    if (project?.CID) {
-      cid = project.CID
-    }
+    const cid = project?.CID || 0;
     try {
-      const response = await review(cid, Number(pid), token); // cid를 이용해 review 호출
-      console.log("review API 호출 성공:", response);
-      navigate(`/review/${project?.CID}`);
+      dispatch(setReviewReady(false));
+      review(cid, Number(pid), token).then(() => {
+        dispatch(setReviewReady(true));
+      });
+      navigate(`/review/${cid}`, { state: { isReviewReady: false } });
     } catch (error) {
       console.error("review API 호출 실패:", error);
+      alert(
+        "Terraform 상태 업데이트에 실패했습니다. 네트워크 연결을 확인하거나, 잠시 후 다시 시도해 주세요."
+      );
+      navigate(`/home/${pid}`);
     }
   };
 
-  const handleParsedData = (data: string[]) => {
-    console.log("Chat 컴포넌트로부터 받은 파싱된 데이터:", data);
-    setParsedData(data);
-  };
   const handleFinishData = (data: string[]) => {
-    console.log("Chat 컴포넌트로부터 받은 파싱된 마무리 데이터:", data);
     setFinishData(data);
   };
 
@@ -107,43 +112,29 @@ const Home: React.FC<HomeProps> = ({ finishData, setFinishData }) => {
 
   return (
     <div className="home">
-      <SideBar isOpen={isOpen} setIsOpen={setIsOpen} />
-      <Chat
-        projectCID={project!.CID}
-        onParsedData={handleParsedData}
-        onFinishData={handleFinishData}
-      />
+      {/* 슬라이드바 삭제 */}
+      {/* <SideBar isOpen={isOpen} setIsOpen={setIsOpen} /> */}
+      <Chat projectCID={project!.CID} onFinishData={handleFinishData} />
       <div className="vertical-line"></div>
       <div className="right-side">
         <div className="project-name-container">
           <h1 className="project-name">Project: {project!.projectName}</h1>
         </div>
-        <div className="setting-container">
-          <div className="setting-services set-up-complete">2</div>
-          <div className="setting-services setting-in-progress">2</div>
-        </div>
-        <ReactFlowProvider>
+        <MermaidChart chartCode={chartCode}></MermaidChart>
+        {/* <ReactFlowProvider>
           <Board parsedData={parsedData} finishData={finishData} />
-        </ReactFlowProvider>
-        <div
-          className={`popup ${isOpenSummary ? "visible" : "hidden"}`}
-          onClick={togglePopup}
-        >
-          {!isOpenSummary ? "Summary" : "Close"}
-          {isOpenSummary && (
-            <div className="extra-content">
-              <p>확장된 영역의 추가 텍스트 1</p>
-            </div>
-          )}
-        </div>
-        <button
-          onClick={handleFinish}
-          className={`review-btn-${finishData.length === 0 ? "disabled" : "enabled"
+        </ReactFlowProvider> */}
+        <div className="review-btn-container">
+          <button
+            onClick={handleFinish}
+            className={`review-btn-${
+              finishData.length === 0 ? "disabled" : "enabled"
             }`}
-          disabled={finishData.length === 0}
-        >
-          Review
-        </button>
+            disabled={finishData.length === 0}
+          >
+            Review
+          </button>
+        </div>
       </div>
     </div>
   );

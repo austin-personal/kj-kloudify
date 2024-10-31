@@ -13,13 +13,13 @@ import { useTemplates } from "./TemplateProvider";
 
 interface ChatProps {
   projectCID: number;
-  onParsedData?: (data: string[]) => void; // 새로운 prop 추가
   onFinishData?: (data: string[]) => void; // 새로운 prop 추가
 }
 
 interface Message {
   id: string;
   text: string | JSX.Element;
+  subtext?: string;
   sender: "user" | "bot";
   maxLength?: number;
   buttons?: { id: number; label: string }[];
@@ -28,15 +28,11 @@ interface Message {
 
 const defaultBotMessage: Message = {
   id: uuidv4(),
-  text: "이 프로젝트의 최종 목표는 무엇인가요? (예: 개인 학습, 소규모 비즈니스, 대규모 배포)",
+  text: "안녕하세요. 당신의 클라우드를 책임져줄 Kloudify에요. Kloudify와 쉽게 클라우드 아키텍쳐를 설계 해봐요! 우측 상단에 Kloudify와 대화하는 팁을 참고 하여 대화해 보세요.",
   sender: "bot",
 };
 
-const Chat: React.FC<ChatProps> = ({
-  projectCID,
-  onParsedData,
-  onFinishData,
-}) => {
+const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
   const templates = useTemplates();
   const targetTemplateNames = [
     "서버",
@@ -55,6 +51,20 @@ const Chat: React.FC<ChatProps> = ({
   }>({});
   const [isHovered, setIsHovered] = useState(false);
 
+  const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
+
+  const handleInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    if (textAreaRef.current) {
+      textAreaRef.current.style.height = "auto"; // 높이를 초기화
+      textAreaRef.current.style.height = `${textAreaRef.current.scrollHeight}px`; // 내용에 맞게 높이 설정
+
+      // 입력이 비어 있으면 최소 높이로 돌아가도록 설정
+      if (e.target.value === "") {
+        textAreaRef.current.style.height = "40px";
+      }
+    }
+  };
+
   // 대화 로딩
   useEffect(() => {
     const fetchMessages = async () => {
@@ -71,13 +81,9 @@ const Chat: React.FC<ChatProps> = ({
                 : msg.userMessage;
 
               // botResponse에서 !! 이전의 부분만 가져오기
-              let parsedBotResponse = msg.botResponse.includes("!!")
-                ? msg.botResponse.split("!!")[0].trim()
+              const parsedBotResponse = msg.botResponse.includes("**")
+                ? msg.botResponse.split("**")[0].trim()
                 : msg.botResponse;
-
-              if (parsedBotResponse.includes("**")) {
-                parsedBotResponse = parsedBotResponse.split("**")[0].trim();
-              }
 
               const matchingTemplate = Object.values(templates).find(
                 (template) => template.name === parsedBotResponse
@@ -96,7 +102,9 @@ const Chat: React.FC<ChatProps> = ({
                   {
                     id: uuidv4(),
                     text: matchingTemplate.text,
+                    subtext: matchingTemplate.subtext,
                     sender: "bot",
+                    checks: isLastMessage ? matchingTemplate.checks : undefined,
                     buttons: isLastMessage
                       ? matchingTemplate.buttons
                       : undefined,
@@ -123,35 +131,11 @@ const Chat: React.FC<ChatProps> = ({
             ...formattedMessages,
           ]);
 
-          // 마지막 botResponse에서 "!!" 뒤의 부분을 파싱하여 onParsedData로 전달
+          // 마지막 botResponse에서 "**" 뒤의 부분을 파싱하여 onParsedData로 전달
           const lastBotResponse =
             initialMessages[initialMessages.length - 1].botResponse;
 
-          if (lastBotResponse.includes("!!")) {
-            const afterAsterisks = lastBotResponse.split("!!")[1].trim();
-
-            let parsedDataArray: string[] = [];
-
-            try {
-              // JSON 배열로 파싱 시도
-              parsedDataArray = JSON.parse(afterAsterisks);
-              if (!Array.isArray(parsedDataArray)) {
-                throw new Error("파싱된 데이터가 배열이 아님");
-              }
-            } catch (e) {
-              console.error("JSON 파싱 실패, 수동으로 파싱 시도:", e);
-              // 수동으로 파싱
-              let dataString = afterAsterisks.replace(/^\[|\]$/g, "");
-              parsedDataArray = dataString
-                .split(",")
-                .map((item: string) => item.trim());
-            }
-
-            // 부모에게 파싱된 데이터 전달
-            if (onParsedData) {
-              onParsedData(parsedDataArray);
-            }
-          } else if (lastBotResponse.includes("**")) {
+          if (lastBotResponse.includes("**")) {
             const afterAsterisks = lastBotResponse.split("**")[1].trim();
 
             let parsedDataArray: string[] = [];
@@ -175,9 +159,9 @@ const Chat: React.FC<ChatProps> = ({
             if (onFinishData) {
               onFinishData(parsedDataArray);
             }
+          } else {
+            setMessages([defaultBotMessage]);
           }
-        } else {
-          setMessages([defaultBotMessage]);
         }
       } catch (error) {
         setMessages([defaultBotMessage]);
@@ -274,68 +258,14 @@ const Chat: React.FC<ChatProps> = ({
     if (selectedLabels.length > 0) {
       handleButtonClick(messageId, {
         id: 0,
-        label: `@@##${selectedLabels.join(", ")}`,
+        label: `${selectedLabels.join(", ")}`,
       });
     }
   };
 
   // 응답 메시지를 처리하는 함수
   const processResponseMessage = (responseMessage: string) => {
-    if (responseMessage.includes("!!")) {
-      const [beforeAsterisks, afterAsterisks] = responseMessage
-        .split("!!")
-        .map((part) => part.trim());
-
-      // "!!"뒤에 있는 데이터를 배열형태로 받기
-      let parsedDataArray: string[] = [];
-
-      try {
-        // JSON배열로 파싱
-        parsedDataArray = JSON.parse(afterAsterisks);
-        if (!Array.isArray(parsedDataArray)) {
-          throw new Error("파싱된 데이터가 배열이 아님");
-        }
-      } catch (e) {
-        console.error("'!!'뒤에있는 데이터를 JSON배열로 파싱하는거 실패 :", e);
-        // 만약 JSON배열이 아니면 매뉴얼대로 파싱
-        let dataString = afterAsterisks.replace(/^\[|\]$/g, "");
-        parsedDataArray = dataString.split(",").map((item) => item.trim());
-      }
-
-      // 부모에게 파싱된 데이터 보내기
-      console.log("!! 파싱: ", parsedDataArray);
-      if (onParsedData) {
-        onParsedData(parsedDataArray);
-      }
-
-      // 이제 beforeAsterisks가 템플릿 이름과 매치하는지 찾기
-      const matchingTemplate = Object.values(templates).find(
-        (template) => template.name === beforeAsterisks
-      );
-
-      // 만약 일치한다면
-      if (matchingTemplate) {
-        // 템플릿을 묘사해라
-        const newBotMessage: Message = {
-          id: uuidv4(),
-          text: matchingTemplate.text,
-          sender: "bot",
-          buttons: matchingTemplate.buttons,
-          checks: matchingTemplate.checks,
-        };
-        setMessages((prevMessages) => [...prevMessages, newBotMessage]);
-        // 일치 안한다면
-      } else {
-        // 그냥 평범하게 메세지 출력해라
-        const botMessage: Message = {
-          id: uuidv4(),
-          text: beforeAsterisks,
-          sender: "bot",
-          maxLength: 50,
-        };
-        setMessages((prevMessages) => [...prevMessages, botMessage]);
-      }
-    } else if (responseMessage.includes("**")) {
+    if (responseMessage.includes("**")) {
       const [beforeAsterisks, afterAsterisks] = responseMessage
         .split("**")
         .map((part) => part.trim());
@@ -373,6 +303,7 @@ const Chat: React.FC<ChatProps> = ({
         const newBotMessage: Message = {
           id: uuidv4(),
           text: matchingTemplate.text,
+          subtext: matchingTemplate.subtext,
           sender: "bot",
           buttons: matchingTemplate.buttons,
           checks: matchingTemplate.checks,
@@ -385,7 +316,6 @@ const Chat: React.FC<ChatProps> = ({
           id: uuidv4(),
           text: beforeAsterisks,
           sender: "bot",
-          maxLength: 50,
         };
         setMessages((prevMessages) => [...prevMessages, botMessage]);
       }
@@ -399,6 +329,7 @@ const Chat: React.FC<ChatProps> = ({
         const newBotMessage: Message = {
           id: uuidv4(),
           text: matchingTemplate.text,
+          subtext: matchingTemplate.subtext,
           sender: "bot",
           buttons: matchingTemplate.buttons,
           checks: matchingTemplate.checks,
@@ -419,8 +350,10 @@ const Chat: React.FC<ChatProps> = ({
   };
 
   // 메시지 전송 핸들러 (인풋 필드용)
-  const handleSendMessage = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const handleSendMessage = async (
+    event?: React.FormEvent | React.MouseEvent
+  ) => {
+    event?.preventDefault();
     if (input.trim() === "") return;
 
     const userMessage: Message = {
@@ -490,6 +423,16 @@ const Chat: React.FC<ChatProps> = ({
         sender: "bot",
       };
       setMessages((prevMessages) => [...prevMessages, errorMessage]);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault(); // 기본 Enter 동작 방지 (줄바꿈 방지)
+      handleSendMessage(); // 메시지 전송 함수 호출
+      if (textAreaRef.current) {
+        textAreaRef.current.style.height = "40px";
+      }
     }
   };
 
@@ -662,6 +605,11 @@ const Chat: React.FC<ChatProps> = ({
                   </>
                 ))}
 
+              {/* 서브텍스트가 존재하면 렌더링 */}
+              {message.subtext && (
+                <p className="template-sub-th">{message.subtext}</p>
+              )}
+
               {/* 버튼이 존재하면 렌더링 */}
               {message.buttons &&
                 message.buttons.map((button) => (
@@ -687,30 +635,35 @@ const Chat: React.FC<ChatProps> = ({
           </React.Fragment>
         ))}
       </div>
-
-      {/* 스크롤을 아래로 이동하는 버튼 */}
-      {showScrollButton && (
-        <>
-          <FontAwesomeIcon
-            className="scroll-to-bottom"
-            onClick={scrollToBottom}
-            icon={faCircleDown}
-            size="2xl"
-          />
-          <div className="scroll-background"></div>
-        </>
-      )}
-
       <div className="input-container">
-        <form className="chat-form" onSubmit={handleSendMessage}>
-          <input
+        {/* 스크롤을 아래로 이동하는 버튼 */}
+        {showScrollButton && (
+          <div className="scroll-to-bottom">
+            <FontAwesomeIcon
+              className="scroll-icon"
+              onClick={scrollToBottom}
+              icon={faCircleDown}
+              size="2xl"
+            />
+            <div className="scroll-background"></div>
+          </div>
+        )}
+        <form className="chat-form">
+          <textarea
+            ref={textAreaRef}
             className="chat-input"
-            type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
+            onInput={handleInput}
+            onKeyDown={handleKeyDown}
             placeholder="메시지를 입력하세요..."
+            rows={1} // 기본 줄 수
           />
-          <button type="submit" className="chat-button-sa">
+          <button
+            type="button"
+            className="chat-button-sa"
+            onClick={handleSendMessage}
+          >
             <FontAwesomeIcon
               icon={faPaperPlane}
               size="2xl"

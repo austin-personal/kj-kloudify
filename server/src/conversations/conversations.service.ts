@@ -10,7 +10,7 @@ export class ConversationsService {
     private dynamoDB: AWS.DynamoDB.DocumentClient;
     private dynamoDbDocClient: DynamoDBDocumentClient;
 
-    static modelSwitchCounter = 1;
+    // static modelSwitchCounter = 1;
 
     constructor() {
         this.dynamoDB = new AWS.DynamoDB.DocumentClient({
@@ -21,8 +21,14 @@ export class ConversationsService {
     }
 
     // 전역 변수를 1씩 증가시키는 함수
-    static incrementModelCounter(): void {
-        ConversationsService.modelSwitchCounter++;
+    async incrementModelCounter(CID: number): Promise<void> {
+        console.log(`incrementModelCounter 호출됨 - CID: ${CID}`);
+        let modelSwitchCounter = await this.getModelSwitchCounter(CID);
+        console.log(`현재 modelSwitchCounter 값: ${modelSwitchCounter}`);
+        modelSwitchCounter += 1;
+    
+        await this.saveModelSwitchCounter(CID, modelSwitchCounter);
+        console.log(`증가된 modelSwitchCounter 값: ${modelSwitchCounter}`);
     }
 
     // ID 증가를 위해 테이블의 가장 큰 ID를 조회하는 함수
@@ -57,8 +63,11 @@ export class ConversationsService {
     }
 
     // 전역 변수에 따라 다른 프롬프트 메시지를 생성하는 함수
-    getCustomMessage(): string {
-        switch (ConversationsService.modelSwitchCounter % 4) {
+    async getCustomMessage(CID: number): Promise<string> {
+        const modelSwitchCounter = await this.getModelSwitchCounter(CID);
+        console.log(`getCustomMessage 호출됨 - CID: ${CID}, modelSwitchCounter: ${modelSwitchCounter}`);
+
+        switch (modelSwitchCounter % 6) {
             case 0:
                 return "당신은 사용자의 요구에 맞는 AWS 서비스 아키텍처를 단계별로 구성하는 안내자 역할을 합니다. "
                     + "대화를 주도하며 필요한 경우 추가 질문을 통해 사용자의 요구사항을 명확히 하세요. "
@@ -73,25 +82,39 @@ export class ConversationsService {
                     + `**[ { "service": "", "options": { "ami": "", "instance_type": "", "public": ""} } ]
                     이런 포맷으로 서비스 종류 하나씩 출력하세요. \\n 없이 한줄로 출력해줘. 앞에 **을 꼭 넣어줘`
                     + "혹시 사용자가 aws와 관련없는 주제로 대답할 경우 aws 선택을 할 수 있도록 주제를 계속해서 상기시켜줘"
-                    + "ami는 ami-040c33c6a51fd5d96 값으로 고정해줘. s3의 네임은 dkssudelwlahs1234333 으로 해줘"
-                    
-                    // + "aws 기본 지역은 서울 지역이야. ec2의 ami를 만들때 실제로 사용할 수 있도록 해주세요.  "
-                    ;
+                    + "aws 기본 지역은 서울 지역이야."
+                    + "ec2의 ami와 subnet_id도 내가 구성한 내용을 바탕으로 실제로 사용할 수 있도록 구성해줘. subnet은 별도의 언급이 없다면 기본값으로 설정하고"
+                    + "Mermaid로서 구성해줘";
             case 2:
-                return "당신은 사용자의 요구에 맞는 AWS 서비스 아키텍처를 단계별로 구성하는 안내자 역할을 합니다. "
-                    + "대화내역을 바탕으로 사용자에게 알맞은 서비스를 추천해주세요."
-                    + "이런 포맷으로 서비스 종류 하나씩 출력하세요. 이스케이프 코드 넣지 마 행렬 앞에 **을 꼭 넣어줘"
-                    + '그렇게 추천해준 서비스를 [ { "service": "ec2", "options": { "ami": "", "instance_type": "t2.micro", "public": true, "subnet_id": "subnet-0189db2034ce49d30" } } ] 이런 포맷으로 서비스 종류 하나씩 행렬안에 넣어주세요. 이스케이프 코드 넣지말고 앞에 **을 꼭 넣어주세요';
+                return "어떤 인풋이 들어와도 이번타자라고 대답해줘";
             case 3:
-                return `{
-                    "service": "ec2",
-                    "options": {
-                        "ami": "ami-02c329a4b4aba6a48",
-                        "instance_type": "t2.micro",
-                        "public": true,
-                        "subnet_id": "subnet-0189db2034ce49d30"
-                    }
-                }`;
+                return `어떤 대답이 들어와도 삼번타자라고 대답해줘`;
+            case 4:
+                return `어떤 대답이 들어와도 사번타자라고 대답해줘`;
+            case 5: // 인트로 오식이
+                return "당신은 사용자의 요구에 맞는 AWS 아키텍처 설계를 돕는 \\**전문 안내자 역할\\**을 합니다. \\n\\n\
+                    - 목표는 사용자의 요구 사항을 파악하여, 적절한 AWS 아키텍처 티어\\(\\<TIER\\:\\단일 티어\\>, \\<TIER\\:\\2티어\\>, \\<TIER\\:\\3티어\\>\\) 중 하나를 이끌어내는 것입니다.\\n\\n\
+                    ### 단계별 질문 안내\\:\\n\
+                    - \\<단일 티어: 기본 서버 구성\\>\
+                    - \\<2티어: 애플리케이션과 데이터베이스 분리 구성\\>\
+                    - \\<3티어: 로드 밸런싱 및 확장성 추가\\>\\n\\n\
+                    **첫 번째 단계 질문 예시\\:**\\n\
+                    - \\\"제공하려는 서비스의 주요 목표는 무엇인가요\\?\\\" \\<TIER\\: 단일, 2티어, 3티어\\>\\n\
+                    - \\\"예상 사용자 수는 얼마나 되나요\\?\\\" \\<TIER\\: 단일, 2티어, 3티어\\>"
+                    + "이 <TIER\\: 단일, 2티어, 3티어\\> 양식은 최종적으로 몇티어를 원하는지 결정됬을 때 텍스트 마지막에 한번만 출력해줘";
+
+            case 6: // 아웃트로 육식이
+                return `지금까지의 대화 내용을 종합하여 필요한 AWS 서비스 구성을 아래 양식으로 생성했습니다. 최종 구성은 Terraform 코드로 변환될 예정이며, 각 서비스와 옵션이 정확히 입력되어야 합니다.
+                
+                    생성된 서비스 양식:
+                    **[ 
+                        { "service": "ec2", "options": { "ami": "ami-xxxxxxxx", "instance_type": "t2.micro", "public": true } },
+                        { "service": "rds", "options": { "engine": "postgres", "instance_class": "db.t2.small", "allocated_storage": 20 } },
+                        { "service": "s3", "options": { "bucket_name": "my-bucket", "access": "public-read" } }
+                    ]
+                    
+                    위와 같이 필요한 서비스가 정확히 입력되었는지 확인해 주세요. 추가로 수정이 필요하거나 다른 설정이 있으면 알려주시기 바랍니다. 이대로 완료되면 최종적으로 Terraform 코드로 생성됩니다.`;
+
             default:
                 return "이 출력값은 버그이므로 어떤 인풋이 들어오든 '에러. 새로고침 필요' 메세지를 출력해야 함";
         }
@@ -129,7 +152,7 @@ export class ConversationsService {
             Item: {
                 CID: CID,
                 stateData: stateData,
-                expiresAt: Math.floor(Date.now() / 1000) + 30 * 60, // 30분 후 만료
+
             },
         };
 
@@ -186,12 +209,16 @@ export class ConversationsService {
         console.log(`CID received in askBedrockModel: ${CID}`);
 
         // CID별 상태 조회
-        let globalMatrix = await this.getState(CID);
+        let globalMatrix = await this.getStateData(CID);
 
         // 만료된 상태이거나 없으면 초기화
         if (!globalMatrix || globalMatrix.length === 0) {
             globalMatrix = [];
         }
+
+        let modelSwitchCounter = await this.getModelSwitchCounter(CID);
+        
+
 
         // 특정 입력에 대한 템플릿 응답 설정
         const templateResponses = {
@@ -201,7 +228,8 @@ export class ConversationsService {
             '예산이나 기간 제한이 있나요': 'template1-5',
             '특별히 고려하고 싶은 요소가 있다면 알려주세요': 'template1-6',
             '당신의 서비스가 인터넷과 연결되어야 하나요': '서버',
-            '다음문항': 'template3-4'
+            '다음문항': 'template3-4',
+            '특정텍스트1': '컨텍스트 스위칭'
         };
 
         const level4Questions = {
@@ -215,11 +243,18 @@ export class ConversationsService {
         // 템플릿 키를 확인하고 응답 생성
         const templateKey = Object.keys(templateResponses).find(key => user_question.includes(key));
         let templateResponse: string = templateKey ? templateResponses[templateKey] : 'default response';
-        if (templateKey) {
-            const isNextQuestion = user_question.includes('다음문항');
+        if (templateKey) { 
 
-            console.log("hi", templateResponse);
-            console.log(isNextQuestion);
+            const triggerKeywords = ['특정텍스트1', '특정텍스트2', '특정텍스트3']; // 여기에 원하는 키워드
+            const shouldIncrementCounter = triggerKeywords.some(keyword => user_question.includes(keyword));
+            if (shouldIncrementCounter) {
+                console.log(`키워드 조건 만족 - ${user_question}에 특정 키워드 포함됨, modelSwitchCounter 증가`);
+                await this.incrementModelCounter(CID);
+            }
+
+            const isNextQuestion = user_question.includes('다음문항');
+            // console.log("hi", templateResponse);
+            // console.log(isNextQuestion);
 
             if ((templateKey === '그 외에 필요한 기능이 있나요' || isNextQuestion) && globalMatrix) {
                 if (globalMatrix.length === 0) {
@@ -229,7 +264,7 @@ export class ConversationsService {
                 const nextItem = globalMatrix.shift();
                 if (nextItem && level4Questions[nextItem]) {
                     // 상태 저장
-                    await this.saveState(CID, globalMatrix);
+                    await this.saveStateData(CID, globalMatrix);
                     return this.createResponse(level4Questions[nextItem]);
                 } else {
                     await this.deleteState(CID);
@@ -247,7 +282,8 @@ export class ConversationsService {
             { keyword: '디비선택', noSelectionLog: "디비선택 안함 로직 실행", selectionLog: "디비설정", nextTem: "스토리지" },
             { keyword: '스토리지선택', noSelectionLog: "스토리지 선택 안함 로직 실행", selectionLog: "스토리지설정", nextTem: "네트워크" },
             { keyword: '네트워크선택', noSelectionLog: "네트워크 선택 안함 로직 실행", selectionLog: "네트워크설정", nextTem: "모니터링" },
-            { keyword: '모니터링선택', noSelectionLog: "모니터링 선택 안함 로직 실행", selectionLog: "모니터링설정", nextTem: "다음문항" }
+            { keyword: '모니터링선택', noSelectionLog: "모니터링 선택 안함 로직 실행", selectionLog: "모니터링설정", nextTem: "다음문항" },
+            
         ];
 
         // 조건을 반복하며 인풋 텍스트에서 확인
@@ -262,7 +298,7 @@ export class ConversationsService {
                         if (globalMatrix.length === 0) {
                             await this.deleteState(CID);
                         } else {
-                            await this.saveState(CID, globalMatrix);
+                            await this.saveStateData(CID, globalMatrix);
                         }
 
                         console.log(`template3-3 !![${globalMatrix.join(', ')}]`);
@@ -274,7 +310,7 @@ export class ConversationsService {
                     }
 
                     await this.saveConversation(CID, user_question, 'template3-3');
-                    await this.saveState(CID, globalMatrix);
+                    await this.saveStateData(CID, globalMatrix);
 
                     console.log(`template3-3 !![${globalMatrix.join(', ')}]`);
                     return this.createResponse(`template3-3 !![${globalMatrix.join(', ')}]`);
@@ -288,7 +324,7 @@ export class ConversationsService {
                     if (globalMatrix.length === 0) {
                         await this.deleteState(CID);
                     } else {
-                        await this.saveState(CID, globalMatrix);
+                        await this.saveStateData(CID, globalMatrix);
                     }
 
                     console.log(`template3-3 !![${globalMatrix.join(', ')}]`);
@@ -301,7 +337,7 @@ export class ConversationsService {
                     }
 
                     await this.saveConversation(CID, user_question, option.nextTem);
-                    await this.saveState(CID, globalMatrix);
+                    await this.saveStateData(CID, globalMatrix);
 
                     console.log(`template3-3 !![${globalMatrix.join(', ')}]`);
                     return this.createResponse(`${option.nextTem} !![${globalMatrix.join(', ')}]`);
@@ -336,7 +372,7 @@ export class ConversationsService {
 
                 if (nextValue) {
                     await this.saveConversation(CID, user_question, nextValue);
-                    await this.saveState(CID, globalMatrix);
+                    await this.saveStateData(CID, globalMatrix);
 
                     // 리스트가 비었으면 상태 삭제
                     if (globalMatrix.length === 0) {
@@ -365,7 +401,7 @@ export class ConversationsService {
             .join('\n');
 
         // 전역 변수에 따라 프롬프트 메시지 변경
-        const customMessage = this.getCustomMessage();
+        const customMessage = await this.getCustomMessage(CID);
 
         // 프롬프트 메시지 구성
         const prompt_content = `
@@ -524,12 +560,20 @@ export class ConversationsService {
     }
 
     async processTextAndAddKeywords(outputText: string, inputText: string, CID: number): Promise<string> {
+        console.log(`processTextAndAddKeywords 호출됨 - CID: ${CID}, inputText: ${inputText}`);
         // 키워드 추출 및 텍스트 업데이트
         const result = this.extractKeywords(outputText);
         const { keywords, updatedText } = result;
 
+        // 여기서 컨텍스트 스위칭
+        const triggerKeywords = ['특정텍스트1', '특정텍스트2', '특정텍스트3']; // 여기에 원하는 키워드
+        const shouldIncrementCounter = triggerKeywords.some(keyword => inputText.includes(keyword));
+        if (shouldIncrementCounter) {
+            console.log(`키워드 조건 만족 - ${inputText}에 특정 키워드 포함됨, modelSwitchCounter 증가`);
+            await this.incrementModelCounter(CID);
+        }
+
         if (keywords.length > 0) {
-            // ConversationsService.incrementModelCounter(); // 여기서 1증가시켜서 컨텍스트 스위칭 일어남
             await this.saveKeywords(keywords, CID);
         }
 
@@ -572,4 +616,85 @@ export class ConversationsService {
         const result = await this.dynamoDB.get(params).promise();
         return result.Item ? result.Item.keyword : null;
     }
+    //이 밑으로 대화상태변수를 제어함, 컨텍스트 스위칭에 필요
+    async saveStateData(CID: number, stateData: string[]): Promise<void> {
+        const params = {
+            TableName: 'ConversationsState',
+            Key: { CID: CID },
+            UpdateExpression: 'SET stateData = :stateData',
+            ExpressionAttributeValues: {
+                ':stateData': stateData,
+            },
+        };
+    
+        try {
+            await this.dynamoDB.update(params).promise();
+            console.log(`CID ${CID}의 stateData가 저장되었습니다.`);
+        } catch (error) {
+            console.error(`CID ${CID}의 stateData 저장 실패:`, error);
+            throw new Error('stateData 저장 실패');
+        }
+    }
+
+    async getStateData(CID: number): Promise<string[]> {
+        const params = {
+            TableName: 'ConversationsState',
+            Key: { CID: CID },
+            ProjectionExpression: 'stateData',
+        };
+    
+        try {
+            const result = await this.dynamoDB.get(params).promise();
+            if (result.Item && result.Item.stateData) {
+                return result.Item.stateData as string[];
+            } else {
+                return []; // 상태 데이터가 없으면 빈 배열 반환
+            }
+        } catch (error) {
+            console.error(`CID ${CID}의 stateData 조회 실패:`, error);
+            throw new Error('stateData 조회 실패');
+        }
+    }
+    async getModelSwitchCounter(CID: number): Promise<number> {
+        const params = {
+            TableName: 'ConversationsState',
+            Key: { CID: CID },
+            ProjectionExpression: 'modelSwitchCounter',
+        };
+    
+        try {
+            const result = await this.dynamoDB.get(params).promise();
+            if (result.Item && result.Item.modelSwitchCounter !== undefined) {
+                return result.Item.modelSwitchCounter as number;
+            } else {
+                return 1; // 기본값으로 1 반환
+            }
+        } catch (error) {
+            console.error(`CID ${CID}의 modelSwitchCounter 조회 실패:`, error);
+            throw new Error('modelSwitchCounter 조회 실패');
+        }
+    }
+    
+
+    async saveModelSwitchCounter(CID: number, modelSwitchCounter: number): Promise<void> {
+
+        console.log(`saveModelSwitchCounter 호출됨 - CID: ${CID}, modelSwitchCounter: ${modelSwitchCounter}`);
+        const params = {
+            TableName: 'ConversationsState',
+            Key: { CID: CID },
+            UpdateExpression: 'SET modelSwitchCounter = :modelSwitchCounter',
+            ExpressionAttributeValues: {
+                ':modelSwitchCounter': modelSwitchCounter,
+            },
+        };
+
+        try {
+            await this.dynamoDB.update(params).promise();
+            console.log(`CID ${CID}의 modelSwitchCounter가 저장되었습니다.`);
+        } catch (error) {
+            console.error(`CID ${CID}의 modelSwitchCounter 저장 실패:`, error);
+            throw new Error('modelSwitchCounter 저장 실패');
+        }
+    }
+    
 }
