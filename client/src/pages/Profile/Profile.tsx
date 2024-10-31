@@ -12,8 +12,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 
-import MermaidChart from "../../components/MermaidTest/mermaid";
-
 // 유저 프로필 타입 정의
 interface UserProfile {
   UID: number;

@@ -9,6 +9,7 @@ import { projectOneInfo } from "../../services/projects";
 import { review } from "../../services/terraforms";
 import { setReviewReady } from "../../store/loadingSlice";
 import { useDispatch } from "react-redux";
+import MermaidChart from "../../components/Mermaid/mermaid";
 
 interface Project {
   PID: number;
@@ -40,7 +41,19 @@ const Home: React.FC<HomeProps> = ({ finishData, setFinishData }) => {
   const { pid } = useParams<{ pid: string }>();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const chartCode: string = `
+  architecture-beta
+    group api(cloud)[API]
 
+    service db(database)[Database] in api
+    service disk1(disk)[Storage] in api
+    service disk2(disk)[Storage] in api
+    service server(server)[Server] in api
+
+    db:L -- R:server
+    disk1:T -- B:server
+    disk2:T -- B:db
+`;
   useEffect(() => {
     const fetchProjectData = async () => {
       try {
@@ -82,7 +95,9 @@ const Home: React.FC<HomeProps> = ({ finishData, setFinishData }) => {
       navigate(`/review/${cid}`, { state: { isReviewReady: false } });
     } catch (error) {
       console.error("review API 호출 실패:", error);
-      alert("Terraform 상태 업데이트에 실패했습니다. 네트워크 연결을 확인하거나, 잠시 후 다시 시도해 주세요.");
+      alert(
+        "Terraform 상태 업데이트에 실패했습니다. 네트워크 연결을 확인하거나, 잠시 후 다시 시도해 주세요."
+      );
       navigate(`/home/${pid}`);
     }
   };
@@ -99,24 +114,22 @@ const Home: React.FC<HomeProps> = ({ finishData, setFinishData }) => {
     <div className="home">
       {/* 슬라이드바 삭제 */}
       {/* <SideBar isOpen={isOpen} setIsOpen={setIsOpen} /> */}
-      <Chat
-        projectCID={project!.CID}
-        onFinishData={handleFinishData}
-      />
+      <Chat projectCID={project!.CID} onFinishData={handleFinishData} />
       <div className="vertical-line"></div>
       <div className="right-side">
         <div className="project-name-container">
           <h1 className="project-name">Project: {project!.projectName}</h1>
         </div>
-
+        <MermaidChart chartCode={chartCode}></MermaidChart>
         {/* <ReactFlowProvider>
           <Board parsedData={parsedData} finishData={finishData} />
         </ReactFlowProvider> */}
         <div className="review-btn-container">
           <button
             onClick={handleFinish}
-            className={`review-btn-${finishData.length === 0 ? "disabled" : "enabled"
-              }`}
+            className={`review-btn-${
+              finishData.length === 0 ? "disabled" : "enabled"
+            }`}
             disabled={finishData.length === 0}
           >
             Review

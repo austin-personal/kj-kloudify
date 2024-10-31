@@ -8,7 +8,7 @@ import { faCloudArrowDown } from "@fortawesome/free-solid-svg-icons";
 import { download, review } from "../../services/terraforms";
 import { useLocation, useParams } from "react-router-dom";
 import { useAppSelector } from "../../store/hooks";
-
+import MermaidChart from "../../components/Mermaid/mermaid";
 interface ReviewProps {
   finishData: string[];
 }
@@ -21,6 +21,20 @@ const Review: React.FC<ReviewProps> = ({ finishData }) => {
   const [nodes, setNodes] = useState<any[]>([]); //node 정보 저장된 것 불러오기위해 상태끌어올림
   const boardRef = useRef<{ takeScreenshot: () => void } | null>(null);
   const token = localStorage.getItem("token") ?? "";
+
+  const chartCode: string = `
+  architecture-beta
+    group api(cloud)[API]
+
+    service db(database)[Database] in api
+    service disk1(disk)[Storage] in api
+    service disk2(disk)[Storage] in api
+    service server(server)[Server] in api
+
+    db:L -- R:server
+    disk1:T -- B:server
+    disk2:T -- B:db
+`;
 
   const handleScreenshot = () => {
     if (boardRef.current) {
@@ -63,7 +77,8 @@ const Review: React.FC<ReviewProps> = ({ finishData }) => {
   return (
     <div className="review">
       <div className="review-board">
-        <ReactFlowProvider>
+        <MermaidChart chartCode={chartCode}></MermaidChart>
+        {/* <ReactFlowProvider>
           <Board
             ref={boardRef}
             height="100%"
@@ -71,7 +86,7 @@ const Review: React.FC<ReviewProps> = ({ finishData }) => {
             parsedData={[]}
             finishData={finishData}
           />
-        </ReactFlowProvider>
+        </ReactFlowProvider> */}
         <div className="download">
           <div
             className="download-container"
