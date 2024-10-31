@@ -12,8 +12,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 
-import MermaidChart from "../../components/MermaidTest/mermaid";
-
 // 유저 프로필 타입 정의
 interface UserProfile {
   UID: number;
@@ -133,7 +131,7 @@ const Profile: React.FC = () => {
 
   const handleProjectClick = (PID: number, isDeployed: boolean) => {
     if (isDeployed) {
-      navigate(`/history/${PID}`);
+      navigate(`/detail/${PID}`);
     } else {
       navigate(`/home/${PID}`);
     }
@@ -147,6 +145,10 @@ const Profile: React.FC = () => {
   const handleAWSKeyDeleteClick = () => {
     setModalType("deleteAWSKey"); // 모달 타입 설정
     setShowDeleteModal(true); // 모달 띄우기
+  };
+
+  const handleAWSKeySubmitClick = () => {
+    navigate("/guide");
   };
 
   const handleConfirmDelete = async () => {
@@ -190,15 +192,20 @@ const Profile: React.FC = () => {
     <div className="profile-page">
       {/* 상단 프로필 섹션 */}
       <div className="profile-info">
-        <div className="profile-text">
-          <h2>{userProfile.username}</h2>
-          <p>{userProfile.email}</p>
+        <div className="profile-left">
+          <img
+            src="https://www.shareicon.net/data/512x512/2016/08/05/806962_user_512x512.png"
+            className="profile-photo"
+          />
+          <div className="profile-text">
+            <h2>{userProfile.username}</h2>
+            <p>{userProfile.email}</p>
+          </div>
         </div>
-        <div className="profile-button">
+
+        {hasSecret ? (
           <button
-            className={`AWS-Credential-deleteButton ${
-              hasSecret ? "visible-btn" : "hidden-btn"
-            }`}
+            className="AWS-Credential-btn delete"
             onClick={(e) => {
               e.stopPropagation();
               handleAWSKeyDeleteClick();
@@ -206,7 +213,16 @@ const Profile: React.FC = () => {
           >
             AWS Key 삭제
           </button>
-        </div>
+        ) : (
+          <button
+            className="AWS-Credential-btn create"
+            onClick={(e) => {
+              handleAWSKeySubmitClick();
+            }}
+          >
+            AWS key 입력
+          </button>
+        )}
       </div>
       <hr className="userProfile-line-th" />
       {/* 하단 프로젝트 리스트 섹션 */}
@@ -240,13 +256,13 @@ const Profile: React.FC = () => {
                       className="dropdown-item"
                       onClick={() => handleFilterChange("deployed")}
                     >
-                      Deployed 보기
+                      Deploy 완료
                     </div>
                     <div
                       className="dropdown-item"
                       onClick={() => handleFilterChange("inProgress")}
                     >
-                      In-progress 보기
+                      Deploy 진행중
                     </div>
                   </div>
                 )}
