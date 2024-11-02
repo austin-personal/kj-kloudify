@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // 태현 api 주소 확인!!!
-const API_URL = 'http://localhost:3000/users';
+const API_URL = `${process.env.REACT_APP_SERVER_URL}/users`;
 
 export const signup = async (username: string, email: string, password: string) => {
     try {

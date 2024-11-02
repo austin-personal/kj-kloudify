@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // 태현 api 주소 확인!!!
-const API_URL = 'http://localhost:3000/terraforms';
+const API_URL = `${process.env.REACT_APP_SERVER_URL}/terraforms`;
 
 export const create = async () => {
     try {
@@ -14,10 +14,17 @@ export const create = async () => {
     }
 };
 
-export const destroy = async () => {
+export const destroy = async (cid: number, token: string | null) => {
     try {
         // 태현 api 주소 확인!!!
-        const response = await axios.post(`${API_URL}/destroy`, {});
+        const response = await axios.post(`${API_URL}/destroy`, {
+            CID: cid,
+        },
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
         return response.data;
     } catch (error) {
         console.error('클라우드 중지 개박살!! :', error);
@@ -92,3 +99,4 @@ export const download = async (cid: number, token: string) => {
         throw error;
     }
 }
+

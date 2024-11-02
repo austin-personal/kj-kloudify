@@ -68,13 +68,18 @@ export class ConversationsService {
         console.log(`getCustomMessage 호출됨 - CID: ${CID}, modelSwitchCounter: ${modelSwitchCounter}`);
 
         switch (modelSwitchCounter % 6) {
-            case 0:
-                return "당신은 사용자의 요구에 맞는 AWS 서비스 아키텍처를 단계별로 구성하는 안내자 역할을 합니다. "
-                    + "대화를 주도하며 필요한 경우 추가 질문을 통해 사용자의 요구사항을 명확히 하세요. "
-                    + "질문에 대해 뭔가 만들고싶다고 요청할 시 필요한 서비스를 목록화 해서 짧게 대답해줘. 문장을 완성하지말고 키워드만 언급하면서"
-                    + "예시) [짧은 설명 텍스트] \n 1. EC2 - [인스턴스 이름 ex)t2.micro] : [선정한 이유] \n"
-                    + "예시 텍스트에서 [짧은 설명 텍스트]에는 짧게 전체적인 설명을 해주고 [선정한 이유]에는 해당 인스턴스에 대한 짧은 설명 부탁해. 중괄호는 출력하지 않아도 돼"
-                    + "만약 사용자가 특정 서비스를 선택하는 메세지를 전송 시 긍정해주는 메세지를 보내줘.";
+            case 0: // 인트로 오식이
+                return `당신은 사용자의 요구에 맞는 AWS 아키텍처 설계를 돕는 전문 안내자 역할을 합니다.
+
+                        목표는 사용자의 요구 사항을 파악하여, 필요한 AWS 서비스의 종류와 개수를 결정하고 이를 mermaid 코드로 간략하게 나타내는 것입니다.
+                        대화 내역 안내:
+                        사용자의 목표와 요구 사항을 이해합니다.
+                        필요한 AWS 서비스들을 식별합니다.
+                        각 서비스 간의 관계를 파악합니다.
+                        대화 내역을 전부 참고하여 질문에 맞지 않는 대답이 있다면 해당 질문을 다시 되물어서 정확한 정보를 얻도록 해주세요.
+
+                        마지막으로 구성된 정보가 마무리되었다면 mermaid 코드로서 ** 양식을 붙여서 보내주세요. \n 없이 한 줄로 출력해주세요. 앞에 **을 꼭 넣어주세요.`
+
             case 1:
                 return "당신은 사용자의 요구에 맞는 AWS 서비스 아키텍처를 단계별로 구성하는 안내자 역할을 합니다."
                     + "저비용을 원할 경우 프리 티어 등급의 서비스를 적극적으로 추천해줘"
@@ -82,16 +87,17 @@ export class ConversationsService {
                     + `**[ { "service": "", "options": { "ami": "", "instance_type": "", "public": ""} } ]
                     이런 포맷으로 서비스 종류 하나씩 출력하세요. \\n 없이 한줄로 출력해줘. 앞에 **을 꼭 넣어줘`
                     + "혹시 사용자가 aws와 관련없는 주제로 대답할 경우 aws 선택을 할 수 있도록 주제를 계속해서 상기시켜줘"
-                    + "aws 기본 지역은 서울 지역이야."
+                    + "aws 기본 지역은 서울 지역이야. 해당 지역에 맞는 ami로 작성해줘."
                     + "ec2의 ami와 subnet_id도 내가 구성한 내용을 바탕으로 실제로 사용할 수 있도록 구성해줘. subnet은 별도의 언급이 없다면 기본값으로 설정하고"
-                    + "Mermaid로서 구성해줘";
+                    + "Mermaid로서 구성해줘"
+                    + "S3은 특별한 목적이 없다면 private하게 해줘";
             case 2:
                 return "어떤 인풋이 들어와도 이번타자라고 대답해줘";
             case 3:
                 return `어떤 대답이 들어와도 삼번타자라고 대답해줘`;
             case 4:
                 return `어떤 대답이 들어와도 사번타자라고 대답해줘`;
-            case 5: // 인트로 오식이
+            case 5: 
                 return "당신은 사용자의 요구에 맞는 AWS 아키텍처 설계를 돕는 \\**전문 안내자 역할\\**을 합니다. \\n\\n\
                     - 목표는 사용자의 요구 사항을 파악하여, 적절한 AWS 아키텍처 티어\\(\\<TIER\\:\\단일 티어\\>, \\<TIER\\:\\2티어\\>, \\<TIER\\:\\3티어\\>\\) 중 하나를 이끌어내는 것입니다.\\n\\n\
                     ### 단계별 질문 안내\\:\\n\
@@ -220,30 +226,41 @@ export class ConversationsService {
         
 
 
-        // 특정 입력에 대한 템플릿 응답 설정
+        // 특정 입력에 대한 템플릿 응답 설정 - 여기선 해당 질문에 좌표 찍어주는 역할
         const templateResponses = {
-            '이 프로젝트의 최종 목표는 무엇인가요': 'template1-2',
-            '클라우드에서 가장 필요한 기능이나 역할은 무엇인가요': 'template1-3',
-            '이 프로젝트를 이용할 예상 사용자 수는 얼마나 되나요': 'template1-4',
-            '예산이나 기간 제한이 있나요': 'template1-5',
-            '특별히 고려하고 싶은 요소가 있다면 알려주세요': 'template1-6',
-            '당신의 서비스가 인터넷과 연결되어야 하나요': '서버',
-            '다음문항': 'template3-4',
-            '특정텍스트1': '컨텍스트 스위칭'
-        };
+            '먼저, 당신의 웹서비스에 대해 알고 싶어요': 'template1-2',
+            '당신의 웹서비스 규모에 대해 알고 싶어요': 'template1-3',
+            '당신의 예산과 비용 관리 계획은 어떻게 되나요': 'template1-4',
+            '추가적인 무언가가 필요한가요': 'template1-5',
+            // '당신의 웹서비스는 어떤 클라우드 기술이 필요한가요': '질문의 끝',
 
+            '애플리케이션의 워크로드 특성이 있나요': 'template2-2',
+            '어떠한 서버 타입이 필요하시나요': 'template2-3',
+            '가장 중요한 가치는 무엇인가요': '질문의 끝',
+
+            '데이터베이스 유형이 어떻게 되나요': 'template3-2',
+            '추가적인 데이터베이스 정보를 알려주세요': '질문의 끝',
+
+            '스토리지의 사용 패턴은 어떻게 되나요': 'template4-2',
+            '스토리지의 사용 목적은 무엇인가요': 'template4-3',
+            '스토리지에서 가장 중요한 가치는 무엇인가요': '질문의 끝',
+
+            '애플리케이션의 네트워크 요구사항은 무엇인가요': '마지막 질문',
+
+            '특정텍스트1': '컨텍스트 스위칭' // 여기서 답변 매칭해줌
+        };
+        // 이 질문의 역할은? - 아 메트릭스에서 나온 키워드에 따라 다음 질문을 매핑하는 역할. 즉, 각 스테이지의 첫 질문 트리거
         const level4Questions = {
-            '디비': '데이터베이스의 주요 기준을 선택하세요',
-            '서버': '서버의 주요 기준을 선택하세요',
-            '스토리지': '저장 공간의 주요 기준을 선택하세요',
-            '네트워크': '네트워크 구성에서 중요하게 여기는 기준을 선택하세요',
-            '모니터링': '모니터링과 로그 관리의 주요 기준을 선택하세요',
+            '디비': '데이터베이스 유형이 어떻게 되나요',
+            '서버': '애플리케이션의 워크로드 특성이 있나요',
+            '스토리지': '스토리지의 사용 패턴은 어떻게 되나요',
+            '네트워크': '애플리케이션의 네트워크 요구사항은 무엇인가요',
         };
 
         // 템플릿 키를 확인하고 응답 생성
         const templateKey = Object.keys(templateResponses).find(key => user_question.includes(key));
         let templateResponse: string = templateKey ? templateResponses[templateKey] : 'default response';
-        if (templateKey) { 
+        if (templateKey) {
 
             const triggerKeywords = ['특정텍스트1', '특정텍스트2', '특정텍스트3']; // 여기에 원하는 키워드
             const shouldIncrementCounter = triggerKeywords.some(keyword => user_question.includes(keyword));
@@ -253,8 +270,6 @@ export class ConversationsService {
             }
 
             const isNextQuestion = user_question.includes('다음문항');
-            // console.log("hi", templateResponse);
-            // console.log(isNextQuestion);
 
             if ((templateKey === '그 외에 필요한 기능이 있나요' || isNextQuestion) && globalMatrix) {
                 if (globalMatrix.length === 0) {
@@ -276,14 +291,14 @@ export class ConversationsService {
             await this.saveConversation(CID, user_question, templateResponse);
             return this.createResponse(templateResponse);
         }
-
+        // 기존 - 선택지에 따라서 필요없음이 나오지 않는 한 리스트에 수동으로 추가하던 로직 -> 스테이지0 5번질문에서 선택한대로 리스트 생성해야함
         const options = [
             { keyword: '서버선택', noSelectionLog: "서버선택 안함 로직 실행", selectionLog: "서버설정", nextTem: "디비" },
             { keyword: '디비선택', noSelectionLog: "디비선택 안함 로직 실행", selectionLog: "디비설정", nextTem: "스토리지" },
             { keyword: '스토리지선택', noSelectionLog: "스토리지 선택 안함 로직 실행", selectionLog: "스토리지설정", nextTem: "네트워크" },
             { keyword: '네트워크선택', noSelectionLog: "네트워크 선택 안함 로직 실행", selectionLog: "네트워크설정", nextTem: "모니터링" },
             { keyword: '모니터링선택', noSelectionLog: "모니터링 선택 안함 로직 실행", selectionLog: "모니터링설정", nextTem: "다음문항" },
-            
+             
         ];
 
         // 조건을 반복하며 인풋 텍스트에서 확인
@@ -534,30 +549,27 @@ export class ConversationsService {
         return { keywords: matches, updatedText: updatedText.trim() };
     }
 
-    // 기존 키워드와 새로 추출한 키워드를 모두 누적 저장하는 함수
-    async saveKeywords(keywords: string[], CID: number): Promise<void> {
-        // 기존 키워드를 먼저 불러오기
-        let existingKeywords = await this.fetchExistingKeywords(CID);
+// 기존 키워드를 누적하지 않고 새로운 키워드로 덮어쓰는 함수
+async saveKeywords(keywords: string[], CID: number): Promise<void> {
+    // 새로운 키워드를 문자열로 결합
+    const newKeywords = keywords.join(', ');
 
-        // 새로운 키워드를 기존 키워드에 추가하여 문자열로 결합
-        const combinedKeywords = existingKeywords ? `${existingKeywords}, ${keywords.join(', ')}` : keywords.join(', ');
-
-        const params = {
-            TableName: 'Archboard_keyword',
-            Item: {
-                CID: CID,
-                keyword: combinedKeywords,
-                timestamp: new Date().toISOString(),
-            }
-        };
-
-        try {
-            await this.dynamoDB.put(params).promise();
-            console.log(`키워드 저장 성공: ${combinedKeywords}`);
-        } catch (error) {
-            console.error(`키워드 저장 실패: ${error.message}`);
+    const params = {
+        TableName: 'Archboard_keyword',
+        Item: {
+            CID: CID,
+            keyword: newKeywords,
+            timestamp: new Date().toISOString(),
         }
+    };
+
+    try {
+        await this.dynamoDB.put(params).promise();
+        console.log(`키워드 저장 성공: ${newKeywords}`);
+    } catch (error) {
+        console.error(`키워드 저장 실패: ${error.message}`);
     }
+}
 
     async processTextAndAddKeywords(outputText: string, inputText: string, CID: number): Promise<string> {
         console.log(`processTextAndAddKeywords 호출됨 - CID: ${CID}, inputText: ${inputText}`);
@@ -667,7 +679,7 @@ export class ConversationsService {
             if (result.Item && result.Item.modelSwitchCounter !== undefined) {
                 return result.Item.modelSwitchCounter as number;
             } else {
-                return 1; // 기본값으로 1 반환
+                return 0; // 기본값으로 1 반환
             }
         } catch (error) {
             console.error(`CID ${CID}의 modelSwitchCounter 조회 실패:`, error);

@@ -1,6 +1,6 @@
 .review {
   display: flex;
-  margin: 90px 50px 0 50px;
+  margin: 0px 50px 0 50px;
 }
 
 .vertical-line {
@@ -10,7 +10,10 @@
 .review-board {
   flex: 2;
   margin-right: 20px;
-  margin-bottom: 80px;
+}
+
+.mermaid {
+  margin-top: 90px;
 }
 
 .download {
@@ -38,7 +41,6 @@
   padding: 10px 20px;
   cursor: pointer;
   font-size: 24px;
-  z-index: 2;
   position: relative;
 }
 

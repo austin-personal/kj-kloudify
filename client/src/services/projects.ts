@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // 태현 api 주소 확인!!!
-const API_URL = 'http://localhost:3000/projects';
+const API_URL = `${process.env.REACT_APP_SERVER_URL}/projects`;
 
 export const create = async (projectName: string,token: string) => {
     try {

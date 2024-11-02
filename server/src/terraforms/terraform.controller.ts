@@ -85,4 +85,18 @@ export class TerraformController {
     }
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Post('state')
+  async getState(@Body() deployDto: DeployDto, @Req() req) {
+    const email = req.user.email;
+    const userInfo = await this.usersService.findOneByEmail(email); // 이메일로 사용자 조회
+    const userId = userInfo.UID;
+
+    try {
+      const result = await this.terraformService.getInfrastructureState(deployDto.CID, userId);
+      return result;
+    } catch (error) {
+      throw new InternalServerErrorException(`Failed to retrieve state for CID: ${deployDto.CID}`);
+    }
+  }
 }
