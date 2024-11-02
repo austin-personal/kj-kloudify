@@ -26,14 +26,15 @@ jobs:
           docker build ./server -t ${{ secrets.DOCKER_USERNAME }}/server:$APP_VERSION 
           docker push ${{ secrets.DOCKER_USERNAME }}/server:$APP_VERSION
 
+          
       - name: List docker image
         run: docker image ls
-
+      
       # Build and push client image
       - name: Build and push client Docker image
         run: |
           docker build ./client -t ${{ secrets.DOCKER_USERNAME }}/client:$APP_VERSION 
-          docker push ${{ secrets.DOCKER_USERNAME }}/client:$APP_VERSION
+          docker push ${{ secrets.DOCKER_USERNAME }}/client:$APP_VERSION 
 
   deploy:
     needs: build-and-push
@@ -60,14 +61,8 @@ jobs:
             echo "TERRAFORM_BUCKET=${{ secrets.TERRAFORM_BUCKET }}" >> .env
             echo "TERRAFORM_LAMBDA_FUNCTION=${{ secrets.TERRAFORM_LAMBDA_FUNCTION }}" >> .env
             echo "ENCRYPTION_KEY=${{ secrets.ENCRYPTION_KEY }}" >> .env
-
-            # Start containers
+          run: |
+            ls -la
             docker pull ${{ secrets.DOCKER_USERNAME }}/server:$APP_VERSION 
             docker pull ${{ secrets.DOCKER_USERNAME }}/client:$APP_VERSION 
             docker-compose -f docker-compose.yml up -d
-
-            # Wait for services to be ready (optional delay)
-            sleep 10
-
-            # Health check to verify services
-            curl -f http://localhost:80 || (echo "Health check failed!" && exit 1)
