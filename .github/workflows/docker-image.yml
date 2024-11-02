@@ -41,6 +41,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Check APP_VERSION
+        run: echo $APP_VERSION
       - name: SSH and Deploy on EC2
         uses: appleboy/ssh-action@master
         with:
@@ -63,8 +65,9 @@ jobs:
             echo "TERRAFORM_LAMBDA_FUNCTION=${{ secrets.TERRAFORM_LAMBDA_FUNCTION }}" >> .env
             echo "ENCRYPTION_KEY=${{ secrets.ENCRYPTION_KEY }}" >> .env
             
-            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/server:$APP_VERSION || echo "Failed to pull server image"
-            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/client:$APP_VERSION || echo "Failed to pull client image"
+
+            sudo docker pull ausitn/server:$APP_VERSION || echo "Failed to pull server image"
+            sudo docker pull ausitn/client:$APP_VERSION || echo "Failed to pull client image"
 
             sudo docker-compose -f docker-compose.yml up -d
             docker image ls
