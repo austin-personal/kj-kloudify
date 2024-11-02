@@ -14,11 +14,11 @@ export class ConversationsController {
     return response;
   }
 
-  @Post('increment')
-  incrementCounter(): string {
-      ConversationsService.incrementModelCounter();
-      return `Counter incremented to ${ConversationsService.modelSwitchCounter}`;
-  }
+  // @Post('increment')
+  // incrementCounter(): string {
+  //     ConversationsService.incrementModelCounter();
+  //     return `Counter incremented to ${ConversationsService.modelSwitchCounter}`;
+  // }
 
   @Post('open')
   async openConversation(@Body('CID') CID: number): Promise<any> {

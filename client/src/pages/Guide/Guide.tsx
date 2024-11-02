@@ -51,7 +51,7 @@ const Guide: React.FC = () => {
         region={region}
         setRegion={setRegion}
       />
-      <div className="vertical-line"></div>
+      <div className="vertical-line-guide-th"></div>
       <GuideForm handleSubmit={handleSubmit} />
     </div>
   );
