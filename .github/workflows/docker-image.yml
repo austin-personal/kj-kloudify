@@ -66,8 +66,8 @@ jobs:
             echo "ENCRYPTION_KEY=${{ secrets.ENCRYPTION_KEY }}" >> .env
             
 
-            sudo docker pull ausitn/server:$APP_VERSION || echo "Failed to pull server image"
-            sudo docker pull ausitn/client:$APP_VERSION || echo "Failed to pull client image"
+            sudo docker pull ausitn/server 
+            sudo docker pull ausitn/client 
 
             sudo docker-compose -f docker-compose.yml up -d
             docker image ls
