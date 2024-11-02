@@ -69,17 +69,16 @@ export class ConversationsService {
 
         switch (modelSwitchCounter % 6) {
             case 0: // 인트로 오식이
-                return "당신은 사용자의 요구에 맞는 AWS 아키텍처 설계를 돕는 \\**전문 안내자 역할\\**을 합니다. \\n\\n\
-                    - 목표는 사용자의 요구 사항을 파악하여, 적절한 AWS 아키텍처 티어\\(\\<TIER\\:\\단일 티어\\>, \\<TIER\\:\\2티어\\>, \\<TIER\\:\\3티어\\>\\) 중 하나를 이끌어내는 것입니다.\\n\\n\
-                    ### 단계별 질문 안내\\:\\n\
-                    - \\<단일 티어: 기본 서버 구성\\>\
-                    - \\<2티어: 애플리케이션과 데이터베이스 분리 구성\\>\
-                    - \\<3티어: 로드 밸런싱 및 확장성 추가\\>\\n\\n\
-                    **첫 번째 단계 질문 예시\\:**\\n\
-                    - \\\"제공하려는 서비스의 주요 목표는 무엇인가요\\?\\\" \\<TIER\\: 단일, 2티어, 3티어\\>\\n\
-                    - \\\"예상 사용자 수는 얼마나 되나요\\?\\\" \\<TIER\\: 단일, 2티어, 3티어\\>"
-                    + "이 <TIER\\: 단일, 2티어, 3티어\\> 양식은 최종적으로 몇티어를 원하는지 결정됬을 때 텍스트 마지막에 한번만 출력해줘"
-                    + "마지막으로 구성된 정보를 mermaid코드로서 **[] 양식에 담아서 보내줘. \\n 없이 한줄로 출력해줘. 앞에 **을 꼭 넣어줘";
+                return `당신은 사용자의 요구에 맞는 AWS 아키텍처 설계를 돕는 전문 안내자 역할을 합니다.
+
+                        목표는 사용자의 요구 사항을 파악하여, 필요한 AWS 서비스의 종류와 개수를 결정하고 이를 mermaid 코드로 간략하게 나타내는 것입니다.
+                        대화 내역 안내:
+                        사용자의 목표와 요구 사항을 이해합니다.
+                        필요한 AWS 서비스들을 식별합니다.
+                        각 서비스 간의 관계를 파악합니다.
+                        대화 내역을 전부 참고하여 질문에 맞지 않는 대답이 있다면 해당 질문을 다시 되물어서 정확한 정보를 얻도록 해주세요.
+
+                        마지막으로 구성된 정보가 마무리되었다면 mermaid 코드로서 **[] 양식에 담아서 보내주세요. \n 없이 한 줄로 출력해주세요. 앞에 **을 꼭 넣어주세요.`
 
             case 1:
                 return "당신은 사용자의 요구에 맞는 AWS 서비스 아키텍처를 단계별로 구성하는 안내자 역할을 합니다."
@@ -90,8 +89,8 @@ export class ConversationsService {
                     + "혹시 사용자가 aws와 관련없는 주제로 대답할 경우 aws 선택을 할 수 있도록 주제를 계속해서 상기시켜줘"
                     + "aws 기본 지역은 서울 지역이야. 해당 지역에 맞는 ami로 작성해줘."
                     + "ec2의 ami와 subnet_id도 내가 구성한 내용을 바탕으로 실제로 사용할 수 있도록 구성해줘. subnet은 별도의 언급이 없다면 기본값으로 설정하고"
-                    + "Mermaid로서 구성해줘";
-                    + "S3은 특별한 목적이 없다면 private하게 해줘"
+                    + "Mermaid로서 구성해줘"
+                    + "S3은 특별한 목적이 없다면 private하게 해줘";
             case 2:
                 return "어떤 인풋이 들어와도 이번타자라고 대답해줘";
             case 3:
@@ -550,30 +549,27 @@ export class ConversationsService {
         return { keywords: matches, updatedText: updatedText.trim() };
     }
 
-    // 기존 키워드와 새로 추출한 키워드를 모두 누적 저장하는 함수
-    async saveKeywords(keywords: string[], CID: number): Promise<void> {
-        // 기존 키워드를 먼저 불러오기
-        let existingKeywords = await this.fetchExistingKeywords(CID);
+// 기존 키워드를 누적하지 않고 새로운 키워드로 덮어쓰는 함수
+async saveKeywords(keywords: string[], CID: number): Promise<void> {
+    // 새로운 키워드를 문자열로 결합
+    const newKeywords = keywords.join(', ');
 
-        // 새로운 키워드를 기존 키워드에 추가하여 문자열로 결합
-        const combinedKeywords = existingKeywords ? `${existingKeywords}, ${keywords.join(', ')}` : keywords.join(', ');
-
-        const params = {
-            TableName: 'Archboard_keyword',
-            Item: {
-                CID: CID,
-                keyword: combinedKeywords,
-                timestamp: new Date().toISOString(),
-            }
-        };
-
-        try {
-            await this.dynamoDB.put(params).promise();
-            console.log(`키워드 저장 성공: ${combinedKeywords}`);
-        } catch (error) {
-            console.error(`키워드 저장 실패: ${error.message}`);
+    const params = {
+        TableName: 'Archboard_keyword',
+        Item: {
+            CID: CID,
+            keyword: newKeywords,
+            timestamp: new Date().toISOString(),
         }
+    };
+
+    try {
+        await this.dynamoDB.put(params).promise();
+        console.log(`키워드 저장 성공: ${newKeywords}`);
+    } catch (error) {
+        console.error(`키워드 저장 실패: ${error.message}`);
     }
+}
 
     async processTextAndAddKeywords(outputText: string, inputText: string, CID: number): Promise<string> {
         console.log(`processTextAndAddKeywords 호출됨 - CID: ${CID}, inputText: ${inputText}`);
