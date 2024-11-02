@@ -69,9 +69,9 @@ jobs:
             echo "TERRAFORM_LAMBDA_FUNCTION=${{ secrets.TERRAFORM_LAMBDA_FUNCTION }}" >> .env
             echo "ENCRYPTION_KEY=${{ secrets.ENCRYPTION_KEY }}" >> .env
             
-
-            sudo docker pull ausitn/server 
-            sudo docker pull ausitn/client 
+            docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
+            sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/server 
+            sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/client 
 
             sudo docker-compose -f docker-compose.yml up -d
             docker image ls
