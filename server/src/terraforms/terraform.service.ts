@@ -77,6 +77,7 @@ export class TerraformService {
      <Terraform Code>
      \`\`\`
       6. region is np-northeast-2.
+      7. please make s3 privately.
       `;
 
     // 베드락 설정
@@ -442,5 +443,221 @@ export class TerraformService {
     console.log('Project Name:', projectName);
     return projectName;
   }
+
+  async getInfrastructureState(CID: number, userId: number): Promise<any> {
+    const localTerraformPath = `/temp/${CID}`;
+    const stateFilePath = `${localTerraformPath}/terraform.tfstate`;
+  
+    // awsCliPath를 함수 상단으로 이동
+    const awsCliPath = "C:/Program Files/Amazon/AWSCLIV2/aws";
+  
+    try {
+      // 상태 파일이 존재하는지 확인
+      if (!fs.existsSync(stateFilePath)) {
+        throw new Error(`State file not found for CID: ${CID}`);
+      }
+  
+      // AWS 자격 증명 및 옵션 설정
+      const { accessKey, secretAccessKey } = await this.secretsService.getUserCredentials(userId);
+      const options = {
+        env: {
+          AWS_ACCESS_KEY_ID: accessKey,
+          AWS_SECRET_ACCESS_KEY: secretAccessKey,
+        },
+      };
+  
+      // Terraform state list 명령어 실행
+      console.log(`Executing: terraform -chdir=${localTerraformPath} state list`);
+      const listOutputBuffer = execSync(`terraform -chdir=${localTerraformPath} state list`);
+      const stateList = listOutputBuffer.toString().split('\n').filter(line => line.trim() !== '');
+  
+      // 리소스 타입 추출 함수
+      function getResourceType(resourceAddress: string): string | null {
+        const parts = resourceAddress.split('.');
+        for (let i = 0; i < parts.length; i++) {
+          if (parts[i].startsWith('aws_')) {
+            return parts[i];
+          }
+        }
+        return null;
+      }
+  
+      // 각 리소스에 대해 비동기적으로 state show 명령어 실행
+      const detailedStates = await Promise.all(stateList.map(async resource => {
+        console.log(`Retrieving details for: ${resource}`);
+        const detailOutputBuffer = execSync(`terraform -chdir=${localTerraformPath} state show ${resource}`);
+        const details = detailOutputBuffer.toString();
+  
+        const resourceType = getResourceType(resource);
+  
+        let instanceState: any = {}; // 여기서 instanceState를 빈 객체로 초기화
+  
+        let resourceId: string | null = null;
+  
+        if (resourceType === "aws_instance") {
+          // EC2 인스턴스 ID 추출
+          const instanceIdMatch = details.match(/id\s+=\s+"(i-[a-zA-Z0-9]+)"/);
+          if (instanceIdMatch) {
+            resourceId = instanceIdMatch[1];
+            console.log(`Extracted Instance ID: ${resourceId}`);
+  
+            // EC2 인스턴스 상태 정보 가져오기
+            console.log(`Executing: aws ec2 describe-instances --instance-ids ${resourceId}`);
+            try {
+              const stateOutputBuffer = execSync(`"${awsCliPath}" ec2 describe-instances --instance-ids ${resourceId} --region ap-northeast-2`, options);
+              instanceState = JSON.parse(stateOutputBuffer.toString());
+              console.log('Instance state:', instanceState);
+            } catch (awsError) {
+              console.error(`Error retrieving EC2 instance state for ${resourceId}:`, awsError);
+            }
+  
+            // 추가: EC2 인스턴스의 CPU 사용률 가져오기
+            console.log(`Retrieving CPU utilization for instance ${resourceId}`);
+            try {
+              const cpuUtilization = getEC2CPUUtilization(resourceId, options);
+              instanceState.cpuUtilization = cpuUtilization; // 오류 해결됨
+              console.log('CPU Utilization:', cpuUtilization);
+            } catch (error) {
+              console.error(`Error retrieving CPU utilization for ${resourceId}:`, error);
+            }
+  
+            // 추가: EC2 인스턴스의 네트워크 트래픽 가져오기
+            console.log(`Retrieving network traffic for instance ${resourceId}`);
+            try {
+              const networkTraffic = getEC2NetworkTraffic(resourceId, options);
+              instanceState.networkTraffic = networkTraffic; // 오류 해결됨
+              console.log('Network Traffic:', networkTraffic);
+            } catch (error) {
+              console.error(`Error retrieving network traffic for ${resourceId}:`, error);
+            }
+  
+          }
+        } else if (resourceType === "aws_s3_bucket") {
+          // S3 버킷 이름 추출
+          const bucketNameMatch = details.match(/bucket\s+=\s+"([^"]+)"/);
+          if (bucketNameMatch) {
+            resourceId = bucketNameMatch[1];
+            console.log(`Extracted Bucket Name: ${resourceId}`);
+  
+            // S3 버킷 위치 가져오기
+            console.log(`Executing: aws s3api get-bucket-location --bucket ${resourceId}`);
+            try {
+              const stateOutputBuffer = execSync(`"${awsCliPath}" s3api get-bucket-location --bucket ${resourceId}`, options);
+              instanceState = JSON.parse(stateOutputBuffer.toString());
+              console.log('Bucket state:', instanceState);
+            } catch (awsError) {
+              console.error(`Error retrieving S3 bucket state for ${resourceId}:`, awsError);
+            }
+  
+            // 추가: S3 버킷의 사용 용량 가져오기
+            console.log(`Retrieving bucket size for ${resourceId}`);
+            try {
+              const bucketSize = getS3BucketSize(resourceId, options);
+              instanceState.bucketSize = bucketSize; // 오류 해결됨
+              console.log('Bucket Size:', bucketSize);
+            } catch (error) {
+              console.error(`Error retrieving bucket size for ${resourceId}:`, error);
+            }
+  
+            // 추가: S3 버킷의 요청 수 가져오기
+            console.log(`Retrieving request count for bucket ${resourceId}`);
+            try {
+              const requestCount = getS3BucketRequestCount(resourceId, options);
+              instanceState.requestCount = requestCount; // 오류 해결됨
+              console.log('Request Count:', requestCount);
+            } catch (error) {
+              console.error(`Error retrieving request count for ${resourceId}:`, error);
+            }
+  
+          }
+        } else if (resourceType === "aws_security_group") {
+          // 보안 그룹 ID 추출
+          const groupIdMatch = details.match(/id\s+=\s+"(sg-[a-zA-Z0-9]+)"/);
+          if (groupIdMatch) {
+            resourceId = groupIdMatch[1];
+            console.log(`Extracted Security Group ID: ${resourceId}`);
+  
+            // 보안 그룹 정보 가져오기
+            console.log(`Executing: aws ec2 describe-security-groups --group-ids ${resourceId}`);
+            try {
+              const stateOutputBuffer = execSync(`"${awsCliPath}" ec2 describe-security-groups --group-ids ${resourceId} --region ap-northeast-2`, options);
+              instanceState = JSON.parse(stateOutputBuffer.toString());
+              console.log('Security Group state:', instanceState);
+            } catch (awsError) {
+              console.error(`Error retrieving Security Group state for ${resourceId}:`, awsError);
+            }
+          }
+        } else {
+          // 다른 리소스 타입에 대해서는 필요에 따라 처리 추가
+          console.log(`Resource type ${resourceType} is not specifically handled.`);
+        }
+  
+        return { details, instanceState };
+      }));
+  
+      console.log('Detailed Terraform state output:', detailedStates);
+  
+      return {
+        status: 'State retrieved successfully',
+        resources: stateList,
+        detailedStates: detailedStates,
+      };
+    } catch (error) {
+      console.error('State retrieval error:', error);
+      throw new Error(`Failed to retrieve state for CID: ${CID}`);
+    }
+  
+    // 헬퍼 함수들은 이제 awsCliPath를 인식할 수 있습니다.
+    function getEC2CPUUtilization(instanceId: string, options: any): any {
+      const startTime = new Date(Date.now() - 3600 * 1000).toISOString(); // 1시간 전
+      const endTime = new Date().toISOString();
+  
+      const command = `"${awsCliPath}" cloudwatch get-metric-statistics --namespace AWS/EC2 --metric-name CPUUtilization --dimensions Name=InstanceId,Value=${instanceId} --start-time ${startTime} --end-time ${endTime} --period 300 --statistics Average --region ap-northeast-2`;
+  
+      const output = execSync(command, options);
+      return JSON.parse(output.toString());
+    }
+  
+    function getEC2NetworkTraffic(instanceId: string, options: any): any {
+      const startTime = new Date(Date.now() - 3600 * 1000).toISOString(); // 1시간 전
+      const endTime = new Date().toISOString();
+  
+      const metrics = ['NetworkIn', 'NetworkOut'];
+      const networkData: any = {};
+  
+      for (const metric of metrics) {
+        const command = `"${awsCliPath}" cloudwatch get-metric-statistics --namespace AWS/EC2 --metric-name ${metric} --dimensions Name=InstanceId,Value=${instanceId} --start-time ${startTime} --end-time ${endTime} --period 300 --statistics Sum --region ap-northeast-2`;
+  
+        const output = execSync(command, options);
+        networkData[metric] = JSON.parse(output.toString());
+      }
+  
+      return networkData;
+    }
+  
+    function getS3BucketSize(bucketName: string, options: any): any {
+      const endTime = new Date();
+      const startTime = new Date(endTime.getTime() - 24 * 3600 * 1000); // 24시간 전
+  
+      const command = `"${awsCliPath}" cloudwatch get-metric-statistics --namespace AWS/S3 --metric-name BucketSizeBytes --dimensions Name=BucketName,Value=${bucketName} Name=StorageType,Value=StandardStorage --start-time ${startTime.toISOString()} --end-time ${endTime.toISOString()} --period 86400 --statistics Average --region ap-northeast-2`;
+  
+      const output = execSync(command, options);
+      return JSON.parse(output.toString());
+    }
+  
+    function getS3BucketRequestCount(bucketName: string, options: any): any {
+      const endTime = new Date();
+      const startTime = new Date(endTime.getTime() - 24 * 3600 * 1000); // 24시간 전
+  
+      const command = `"${awsCliPath}" cloudwatch get-metric-statistics --namespace AWS/S3 --metric-name NumberOfObjects --dimensions Name=BucketName,Value=${bucketName} Name=StorageType,Value=AllStorageTypes --start-time ${startTime.toISOString()} --end-time ${endTime.toISOString()} --period 86400 --statistics Average --region ap-northeast-2`;
+  
+      const output = execSync(command, options);
+      return JSON.parse(output.toString());
+    }
+  }
+  
+  
+  
+
 
 }
