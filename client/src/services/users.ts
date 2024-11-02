@@ -22,6 +22,7 @@ export const signup = async (username: string, email: string, password: string) 
 export const login = async (email: string, password: string) => {
     try {
         // 태현 api 주소 확인!!!
+        console.log("뭐냐이거", process.env)
         const response = await axios.post(`${API_URL}/login`, {
             email,
             password,
