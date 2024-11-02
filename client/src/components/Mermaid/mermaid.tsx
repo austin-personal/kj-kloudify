@@ -42,10 +42,7 @@ const MermaidChart: React.FC<MermaidChartProps> = ({ chartCode }) => {
           svgRef.current = svg; // SVG 참조 저장
           const innerGroup = svg.select<SVGGElement>("g");
           // 컨테이너 크기에 맞춰 SVG 크기 조정
-          svg
-            .attr("width", "100%")
-            .attr("height", "100%")
-            .attr("preserveAspectRatio", "xMinYMin meet");
+
           zoomBehavior.current = d3
             .zoom<SVGSVGElement, unknown>()
             .on("zoom", (event) => {
