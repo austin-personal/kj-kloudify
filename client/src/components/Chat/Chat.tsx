@@ -26,11 +26,19 @@ interface Message {
   checks?: { id: number; label: string }[];
 }
 
-const defaultBotMessage: Message = {
-  id: uuidv4(),
-  text: "안녕하세요. 당신의 클라우드를 책임져줄 Kloudify에요. Kloudify와 쉽게 클라우드 아키텍쳐를 설계 해봐요! 우측 상단에 Kloudify와 대화하는 팁을 참고 하여 대화해 보세요.",
-  sender: "bot",
-};
+const defaultBotMessage: Message[] = [
+  {
+    id: uuidv4(),
+    text: "안녕하세요. 당신의 클라우드를 책임져줄 Kloudify에요. Kloudify와 쉽게 클라우드 아키텍쳐를 설계 해봐요! 우측 상단에 Kloudify와 대화하는 팁을 참고 하여 대화해 보세요.",
+    sender: "bot",
+  },
+  {
+    id: uuidv4(),
+    text: "먼저, 당신의 웹서비스에 대해 알고 싶어요. 당신의 웹 서비스의 주요 목적과 기능은 무엇인가요?",
+    sender: "bot",
+    subtext: "자유롭게 당신의 서비스를 설명해주세요."
+  }
+];
 
 const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
   const templates = useTemplates();
@@ -71,8 +79,8 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
       try {
         const token = localStorage.getItem("token") || "";
         const initialMessages = await open(projectCID, token);
+        setMessages(defaultBotMessage);
         if (initialMessages && initialMessages.length > 0) {
-          setMessages([defaultBotMessage]);
           const formattedMessages: Message[] = initialMessages.flatMap(
             (msg: any, index: number) => {
               // userMessage에서 - 이후의 부분만 가져오기
@@ -159,12 +167,10 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
             if (onFinishData) {
               onFinishData(parsedDataArray);
             }
-          } else {
-            setMessages([defaultBotMessage]);
           }
         }
       } catch (error) {
-        setMessages([defaultBotMessage]);
+        setMessages(defaultBotMessage);
       }
     };
 
