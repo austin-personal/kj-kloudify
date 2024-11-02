@@ -72,6 +72,6 @@ jobs:
             docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
             sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/server 
             sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/client 
-
-            sudo docker-compose -f docker-compose.yml up -d
             docker image ls
+            sudo docker-compose -f docker-compose.yml up -d
+            
