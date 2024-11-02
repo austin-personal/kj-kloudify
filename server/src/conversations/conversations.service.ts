@@ -82,9 +82,10 @@ export class ConversationsService {
                     + `**[ { "service": "", "options": { "ami": "", "instance_type": "", "public": ""} } ]
                     이런 포맷으로 서비스 종류 하나씩 출력하세요. \\n 없이 한줄로 출력해줘. 앞에 **을 꼭 넣어줘`
                     + "혹시 사용자가 aws와 관련없는 주제로 대답할 경우 aws 선택을 할 수 있도록 주제를 계속해서 상기시켜줘"
-                    + "aws 기본 지역은 서울 지역이야."
+                    + "aws 기본 지역은 서울 지역이야. 해당 지역에 맞는 ami로 작성해줘."
                     + "ec2의 ami와 subnet_id도 내가 구성한 내용을 바탕으로 실제로 사용할 수 있도록 구성해줘. subnet은 별도의 언급이 없다면 기본값으로 설정하고"
                     + "Mermaid로서 구성해줘";
+                    + "S3은 특별한 목적이 없다면 private하게 해줘"
             case 2:
                 return "어떤 인풋이 들어와도 이번타자라고 대답해줘";
             case 3:
@@ -220,30 +221,41 @@ export class ConversationsService {
         
 
 
-        // 특정 입력에 대한 템플릿 응답 설정
+        // 특정 입력에 대한 템플릿 응답 설정 - 여기선 해당 질문에 좌표 찍어주는 역할
         const templateResponses = {
-            '이 프로젝트의 최종 목표는 무엇인가요': 'template1-2',
-            '클라우드에서 가장 필요한 기능이나 역할은 무엇인가요': 'template1-3',
-            '이 프로젝트를 이용할 예상 사용자 수는 얼마나 되나요': 'template1-4',
-            '예산이나 기간 제한이 있나요': 'template1-5',
-            '특별히 고려하고 싶은 요소가 있다면 알려주세요': 'template1-6',
-            '당신의 서비스가 인터넷과 연결되어야 하나요': '서버',
-            '다음문항': 'template3-4',
-            '특정텍스트1': '컨텍스트 스위칭'
-        };
+            '먼저, 당신의 웹서비스에 대해 알고싶어요': 'template1-2',
+            '당신의 웹서비스 규모에 대해 알고싶어요': 'template1-3',
+            '당신의 예산과 비용 관리 계획은 어떻게 되나요': 'template1-4',
+            '추가적인 무언가가 필요한가요': 'template1-5',
+            '당신의 웹서비스는 어떤 클라우드 기술이 필요한가요': '질문의 끝',
 
+            '애플리케이션의 워크로드 특성이 있나요': 'template2-2',
+            '어떠한 서버 타입이 필요하시나요': 'template2-3',
+            '가장 중요한 가치는 무엇인가요': '질문의 끝',
+
+            '데이터베이스 유형이 어떻게 되나요': 'template3-2',
+            '추가적인 데이터베이스 정보를 알려주세요': '질문의 끝',
+
+            '스토리지의 사용 패턴은 어떻게 되나요': 'template4-2',
+            '스토리지의 사용 목적은 무엇인가요': 'template4-3',
+            '스토리지에서 가장 중요한 가치는 무엇인가요': '질문의 끝',
+
+            '애플리케이션의 네트워크 요구사항은 무엇인가요': '마지막 질문',
+
+            '특정텍스트1': '컨텍스트 스위칭' // 여기서 답변 매칭해줌
+        };
+        // 이 질문의 역할은? - 아 메트릭스에서 나온 키워드에 따라 다음 질문을 매핑하는 역할. 즉, 각 스테이지의 첫 질문 트리거
         const level4Questions = {
-            '디비': '데이터베이스의 주요 기준을 선택하세요',
-            '서버': '서버의 주요 기준을 선택하세요',
-            '스토리지': '저장 공간의 주요 기준을 선택하세요',
-            '네트워크': '네트워크 구성에서 중요하게 여기는 기준을 선택하세요',
-            '모니터링': '모니터링과 로그 관리의 주요 기준을 선택하세요',
+            '디비': '데이터베이스 유형이 어떻게 되나요',
+            '서버': '애플리케이션의 워크로드 특성이 있나요',
+            '스토리지': '스토리지의 사용 패턴은 어떻게 되나요',
+            '네트워크': '애플리케이션의 네트워크 요구사항은 무엇인가요',
         };
 
         // 템플릿 키를 확인하고 응답 생성
         const templateKey = Object.keys(templateResponses).find(key => user_question.includes(key));
         let templateResponse: string = templateKey ? templateResponses[templateKey] : 'default response';
-        if (templateKey) { 
+        if (templateKey) {
 
             const triggerKeywords = ['특정텍스트1', '특정텍스트2', '특정텍스트3']; // 여기에 원하는 키워드
             const shouldIncrementCounter = triggerKeywords.some(keyword => user_question.includes(keyword));
@@ -253,8 +265,6 @@ export class ConversationsService {
             }
 
             const isNextQuestion = user_question.includes('다음문항');
-            // console.log("hi", templateResponse);
-            // console.log(isNextQuestion);
 
             if ((templateKey === '그 외에 필요한 기능이 있나요' || isNextQuestion) && globalMatrix) {
                 if (globalMatrix.length === 0) {
@@ -276,14 +286,14 @@ export class ConversationsService {
             await this.saveConversation(CID, user_question, templateResponse);
             return this.createResponse(templateResponse);
         }
-
+        // 기존 - 선택지에 따라서 필요없음이 나오지 않는 한 리스트에 수동으로 추가하던 로직 -> 스테이지0 5번질문에서 선택한대로 리스트 생성해야함
         const options = [
             { keyword: '서버선택', noSelectionLog: "서버선택 안함 로직 실행", selectionLog: "서버설정", nextTem: "디비" },
             { keyword: '디비선택', noSelectionLog: "디비선택 안함 로직 실행", selectionLog: "디비설정", nextTem: "스토리지" },
             { keyword: '스토리지선택', noSelectionLog: "스토리지 선택 안함 로직 실행", selectionLog: "스토리지설정", nextTem: "네트워크" },
             { keyword: '네트워크선택', noSelectionLog: "네트워크 선택 안함 로직 실행", selectionLog: "네트워크설정", nextTem: "모니터링" },
             { keyword: '모니터링선택', noSelectionLog: "모니터링 선택 안함 로직 실행", selectionLog: "모니터링설정", nextTem: "다음문항" },
-            
+             
         ];
 
         // 조건을 반복하며 인풋 텍스트에서 확인

@@ -105,6 +105,7 @@ export class SecretsService {
    * 복호화 메서드
    */
   decrypt(encryptedText: string): string {
+
     const [ivHex, encrypted] = encryptedText.split(':');
     const iv = Buffer.from(ivHex, 'hex');
     const decipher = crypto.createDecipheriv('aes-256-cbc', this.encryptionKey, iv);
