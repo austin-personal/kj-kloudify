@@ -407,7 +407,8 @@ export class TerraformService {
   
       // 해당 경로에 Terraform 파일이 존재하는지 확인
       if (!fs.existsSync(mainTfFilePath)) {
-        throw new Error(`Terraform file not found for CID: ${CID}`);
+        console.log(`there is no ${CID}`);
+        return `there is no ${CID}`;
       }
   
       // Terraform 초기화 (init) - 이미 적용된 상태에서도 destroy를 위해 필요
