@@ -26,10 +26,9 @@ jobs:
           docker build ./server -t ${{ secrets.DOCKER_USERNAME }}/server:$APP_VERSION 
           docker push ${{ secrets.DOCKER_USERNAME }}/server:$APP_VERSION
 
-          
       - name: List docker image
         run: docker image ls
-      
+
       # Build and push client image
       - name: Build and push client Docker image
         run: |
@@ -50,22 +49,36 @@ jobs:
           script: |
             cd ~/kj-kloudify
             ls
-            echo "DATABASE_HOST=${{ secrets.DATABASE_HOST }}" > .env
-            echo "DATABASE_PORT=${{ secrets.DATABASE_PORT }}" >> .env
-            echo "DATABASE_USER=${{ secrets.DATABASE_USER }}" >> .env
-            echo "DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }}" >> .env
-            echo "DATABASE_NAME=${{ secrets.DATABASE_NAME }}" >> .env
-            echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> .env
-            echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> .env
-            echo "AWS_REGION=${{ secrets.AWS_REGION }}" >> .env
-            echo "DYNAMO_TABLE_NAME=${{ secrets.DYNAMO_TABLE_NAME }}" >> .env
-            echo "TERRAFORM_BUCKET=${{ secrets.TERRAFORM_BUCKET }}" >> .env
-            echo "TERRAFORM_LAMBDA_FUNCTION=${{ secrets.TERRAFORM_LAMBDA_FUNCTION }}" >> .env
-            echo "ENCRYPTION_KEY=${{ secrets.ENCRYPTION_KEY }}" >> .env
+            echo "DATABASE_HOST=${DATABASE_HOST}" > .env
+            echo "DATABASE_PORT=${DATABASE_PORT}" >> .env
+            echo "DATABASE_USER=${DATABASE_USER}" >> .env
+            echo "DATABASE_PASSWORD=${DATABASE_PASSWORD}" >> .env
+            echo "DATABASE_NAME=${DATABASE_NAME}" >> .env
+            echo "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}" >> .env
+            echo "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}" >> .env
+            echo "AWS_REGION=${AWS_REGION}" >> .env
+            echo "DYNAMO_TABLE_NAME=${DYNAMO_TABLE_NAME}" >> .env
+            echo "TERRAFORM_BUCKET=${TERRAFORM_BUCKET}" >> .env
+            echo "TERRAFORM_LAMBDA_FUNCTION=${TERRAFORM_LAMBDA_FUNCTION}" >> .env
+            echo "ENCRYPTION_KEY=${ENCRYPTION_KEY}" >> .env
             
-            DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}
-            sudo docker pull $DOCKER_USERNAME/server:$APP_VERSION || echo "Failed to pull server image"
-            sudo docker pull $DOCKER_USERNAME/client:$APP_VERSION || echo "Failed to pull client image"
-
+            # Docker 이미지 pull 및 docker-compose 실행
+            sudo docker pull ${DOCKER_USERNAME}/server:${APP_VERSION} || echo "Failed to pull server image"
+            sudo docker pull ${DOCKER_USERNAME}/client:${APP_VERSION} || echo "Failed to pull client image"
             sudo docker-compose -f docker-compose.yml up -d
             docker image ls
+        env:
+          DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
+          DATABASE_PORT: ${{ secrets.DATABASE_PORT }}
+          DATABASE_USER: ${{ secrets.DATABASE_USER }}
+          DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+          DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          DYNAMO_TABLE_NAME: ${{ secrets.DYNAMO_TABLE_NAME }}
+          TERRAFORM_BUCKET: ${{ secrets.TERRAFORM_BUCKET }}
+          TERRAFORM_LAMBDA_FUNCTION: ${{ secrets.TERRAFORM_LAMBDA_FUNCTION }}
+          ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          
