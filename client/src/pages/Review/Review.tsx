@@ -1,40 +1,21 @@
-import React, { useEffect, useRef, useState } from "react";
-import { ReactFlowProvider } from "@xyflow/react";
-import Board from "../../components/Board/Board";
+import React, { useRef, useState } from "react";
 import Services from "../../components/Services/Services";
 import "./Review.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCloudArrowDown } from "@fortawesome/free-solid-svg-icons";
-import { download, review } from "../../services/terraforms";
-import { useLocation, useParams } from "react-router-dom";
+import { download } from "../../services/terraforms";
+import { useParams } from "react-router-dom";
 import { useAppSelector } from "../../store/hooks";
 import MermaidChart from "../../components/Mermaid/mermaid";
-interface ReviewProps {
-  finishData: string[];
-}
 
-const Review: React.FC<ReviewProps> = ({ finishData }) => {
+const Review: React.FC = () => {
   const isReviewReady = useAppSelector((state) => state.loading.isReviewReady);
+  const finishData = useAppSelector((state) => state.finishData.finishData);
   const { cid: cidParam } = useParams<{ cid: string }>(); // useParams로 cid 가져오기
   const cid = cidParam ? parseInt(cidParam, 10) : null; // cid가 존재할 때만 number로 변환
   const [showOptions, setShowOptions] = useState(false);
-  const [nodes, setNodes] = useState<any[]>([]); //node 정보 저장된 것 불러오기위해 상태끌어올림
   const boardRef = useRef<{ takeScreenshot: () => void } | null>(null);
   const token = localStorage.getItem("token") ?? "";
-
-  const chartCode: string = `
-  architecture-beta
-    group api(cloud)[API]
-
-    service db(database)[Database] in api
-    service disk1(disk)[Storage] in api
-    service disk2(disk)[Storage] in api
-    service server(server)[Server] in api
-
-    db:L -- R:server
-    disk1:T -- B:server
-    disk2:T -- B:db
-`;
 
   const handleScreenshot = () => {
     if (boardRef.current) {
@@ -77,7 +58,7 @@ const Review: React.FC<ReviewProps> = ({ finishData }) => {
   return (
     <div className="review">
       <div className="review-board">
-        <MermaidChart chartCode={chartCode}></MermaidChart>
+        <MermaidChart chartCode={finishData}></MermaidChart>
         {/* <ReactFlowProvider>
           <Board
             ref={boardRef}
@@ -109,7 +90,7 @@ const Review: React.FC<ReviewProps> = ({ finishData }) => {
       </div>
 
       <div className="vertical-line"></div>
-      <Services nodes={nodes} cid={cid ?? 0} isReviewReady={isReviewReady} />
+      <Services cid={cid ?? 0} isReviewReady={isReviewReady} />
     </div>
   );
 };

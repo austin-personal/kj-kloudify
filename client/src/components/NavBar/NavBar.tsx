@@ -40,9 +40,7 @@ const NavBar: React.FC = () => {
   }, [token, navigate]);
 
   const handleLogout = () => {
-    if (token) {
-      localStorage.removeItem("token");
-    }
+    localStorage.clear();
   };
 
   const handleBackClick = () => {

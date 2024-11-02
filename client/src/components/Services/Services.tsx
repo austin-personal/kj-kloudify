@@ -9,26 +9,11 @@ import { deploy } from "../../services/terraforms";
 import { checkSecret } from "../../services/secrets";
 
 interface ServicesProps {
-  nodes: Node[]; // Node 타입의 배열로 정의
   cid: number;
   isReviewReady: boolean;
 }
 
-interface Node {
-  id: string;
-  type?: string;
-  position: {
-    x: number;
-    y: number;
-  };
-  data?: {
-    label?: string;
-    [key: string]: any;
-  };
-  style?: React.CSSProperties;
-}
-
-const Services: React.FC<ServicesProps> = ({ nodes, cid, isReviewReady }) => {
+const Services: React.FC<ServicesProps> = ({ cid, isReviewReady }) => {
   // 모달 열림 상태 관리
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
@@ -88,7 +73,7 @@ const Services: React.FC<ServicesProps> = ({ nodes, cid, isReviewReady }) => {
         </button>
       </div>
       <div className="service-container">
-        {nodes.map((node) => (
+        {/* {nodes.map((node) => (
           <div key={node.id}>
             {node.data && node.type === "position-logger" && (
               <>
@@ -104,7 +89,7 @@ const Services: React.FC<ServicesProps> = ({ nodes, cid, isReviewReady }) => {
               </>
             )}
           </div>
-        ))}
+        ))} */}
       </div>
       <div className="middle-btn">
         {/* 모달이 열려 있을 때만 모달 컴포넌트 보여주기 */}
