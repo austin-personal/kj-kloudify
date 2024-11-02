@@ -114,7 +114,11 @@ const Profile: React.FC = () => {
   );
 
   // 빈 행을 추가해 5개의 행을 유지
-  const emptyRows = itemsPerPage - currentProjects.length; // 남은 빈 행의 개수 계산
+  //현재 보여줄 프로젝트가 없는 경우 게시물이 없습니다 문구 제외 빈 행이 4개가 되게
+  const emptyRows =
+    currentProjects.length === 0
+      ? itemsPerPage - 1
+      : itemsPerPage - currentProjects.length; // 남은 빈 행의 개수 계산
 
   // 총 페이지 수 계산
   const totalPages = Math.ceil(filteredProjects().length / itemsPerPage);
