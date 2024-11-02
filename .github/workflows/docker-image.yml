@@ -78,7 +78,9 @@ jobs:
 
             sudo docker pull ausitn/server
             sudo docker pull ausitn/client 
+            
             docker image ls
             sudo docker-compose -f docker-compose.yml up -d
             docker ps
             
+
