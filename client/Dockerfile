@@ -2,10 +2,6 @@
 FROM node:16 AS build
 WORKDIR /app
 
-# 환경 변수 설정
-ARG REACT_APP_SERVER_URL
-ENV REACT_APP_SERVER_URL=$REACT_APP_SERVER_URL
-
 # package.json과 package-lock.json을 복사
 COPY package*.json ./
 RUN npm install

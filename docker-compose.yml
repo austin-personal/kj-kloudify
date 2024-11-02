@@ -2,8 +2,6 @@ services:
   client:
     build:
       context: ${CLIENT_PATH}
-      args:
-        - REACT_APP_SERVER_URL=${REACT_APP_SERVER_URL}
     ports:
       - "80:80"
     volumes:
