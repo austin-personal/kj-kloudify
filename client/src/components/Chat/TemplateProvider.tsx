@@ -42,6 +42,9 @@ const templates: Record<number, Template> = {
             { id: 1, label: "안정성" },
             { id: 1, label: "성능 효율성" },
             { id: 1, label: "비용 최적화" },
+        ],
+        buttons: [
+            { id: 1, label: "확인" },
         ]
     },
     6: {
@@ -52,6 +55,9 @@ const templates: Record<number, Template> = {
             { id: 1, label: "데이터베이스" },
             { id: 1, label: "스토리지" },
             { id: 1, label: "네트워크" },
+        ],
+        buttons: [
+            { id: 1, label: "확인" },
         ]
     },
     7: {
@@ -63,6 +69,9 @@ const templates: Record<number, Template> = {
             { id: 1, label: "Memory 집약적" },
             { id: 1, label: "통신 집약적" },
             { id: 1, label: "GPU 필요" },
+        ],
+        buttons: [
+            { id: 1, label: "확인" },
         ]
     },
     8: {
@@ -84,6 +93,9 @@ const templates: Record<number, Template> = {
             { id: 1, label: "고가용성" },
             { id: 1, label: "고성능" },
             { id: 1, label: "백업기능" },
+        ],
+        buttons: [
+            { id: 1, label: "확인" },
         ]
     },
     10: {
@@ -133,6 +145,9 @@ const templates: Record<number, Template> = {
             { id: 1, label: "고가용성" },
             { id: 1, label: "고성능" },
             { id: 1, label: "백업기능" },
+        ],
+        buttons: [
+            { id: 1, label: "확인" },
         ]
     },
     15: {
@@ -142,6 +157,17 @@ const templates: Record<number, Template> = {
             { id: 1, label: "기본 성능의 보안과 네트워크" },
             { id: 1, label: "추가적인 보안" },
             { id: 1, label: "퍼블릭 인터넷과 연결" }
+        ],
+        buttons: [
+            { id: 1, label: "확인" },
+        ]
+    },
+    16: {
+        name: "template-trigger",
+        text: "이대로 하시겠습니까?",
+        buttons: [
+            { id: 1, label: "예" },
+            { id: 1, label: "아니요" }
         ]
     },
 };
