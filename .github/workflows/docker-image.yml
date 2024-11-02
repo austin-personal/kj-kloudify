@@ -61,7 +61,7 @@ jobs:
             echo "TERRAFORM_BUCKET=${{ secrets.TERRAFORM_BUCKET }}" >> .env
             echo "TERRAFORM_LAMBDA_FUNCTION=${{ secrets.TERRAFORM_LAMBDA_FUNCTION }}" >> .env
             echo "ENCRYPTION_KEY=${{ secrets.ENCRYPTION_KEY }}" >> .env
-            
-            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/server:$APP_VERSION 
-            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/client:$APP_VERSION 
-            sudo docker-compose -f docker-compose.yml up -d
+
+            docker pull ${{ secrets.DOCKER_USERNAME }}/server:$APP_VERSION 
+            docker pull ${{ secrets.DOCKER_USERNAME }}/client:$APP_VERSION 
+            docker-compose -f docker-compose.yml up -d
