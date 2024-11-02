@@ -13,6 +13,7 @@ import { info } from "../../services/users";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
+import { destroy } from "../../services/terraforms";
 
 // 유저 프로필 타입 정의
 interface UserProfile {
@@ -25,7 +26,7 @@ interface UserProfile {
 // 프로젝트 타입 정의
 interface Project {
   PID: number;
-  CID: string;
+  CID: number;
   UID: number;
   ARCTID: number;
   projectName: string;
@@ -167,6 +168,7 @@ const Profile: React.FC = () => {
 
     if (modalType === "deleteProject" && projectToDelete) {
       // 프로젝트 삭제 로직
+      await destroy(projectToDelete.CID, token);
       await deleteProject(projectToDelete.PID, token);
 
       console.log(`Deleting project with PID: ${projectToDelete.PID}`);

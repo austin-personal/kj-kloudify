@@ -10,10 +10,11 @@ import { faCloud } from "@fortawesome/free-solid-svg-icons";
 import "./Detail.css";
 import { open } from "../../services/conversations";
 import { useTemplates } from "../../components/Chat/TemplateProvider";
+import { state } from "../../services/terraforms";
 
 interface Project {
   PID: number;
-  CID: string;
+  CID: number;
   UID: number;
   ARCTID: number;
   projectName: string;
@@ -45,13 +46,16 @@ const Detail: React.FC = () => {
     const fetchProjectData = async () => {
       try {
         if (pid) {
-          const response = await projectOneInfo(Number(pid), token);
-          const projectData = response.data;
-          setProject(projectData);
-
+          if (!project) {
+            const response = await projectOneInfo(Number(pid), token);
+            const projectData = response.data;
+            setProject(projectData);
+          }
+          const response = await state(project?.UID, project?.CID, token);
+          console.log("이것이 state? : ",response)
           // Chat history를 불러올 때 CID를 사용
-          if (projectData.CID && isChatting) {
-            openChatHistory(projectData.CID).then(() => {
+          if (project?.CID && isChatting && isLoading) {
+            openChatHistory(project.CID).then(() => {
               setIsLoading(false)
             });
           }
@@ -69,23 +73,23 @@ const Detail: React.FC = () => {
           const parsedUserMessage = msg.userMessage.includes("-")
             ? msg.userMessage.slice(msg.userMessage.indexOf("-") + 1).trim()
             : msg.userMessage;
-
+  
           // botResponse에서 '!!'나 '**' 앞의 부분을 가져오기
           let parsedBotResponse = msg.botResponse.includes("!!")
             ? msg.botResponse.split("!!")[0].trim()
             : msg.botResponse;
-
+  
           if (parsedBotResponse.includes("**")) {
             parsedBotResponse = parsedBotResponse.split("**")[0].trim();
           }
-
+  
           // templates에서 botResponse가 존재하는지 확인하고 매칭되는 텍스트 사용
           const matchingTemplate = Object.values(templates).find(
             (template) => template.name === parsedBotResponse
           );
-
+  
           const botText = matchingTemplate ? matchingTemplate.text : parsedBotResponse;
-
+  
           return [
             {
               id: uuidv4(),
@@ -98,7 +102,7 @@ const Detail: React.FC = () => {
               sender: "bot",
             },
           ];
-        });
+      });
         setChatHistory(formattedChat);
       } catch (error) {
         console.error("채팅 내역을 가져오는 중 오류 발생:", error);
