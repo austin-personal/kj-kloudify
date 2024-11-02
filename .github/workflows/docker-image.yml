@@ -69,7 +69,14 @@ jobs:
             echo "TERRAFORM_LAMBDA_FUNCTION=${{ secrets.TERRAFORM_LAMBDA_FUNCTION }}" >> .env
             echo "ENCRYPTION_KEY=${{ secrets.ENCRYPTION_KEY }}" >> .env
             
-            sudo docker pull ausitn/server 
+            CONTAINER_ID=$(sudo docker ps -q --filter "publish=80-8080")
+
+            if [ ! -z "$CONTAINER_ID" ]; then
+              sudo docker stop $CONTAINER_ID
+              sudo docker rm $CONTAINER_ID
+            fi
+
+            sudo docker pull ausitn/server
             sudo docker pull ausitn/client 
             docker image ls
             sudo docker-compose -f docker-compose.yml up -d
