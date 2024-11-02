@@ -89,8 +89,12 @@ const Home: React.FC<HomeProps> = ({ finishData, setFinishData }) => {
     const cid = project?.CID || 0;
     try {
       dispatch(setReviewReady(false));
-      review(cid, Number(pid), token).then(() => {
+      review(cid, Number(pid), token).then(({ message, bool }) => {
         dispatch(setReviewReady(true));
+        if (!bool) {
+          alert(message)
+          navigate(`/home/${pid}`);
+        }
       });
       navigate(`/review/${cid}`, { state: { isReviewReady: false } });
     } catch (error) {
@@ -127,9 +131,8 @@ const Home: React.FC<HomeProps> = ({ finishData, setFinishData }) => {
         <div className="review-btn-container">
           <button
             onClick={handleFinish}
-            className={`review-btn-${
-              finishData.length === 0 ? "disabled" : "enabled"
-            }`}
+            className={`review-btn-${finishData.length === 0 ? "disabled" : "enabled"
+              }`}
             disabled={finishData.length === 0}
           >
             Review
