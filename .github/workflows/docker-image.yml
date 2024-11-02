@@ -76,9 +76,11 @@ jobs:
               sudo docker rm $CONTAINER_ID
             fi
 
+            sudo docker image prune -af
+            
             sudo docker pull ausitn/server
             sudo docker pull ausitn/client 
-            
+
             docker image ls
             sudo docker-compose -f docker-compose.yml up -d
             docker ps
