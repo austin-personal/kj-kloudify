@@ -33,8 +33,8 @@ jobs:
       # Build and push client image
       - name: Build and push client Docker image
         run: |
-          docker build ./client -t ${{ secrets.DOCKER_USERNAME }}/client:latest
-          docker push ${{ secrets.DOCKER_USERNAME }}/client:latest
+          docker build ./client -t ${{ secrets.DOCKER_USERNAME }}/client:$APP_VERSION 
+          docker push ${{ secrets.DOCKER_USERNAME }}/client:$APP_VERSION 
 
   deploy:
     needs: build-and-push
@@ -49,18 +49,19 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             cd ~/kj-***
-            export DATABASE_HOST=${{ secrets.DATABASE_HOST }}
-            export DATABASE_PORT=${{ secrets.DATABASE_PORT }}
-            export DATABASE_USER=${{ secrets.DATABASE_USER }}
-            export DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }}
-            export DATABASE_NAME=${{ secrets.DATABASE_NAME }}
-            export AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
-            export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
-            export AWS_REGION=${{ secrets.AWS_REGION }}
-            export DYNAMO_TABLE_NAME=${{ secrets.DYNAMO_TABLE_NAME }}
-            export TERRAFORM_BUCKET=${{ secrets.TERRAFORM_BUCKET }}
-            export TERRAFORM_LAMBDA_FUNCTION=${{ secrets.TERRAFORM_LAMBDA_FUNCTION }}
-            export ENCRYPTION_KEY=${{ secrets.ENCRYPTION_KEY }}
-            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/server:latest
-            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/client:latest
+            echo "DATABASE_HOST=${{ secrets.DATABASE_HOST }}" > .env
+            echo "DATABASE_PORT=${{ secrets.DATABASE_PORT }}" >> .env
+            echo "DATABASE_USER=${{ secrets.DATABASE_USER }}" >> .env
+            echo "DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }}" >> .env
+            echo "DATABASE_NAME=${{ secrets.DATABASE_NAME }}" >> .env
+            echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> .env
+            echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> .env
+            echo "AWS_REGION=${{ secrets.AWS_REGION }}" >> .env
+            echo "DYNAMO_TABLE_NAME=${{ secrets.DYNAMO_TABLE_NAME }}" >> .env
+            echo "TERRAFORM_BUCKET=${{ secrets.TERRAFORM_BUCKET }}" >> .env
+            echo "TERRAFORM_LAMBDA_FUNCTION=${{ secrets.TERRAFORM_LAMBDA_FUNCTION }}" >> .env
+            echo "ENCRYPTION_KEY=${{ secrets.ENCRYPTION_KEY }}" >> .env
+            
+            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/server:$APP_VERSION 
+            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/client:$APP_VERSION 
             sudo docker-compose -f docker-compose.yml up -d
