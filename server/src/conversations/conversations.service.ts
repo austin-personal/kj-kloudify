@@ -68,13 +68,18 @@ export class ConversationsService {
         console.log(`getCustomMessage 호출됨 - CID: ${CID}, modelSwitchCounter: ${modelSwitchCounter}`);
 
         switch (modelSwitchCounter % 6) {
-            case 0:
-                return "당신은 사용자의 요구에 맞는 AWS 서비스 아키텍처를 단계별로 구성하는 안내자 역할을 합니다. "
-                    + "대화를 주도하며 필요한 경우 추가 질문을 통해 사용자의 요구사항을 명확히 하세요. "
-                    + "질문에 대해 뭔가 만들고싶다고 요청할 시 필요한 서비스를 목록화 해서 짧게 대답해줘. 문장을 완성하지말고 키워드만 언급하면서"
-                    + "예시) [짧은 설명 텍스트] \n 1. EC2 - [인스턴스 이름 ex)t2.micro] : [선정한 이유] \n"
-                    + "예시 텍스트에서 [짧은 설명 텍스트]에는 짧게 전체적인 설명을 해주고 [선정한 이유]에는 해당 인스턴스에 대한 짧은 설명 부탁해. 중괄호는 출력하지 않아도 돼"
-                    + "만약 사용자가 특정 서비스를 선택하는 메세지를 전송 시 긍정해주는 메세지를 보내줘.";
+            case 0: // 인트로 오식이
+                return `당신은 사용자의 요구에 맞는 AWS 아키텍처 설계를 돕는 전문 안내자 역할을 합니다.
+
+                        목표는 사용자의 요구 사항을 파악하여, 필요한 AWS 서비스의 종류와 개수를 결정하고 이를 mermaid 코드로 간략하게 나타내는 것입니다.
+                        대화 내역 안내:
+                        사용자의 목표와 요구 사항을 이해합니다.
+                        필요한 AWS 서비스들을 식별합니다.
+                        각 서비스 간의 관계를 파악합니다.
+                        대화 내역을 전부 참고하여 질문에 맞지 않는 대답이 있다면 해당 질문을 다시 되물어서 정확한 정보를 얻도록 해주세요.
+
+                        마지막으로 구성된 정보가 마무리되었다면 mermaid 코드로서 ** 양식을 붙여서 보내주세요. \n 없이 한 줄로 출력해주세요. 앞에 **을 꼭 넣어주세요.`
+
             case 1:
                 return "당신은 사용자의 요구에 맞는 AWS 서비스 아키텍처를 단계별로 구성하는 안내자 역할을 합니다."
                     + "저비용을 원할 경우 프리 티어 등급의 서비스를 적극적으로 추천해줘"
@@ -84,15 +89,15 @@ export class ConversationsService {
                     + "혹시 사용자가 aws와 관련없는 주제로 대답할 경우 aws 선택을 할 수 있도록 주제를 계속해서 상기시켜줘"
                     + "aws 기본 지역은 서울 지역이야. 해당 지역에 맞는 ami로 작성해줘."
                     + "ec2의 ami와 subnet_id도 내가 구성한 내용을 바탕으로 실제로 사용할 수 있도록 구성해줘. subnet은 별도의 언급이 없다면 기본값으로 설정하고"
-                    + "Mermaid로서 구성해줘";
-                    + "S3은 특별한 목적이 없다면 private하게 해줘"
+                    + "Mermaid로서 구성해줘"
+                    + "S3은 특별한 목적이 없다면 private하게 해줘";
             case 2:
                 return "어떤 인풋이 들어와도 이번타자라고 대답해줘";
             case 3:
                 return `어떤 대답이 들어와도 삼번타자라고 대답해줘`;
             case 4:
                 return `어떤 대답이 들어와도 사번타자라고 대답해줘`;
-            case 5: // 인트로 오식이
+            case 5: 
                 return "당신은 사용자의 요구에 맞는 AWS 아키텍처 설계를 돕는 \\**전문 안내자 역할\\**을 합니다. \\n\\n\
                     - 목표는 사용자의 요구 사항을 파악하여, 적절한 AWS 아키텍처 티어\\(\\<TIER\\:\\단일 티어\\>, \\<TIER\\:\\2티어\\>, \\<TIER\\:\\3티어\\>\\) 중 하나를 이끌어내는 것입니다.\\n\\n\
                     ### 단계별 질문 안내\\:\\n\
@@ -223,11 +228,11 @@ export class ConversationsService {
 
         // 특정 입력에 대한 템플릿 응답 설정 - 여기선 해당 질문에 좌표 찍어주는 역할
         const templateResponses = {
-            '먼저, 당신의 웹서비스에 대해 알고싶어요': 'template1-2',
-            '당신의 웹서비스 규모에 대해 알고싶어요': 'template1-3',
+            '먼저, 당신의 웹서비스에 대해 알고 싶어요': 'template1-2',
+            '당신의 웹서비스 규모에 대해 알고 싶어요': 'template1-3',
             '당신의 예산과 비용 관리 계획은 어떻게 되나요': 'template1-4',
             '추가적인 무언가가 필요한가요': 'template1-5',
-            '당신의 웹서비스는 어떤 클라우드 기술이 필요한가요': '질문의 끝',
+            // '당신의 웹서비스는 어떤 클라우드 기술이 필요한가요': '질문의 끝',
 
             '애플리케이션의 워크로드 특성이 있나요': 'template2-2',
             '어떠한 서버 타입이 필요하시나요': 'template2-3',
@@ -544,30 +549,27 @@ export class ConversationsService {
         return { keywords: matches, updatedText: updatedText.trim() };
     }
 
-    // 기존 키워드와 새로 추출한 키워드를 모두 누적 저장하는 함수
-    async saveKeywords(keywords: string[], CID: number): Promise<void> {
-        // 기존 키워드를 먼저 불러오기
-        let existingKeywords = await this.fetchExistingKeywords(CID);
+// 기존 키워드를 누적하지 않고 새로운 키워드로 덮어쓰는 함수
+async saveKeywords(keywords: string[], CID: number): Promise<void> {
+    // 새로운 키워드를 문자열로 결합
+    const newKeywords = keywords.join(', ');
 
-        // 새로운 키워드를 기존 키워드에 추가하여 문자열로 결합
-        const combinedKeywords = existingKeywords ? `${existingKeywords}, ${keywords.join(', ')}` : keywords.join(', ');
-
-        const params = {
-            TableName: 'Archboard_keyword',
-            Item: {
-                CID: CID,
-                keyword: combinedKeywords,
-                timestamp: new Date().toISOString(),
-            }
-        };
-
-        try {
-            await this.dynamoDB.put(params).promise();
-            console.log(`키워드 저장 성공: ${combinedKeywords}`);
-        } catch (error) {
-            console.error(`키워드 저장 실패: ${error.message}`);
+    const params = {
+        TableName: 'Archboard_keyword',
+        Item: {
+            CID: CID,
+            keyword: newKeywords,
+            timestamp: new Date().toISOString(),
         }
+    };
+
+    try {
+        await this.dynamoDB.put(params).promise();
+        console.log(`키워드 저장 성공: ${newKeywords}`);
+    } catch (error) {
+        console.error(`키워드 저장 실패: ${error.message}`);
     }
+}
 
     async processTextAndAddKeywords(outputText: string, inputText: string, CID: number): Promise<string> {
         console.log(`processTextAndAddKeywords 호출됨 - CID: ${CID}, inputText: ${inputText}`);
@@ -677,7 +679,7 @@ export class ConversationsService {
             if (result.Item && result.Item.modelSwitchCounter !== undefined) {
                 return result.Item.modelSwitchCounter as number;
             } else {
-                return 1; // 기본값으로 1 반환
+                return 0; // 기본값으로 1 반환
             }
         } catch (error) {
             console.error(`CID ${CID}의 modelSwitchCounter 조회 실패:`, error);
