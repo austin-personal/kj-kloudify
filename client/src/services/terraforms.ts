@@ -100,3 +100,21 @@ export const download = async (cid: number, token: string) => {
     }
 }
 
+export const state = async (uid: number | undefined, cid: number | undefined, token: string | null) => {
+    try {
+        const response = await axios.post(`${API_URL}/download`,
+            {
+                userId: uid,
+                CID: cid
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+        return response.data;
+    } catch (error) {
+        console.error('스테이트 개박살!! ;', error)
+        throw error;
+    }
+}

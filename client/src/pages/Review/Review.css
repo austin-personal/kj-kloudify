@@ -8,12 +8,12 @@
 }
 
 .review-board {
+  margin-top: 90px;
   flex: 2;
   margin-right: 20px;
-}
-
-.mermaid {
-  margin-top: 90px;
+  display: flex;
+  flex-direction: column; /* 세로 방향 정렬 */
+  align-items: stretch; /* 자식 요소를 세로로 확장 */
 }
 
 .download {

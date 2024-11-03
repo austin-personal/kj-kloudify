@@ -8,7 +8,8 @@ import "./Home.css";
 import { projectOneInfo } from "../../services/projects";
 import { review } from "../../services/terraforms";
 import { setReviewReady } from "../../store/loadingSlice";
-import { useDispatch } from "react-redux";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { setFinishData, clearFinishData } from "../../store/finishDataSlice";
 import MermaidChart from "../../components/Mermaid/mermaid";
 
 interface Project {
@@ -28,32 +29,16 @@ interface Project {
   isDeployed: boolean;
 }
 
-interface HomeProps {
-  finishData: string[];
-  setFinishData: React.Dispatch<React.SetStateAction<string[]>>;
-}
-
-const Home: React.FC<HomeProps> = ({ finishData, setFinishData }) => {
+const Home: React.FC = () => {
   const [project, setProject] = useState<Project | null>(null);
   const [loading, setLoading] = useState(true);
-
+  const finishData = useAppSelector((state) => state.finishData.finishData);
   const token = localStorage.getItem("token");
   const { pid } = useParams<{ pid: string }>();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const chartCode: string = `
-  architecture-beta
-    group api(cloud)[API]
+  const dispatch = useAppDispatch();
+  console.log("finished:", finishData);
 
-    service db(database)[Database] in api
-    service disk1(disk)[Storage] in api
-    service disk2(disk)[Storage] in api
-    service server(server)[Server] in api
-
-    db:L -- R:server
-    disk1:T -- B:server
-    disk2:T -- B:db
-`;
   useEffect(() => {
     const fetchProjectData = async () => {
       try {
@@ -75,9 +60,9 @@ const Home: React.FC<HomeProps> = ({ finishData, setFinishData }) => {
       }
     };
 
-    setFinishData([]);
+    dispatch(clearFinishData());
     fetchProjectData();
-  }, [pid, navigate]);
+  }, [pid, navigate, dispatch]);
 
   useEffect(() => {
     if (!loading && !project) {
@@ -92,7 +77,7 @@ const Home: React.FC<HomeProps> = ({ finishData, setFinishData }) => {
       review(cid, Number(pid), token).then(({ message, bool }) => {
         dispatch(setReviewReady(true));
         if (!bool) {
-          alert(message)
+          alert(message);
           navigate(`/home/${pid}`);
         }
       });
@@ -107,7 +92,7 @@ const Home: React.FC<HomeProps> = ({ finishData, setFinishData }) => {
   };
 
   const handleFinishData = (data: string[]) => {
-    setFinishData(data);
+    dispatch(setFinishData(data));
   };
 
   if (loading) {
@@ -124,15 +109,13 @@ const Home: React.FC<HomeProps> = ({ finishData, setFinishData }) => {
         <div className="project-name-container">
           <h1 className="project-name">Project: {project!.projectName}</h1>
         </div>
-        <MermaidChart chartCode={chartCode}></MermaidChart>
-        {/* <ReactFlowProvider>
-          <Board parsedData={parsedData} finishData={finishData} />
-        </ReactFlowProvider> */}
+        <MermaidChart chartCode={finishData}></MermaidChart>
         <div className="review-btn-container">
           <button
             onClick={handleFinish}
-            className={`review-btn-${finishData.length === 0 ? "disabled" : "enabled"
-              }`}
+            className={`review-btn-${
+              finishData.length === 0 ? "disabled" : "enabled"
+            }`}
             disabled={finishData.length === 0}
           >
             Review

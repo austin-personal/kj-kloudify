@@ -6,7 +6,8 @@
   border-radius: 8px;
   height: 590px;
   width: 440px;
-  border: solid 1px rgb(160, 158, 138, 0.5);;
+  border: solid 1px rgb(160, 158, 138, 0.5);
+  color: #312d26;
 }
 
 .login-form {
@@ -14,6 +15,7 @@
   flex-direction: column;
   align-items: center;
   width: 326px;
+  color: #312d26;
 }
 
 .auth-logo {
@@ -78,6 +80,10 @@
   font-weight: bold;
   background-color: #fdc36d;
   border: 1px solid #e5e5e5;
+}
+
+.login-form button:hover {
+  opacity: 0.8;
 }
 
 .separator {
