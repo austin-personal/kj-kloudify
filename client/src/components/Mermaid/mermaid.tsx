@@ -10,15 +10,24 @@ interface MermaidChartProps {
 const MermaidChart: React.FC<MermaidChartProps> = ({ chartCode }) => {
   const chartString =
     `${chartCode
-      .map(
-        (code) =>
-          `${code
-            .replace(/^\[|\]$/g, "")
-            .replace(/;/g, "\n  ")
-            .replace(/[()]/g, "")}`
-      )
+      .map((code) => {
+        // 시작 부분에 [ 가 있으면 끝 부분의 ] 를 제거
+        if (code.startsWith("[")) {
+          return code
+            .replace(/^\[|\]$/g, "") // 시작의 [ 와 끝의 ] 를 제거
+            .replace(/;/g, "\n  ") // 끝의 세미콜론을 제거
+            .replace(/[()]/g, ""); // 끝의 () 괄호만 제거
+        } else {
+          // 시작 부분에 [가 없으면 끝의 ]를 제거하지 않음
+          return code
+            .replace(/^\[/, "") // 시작 부분의 [ 만 제거
+            .replace(/;/g, "\n  ") // 끝의 세미콜론을 제거
+            .replace(/[()]/g, ""); // 끝의 () 괄호만 제거
+        }
+      })
       .join("\n  ")}` ||
     `flowchart LR\nA[Welcome to Kloudify!]\nA --> B[Cloud simplified for you]`;
+
   console.log("파싱파싱:", chartString);
   const svgRef = useRef<d3.Selection<
     SVGSVGElement,
