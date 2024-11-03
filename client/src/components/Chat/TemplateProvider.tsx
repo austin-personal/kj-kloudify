@@ -1,11 +1,13 @@
 import React from "react";
 
 interface Template {
+    header?: string;
     name: string;
     text: string;
     subtext?: string;
     buttons?: { id: number; label: string }[];
     checks?: { id: number; label: string }[];
+    nocheck?: { id: number; label: string };
 }
 
 const templates: Record<number, Template> = {
@@ -43,6 +45,7 @@ const templates: Record<number, Template> = {
             { id: 1, label: "성능 효율성" },
             { id: 1, label: "비용 최적화" },
         ],
+        nocheck: { id: 1, label: "상관없음" },
     },
     6: {
         name: "template1-5",
@@ -55,17 +58,19 @@ const templates: Record<number, Template> = {
         ],
     },
     7: {
+        header: "서버",
         name: "template2-1",
         text: "애플리케이션의 워크로드 특성이 있나요? (다중선택)",
         checks: [
-            { id: 1, label: "기본" },
             { id: 1, label: "CPU 집약적" },
             { id: 1, label: "Memory 집약적" },
             { id: 1, label: "통신 집약적" },
             { id: 1, label: "GPU 필요" },
         ],
+        nocheck: { id: 1, label: "상관없음" },
     },
     8: {
+        header: "서버",
         name: "template2-2",
         text: "어떠한 서버 타입이 필요하시나요?",
         buttons: [
@@ -76,17 +81,19 @@ const templates: Record<number, Template> = {
         ]
     },
     9: {
+        header: "서버",
         name: "template2-3",
         text: "가장 중요한 가치는 무엇인가요? (다중선택) ",
         checks: [
-            { id: 1, label: "기본" },
             { id: 1, label: "가격 최적화" },
             { id: 1, label: "고가용성" },
             { id: 1, label: "고성능" },
             { id: 1, label: "백업기능" },
         ],
+        nocheck: { id: 1, label: "상관없음" },
     },
     10: {
+        header: "데이터베이스",
         name: "template3-1",
         text: "데이터베이스 유형이 어떻게 되나요?",
         buttons: [
@@ -97,25 +104,28 @@ const templates: Record<number, Template> = {
         ]
     },
     11: {
+        header: "데이터베이스",
         name: "template3-2",
         text: "추가적인 데이터베이스 정보를 알려주세요. 가장 중요한 가치는 무엇인가요?",
         buttons: [
-            { id: 1, label: "기본" },
             { id: 1, label: "가격 최적화" },
             { id: 1, label: "고가용성" },
             { id: 1, label: "고성능" },
             { id: 1, label: "백업기능" },
-        ]
+        ],
+        nocheck: { id: 1, label: "상관없음" },
     },
     12: {
+        header: "스토리지",
         name: "template4-1",
         text: "스토리지의 사용 패턴은 어떻게 되나요?",
         buttons: [
-            { id: 1, label: "기본" },
             { id: 1, label: "아주 가끔식만 접근" },
-        ]
+        ],
+        nocheck: { id: 1, label: "상관없음" },
     },
     13: {
+        header: "스토리지",
         name: "template4-2",
         text: "스토리지의 사용 목적은 무엇인가요?",
         buttons: [
@@ -125,24 +135,26 @@ const templates: Record<number, Template> = {
         ]
     },
     14: {
+        header: "스토리지",
         name: "template4-3",
         text: "스토리지에서 가장 중요한 가치는 무엇인가요? (다중선택) ",
         checks: [
-            { id: 1, label: "기본" },
             { id: 1, label: "가격 최적화" },
             { id: 1, label: "고가용성" },
             { id: 1, label: "고성능" },
             { id: 1, label: "백업기능" },
         ],
+        nocheck: { id: 1, label: "상관없음" },
     },
     15: {
+        header: "네트워크",
         name: "template5-1",
         text: "애플리케이션의 네트워크 요구사항은 무엇인가요? (다중선택)",
         checks: [
-            { id: 1, label: "기본 성능의 보안과 네트워크" },
             { id: 1, label: "추가적인 보안" },
             { id: 1, label: "퍼블릭 인터넷과 연결" }
         ],
+        nocheck: { id: 1, label: "상관없음" },
     },
     16: {
         name: "template-trigger",

@@ -159,9 +159,11 @@
   outline: none; /* 포커스 시 외곽선 제거 */
   border: none; /* 포커스 시 경계선 제거 */
 }
+
 .chat-icon {
   margin-left: 0;
 }
+
 .chat-button-sa {
   margin: 0;
   margin-right: 20px;
@@ -250,6 +252,13 @@
   80% {
     background-position: 0% 50%, 50% 50%, 100% 100%;
   }
+}
+
+.checkbox-container-th {
+  background-color: #fffce8;
+  padding: 10px;
+  border-radius: 10px;
+  margin-top: 5px;
 }
 
 .custom-checkbox {
