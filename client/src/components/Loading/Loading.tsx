@@ -1,14 +1,13 @@
 // Loading.tsx
-import React, { useEffect } from "react";
+import React from "react";
 import "./Loading.css";
+import Lottie from "lottie-react";
+import Loadinganimation from "./LoadingAnimation.json"
 
 const Loading: React.FC = () => {
-    useEffect(() => {
-        console.log("안녕");
-    }, [])
     return (
         <div className="loading-page">
-            <div className="loading-spinner"></div>
+            <Lottie animationData={Loadinganimation} />
             <p>Loading...</p>
         </div>
     );
