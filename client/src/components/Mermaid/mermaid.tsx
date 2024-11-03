@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
-import * as mermaid from "mermaid";
-import * as d3 from "d3";
+import mermaid from "mermaid";
+import { select, zoom, ZoomBehavior, zoomIdentity } from "d3";
 import "./mermaid.css";
 
 interface MermaidChartProps {
@@ -8,9 +8,11 @@ interface MermaidChartProps {
 }
 
 const MermaidChart: React.FC<MermaidChartProps> = ({ chartCode }) => {
-  const chartString = `${chartCode
-    .map((code) => `${code.replace(/^\[|\]$/g, "").replace(/;/g, "\n  ")}`)
-    .join("\n  ")}`;
+  const chartString =
+    `${chartCode
+      .map((code) => `${code.replace(/^\[|\]$/g, "").replace(/;/g, "\n  ")}`)
+      .join("\n  ")}` ||
+    `flowchart LR\nA[Welcome to Kloudify!]\nA --> B[Cloud simplified for you]`;
 
   const svgRef = useRef<d3.Selection<
     SVGSVGElement,
@@ -18,82 +20,88 @@ const MermaidChart: React.FC<MermaidChartProps> = ({ chartCode }) => {
     null,
     undefined
   > | null>(null);
-  const zoomBehavior = useRef<d3.ZoomBehavior<SVGSVGElement, unknown> | null>(
+  const zoomBehavior = useRef<ZoomBehavior<SVGSVGElement, unknown> | null>(
     null
   );
 
   useEffect(() => {
-    mermaid.default.initialize({
+    // Mermaid 설정
+    mermaid.initialize({
       startOnLoad: false,
       securityLevel: "loose",
-      betaFeatures: true,
-    } as any);
+      theme: "base",
+      themeVariables: {
+        nodeBorderRadius: "10px",
+        primaryColor: "#cbe8f8",
+      },
+    });
 
-    const element = document.querySelector(".mermaid");
-    if (element) {
-      mermaid.default
-        .render("mermaidChart", chartString)
-        .then((result: { svg: string }) => {
-          element.innerHTML = result.svg;
+    const renderDiagram = async () => {
+      const element = document.querySelector(".mermaid");
+      if (element) {
+        try {
+          const { svg } = await mermaid.render("mermaidChart", chartString);
+          element.innerHTML = svg;
 
-          const svg = d3.select<SVGSVGElement, unknown>(
-            element.querySelector("svg")!
-          );
-          svgRef.current = svg; // SVG 참조 저장
-          const innerGroup = svg.select<SVGGElement>("g");
-          // 컨테이너 크기에 맞춰 SVG 크기 조정
+          const svgElement = element.querySelector("svg") as SVGSVGElement;
+          if (svgElement) {
+            svgRef.current = select(svgElement) as d3.Selection<
+              SVGSVGElement,
+              unknown,
+              null,
+              undefined
+            >;
+            const innerGroup = svgRef.current.select<SVGGElement>("g");
 
-          zoomBehavior.current = d3
-            .zoom<SVGSVGElement, unknown>()
-            .on("zoom", (event) => {
-              innerGroup.attr("transform", event.transform.toString());
-            });
+            // 줌 설정
+            zoomBehavior.current = zoom<SVGSVGElement, unknown>()
+              .scaleExtent([0.5, 2])
+              .on("zoom", (event) => {
+                innerGroup.attr("transform", event.transform.toString());
+              });
 
-          svg.call(
-            zoomBehavior.current as unknown as (
-              selection: d3.Selection<SVGSVGElement, unknown, null, undefined>
-            ) => void
-          );
-        })
-        .catch((error) => console.error("Mermaid rendering error:", error));
-    }
+            svgRef.current.call(zoomBehavior.current);
+          }
+        } catch (error) {
+          console.error("Mermaid 렌더링 오류:", error);
+        }
+      }
+    };
+
+    renderDiagram();
   }, [chartString]);
 
-  // 줌 인 함수
   const zoomIn = () => {
     if (svgRef.current && zoomBehavior.current) {
-      svgRef.current
-        .transition()
-        .call(zoomBehavior.current.scaleBy as any, 1.2);
+      svgRef.current.transition().call(zoomBehavior.current.scaleBy, 1.2);
     }
   };
 
-  // 줌 아웃 함수
   const zoomOut = () => {
     if (svgRef.current && zoomBehavior.current) {
-      svgRef.current
-        .transition()
-        .call(zoomBehavior.current.scaleBy as any, 0.8);
+      svgRef.current.transition().call(zoomBehavior.current.scaleBy, 0.8);
     }
   };
 
-  // 전체 화면에 맞추기 함수
   const fitView = () => {
     if (svgRef.current && zoomBehavior.current) {
       svgRef.current
         .transition()
-        .call(zoomBehavior.current.transform as any, d3.zoomIdentity);
+        .call(zoomBehavior.current.transform, zoomIdentity);
     }
   };
 
   return (
     <div className="mermaid-container">
-      <div className="mermaid">{chartString}</div>
+      <div className="mermaid"></div>
       <div className="zoom-controls">
         <button onClick={zoomIn}>+</button>
         <button onClick={zoomOut}>-</button>
         <button onClick={fitView}>
-          <img src="https://api.iconify.design/material-symbols:fit-screen.svg" />
+          <img
+            src="https://api.iconify.design/material-symbols:fit-screen.svg"
+            alt="Fit View"
+          />
         </button>
       </div>
     </div>
