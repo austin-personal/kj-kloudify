@@ -26,6 +26,7 @@ interface Message {
   buttons?: { id: number; label: string }[];
   checks?: { id: number; label: string }[];
   nocheck?: { id: number; label: string };
+  servicechecks?: { id: number; label: string }[];
 }
 
 const defaultBotMessage: Message[] = [
@@ -46,10 +47,9 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
   const templates = useTemplates();
   const targetTemplateNames = [
     "서버",
-    "디비",
-    "네트워크",
+    "데이터베이스",
     "스토리지",
-    "모니터링",
+    "네트워크",
   ];
 
   const [messages, setMessages] = useState<Message[]>([]);
@@ -120,6 +120,7 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
                       ? matchingTemplate.buttons
                       : undefined,
                     nocheck: isLastMessage ? matchingTemplate.nocheck : undefined,
+                    servicechecks: isLastMessage ? matchingTemplate.servicechecks : undefined,
                   },
                 ];
               } else {
@@ -253,8 +254,8 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
         }
       } else {
         const currentChecks = prevState[messageId] || [];
-        if (currentChecks.includes("상관없음")) {
-          const filteredChecks = currentChecks.filter((item) => item !== "상관없음")
+        if (currentChecks.includes("알아서 해줘")) {
+          const filteredChecks = currentChecks.filter((item) => item !== "알아서 해줘")
           return {
             ...prevState,
             [messageId]: [...filteredChecks, label],
@@ -279,11 +280,35 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
   // 체크박스 제출 핸들러
   const handleCheckSubmit = (messageId: string) => {
     const selectedLabels = selectedChecks[messageId] || [];
-    if (selectedLabels.length > 0) {
-      handleButtonClick(messageId, {
-        id: 0,
-        label: `${selectedLabels.join(", ")}`,
-      });
+    const message = messages.find((msg) => msg.id === messageId);
+
+    if (message?.servicechecks) {
+      // servicechecks가 있는 경우만 처리
+      const uncheckedLabels = targetTemplateNames.filter(
+        (name) => !selectedLabels.includes(name)
+      );
+
+      if (selectedLabels.length > 0) {
+        handleButtonClick(messageId, {
+          id: 0,
+          label: `${selectedLabels.join(", ")} 선택 - ${uncheckedLabels.join(", ")} 선택안함`,
+        });
+      } else {
+        // 선택된 항목이 없는 경우에도 선택되지 않은 항목을 포함해 메시지를 보냄
+        handleButtonClick(messageId, {
+          id: 0,
+          label: `선택되지 않음 - ${uncheckedLabels.join(", ")} 선택안함`,
+        });
+      }
+
+    } else {
+      // 기존 checks는 기존 방식대로 처리
+      if (selectedLabels.length > 0) {
+        handleButtonClick(messageId, {
+          id: 0,
+          label: `${selectedLabels.join(", ")}`,
+        });
+      }
     }
   };
 
@@ -297,18 +322,9 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
       // "**"뒤에 있는 데이터를 배열형태로 받기
       let parsedDataArray: string[] = [];
 
-      try {
-        // JSON배열로 파싱
-        parsedDataArray = JSON.parse(afterAsterisks);
-        if (!Array.isArray(parsedDataArray)) {
-          throw new Error("파싱된 데이터가 배열이 아님");
-        }
-      } catch (e) {
-        console.error("'**'뒤에있는 데이터를 JSON배열로 파싱하는거 실패 :", e);
-        // 만약 JSON배열이 아니면 매뉴얼대로 파싱
-        let dataString = afterAsterisks.replace(/^\[|\]$/g, "");
-        parsedDataArray = dataString.split(",").map((item) => item.trim());
-      }
+      // 만약 JSON배열이 아니면 매뉴얼대로 파싱
+      let dataString = afterAsterisks.replace(/^\[|\]$/g, "");
+      parsedDataArray = dataString.split(",").map((item) => item.trim());
 
       // 부모에게 파싱된 데이터 보내기
       console.log("** 파싱: ", parsedDataArray);
@@ -333,6 +349,7 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
           buttons: matchingTemplate.buttons,
           checks: matchingTemplate.checks,
           nocheck: matchingTemplate.nocheck,
+          servicechecks: matchingTemplate.servicechecks,
         };
         setMessages((prevMessages) => [...prevMessages, newBotMessage]);
         // 일치 안한다면
@@ -361,6 +378,7 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
           buttons: matchingTemplate.buttons,
           checks: matchingTemplate.checks,
           nocheck: matchingTemplate.nocheck,
+          servicechecks: matchingTemplate.servicechecks,
         };
         setMessages((prevMessages) => [...prevMessages, newBotMessage]);
         // 일치 안한다면
@@ -413,21 +431,15 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
         const matchingTemplate = Object.values(templates).find(
           (template) => template.text === lastBotMessage.text
         );
-
-        // 특정 템플릿 이름과 일치하는지 확인
-        if (
-          matchingTemplate &&
-          targetTemplateNames.includes(matchingTemplate.name)
-        ) {
-          messageToSend = `${lastBotMessage.text} = ${matchingTemplate.name}선택 - ${input}`;
-        } else {
-          messageToSend = `${lastBotMessage.text} - ${input}`;
-        }
+        messageToSend = `${lastBotMessage.text} - ${input}`;
       } else {
         messageToSend = input;
       }
 
-      const responseMessage = await ask(messageToSend, projectCID);
+      let responseMessage = await ask(messageToSend, projectCID);
+      if (responseMessage === "template6-1") {
+        responseMessage = await ask("trigger", projectCID);
+      }
 
       // 로딩 메시지 제거
       setMessages((prevMessages) =>
@@ -473,7 +485,7 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
     setMessages((prevMessages) =>
       prevMessages.map((msg) =>
         msg.id === messageId
-          ? { ...msg, buttons: undefined, checks: undefined }
+          ? { ...msg, buttons: undefined, checks: undefined, servicechecks: undefined }
           : msg
       )
     );
@@ -512,19 +524,12 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
         const matchingTemplate = Object.values(templates).find(
           (template) => template.text === lastBotMessage.text
         );
-
-        // 특정 템플릿 이름과 일치하는지 확인
-        if (
-          matchingTemplate &&
-          targetTemplateNames.includes(matchingTemplate.name)
-        ) {
-          messageToSend = `${lastBotMessage.text} = ${matchingTemplate.name}선택 - ${userMessageText}`;
-        } else {
-          messageToSend = `${lastBotMessage.text} - ${userMessageText}`;
-        }
+        messageToSend = `${lastBotMessage.text} - ${userMessageText}`;
       } else {
         messageToSend = userMessageText;
       }
+
+      console.log("response : ", messageToSend)
 
       const responseMessage = await ask(messageToSend, projectCID);
 
@@ -608,17 +613,14 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
               <FontAwesomeIcon className="bot-icon" icon={faCloud} />
             )}
             <div className={`message ${message.sender}-message`}>
+
               {message.header && (
                 <div className="message-header">
                   <strong>{message.header}</strong>
                 </div>
               )}
 
-              {message.sender === "bot" ? (
-                <div className="message-content">{message.text}</div>
-              ) : (
-                message.text
-              )}
+              <div className="message-content">{message.text}</div>
 
               {/* 체크박스가 존재하면 렌더링 */}
               {message.checks &&
@@ -652,6 +654,25 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
                 </div>
               }
 
+              {/* 서비스체크박스가 존재하면 렌더링 */}
+              {message.servicechecks &&
+                <div className="checkbox-container-th">
+                  {message.servicechecks.map((check) => (
+                    <label className="custom-checkbox" key={check.label}>
+                      <input
+                        type="checkbox"
+                        checked={selectedChecks[message.id]?.includes(check.label) || false}
+                        onChange={() =>
+                          handleCheckChange(message.id, check.label)
+                        }
+                      />
+                      <span className="checkbox-mark"></span>
+                      {check.label}
+                    </label>
+                  ))}
+                </div>
+              }
+
               {/* 서브텍스트가 존재하면 렌더링 */}
               {message.subtext && (
                 <p className="template-sub-th">{message.subtext}</p>
@@ -670,7 +691,7 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
                 ))}
 
               {/* 체크박스 제출 버튼 */}
-              {message.checks && (
+              {(message.checks || message.servicechecks) && (
                 <button
                   onClick={() => handleCheckSubmit(message.id)}
                   className="template-btn-th"
