@@ -10,10 +10,16 @@ interface MermaidChartProps {
 const MermaidChart: React.FC<MermaidChartProps> = ({ chartCode }) => {
   const chartString =
     `${chartCode
-      .map((code) => `${code.replace(/^\[|\]$/g, "").replace(/;/g, "\n  ")}`)
+      .map(
+        (code) =>
+          `${code
+            .replace(/^\[|\]$/g, "")
+            .replace(/;/g, "\n  ")
+            .replace(/[()]/g, "")}`
+      )
       .join("\n  ")}` ||
     `flowchart LR\nA[Welcome to Kloudify!]\nA --> B[Cloud simplified for you]`;
-
+  console.log("파싱파싱:", chartString);
   const svgRef = useRef<d3.Selection<
     SVGSVGElement,
     unknown,
@@ -30,21 +36,23 @@ const MermaidChart: React.FC<MermaidChartProps> = ({ chartCode }) => {
       startOnLoad: false,
       securityLevel: "loose",
       theme: "base",
+      flowchart: { curve: "linear", useMaxWidth: false },
       themeVariables: {
-        nodeBorderRadius: "10px",
         primaryColor: "#cbe8f8",
       },
     });
 
     const renderDiagram = async () => {
-      const element = document.querySelector(".mermaid");
+      const element = document.querySelector(".mermaid-container");
       if (element) {
         try {
-          const { svg } = await mermaid.render("mermaidChart", chartString);
+          const { svg } = await mermaid.render("mermaid", chartString);
           element.innerHTML = svg;
 
           const svgElement = element.querySelector("svg") as SVGSVGElement;
           if (svgElement) {
+            svgElement.setAttribute("width", "100%");
+            svgElement.setAttribute("height", "100%");
             svgRef.current = select(svgElement) as d3.Selection<
               SVGSVGElement,
               unknown,
@@ -55,7 +63,7 @@ const MermaidChart: React.FC<MermaidChartProps> = ({ chartCode }) => {
 
             // 줌 설정
             zoomBehavior.current = zoom<SVGSVGElement, unknown>()
-              .scaleExtent([0.5, 2])
+              .scaleExtent([0.5, 5])
               .on("zoom", (event) => {
                 innerGroup.attr("transform", event.transform.toString());
               });
@@ -92,8 +100,10 @@ const MermaidChart: React.FC<MermaidChartProps> = ({ chartCode }) => {
   };
 
   return (
-    <div className="mermaid-container">
-      <div className="mermaid"></div>
+    <div className="frame">
+      <div className="mermaid-container">
+        <div id="mermaid"></div>
+      </div>
       <div className="zoom-controls">
         <button onClick={zoomIn}>+</button>
         <button onClick={zoomOut}>-</button>
