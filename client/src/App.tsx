@@ -9,7 +9,7 @@ import Detail from "./pages/Detail/Detail";
 import Review from "./pages/Review/Review";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import Guide from "./pages/Guide/Guide";
-import Loading from "./components/Loading/Loading"
+import Loading from "./components/Loading/Loading";
 import store from "./store/store";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -17,7 +17,6 @@ import { useAppSelector } from "./store/hooks";
 
 const App: React.FC = () => {
   const location = useLocation();
-  const [finishData, setFinishData] = useState<string[]>([]);
   // 주소가 login인지 아닌지
   const showNavBar = location.pathname !== "/";
   const isLoading = useAppSelector((state) => state.loading.isLoading);
@@ -37,7 +36,7 @@ const App: React.FC = () => {
               path="/home/:pid"
               element={
                 <ProtectedRoute>
-                  <Home finishData={finishData} setFinishData={setFinishData} />
+                  <Home />
                 </ProtectedRoute>
               }
             />
@@ -47,7 +46,7 @@ const App: React.FC = () => {
               path="/review/:cid"
               element={
                 <ProtectedRoute>
-                  <Review finishData={finishData} />
+                  <Review />
                 </ProtectedRoute>
               }
             />

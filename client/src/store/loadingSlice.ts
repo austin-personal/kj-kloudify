@@ -4,11 +4,13 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 interface LoadingState {
   isLoading: boolean;
   isReviewReady: boolean;
+  hasSecret: boolean;
 }
 
 const initialState: LoadingState = {
   isLoading: false,
   isReviewReady: false,
+  hasSecret: false, 
 };
 
 const loadingSlice = createSlice({
@@ -21,8 +23,11 @@ const loadingSlice = createSlice({
     setReviewReady: (state, action: PayloadAction<boolean>) => {
         state.isReviewReady = action.payload;
     },
+    setHasSecret: (state, action: PayloadAction<boolean>) => {
+      state.hasSecret = action.payload; // hasSecret 설정 리듀서
+    },
   },
 });
 
-export const { setLoading, setReviewReady } = loadingSlice.actions;
+export const { setLoading, setReviewReady, setHasSecret} = loadingSlice.actions;
 export default loadingSlice.reducer;

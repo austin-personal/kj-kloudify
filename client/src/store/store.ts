@@ -1,10 +1,12 @@
 // src/store/store.ts
 import { configureStore } from "@reduxjs/toolkit";
 import loadingReducer from "./loadingSlice";
+import finishDataReducer from "./finishDataSlice";
 
 const store = configureStore({
   reducer: {
     loading: loadingReducer,
+    finishData:finishDataReducer,
   },
 });
 

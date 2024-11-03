@@ -45,7 +45,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSwitchToLogin }) => {
           onChange={(e) => setPassword(e.target.value)}
         />
 
-        <button type="submit">회원가입</button>
+        <button type="submit">가입하기</button>
       </form>
       <div className="auth-login">
         이미 계정이 있으신가요?{" "}

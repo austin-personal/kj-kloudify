@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { setHasSecret } from "../../store/loadingSlice";
 import "./Profile.css";
 import {
   projectResumeInfo,
@@ -34,13 +36,15 @@ interface Project {
 
 const Profile: React.FC = () => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const hasSecret = useAppSelector((state) => state.loading.hasSecret); // Redux에서 가져옴
+
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [projects, setProjects] = useState<Project[]>([]);
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
   const [modalType, setModalType] = useState<string>(""); // 모달 타입을 구분하는 상태
   const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [hasSecret, setHasSecret] = useState(false);
   const [filterType, setFilterType] = useState("all"); // 필터링 타입 상태 추가
   const [isDropdownOpen, setIsDropdownOpen] = useState(false); // 드롭다운 상태 추가
   const itemsPerPage = 5; // 한 페이지에 보여줄 항목 수
@@ -51,7 +55,7 @@ const Profile: React.FC = () => {
       try {
         if (token) {
           const result = await checkSecret(token);
-          setHasSecret(result);
+          dispatch(setHasSecret(result));
           // 유저 정보 가져오기
           const userData = await info(token);
           setUserProfile(userData.user);
@@ -111,7 +115,11 @@ const Profile: React.FC = () => {
   );
 
   // 빈 행을 추가해 5개의 행을 유지
-  const emptyRows = itemsPerPage - currentProjects.length; // 남은 빈 행의 개수 계산
+  //현재 보여줄 프로젝트가 없는 경우 게시물이 없습니다 문구 제외 빈 행이 4개가 되게
+  const emptyRows =
+    currentProjects.length === 0
+      ? itemsPerPage - 1
+      : itemsPerPage - currentProjects.length; // 남은 빈 행의 개수 계산
 
   // 총 페이지 수 계산
   const totalPages = Math.ceil(filteredProjects().length / itemsPerPage);
@@ -169,7 +177,7 @@ const Profile: React.FC = () => {
       // AWS Key 삭제 로직
       const response = await deleteSecret(token);
       alert(response);
-      setHasSecret(false);
+      dispatch(setHasSecret(false));
     }
 
     setShowDeleteModal(false);

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
+import { useAppSelector } from "../../store/hooks"; // 커스텀 훅 임포트
 import "./NavBar.css";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -16,6 +17,7 @@ const NavBar: React.FC = () => {
   const navigate = useNavigate(); // useNavigate 훅 사용
   const location = useLocation();
   const [userProfile, setUserProfile] = useState("");
+  const hasSecret = useAppSelector((state) => state.loading.hasSecret);
   const token = localStorage.getItem("token");
 
   useEffect(() => {
@@ -38,9 +40,7 @@ const NavBar: React.FC = () => {
   }, [token, navigate]);
 
   const handleLogout = () => {
-    if (token) {
-      localStorage.removeItem("token");
-    }
+    localStorage.clear();
   };
 
   const handleBackClick = () => {
@@ -83,7 +83,12 @@ const NavBar: React.FC = () => {
 
   // 모달 열고 닫는 함수
   const handleNewProjectOpen = () => {
-    setIsModalOpen(true);
+    if (!hasSecret) {
+      alert("새로운 프로젝트를 생성하기 전 AWS Key 정보가 필요합니다.");
+      navigate("/guide");
+    } else {
+      setIsModalOpen(true);
+    }
   };
 
   const handleNewProjectClose = () => {
@@ -112,6 +117,7 @@ const NavBar: React.FC = () => {
   };
 
   const isProfilePage = location.pathname === "/profile";
+  const isGuidePage = location.pathname === "/guide";
 
   return (
     <>
@@ -125,9 +131,11 @@ const NavBar: React.FC = () => {
               onClick={handleBackClick}
             />
           )}
-          <button className="new-project-btn" onClick={handleNewProjectOpen}>
-            + New Project
-          </button>
+          {!isGuidePage && (
+            <button className="new-project-btn" onClick={handleNewProjectOpen}>
+              + New Project
+            </button>
+          )}
         </div>
         <div className="navbar-center">
           <FontAwesomeIcon icon={faCloud} size="2xl" className="navbar-icon" />
