@@ -18,12 +18,14 @@ interface ChatProps {
 
 interface Message {
   id: string;
+  header?: string;
   text: string | JSX.Element;
   subtext?: string;
   sender: "user" | "bot";
   maxLength?: number;
   buttons?: { id: number; label: string }[];
   checks?: { id: number; label: string }[];
+  nocheck?: { id: number; label: string };
 }
 
 const defaultBotMessage: Message[] = [
@@ -108,6 +110,7 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
                     sender: "user",
                   },
                   {
+                    header: matchingTemplate.header,
                     id: uuidv4(),
                     text: matchingTemplate.text,
                     subtext: matchingTemplate.subtext,
@@ -116,6 +119,7 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
                     buttons: isLastMessage
                       ? matchingTemplate.buttons
                       : undefined,
+                    nocheck: isLastMessage ? matchingTemplate.nocheck : undefined,
                   },
                 ];
               } else {
@@ -241,19 +245,33 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
   }, [scrollRef.current]); // scrollRef.current가 변경될 때만 실행
 
   // 체크박스 클릭 핸들러
-  const handleCheckChange = (messageId: string, label: string) => {
+  const handleCheckChange = (messageId: string, label: string, isNoCheck?: boolean) => {
     setSelectedChecks((prevState) => {
-      const currentChecks = prevState[messageId] || [];
-      if (currentChecks.includes(label)) {
+      if (isNoCheck) {
         return {
-          ...prevState,
-          [messageId]: currentChecks.filter((item) => item !== label),
-        };
+          ...prevState, [messageId]: [label],
+        }
       } else {
-        return {
-          ...prevState,
-          [messageId]: [...currentChecks, label],
-        };
+        const currentChecks = prevState[messageId] || [];
+        if (currentChecks.includes("상관없음")) {
+          const filteredChecks = currentChecks.filter((item) => item !== "상관없음")
+          return {
+            ...prevState,
+            [messageId]: [...filteredChecks, label],
+          };
+        }
+
+        if (currentChecks.includes(label)) {
+          return {
+            ...prevState,
+            [messageId]: currentChecks.filter((item) => item !== label),
+          };
+        } else {
+          return {
+            ...prevState,
+            [messageId]: [...currentChecks, label],
+          };
+        }
       }
     });
   };
@@ -307,12 +325,14 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
       if (matchingTemplate) {
         // 템플릿을 묘사해라
         const newBotMessage: Message = {
+          header: matchingTemplate.header,
           id: uuidv4(),
           text: matchingTemplate.text,
           subtext: matchingTemplate.subtext,
           sender: "bot",
           buttons: matchingTemplate.buttons,
           checks: matchingTemplate.checks,
+          nocheck: matchingTemplate.nocheck,
         };
         setMessages((prevMessages) => [...prevMessages, newBotMessage]);
         // 일치 안한다면
@@ -333,12 +353,14 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
       if (matchingTemplate) {
         // 템플릿을 묘사해라
         const newBotMessage: Message = {
+          header: matchingTemplate.header,
           id: uuidv4(),
           text: matchingTemplate.text,
           subtext: matchingTemplate.subtext,
           sender: "bot",
           buttons: matchingTemplate.buttons,
           checks: matchingTemplate.checks,
+          nocheck: matchingTemplate.nocheck,
         };
         setMessages((prevMessages) => [...prevMessages, newBotMessage]);
         // 일치 안한다면
@@ -586,6 +608,12 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
               <FontAwesomeIcon className="bot-icon" icon={faCloud} />
             )}
             <div className={`message ${message.sender}-message`}>
+              {message.header && (
+                <div className="message-header">
+                  <strong>{message.header}</strong>
+                </div>
+              )}
+
               {message.sender === "bot" ? (
                 <div className="message-content">{message.text}</div>
               ) : (
@@ -594,22 +622,35 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
 
               {/* 체크박스가 존재하면 렌더링 */}
               {message.checks &&
-                message.checks.map((check) => (
-                  <>
-                    <div className="checkbox-container-th">
-                      <label className="custom-checkbox" key={check.label}>
-                        <input
-                          type="checkbox"
-                          onChange={() =>
-                            handleCheckChange(message.id, check.label)
-                          }
-                        />
-                        <span className="checkbox-mark"></span>
-                        {check.label}
-                      </label>
-                    </div>
-                  </>
-                ))}
+                <div className="checkbox-container-th">
+                  {message.checks.map((check) => (
+                    <label className="custom-checkbox" key={check.label}>
+                      <input
+                        type="checkbox"
+                        checked={selectedChecks[message.id]?.includes(check.label) || false}
+                        onChange={() =>
+                          handleCheckChange(message.id, check.label)
+                        }
+                      />
+                      <span className="checkbox-mark"></span>
+                      {check.label}
+                    </label>
+                  ))}
+                  {message.nocheck && (
+                    <label className="custom-checkbox" key={message.nocheck.label}>
+                      <input
+                        type="checkbox"
+                        checked={selectedChecks[message.id]?.includes(message.nocheck.label) || false}
+                        onChange={() =>
+                          message.nocheck?.label && handleCheckChange(message.id, message.nocheck?.label, true)
+                        }
+                      />
+                      <span className="checkbox-mark"></span>
+                      {message.nocheck.label}
+                    </label>
+                  )}
+                </div>
+              }
 
               {/* 서브텍스트가 존재하면 렌더링 */}
               {message.subtext && (
