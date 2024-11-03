@@ -381,7 +381,7 @@ export class ConversationsService {
                 }
 
                 // 대화 내용 저장 (필요한 경우 다음 템플릿 지정)
-                await this.saveConversation(CID, user_question, '다음템플릿');
+                // await this.saveConversation(CID, user_question, '다음템플릿');
 
                 // 응답 생성 및 반환
             } else {
@@ -447,7 +447,6 @@ export class ConversationsService {
             const botResponse = parsedResponse.content?.[0]?.text;
 
             console.log("bot response? ", responseBody);
-            
 
             // 키워드 처리 및 저장 (botResponse, user_question을 사용)
             let updatedResponse = await this.processTextAndAddKeywords(botResponse, user_question, CID);
@@ -473,19 +472,22 @@ export class ConversationsService {
                 } else {
                     nextTemplate = 'template6-1';
                 }
+
                 this.updateModelCounter(CID,nextItem);
-                updatedResponse = await this.processTextAndAddKeywords(nextTemplate + '\n' + updatedResponse, user_question, CID);
+
+                await this.saveConversation(CID, user_question, nextTemplate + updatedResponse);
+
                 return {
                     ...parsedResponse,
                     content: [
                         {
                             type: "text",
-                            text: updatedResponse // 업데이트된 텍스트 (키워드 리스트 포함)
+                            text: nextTemplate + updatedResponse // 업데이트된 텍스트 (키워드 리스트 포함)
                         }
                     ]
                 };
             }
-
+            await this.saveConversation(CID, user_question, updatedResponse);
             // 최종적으로 업데이트된 텍스트와 함께 리턴 (키워드 리스트 포함)
             return {
                 ...parsedResponse,
@@ -571,27 +573,28 @@ export class ConversationsService {
         return { keywords: matches, updatedText: updatedText.trim() };
     }
 
-// 기존 키워드를 누적하지 않고 새로운 키워드로 덮어쓰는 함수
-async saveKeywords(keywords: string[], CID: number): Promise<void> {
-    // 새로운 키워드를 문자열로 결합
-    const newKeywords = keywords.join(', ');
+    // 기존 키워드를 누적하지 않고 새로운 키워드로 덮어쓰는 함수
+    async saveKeywords(keywords: string[], CID: number): Promise<void> {
+        // 새로운 키워드를 문자열로 결합
+        const newKeywords = keywords.join(', ');
 
-    const params = {
-        TableName: 'Archboard_keyword',
-        Item: {
-            CID: CID,
-            keyword: newKeywords,
-            timestamp: new Date().toISOString(),
+        const params = {
+            TableName: 'Archboard_keyword',
+            Item: {
+                CID: CID,
+                keyword: newKeywords,
+                timestamp: new Date().toISOString(),
+            }
+        };
+
+        try {
+            await this.dynamoDB.put(params).promise();
+            console.log(`키워드 저장 성공: ${newKeywords}`);
+        } catch (error) {
+            console.error(`키워드 저장 실패: ${error.message}`);
         }
-    };
-
-    try {
-        await this.dynamoDB.put(params).promise();
-        console.log(`키워드 저장 성공: ${newKeywords}`);
-    } catch (error) {
-        console.error(`키워드 저장 실패: ${error.message}`);
     }
-}
+    
 
     async processTextAndAddKeywords(outputText: string, inputText: string, CID: number): Promise<string> {
         // console.log(`processTextAndAddKeywords 호출됨 - CID: ${CID}, insputText: ${inputText}`);
@@ -619,7 +622,7 @@ async saveKeywords(keywords: string[], CID: number): Promise<void> {
         const finalText = updatedText + `\n**[${fetchedKeywords.join(', ')}]`;
 
         // 인풋(사용자 입력)과 최종 텍스트 저장
-        await this.saveConversation(CID, inputText, finalText);
+        // await this.saveConversation(CID, inputText, finalText);
 
         return finalText;
     }
