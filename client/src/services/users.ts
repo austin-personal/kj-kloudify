@@ -23,6 +23,7 @@ export const login = async (email: string, password: string) => {
     try {
         // 태현 api 주소 확인!!!
         console.log("뭐냐이거", process.env)
+        console.log("변수값은",email,password);
         const response = await axios.post(`${API_URL}/login`, {
             email,
             password,
