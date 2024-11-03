@@ -20,6 +20,31 @@ const Services: React.FC<ServicesProps> = ({ cid, isReviewReady }) => {
   const navigate = useNavigate();
   const token = localStorage.getItem("token") ?? "";
   const dispatch = useDispatch();
+  const data = localStorage.getItem("finishData");
+  //서비스 이름 추출
+  let filteredMatches: string[] = [];
+  if (data) {
+    const reData = JSON.parse(data);
+
+    const chartString = `${reData
+      .map(
+        (code: string) =>
+          `${code.replace(/^\[|\]$/g, "").replace(/;/g, "\n  ")}`
+      )
+      .join("\n  ")}`;
+    console.log(chartString);
+    // `[]` 안의 문자열 추출
+    const matches = Array.from(chartString.matchAll(/\[(.*?)\]/g)).map(
+      (match) => match[1]
+    );
+    console.log(matches);
+    // `사용자` 또는 `client` 키워드를 포함하지 않는 항목만 필터링
+    filteredMatches = matches.filter(
+      (item) =>
+        !item.includes("사용자") && !item.toLowerCase().includes("client")
+    );
+    console.log(filteredMatches);
+  }
 
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setIsChecked(e.target.checked);
@@ -73,23 +98,19 @@ const Services: React.FC<ServicesProps> = ({ cid, isReviewReady }) => {
         </button>
       </div>
       <div className="service-container">
-        {/* {nodes.map((node) => (
-          <div key={node.id}>
-            {node.data && node.type === "position-logger" && (
-              <>
-                <div className="service-element">
-                  <img
-                    src={node.data.imgUrl}
-                    alt="ec2"
-                    className="service-image"
-                  />
-                  <span className="service-label">{node.data.label}</span>
-                  <span className="price-label">$9/per month</span>
-                </div>
-              </>
-            )}
+        {filteredMatches.map((item, index) => (
+          <div key={index}>
+            <div className="service-element">
+              <img
+                src="https://icon.icepanel.io/AWS/svg/Compute/EC2.svg"
+                alt="ec2"
+                className="service-image"
+              />
+              <span className="service-label">{item}</span>
+              <span className="price-label">$9/per month</span>
+            </div>
           </div>
-        ))} */}
+        ))}
       </div>
       <div className="middle-btn">
         {/* 모달이 열려 있을 때만 모달 컴포넌트 보여주기 */}
