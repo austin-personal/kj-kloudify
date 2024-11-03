@@ -31,6 +31,31 @@ export class ConversationsService {
         console.log(`증가된 modelSwitchCounter 값: ${modelSwitchCounter}`);
     }
 
+    // 전역 변수를 특정 값으로 변경하는 함수
+    async updateModelCounter(CID: number, action: string): Promise<void> {
+        console.log(`updateModelCounter 호출됨 - CID: ${CID}, action: ${action}`);
+        let modelSwitchCounter = await this.getModelSwitchCounter(CID);
+        console.log(`현재 modelSwitchCounter 값: ${modelSwitchCounter}`);
+
+        // action 값에 따라 modelSwitchCounter 설정
+        if (action === '서버') {
+            modelSwitchCounter = 1; // reset의 경우 0으로 설정
+        } else if (action === '데이터베이스') {
+            modelSwitchCounter = 2; // double의 경우 두 배로 설정
+        } else if (action === '스토리지') {
+            modelSwitchCounter = 3; 
+        } else if (action === '네트워크') {
+            modelSwitchCounter = 4; 
+        } else {
+            modelSwitchCounter = 6; 
+            return;
+        }
+
+        await this.saveModelSwitchCounter(CID, modelSwitchCounter);
+        console.log(`변경된 modelSwitchCounter 값: ${modelSwitchCounter}`);
+    }
+
+
     // ID 증가를 위해 테이블의 가장 큰 ID를 조회하는 함수
     async getLastID(): Promise<number> {
         let lastEvaluatedKey: AWS.DynamoDB.Key | undefined = undefined;
@@ -77,10 +102,51 @@ export class ConversationsService {
                         필요한 AWS 서비스들을 식별합니다.
                         각 서비스 간의 관계를 파악합니다.
                         대화 내역을 전부 참고하여 질문에 맞지 않는 대답이 있다면 해당 질문을 다시 되물어서 정확한 정보를 얻도록 해주세요.
-
-                        마지막으로 구성된 정보가 마무리되었다면 mermaid 코드로서 ** 양식을 붙여서 보내주세요. \n 없이 한 줄로 출력해주세요. 앞에 **을 꼭 넣어주세요.`
+                        대화 내역을 참고한 결과 필요한 서비스를 어느정도 구성할 수 있다면 구성한 서비스를 보여주며 이대로 진행할꺼냐고 물어봐주세요.
+                        마지막으로 구성된 정보가 마무리되었다면 mermaid 코드로서 AWS 아이콘들의 실제 URL을 사용해서 3티어 아키텍쳐 머메이드로 <img> 사용해서 예쁘게 ** 양식을 붙여서 보내주세요. \n 없이 한 줄로 출력해주세요. 앞에 **을 꼭 넣어주세요.
+                        구성이 완료되고 사용자가 이대로 진행을 요청을 하게되면 아무말 없이 mermaid코드만 한줄로 출력해주세요.`;
 
             case 1:
+                return `당신은 사용자의 요구에 맞는 AWS 아키텍처 설계를 돕는 전문 안내자 역할을 합니다. 그 중 서버담당자입니다.
+
+                        목표는 사용자의 요구 사항을 파악하여, 필요한 서버 서비스의 옵션을 정확히 정의하고 이를 mermaid 코드로 간략하게 나타내는 것입니다.
+                        이전에 만들었던 mermaid 코드를 참조하여 같은 구조에서 담당한 서비스의 구역이 구체화 되도록 하세요.
+                        
+                        대화 내역을 전부 참고하여 질문에 맞지 않는 대답이 있다면 해당 질문을 다시 되물어서 정확한 정보를 얻도록 해주세요.
+                        대화 내역을 참고한 결과 서버를 가동하는데에 충분한 정보가 모였다면 구성한 서비스를 보여주며 이대로 진행할꺼냐고 물어봐주세요.
+                        마지막으로 구성된 정보가 마무리되었다면 mermaid 코드로서 AWS 아이콘들의 실제 URL을 사용해서 3티어 아키텍쳐 머메이드로 <img> 사용해서 예쁘게 ** 양식을 붙여서 보내주세요. \n 없이 한 줄로 출력해주세요. 앞에 **을 꼭 넣어주세요.
+                        구성이 완료되고 사용자가 이대로 진행을 요청을 하게되면 아무말 없이 mermaid코드만 한줄로 출력해주세요.`;
+            case 2:
+                return `당신은 사용자의 요구에 맞는 AWS 아키텍처 설계를 돕는 전문 안내자 역할을 합니다. 그 중 데이터베이스 담당자입니다.
+
+                        목표는 사용자의 요구 사항을 파악하여, 필요한 데이터베이스 서비스의 옵션을 정확히 정의하고 이를 mermaid 코드로 간략하게 나타내는 것입니다.
+                        이전에 만들었던 mermaid 코드를 참조하여 같은 구조에서 담당한 서비스의 구역이 구체화 되도록 하세요.
+
+                        대화 내역을 전부 참고하여 질문에 맞지 않는 대답이 있다면 해당 질문을 다시 되물어서 정확한 정보를 얻도록 해주세요.
+                        대화 내역을 참고한 결과 서버를 가동하는데에 충분한 정보가 모였다면 구성한 서비스를 보여주며 이대로 진행할꺼냐고 물어봐주세요.
+                        마지막으로 구성된 정보가 마무리되었다면 mermaid 코드로서 AWS 아이콘들의 실제 URL을 사용해서 3티어 아키텍쳐 머메이드로 <img> 사용해서 예쁘게 ** 양식을 붙여서 보내주세요. \n 없이 한 줄로 출력해주세요. 앞에 **을 꼭 넣어주세요.
+                        구성이 완료되고 사용자가 이대로 진행을 요청을 하게되면 아무말 없이 mermaid코드만 한줄로 출력해주세요.`;
+            case 3:
+                return `당신은 사용자의 요구에 맞는 AWS 아키텍처 설계를 돕는 전문 안내자 역할을 합니다. 그 중 스토리지 담당자입니다.
+
+                        목표는 사용자의 요구 사항을 파악하여, 필요한 스토리지 서비스의 옵션을 정확히 정의하고 이를 mermaid 코드로 간략하게 나타내는 것입니다.
+                        이전에 만들었던 mermaid 코드를 참조하여 같은 구조에서 담당한 서비스의 구역이 구체화 되도록 하세요.
+                        
+                        대화 내역을 전부 참고하여 질문에 맞지 않는 대답이 있다면 해당 질문을 다시 되물어서 정확한 정보를 얻도록 해주세요.
+                        대화 내역을 참고한 결과 서버를 가동하는데에 충분한 정보가 모였다면 구성한 서비스를 보여주며 이대로 진행할꺼냐고 물어봐주세요.
+                        마지막으로 구성된 정보가 마무리되었다면 mermaid 코드로서 AWS 아이콘들의 실제 URL을 사용해서 3티어 아키텍쳐 머메이드로 <img> 사용해서 예쁘게 ** 양식을 붙여서 보내주세요. \n 없이 한 줄로 출력해주세요. 앞에 **을 꼭 넣어주세요.
+                        구성이 완료되고 사용자가 이대로 진행을 요청을 하게되면 아무말 없이 mermaid코드만 한줄로 출력해주세요.`;
+            case 4:
+                return `당신은 사용자의 요구에 맞는 AWS 아키텍처 설계를 돕는 전문 안내자 역할을 합니다. 그 중 네트워크 담당자입니다.
+
+                        목표는 사용자의 요구 사항을 파악하여, 필요한 네트워크 서비스의 옵션을 정확히 정의하고 이를 mermaid 코드로 간략하게 나타내는 것입니다.
+                        이전에 만들었던 mermaid 코드를 참조하여 같은 구조에서 담당한 서비스의 구역이 구체화 되도록 하세요.
+                        
+                        대화 내역을 전부 참고하여 질문에 맞지 않는 대답이 있다면 해당 질문을 다시 되물어서 정확한 정보를 얻도록 해주세요.
+                        대화 내역을 참고한 결과 서버를 가동하는데에 충분한 정보가 모였다면 구성한 서비스를 보여주며 이대로 진행할꺼냐고 물어봐주세요.
+                        마지막으로 구성된 정보가 마무리되었다면 mermaid 코드로서 AWS 아이콘들의 실제 URL을 사용해서 3티어 아키텍쳐 머메이드로 <img> 사용해서 예쁘게 ** 양식을 붙여서 보내주세요. \n 없이 한 줄로 출력해주세요. 앞에 **을 꼭 넣어주세요.
+                        구성이 완료되고 사용자가 이대로 진행을 요청을 하게되면 아무말 없이 mermaid코드만 한줄로 출력해주세요.`;
+            case 5: 
                 return "당신은 사용자의 요구에 맞는 AWS 서비스 아키텍처를 단계별로 구성하는 안내자 역할을 합니다."
                     + "저비용을 원할 경우 프리 티어 등급의 서비스를 적극적으로 추천해줘"
                     + "답변에서 사용자가 특정 aws의 서비스를 단순히 언급하는게 아닌 '확실하게 사용하겠다고 확정 {ex)ec2를 사용할께 같은 경우}' 지은 경우에만 대답을 완료한 후 별도로 추출하기 쉽도록 텍스트 하단에 "
@@ -91,23 +157,6 @@ export class ConversationsService {
                     + "ec2의 ami와 subnet_id도 내가 구성한 내용을 바탕으로 실제로 사용할 수 있도록 구성해줘. subnet은 별도의 언급이 없다면 기본값으로 설정하고"
                     + "Mermaid로서 구성해줘"
                     + "S3은 특별한 목적이 없다면 private하게 해줘";
-            case 2:
-                return "어떤 인풋이 들어와도 이번타자라고 대답해줘";
-            case 3:
-                return `어떤 대답이 들어와도 삼번타자라고 대답해줘`;
-            case 4:
-                return `어떤 대답이 들어와도 사번타자라고 대답해줘`;
-            case 5: 
-                return "당신은 사용자의 요구에 맞는 AWS 아키텍처 설계를 돕는 \\**전문 안내자 역할\\**을 합니다. \\n\\n\
-                    - 목표는 사용자의 요구 사항을 파악하여, 적절한 AWS 아키텍처 티어\\(\\<TIER\\:\\단일 티어\\>, \\<TIER\\:\\2티어\\>, \\<TIER\\:\\3티어\\>\\) 중 하나를 이끌어내는 것입니다.\\n\\n\
-                    ### 단계별 질문 안내\\:\\n\
-                    - \\<단일 티어: 기본 서버 구성\\>\
-                    - \\<2티어: 애플리케이션과 데이터베이스 분리 구성\\>\
-                    - \\<3티어: 로드 밸런싱 및 확장성 추가\\>\\n\\n\
-                    **첫 번째 단계 질문 예시\\:**\\n\
-                    - \\\"제공하려는 서비스의 주요 목표는 무엇인가요\\?\\\" \\<TIER\\: 단일, 2티어, 3티어\\>\\n\
-                    - \\\"예상 사용자 수는 얼마나 되나요\\?\\\" \\<TIER\\: 단일, 2티어, 3티어\\>"
-                    + "이 <TIER\\: 단일, 2티어, 3티어\\> 양식은 최종적으로 몇티어를 원하는지 결정됬을 때 텍스트 마지막에 한번만 출력해줘";
 
             case 6: // 아웃트로 육식이
                 return `지금까지의 대화 내용을 종합하여 필요한 AWS 서비스 구성을 아래 양식으로 생성했습니다. 최종 구성은 Terraform 코드로 변환될 예정이며, 각 서비스와 옵션이 정확히 입력되어야 합니다.
@@ -236,50 +285,60 @@ export class ConversationsService {
 
             '애플리케이션의 워크로드 특성이 있나요': 'template2-2',
             '어떠한 서버 타입이 필요하시나요': 'template2-3',
-            '가장 중요한 가치는 무엇인가요': '질문의 끝',
+            // '가장 중요한 가치는 무엇인가요': '질문의 끝',
 
             '데이터베이스 유형이 어떻게 되나요': 'template3-2',
-            '추가적인 데이터베이스 정보를 알려주세요': '질문의 끝',
+            // '추가적인 데이터베이스 정보를 알려주세요': '질문의 끝',
 
             '스토리지의 사용 패턴은 어떻게 되나요': 'template4-2',
             '스토리지의 사용 목적은 무엇인가요': 'template4-3',
-            '스토리지에서 가장 중요한 가치는 무엇인가요': '질문의 끝',
+            // '스토리지에서 가장 중요한 가치는 무엇인가요': '질문의 끝',
 
-            '애플리케이션의 네트워크 요구사항은 무엇인가요': '마지막 질문',
-
+            // '애플리케이션의 네트워크 요구사항은 무엇인가요': '마지막 질문',
+            '계활' : "컨텍스트 스위칭",
             '특정텍스트1': '컨텍스트 스위칭' // 여기서 답변 매칭해줌
         };
+
         // 이 질문의 역할은? - 아 메트릭스에서 나온 키워드에 따라 다음 질문을 매핑하는 역할. 즉, 각 스테이지의 첫 질문 트리거
         const level4Questions = {
-            '디비': '데이터베이스 유형이 어떻게 되나요',
-            '서버': '애플리케이션의 워크로드 특성이 있나요',
-            '스토리지': '스토리지의 사용 패턴은 어떻게 되나요',
-            '네트워크': '애플리케이션의 네트워크 요구사항은 무엇인가요',
+            '디비': 'template3-1',
+            '서버': 'template2-1',
+            '스토리지': 'template3-1',
+            '네트워크': 'template4-1',
         };
 
         // 템플릿 키를 확인하고 응답 생성
         const templateKey = Object.keys(templateResponses).find(key => user_question.includes(key));
         let templateResponse: string = templateKey ? templateResponses[templateKey] : 'default response';
-        if (templateKey) {
 
-            const triggerKeywords = ['특정텍스트1', '특정텍스트2', '특정텍스트3']; // 여기에 원하는 키워드
+        if (templateKey) {
+            // 모델 카운터 증가 조건 확인 및 처리
+            const triggerKeywords = ['특정텍스트1', '특정텍스트2', '계활'];
             const shouldIncrementCounter = triggerKeywords.some(keyword => user_question.includes(keyword));
             if (shouldIncrementCounter) {
                 console.log(`키워드 조건 만족 - ${user_question}에 특정 키워드 포함됨, modelSwitchCounter 증가`);
-                await this.incrementModelCounter(CID);
+                try {
+                    await this.incrementModelCounter(CID);
+                } catch (error) {
+                    console.error('모델 카운터 증가 중 에러 발생:', error);
+                }
             }
 
             const isNextQuestion = user_question.includes('다음문항');
-
             if ((templateKey === '그 외에 필요한 기능이 있나요' || isNextQuestion) && globalMatrix) {
                 if (globalMatrix.length === 0) {
                     await this.deleteState(CID);
                     return this.createResponse("종료");
                 }
+
                 const nextItem = globalMatrix.shift();
                 if (nextItem && level4Questions[nextItem]) {
                     // 상태 저장
-                    await this.saveStateData(CID, globalMatrix);
+                    try {
+                        await this.saveStateData(CID, globalMatrix);
+                    } catch (error) {
+                        console.error('상태 저장 중 에러 발생:', error);
+                    }
                     return this.createResponse(level4Questions[nextItem]);
                 } else {
                     await this.deleteState(CID);
@@ -288,117 +347,50 @@ export class ConversationsService {
             }
 
             // 템플릿 응답 반환
-            await this.saveConversation(CID, user_question, templateResponse);
+            try {
+                await this.saveConversation(CID, user_question, templateResponse);
+            } catch (error) {
+                console.error('대화 내용 저장 중 에러 발생:', error);
+            }
             return this.createResponse(templateResponse);
         }
-        // 기존 - 선택지에 따라서 필요없음이 나오지 않는 한 리스트에 수동으로 추가하던 로직 -> 스테이지0 5번질문에서 선택한대로 리스트 생성해야함
-        const options = [
-            { keyword: '서버선택', noSelectionLog: "서버선택 안함 로직 실행", selectionLog: "서버설정", nextTem: "디비" },
-            { keyword: '디비선택', noSelectionLog: "디비선택 안함 로직 실행", selectionLog: "디비설정", nextTem: "스토리지" },
-            { keyword: '스토리지선택', noSelectionLog: "스토리지 선택 안함 로직 실행", selectionLog: "스토리지설정", nextTem: "네트워크" },
-            { keyword: '네트워크선택', noSelectionLog: "네트워크 선택 안함 로직 실행", selectionLog: "네트워크설정", nextTem: "모니터링" },
-            { keyword: '모니터링선택', noSelectionLog: "모니터링 선택 안함 로직 실행", selectionLog: "모니터링설정", nextTem: "다음문항" },
-             
-        ];
 
-        // 조건을 반복하며 인풋 텍스트에서 확인
-        for (const option of options) {
-            if (user_question.includes(option.keyword)) {
-                if (option.keyword === "모니터링선택") {
-                    if (user_question.includes('필요없음')) {
-                        console.log(option.noSelectionLog, "Is here??");
-                        await this.saveConversation(CID, user_question, 'template3-3');
 
-                        // 상태 저장 또는 삭제
-                        if (globalMatrix.length === 0) {
-                            await this.deleteState(CID);
-                        } else {
-                            await this.saveStateData(CID, globalMatrix);
-                        }
+        // 트리거 키워드 정의 (항상 동일한 키워드)
+        const triggerKeyword = '당신의 웹서비스는 어떤 클라우드 기술이 필요한가요'; // 실제 트리거 키워드로 변경하세요.
 
-                        console.log(`template3-3 !![${globalMatrix.join(', ')}]`);
-                        return this.createResponse(`template3-3 !![${globalMatrix.join(', ')}]`);
-                    }
+        // 사용자 메시지에서 트리거 키워드가 포함되어 있는지 확인
+        if (user_question.includes(triggerKeyword)) {
+            // 트리거 키워드 이후의 텍스트를 파싱
+            const triggerIndex = user_question.indexOf(triggerKeyword) + triggerKeyword.length;
+            const remainingText = user_question.substring(triggerIndex).trim();
 
-                    if (option.selectionLog) {
-                        globalMatrix.push(option.selectionLog);
-                    }
+            // "-" 기호 뒤의 내용을 추출
+            const dashIndex = remainingText.indexOf('-');
+            if (dashIndex !== -1) {
+                const textAfterDash = remainingText.substring(dashIndex + 1).trim();
+                
+                // "," 기준으로 행렬로 변환
+                const extractedKeywords = textAfterDash.split(',').map(keyword => keyword.trim());
 
-                    await this.saveConversation(CID, user_question, 'template3-3');
-                    await this.saveStateData(CID, globalMatrix);
-
-                    console.log(`template3-3 !![${globalMatrix.join(', ')}]`);
-                    return this.createResponse(`template3-3 !![${globalMatrix.join(', ')}]`);
-                }
-                else if (user_question.includes('필요없음')) {
-                    console.log(option.noSelectionLog);
-
-                    await this.saveConversation(CID, user_question, option.nextTem);
-
-                    // 상태 저장 또는 삭제
-                    if (globalMatrix.length === 0) {
-                        await this.deleteState(CID);
-                    } else {
-                        await this.saveStateData(CID, globalMatrix);
-                    }
-
-                    console.log(`template3-3 !![${globalMatrix.join(', ')}]`);
-                    return this.createResponse(`${option.nextTem} !![${globalMatrix.join(', ')}]`);
-                }
-                else {
-                    console.log(option.selectionLog);
-                    if (option.selectionLog) {
-                        globalMatrix.push(option.selectionLog);
-                    }
-
-                    await this.saveConversation(CID, user_question, option.nextTem);
-                    await this.saveStateData(CID, globalMatrix);
-
-                    console.log(`template3-3 !![${globalMatrix.join(', ')}]`);
-                    return this.createResponse(`${option.nextTem} !![${globalMatrix.join(', ')}]`);
-                }
-            }
-        }
-
-        // 기존 로직 이후 추가 로직
-        const labels = [
-            "그 외에 필요한 기능이 있나요",
-            "비용 최적화: 비용을 낮추고 저용량부터 시작할 수 있는 설정 (예: 작은 RDS 인스턴스, 온디맨드 가격 모델)",
-            "고성능: 높은 성능과 빠른 처리 속도를 위해 최적화된 설정 (예: 고성능 RDS 인스턴스, Provisioned IOPS 스토리지)",
-            "확장 가능성: 서비스 확장을 위한 자동 확장 옵션 (예: Aurora Serverless)",
-            "저비용 서버: 일반적인 웹 서비스나 소규모 트래픽을 위한 저비용 옵션 (예: 작은 EC2 인스턴스, Spot Instances)",
-            "성능 중심 서버: 트래픽이 많거나 성능이 중요한 경우 (예: 고성능 EC2 인스턴스, Enhanced Networking 지원)",
-            "서버리스: 관리가 필요 없는 자동 확장 서버리스 옵션 (예: AWS Lambda)",
-            "비용 절감: 장기 저장 및 저렴한 비용이 필요할 때 (예: S3 Standard-IA, S3 Glacier)",
-            "고성능: 빈번한 데이터 접근을 위한 높은 성능 (예: S3 Standard)",
-            "확장 및 내구성: 자동 확장 및 높은 데이터 내구성을 원하는 경우 (예: S3와 자동 확장 설정)",
-            "기본 보안: 기본적인 보안 구성으로 클라우드 네트워크 보호",
-            "고급 보안: 보안 강화를 위한 VPN 연결 및 세분화된 접근 제어 (예: VPC, Network ACL)",
-            "성능 최적화: 네트워크 성능을 높이기 위한 고성능 설정 (예: 고성능 네트워킹, 글로벌 가속기)",
-            "기본 모니터링: 기본적인 성능 모니터링과 에러 알림 (예: CloudWatch 기본 설정)",
-            "심화 모니터링: 더 상세한 성능 및 로그 데이터 수집 (예: CloudWatch와 고급 메트릭)",
-            "자동화된 경고 및 알림: 특정 조건이 발생할 때 자동으로 알림을 받는 설정 (예: 경고 알림 및 자동 조치 설정)"
-        ];
-
-        // label 값을 확인하고 globalMatrix에서 값을 pop하는 로직
-        for (const label of labels) {
-            if (user_question.includes(label)) {
-                const nextValue = globalMatrix.shift();
-
-                if (nextValue) {
-                    await this.saveConversation(CID, user_question, nextValue);
-                    await this.saveStateData(CID, globalMatrix);
-
-                    // 리스트가 비었으면 상태 삭제
-                    if (globalMatrix.length === 0) {
-                        await this.deleteState(CID);
-                    }
-
-                    return this.createResponse(nextValue);
+                // 상태 저장 또는 삭제
+                if (extractedKeywords.length > 0 && extractedKeywords[0] !== '') {
+                    // 추출된 키워드가 있으면 상태를 저장합니다.
+                    await this.saveStateData(CID, extractedKeywords);
+                    console.log(`키워드 저장: ${extractedKeywords.join(', ')}`);
                 } else {
+                    // 추출된 키워드가 없거나 빈 문자열일 경우 상태를 삭제합니다.
                     await this.deleteState(CID);
-                    return this.createResponse("선택이 완료되었습니다.");
+                    console.log('추출된 키워드가 없습니다. 상태를 삭제합니다.');
                 }
+
+                // 대화 내용 저장 (필요한 경우 다음 템플릿 지정)
+                await this.saveConversation(CID, user_question, '다음템플릿');
+
+                // 응답 생성 및 반환
+            } else {
+                console.log('"-" 기호가 메시지에 없습니다. 상태를 삭제합니다.');
+                await this.deleteState(CID);
             }
         }
 
@@ -458,8 +450,46 @@ export class ConversationsService {
             // 응답에서 'content' 필드의 'text' 값을 추출하여 botResponse로 사용
             const botResponse = parsedResponse.content?.[0]?.text;
 
+            console.log("bot response? ", responseBody);
+            
+
             // 키워드 처리 및 저장 (botResponse, user_question을 사용)
             const updatedResponse = await this.processTextAndAddKeywords(botResponse, user_question, CID);
+            if (botResponse.startsWith('**')) {
+
+                let nextItem = globalMatrix.shift();
+                this.saveStateData(CID, globalMatrix);
+                if (!nextItem){
+                    nextItem = "끝";
+                }
+                let nextTemplate = '';
+            
+                // nextItem에 따라 nextTemplate 설정
+                if (nextItem === '서버') {
+                    nextTemplate = 'template2-1';
+                } else if (nextItem === '데이터베이스') {
+                    nextTemplate = 'template3-1';
+                } else if (nextItem === '스토리지') {
+                    nextTemplate = 'template4-1';
+                } else if (nextItem === '네트워크') {
+                    nextTemplate = 'template5-1';
+                } else {
+                    nextTemplate = 'template6-1';
+                }
+                this.updateModelCounter(CID,nextItem);
+
+
+                // this.incrementModelCounter(CID);
+                return {
+                    ...parsedResponse,
+                    content: [
+                        {
+                            type: "text",
+                            text: nextTemplate + '\n' + updatedResponse // 업데이트된 텍스트 (키워드 리스트 포함)
+                        }
+                    ]
+                };
+            }
 
             // 최종적으로 업데이트된 텍스트와 함께 리턴 (키워드 리스트 포함)
             return {
@@ -479,7 +509,6 @@ export class ConversationsService {
     // 대화 기록을 DynamoDB에 저장하는 함수
     async saveConversation(CID: number, userMessage: string, botResponse: string): Promise<void> {
         const lastID = await this.getLastID(); // 마지막 ID 조회
-        console.log(lastID);
         const newID = lastID + 1; // 마지막 ID에 1을 더해 새로운 ID 생성
 
         const params = {
@@ -513,7 +542,6 @@ export class ConversationsService {
                 ':cid': CID,
             }
         };
-        console.log("hi my name is CID");
         try {
             console.log('쿼리 파라미터:', params);
             const result = await this.dynamoDB.scan(params).promise();
@@ -532,7 +560,6 @@ export class ConversationsService {
     // **로 감싸진 텍스트에서 키워드 추출
     extractKeywords(text: string): { keywords: string[], updatedText: string } {
         if (!text) {
-            console.log("여긴 콘솔로그 안");
             return { keywords: [], updatedText: text };
         }
 
@@ -572,18 +599,19 @@ async saveKeywords(keywords: string[], CID: number): Promise<void> {
 }
 
     async processTextAndAddKeywords(outputText: string, inputText: string, CID: number): Promise<string> {
-        console.log(`processTextAndAddKeywords 호출됨 - CID: ${CID}, inputText: ${inputText}`);
+        // console.log(`processTextAndAddKeywords 호출됨 - CID: ${CID}, insputText: ${inputText}`);
+        // console.log(`processTextAndAddKeywords 호출됨 - CID: ${CID}, inputText: ${outputText}`);
         // 키워드 추출 및 텍스트 업데이트
         const result = this.extractKeywords(outputText);
         const { keywords, updatedText } = result;
 
         // 여기서 컨텍스트 스위칭
-        const triggerKeywords = ['특정텍스트1', '특정텍스트2', '특정텍스트3']; // 여기에 원하는 키워드
-        const shouldIncrementCounter = triggerKeywords.some(keyword => inputText.includes(keyword));
-        if (shouldIncrementCounter) {
-            console.log(`키워드 조건 만족 - ${inputText}에 특정 키워드 포함됨, modelSwitchCounter 증가`);
-            await this.incrementModelCounter(CID);
-        }
+        // const triggerKeywords = ['특정텍스트1', '특정텍스트2', '특정텍스트3']; // 여기에 원하는 키워드
+        // const shouldIncrementCounter = triggerKeywords.some(keyword => inputText.includes(keyword));
+        // if (shouldIncrementCounter) {
+        //     console.log(`키워드 조건 만족 - ${inputText}에 특정 키워드 포함됨, modelSwitchCounter 증가`);
+        //     await this.incrementModelCounter(CID);
+        // }
 
         if (keywords.length > 0) {
             await this.saveKeywords(keywords, CID);
