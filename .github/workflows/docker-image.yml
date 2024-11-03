@@ -1,5 +1,4 @@
-name: Docker Image CI/CD
-
+name: Deploy
 on:
   push:
     branches: [ "deploy" ]
@@ -25,8 +24,9 @@ jobs:
       - name: Build and push server Docker image
         run: |
           docker build ./server -t ${{ secrets.DOCKER_USERNAME }}/server:$APP_VERSION 
+          docker build ./server -t ${{ secrets.DOCKER_USERNAME }}/server:latest
           docker push ${{ secrets.DOCKER_USERNAME }}/server:$APP_VERSION
-
+          docker push ${{ secrets.DOCKER_USERNAME }}/server:latest
           
       - name: List docker image
         run: docker image ls
@@ -34,37 +34,49 @@ jobs:
       # Build and push client image
       - name: Build and push client Docker image
         run: |
-          docker build ./client -t ${{ secrets.DOCKER_USERNAME }}/client:latest
+          docker build ./client \
+            -t ${{ secrets.DOCKER_USERNAME }}/client:$APP_VERSION \
+            -t ${{ secrets.DOCKER_USERNAME }}/client:latest \
+            --build-arg REACT_APP_SERVER_URL=http://43.203.208.235:3000
+          docker push ${{ secrets.DOCKER_USERNAME }}/client:$APP_VERSION 
           docker push ${{ secrets.DOCKER_USERNAME }}/client:latest
-
   deploy:
     needs: build-and-push
     runs-on: ubuntu-latest
 
     steps:
+      - name: Check APP_VERSION
+        run: echo $APP_VERSION
       - name: SSH and Deploy on EC2
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.EC2_IP }}
+          host: ${{ secrets.EC2_HOST }}
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             cd ~/kj-kloudify
+            ls
+            echo "DATABASE_HOST=${{ secrets.DATABASE_HOST }}" > .env
+            echo "DATABASE_PORT=${{ secrets.DATABASE_PORT }}" >> .env
+            echo "DATABASE_USER=${{ secrets.DATABASE_USER }}" >> .env
+            echo "DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }}" >> .env
+            echo "DATABASE_NAME=${{ secrets.DATABASE_NAME }}" >> .env
+            echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> .env
+            echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> .env
+            echo "AWS_REGION=${{ secrets.AWS_REGION }}" >> .env
+            echo "DYNAMO_TABLE_NAME=${{ secrets.DYNAMO_TABLE_NAME }}" >> .env
+            echo "TERRAFORM_BUCKET=${{ secrets.TERRAFORM_BUCKET }}" >> .env
+            echo "TERRAFORM_LAMBDA_FUNCTION=${{ secrets.TERRAFORM_LAMBDA_FUNCTION }}" >> .env
+            echo "ENCRYPTION_KEY=${{ secrets.ENCRYPTION_KEY }}" >> .env
             
-            DATABASE_HOST=${{ secrets.DATABASE_HOST }} \
-            DATABASE_PORT=${{ secrets.DATABASE_PORT }} \
-            DATABASE_USER=${{ secrets.DATABASE_USER }} \
-            DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }} \
-            DATABASE_NAME=${{ secrets.DATABASE_NAME }} \
-            AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
-            AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
-            AWS_REGION=${{ secrets.AWS_REGION }} \
-            DYNAMO_TABLE_NAME=${{ secrets.DYNAMO_TABLE_NAME }} \
-            TERRAFORM_BUCKET=${{ secrets.TERRAFORM_BUCKET }} \
-            TERRAFORM_LAMBDA_FUNCTION=${{ secrets.TERRAFORM_LAMBDA_FUNCTION }} \
-            ENCRYPTION_KEY=${{ secrets.ENCRYPTION_KEY }} \
-            
-            docker pull ${{ secrets.DOCKER_USERNAME }}/server:latest
-            docker pull ${{ secrets.DOCKER_USERNAME }}/client:latest
-            
-            docker-compose -f docker-compose.yml up -d
+            CONTAINER_ID=$(sudo docker ps -q --filter "publish=80-8080")
+            if [ ! -z "$CONTAINER_ID" ]; then
+              sudo docker stop $CONTAINER_ID
+              sudo docker rm $CONTAINER_ID
+            fi
+            sudo docker image prune -af
+            sudo docker pull ausitn/server
+            sudo docker pull ausitn/client 
+            docker image ls
+            sudo docker compose -f docker-compose.yml up -d
+            docker ps
