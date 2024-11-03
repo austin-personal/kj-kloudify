@@ -120,7 +120,7 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
                       ? matchingTemplate.buttons
                       : undefined,
                     nocheck: isLastMessage ? matchingTemplate.nocheck : undefined,
-                    servicecheck: isLastMessage ? matchingTemplate.servicechecks : undefined,
+                    servicechecks: isLastMessage ? matchingTemplate.servicechecks : undefined,
                   },
                 ];
               } else {
@@ -485,7 +485,7 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
     setMessages((prevMessages) =>
       prevMessages.map((msg) =>
         msg.id === messageId
-          ? { ...msg, buttons: undefined, checks: undefined }
+          ? { ...msg, buttons: undefined, checks: undefined, servicechecks: undefined }
           : msg
       )
     );
