@@ -21,7 +21,7 @@
     "dagre": "^0.8.5",
     "html2canvas": "^1.4.1",
     "lottie-react": "^2.4.0",
-    "mermaid": "^11.3.0",
+    "mermaid": "^11.4.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-redux": "^9.1.2",
