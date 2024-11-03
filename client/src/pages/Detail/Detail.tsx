@@ -51,14 +51,14 @@ const Detail: React.FC = () => {
             const projectData = response.data;
             setProject(projectData);
           }
-          const response = await state(project?.UID, project?.CID, token);
-          console.log("이것이 state? : ",response)
           // Chat history를 불러올 때 CID를 사용
           if (project?.CID && isChatting && isLoading) {
             openChatHistory(project.CID).then(() => {
               setIsLoading(false)
             });
           }
+          const response = await state(project?.UID, project?.CID, token);
+          console.log("이것이 state? : ",response)
         }
       } catch (error) {
         console.error("프로젝트 정보를 가져오는 중 오류 발생:", error);
