@@ -734,5 +734,61 @@ export class ConversationsService {
             throw new Error('modelSwitchCounter 저장 실패');
         }
     }
-    
+    // summary들 생산 (가격 정보. 아키 서머리)
+    async generateSummary(cid: number, type: 'summary' | 'price'): Promise<string> {
+        // 1. DynamoDB에서 keyword 데이터 가져오기
+        const params = {
+            TableName: 'Archboard_keyword',
+            Key: { CID: cid },
+            ProjectionExpression: 'keyword',
+        };
+        const result = await this.dynamoDB.get(params).promise();
+
+        const keywordData = result.Item && result.Item.keyword ? result.Item.keyword : '';
+        if (!keywordData) {
+            return ''; // keyword 데이터가 없으면 빈 문자열 반환
+        }
+
+        // 2. Bedrock 요청을 위한 프롬프트 내용 준비
+        const prompt_content = type === 'summary'
+            ? `Please provide a detailed summary of the cloud architecture, including each service's information based on the following keywords: ${keywordData}`
+            : `Please provide a detailed price summary of the cloud architecture, including each service's information based on the following keywords: ${keywordData}`;
+
+        // 3. Bedrock 요청 본문 생성
+        const requestBody = {
+            max_tokens: 1000,
+            anthropic_version: 'bedrock-2023-05-31',
+            messages: [
+                {
+                    role: 'user',
+                    content: prompt_content,
+                },
+            ],
+        };
+
+        try {
+            // 4. Bedrock 모델 호출
+            const response = await this.bedrockClient.invokeModel({
+                body: JSON.stringify(requestBody),
+                contentType: 'application/json',
+                modelId: 'anthropic.claude-3-5-sonnet-20240620-v1:0',
+            }).promise();
+
+            const responseBody = response.body.toString();
+            const parsedResponse = JSON.parse(responseBody);
+
+            // 예상되는 데이터 형식에 따라 응답 반환
+            return parsedResponse.messages[0]?.content || ''; // 적절한 키에 맞게 데이터를 반환
+        } catch (error) {
+            throw new Error(`Bedrock 모델 호출 실패: ${error.message}`);
+        }
+    }
+
+    // Bedrock 클라이언트 설정
+    private bedrockClient = new AWS.BedrockRuntime({
+        region: process.env.AWS_REGION,
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    });
+   
 }

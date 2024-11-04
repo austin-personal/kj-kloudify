@@ -103,7 +103,30 @@ export class ProjectsController {
 
    return { projectName, chattings, archBoardKeywords };
  }
-
-
  
+  // 머메이드 코드 가져오기
+  @UseGuards(JwtAuthGuard)
+  @Get(':PID/archiboard')
+  async getArchiboard(@Param('PID') PID: number): Promise<{ code: any[] }> {
+    const project = await this.projectsService.findOneByPID(PID);
+    if (!project) {
+      throw new NotFoundException('Project not found');
+    }
+    const code = await this.projectsService.getMermaidCode(PID);
+    return { code };
+  }
+  // 서비스 요약 해주기
+  @UseGuards(JwtAuthGuard)
+  @Get(':CID/summary')
+  async getSummary(@Param('CID') CID: number): Promise<{ summary: string }> {
+      const summary = await this.conversationsService.generateSummary(CID, 'summary');
+      return { summary };
+  }
+  
+  @UseGuards(JwtAuthGuard)
+  @Get(':CID/price')
+  async getPrice(@Param('CID') CID: number): Promise<{ price: string }> {
+      const price = await this.conversationsService.generateSummary(CID, 'price');
+      return { price };
+  }
 }
