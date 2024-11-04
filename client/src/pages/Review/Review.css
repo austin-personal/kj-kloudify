@@ -55,6 +55,11 @@
   border-color: #6bb961;
 }
 
+.mermaid-chart {
+  width: 100%;
+  height: 100%;
+}
+
 .download-button.loading .spinner {
   display: flex;
   align-items: center;
