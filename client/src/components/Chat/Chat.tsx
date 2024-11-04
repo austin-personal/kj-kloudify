@@ -32,7 +32,7 @@ interface Message {
 const defaultBotMessage: Message[] = [
   {
     id: uuidv4(),
-    text: "안녕하세요. 당신의 클라우드를 책임져줄 Kloudify에요. Kloudify와 쉽게 클라우드 아키텍쳐를 설계 해봐요! 우측 상단에 Kloudify와 대화하는 팁을 참고 하여 대화해 보세요.",
+    text: "Kloudify와 쉽게 클라우드 아키텍쳐를 설계 해봐요! 우측 상단에 Kloudify와 대화하는 팁을 참고 하여 대화해 보세요.",
     sender: "bot",
   },
   {
@@ -291,13 +291,13 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
       if (selectedLabels.length > 0) {
         handleButtonClick(messageId, {
           id: 0,
-          label: `${selectedLabels.join(", ")} 선택 - ${uncheckedLabels.join(", ")} 선택안함`,
+          label: `${selectedLabels.join(", ")} 선택 / ${uncheckedLabels.join(", ")} 선택안함`,
         });
       } else {
         // 선택된 항목이 없는 경우에도 선택되지 않은 항목을 포함해 메시지를 보냄
         handleButtonClick(messageId, {
           id: 0,
-          label: `선택되지 않음 - ${uncheckedLabels.join(", ")} 선택안함`,
+          label: `선택되지 않음 / ${uncheckedLabels.join(", ")} 선택안함`,
         });
       }
 
@@ -437,6 +437,7 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
       }
 
       let responseMessage = await ask(messageToSend, projectCID);
+      console.log("responseMessage : ", responseMessage)
       if (responseMessage === "template6-1") {
         responseMessage = await ask("trigger", projectCID);
       }
@@ -529,9 +530,11 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
         messageToSend = userMessageText;
       }
 
-      console.log("response : ", messageToSend)
-
-      const responseMessage = await ask(messageToSend, projectCID);
+      let responseMessage = await ask(messageToSend, projectCID);
+      console.log("responseMessage : ", responseMessage)
+      if (responseMessage === "template6-1") {
+        responseMessage = await ask("trigger", projectCID);
+      }
 
       // 로딩 메시지 제거
       setMessages((prevMessages) =>
