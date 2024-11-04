@@ -485,7 +485,7 @@ export class ConversationsService {
 
             // 키워드 처리 및 저장 (botResponse, user_question을 사용)
             let updatedResponse = await this.processTextAndAddKeywords(botResponse, user_question, CID, modelSwitchCounter);
-            console.log("봇 응답 원문",botResponse);
+
             if (botResponse.startsWith('**')) {
 
                 let nextItem = globalMatrix.shift();
@@ -689,7 +689,12 @@ export class ConversationsService {
         }
 
         // 최종적으로 텍스트 끝에 키워드 리스트 추가
-        const finalText = updatedText + `\n**[${fetchedKeywords.join(', ')}]`;
+        let finalText = updatedText;
+
+        // modelSwitchCounter가 6이 아닐 때만 추가
+        if (modelSwitchCounter !== 6) {
+            finalText += `\n**[${fetchedKeywords.join(', ')}]`;
+        }
 
         // 인풋(사용자 입력)과 최종 텍스트 저장
         // await this.saveConversation(CID, inputText, finalText);
