@@ -60,6 +60,10 @@
   height: 100%;
 }
 
+.download-button.loading {
+  cursor: not-allowed;
+}
+
 .download-button.loading .spinner {
   display: flex;
   align-items: center;
