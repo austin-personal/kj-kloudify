@@ -2,6 +2,8 @@ services:
   client:
     build:
       context: ${CLIENT_PATH}
+      args:
+        REACT_APP_SERVER_URL: "http://localhost:3000"
     ports:
       - "80:80"
     volumes:
@@ -9,7 +11,7 @@ services:
     depends_on:
       - server
     environment:
-      - REACT_APP_SERVER_URL=http://server:3000  # 서버의 URL을 환경 변수로 전달
+      - REACT_APP_SERVER_URL=http://localhost:3000  # 서버의 URL을 환경 변수로 전달
     networks:
       - webnet
 
