@@ -191,7 +191,7 @@ export class ConversationsService {
                     지금까지의 대화 내용을 종합하여 필요한 AWS 서비스 구성을 아래 양식으로 생성해야합니다. 최종 구성은 Terraform 코드로 변환될 예정이며, 각 서비스와 옵션이 정확히 입력되어야 합니다.
                     생성한 최종구조에 대해 간략하게 설명해주세요. 그리고 설명이 끝나면 다음의 양식대로 **양식 앞에 붙여 \n 없이 한줄로 글을 마무리해주세요
                     생성된 서비스 양식:
-                    **{ "service": "ec2", "options": { "ami": "ami-xxxxxxxx", "instance_type": "t2.micro", "public": true } },{ "service": "rds", "options": { "engine": "postgres", "instance_class": "db.t2.small", "allocated_storage": 20 } },{ "service": "s3", "options": { "bucket_name": "my-bucket", "access": "public-read" } }
+                    **{ "service": "", "options": { "ami": "", "instance_type": "", "public":  } },{ "service": "", "options": { "engine": "", "instance_class": "", "allocated_storage":  } },{ "service": "", "options": { "bucket_name": "", "access": "" } }
                     지역은 서울지역을 기준으로 생성해줘.`
 
             default:
