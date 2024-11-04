@@ -1,6 +1,6 @@
 import React from "react";
 
-interface Template {
+export interface Template {
     header?: string;
     name: string;
     text: string;
@@ -73,17 +73,17 @@ const templates: Record<number, Template> = {
             { id: 20, label: "통신 집약적" },
             { id: 21, label: "GPU 필요" },
         ],
-        nocheck: { id: 1, label: "알아서 해줘" },
+        nocheck: { id: 22, label: "알아서 해줘" },
     },
     8: {
         header: "서버",
         name: "template2-2",
         text: "어떠한 서버 타입이 필요하시나요?",
         buttons: [
-            { id: 22, label: "기본 서버" },
             { id: 23, label: "컨테이너 서버" },
             { id: 24, label: "배포, 관리, 확장 자동화 서버" },
             { id: 25, label: "이벤트 기반 서버" },
+            { id: 26, label: "알아서 해줘" },
         ]
     },
     9: {
@@ -91,22 +91,23 @@ const templates: Record<number, Template> = {
         name: "template2-3",
         text: "가장 중요한 가치는 무엇인가요? (다중선택) ",
         checks: [
-            { id: 26, label: "가격 최적화" },
-            { id: 27, label: "고가용성" },
-            { id: 28, label: "고성능" },
-            { id: 29, label: "백업기능" },
+            { id: 27, label: "가격 최적화" },
+            { id: 28, label: "고가용성" },
+            { id: 29, label: "고성능" },
+            { id: 30, label: "백업기능" },
         ],
-        nocheck: { id: 1, label: "알아서 해줘" },
+        nocheck: { id: 31, label: "알아서 해줘" },
     },
     10: {
         header: "데이터베이스",
         name: "template3-1",
         text: "데이터베이스 유형이 어떻게 되나요?",
         buttons: [
-            { id: 30, label: "관계형 데이터베이스 (postgres)" },
-            { id: 31, label: "관계형 데이터베이스 (MySQL)" },
-            { id: 32, label: "NoSQL (완전 관리형)" },
-            { id: 33, label: "NoSQL (MongoDB호환형)" },
+            { id: 32, label: "관계형 데이터베이스 (postgres)" },
+            { id: 33, label: "관계형 데이터베이스 (MySQL)" },
+            { id: 34, label: "NoSQL (완전 관리형)" },
+            { id: 35, label: "NoSQL (MongoDB호환형)" },
+            { id: 36, label: "알아서 해줘" },
         ]
     },
     11: {
@@ -114,30 +115,32 @@ const templates: Record<number, Template> = {
         name: "template3-2",
         text: "추가적인 데이터베이스 정보를 알려주세요. 가장 중요한 가치는 무엇인가요?",
         buttons: [
-            { id: 34, label: "가격 최적화" },
-            { id: 35, label: "고가용성" },
-            { id: 36, label: "고성능" },
-            { id: 37, label: "백업기능" },
+            { id: 37, label: "가격 최적화" },
+            { id: 38, label: "고가용성" },
+            { id: 39, label: "고성능" },
+            { id: 40, label: "백업기능" },
         ],
-        nocheck: { id: 38, label: "알아서 해줘" },
+        nocheck: { id: 41, label: "알아서 해줘" },
     },
     12: {
         header: "스토리지",
         name: "template4-1",
         text: "스토리지의 사용 패턴은 어떻게 되나요?",
         buttons: [
-            { id: 39, label: "아주 가끔식만 접근" },
+            { id: 42, label: "아주 가끔식만 접근" },
+            { id: 43, label: "평균 접근" },
+            { id: 44, label: "자주 접근" },
+            { id: 45, label: "알아서 해줘" },
         ],
-        nocheck: { id: 40, label: "알아서 해줘" },
     },
     13: {
         header: "스토리지",
         name: "template4-2",
         text: "스토리지의 사용 목적은 무엇인가요?",
         buttons: [
-            { id: 41, label: "미디어 저장 (사진, 동영상등등)" },
-            { id: 42, label: "파일(저장)" },
-            { id: 43, label: "정적 왭호스팅" }
+            { id: 46, label: "미디어 저장 (사진, 동영상등등)" },
+            { id: 47, label: "파일(저장)" },
+            { id: 48, label: "정적 웹호스팅" }
         ]
     },
     14: {
@@ -145,29 +148,29 @@ const templates: Record<number, Template> = {
         name: "template4-3",
         text: "스토리지에서 가장 중요한 가치는 무엇인가요? (다중선택) ",
         checks: [
-            { id: 44, label: "가격 최적화" },
-            { id: 45, label: "고가용성" },
-            { id: 46, label: "고성능" },
-            { id: 47, label: "백업기능" },
+            { id: 49, label: "가격 최적화" },
+            { id: 50, label: "고가용성" },
+            { id: 51, label: "고성능" },
+            { id: 52, label: "백업기능" },
         ],
-        nocheck: { id: 48, label: "알아서 해줘" },
+        nocheck: { id: 53, label: "알아서 해줘" },
     },
     15: {
         header: "네트워크",
         name: "template5-1",
         text: "애플리케이션의 네트워크 요구사항은 무엇인가요? (다중선택)",
         checks: [
-            { id: 49, label: "추가적인 보안" },
-            { id: 50, label: "퍼블릭 인터넷과 연결" }
+            { id: 54, label: "추가적인 보안" },
+            { id: 55, label: "퍼블릭 인터넷과 연결" }
         ],
-        nocheck: { id: 51, label: "알아서 해줘" },
+        nocheck: { id: 56, label: "알아서 해줘" },
     },
     16: {
         name: "template-trigger",
         text: "이대로 하시겠습니까?",
         buttons: [
-            { id: 52, label: "예" },
-            { id: 53, label: "아니요" }
+            { id: 57, label: "예" },
+            { id: 58, label: "아니요" }
         ]
     },
 };

@@ -1,4 +1,5 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { useLocation } from "react-router-dom";
 import mermaid from "mermaid";
 import { select, zoom, ZoomBehavior, zoomIdentity } from "d3";
 import "./mermaid.css";
@@ -8,6 +9,17 @@ interface MermaidChartProps {
 }
 
 const MermaidChart: React.FC<MermaidChartProps> = ({ chartCode }) => {
+  const [isDetails, setIsDetails] = useState(false);
+
+  const location = useLocation();
+
+  // `home` 경로에서만 popup 클래스가 적용되도록 설정
+  const isHomePage = location.pathname.startsWith("/home");
+  const popupClass = isHomePage ? "" : "isNothome"; // home 페이지일 때만 popup 클래스 추가
+
+  const togglePopup = () => {
+    setIsDetails(!isDetails);
+  };
   const chartString =
     `${chartCode
       .map((code) => {
@@ -26,7 +38,12 @@ const MermaidChart: React.FC<MermaidChartProps> = ({ chartCode }) => {
         }
       })
       .join("\n  ")}` ||
-    `flowchart LR\nA[Welcome to Kloudify!]\nA --> B[Cloud simplified for you]`;
+    `flowchart LR
+    A[Welcome to Kloudify!]
+    B[채팅으로 AWS 아키텍처를 실시간으로 구축하고,\n Mermaid 시각화를 통해 확인하세요.]
+    style A font-size:34px;
+    classDef transparent fill-opacity:0,stroke-width:0
+    class A,B transparent`;
 
   console.log("파싱파싱:", chartString);
   const svgRef = useRef<d3.Selection<
@@ -78,6 +95,13 @@ const MermaidChart: React.FC<MermaidChartProps> = ({ chartCode }) => {
               });
 
             svgRef.current.call(zoomBehavior.current);
+            if (chartCode.length === 0) {
+              //아키텍쳐 보드 데이터가 없을 때 나오는 Mermaid가 생성한 <p> 요소에 애니메이션 클래스 추가
+              const textElement = element.querySelector("#mermaid p");
+              if (textElement) {
+                textElement.classList.add("floating-text");
+              }
+            }
           }
         } catch (error) {
           console.error("Mermaid 렌더링 오류:", error);
@@ -110,6 +134,21 @@ const MermaidChart: React.FC<MermaidChartProps> = ({ chartCode }) => {
 
   return (
     <div className="frame">
+      <div
+        className={`popup ${isDetails ? "visible" : "hidden"} ${popupClass}`}
+        onClick={togglePopup}
+      >
+        {!isDetails ? "Details" : "Close"}
+        {isDetails && (
+          <div className="extra-content">
+            {chartCode.length > 0 ? (
+              <p>요약</p>
+            ) : (
+              <p>값이 없습니다</p> // 값이 없을 때 표시
+            )}
+          </div>
+        )}
+      </div>
       <div className="mermaid-container">
         <div id="mermaid"></div>
       </div>
