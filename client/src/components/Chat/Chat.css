@@ -28,6 +28,8 @@
   cursor: pointer;
   font-size: 28px;
   display: flex;
+  position: absolute;
+  right: 15px;
 }
 
 .home-chat-guide-th {
@@ -56,14 +58,17 @@
   margin: 0 25px 0 25px;
   padding: 10px;
   display: flex;
-  flex-direction: column; /* 메시지들이 세로로 쌓이게 함 */
-  gap: 10px; /* 메시지 간의 간격 */
+  flex-direction: column;
+  /* 메시지들이 세로로 쌓이게 함 */
+  gap: 10px;
+  /* 메시지 간의 간격 */
   overflow-y: auto;
 }
 
 /* 크롬 및 사파리에서 스크롤바 숨기기 */
 .message-list::-webkit-scrollbar {
-  display: none; /* 스크롤바 숨기기 */
+  display: none;
+  /* 스크롤바 숨기기 */
 }
 
 /* 개별 메시지 스타일 */
@@ -84,12 +89,29 @@
   justify-content: center;
   align-items: center;
   position: absolute;
-  right: 0;
-  top: -39px;
-  background-color: #cbe8f8;
-  height: 33px;
+  right: 10px;
+  top: -43px;
+  background-color: #ffa180;
+  box-shadow: 0px 2px 2px 1px rgba(0, 0, 0, 10%);
+  height: 30px;
   padding: 3px 20px;
-  border-radius: 10px 10px 0 0;
+  border-radius: 10px;
+}
+
+.server-class {
+  background-color: #e0a2a2;
+}
+
+.database-class {
+  background-color: #fff099;
+}
+
+.storage-class {
+  background-color: #98fd98;
+}
+
+.network-class {
+  background-color: #87ceeb;
 }
 
 .template-btn-th {
@@ -121,7 +143,6 @@
   /* background-color: #b6d6ed; */
   background-color: #cbe8f8;
   border-top-left-radius: 0;
-  border-top-right-radius: 0;
 }
 
 .message-content {
@@ -130,7 +151,8 @@
 
 .chat-form {
   display: flex;
-  align-items: flex-end; /* textarea와 버튼의 하단을 맞춤 */
+  align-items: flex-end;
+  /* textarea와 버튼의 하단을 맞춤 */
   width: 100%;
   background-color: white;
   border-radius: 30px;
@@ -152,7 +174,8 @@
   width: 100%;
   line-height: 1.5;
   overflow-y: auto;
-  max-height: 200px; /* 원하는 최대 높이로 설정 */
+  max-height: 200px;
+  /* 원하는 최대 높이로 설정 */
   min-height: 35px;
   resize: none;
   margin-left: 20px;
@@ -166,12 +189,15 @@
 }
 
 .chat-input::placeholder {
-  padding-top: 1px; /* placeholder를 약간 아래로 이동 */
+  padding-top: 1px;
+  /* placeholder를 약간 아래로 이동 */
 }
 
 .chat-input:focus {
-  outline: none; /* 포커스 시 외곽선 제거 */
-  border: none; /* 포커스 시 경계선 제거 */
+  outline: none;
+  /* 포커스 시 외곽선 제거 */
+  border: none;
+  /* 포커스 시 경계선 제거 */
 }
 
 .chat-icon {
@@ -195,20 +221,26 @@
 
 .scroll-to-bottom {
   position: absolute;
-  top: -80px; /* 원하는 위치로 조정 */
+  top: -80px;
+  /* 원하는 위치로 조정 */
   left: 50%;
-  transform: translateX(-50%); /* 가로 중앙 맞추기 */
+  transform: translateX(-50%);
+  /* 가로 중앙 맞추기 */
   cursor: pointer;
-  width: 40px; /* 부모 요소의 크기를 아이콘과 배경에 맞게 설정 */
+  width: 40px;
+  /* 부모 요소의 크기를 아이콘과 배경에 맞게 설정 */
   height: 40px;
-  animation: bounce 1s ease-in-out infinite; /* 애니메이션 반복 */
+  animation: bounce 1s ease-in-out infinite;
+  /* 애니메이션 반복 */
 }
 
 @keyframes bounce {
+
   0%,
   100% {
     transform: translate(-50%, 0);
   }
+
   50% {
     transform: translate(-50%, -5px);
   }
@@ -218,20 +250,25 @@
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%); /* 아이콘을 배경의 중앙에 위치 */
+  transform: translate(-50%, -50%);
+  /* 아이콘을 배경의 중앙에 위치 */
   color: #fdc36d;
-  z-index: 901; /* 배경 위로 오도록 설정 */
+  z-index: 901;
+  /* 배경 위로 오도록 설정 */
 }
 
 .scroll-background {
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%; /* 부모 요소 크기만큼 배경 채우기 */
+  width: 100%;
+  /* 부모 요소 크기만큼 배경 채우기 */
   height: 100%;
   background-color: white;
-  border-radius: 50%; /* 원형 배경 */
-  z-index: 900; /* 아이콘 뒤로 위치 */
+  border-radius: 50%;
+  /* 원형 배경 */
+  z-index: 900;
+  /* 아이콘 뒤로 위치 */
 }
 
 .bot-icon {
@@ -253,16 +290,20 @@
   background-size: calc(100% / 3) 50%;
   animation: l3 1s infinite linear;
 }
+
 @keyframes l3 {
   20% {
     background-position: 0% 0%, 50% 50%, 100% 50%;
   }
+
   40% {
     background-position: 0% 100%, 50% 0%, 100% 50%;
   }
+
   60% {
     background-position: 0% 50%, 50% 100%, 100% 0%;
   }
+
   80% {
     background-position: 0% 50%, 50% 50%, 100% 100%;
   }
@@ -304,7 +345,7 @@
   transition: background-color 0.3s;
 }
 
-.custom-checkbox input[type="checkbox"]:checked + .checkbox-mark {
+.custom-checkbox input[type="checkbox"]:checked+.checkbox-mark {
   background-color: #007bff;
   border-color: #007bff;
 }
@@ -322,6 +363,6 @@
   transform: rotate(45deg);
 }
 
-.custom-checkbox input[type="checkbox"]:checked + .checkbox-mark::after {
+.custom-checkbox input[type="checkbox"]:checked+.checkbox-mark::after {
   display: block;
 }
