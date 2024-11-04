@@ -22,7 +22,6 @@ export const create = async (projectName: string,token: string) => {
 export const deleteProject = async (PID:number,token:string) => {
     try {
         // 태현 api 주소 확인!!!
-        console.log("delete 프론트 PID",PID);
         const response = await axios.delete(`${API_URL}`, {
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -66,6 +65,7 @@ export const projectResumeInfo = async (token: string) => {
         throw error;
     }
 };
+
 //배포 완료된 프로젝트 가져오기
 export const projectDeployedInfo = async (token: string) => {
     try {
@@ -78,6 +78,22 @@ export const projectDeployedInfo = async (token: string) => {
         return response;
     } catch (error) {
         console.error('배포된 프로젝트 정보 개박살!! :', error);
+        throw error;
+    }
+};
+
+//머메이드 코드 가져오기
+export const mermaid = async (pid: number, token: string | null) => {
+    try {
+        // 태현 api 주소 확인!!!
+        const response = await axios.get(`${API_URL}/${pid}/archiboard`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        return response;
+    } catch (error) {
+        console.error('머메이드 코드 개박살!! :', error);
         throw error;
     }
 };
