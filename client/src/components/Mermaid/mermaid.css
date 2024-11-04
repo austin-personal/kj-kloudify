@@ -67,3 +67,22 @@
 .zoom-controls button:active {
   background-color: #d0d0d0;
 }
+
+#mermaid .floating-text {
+  white-space: nowrap;
+  animation: floatingAnimation 3s ease-in-out infinite;
+}
+
+#mermaid span p {
+  white-space: nowrap;
+}
+
+@keyframes floatingAnimation {
+  0%,
+  100% {
+    transform: translateY(0); /* 시작과 끝에서 제자리 */
+  }
+  50% {
+    transform: translateY(-10px); /* 중간에 위로 이동 */
+  }
+}
