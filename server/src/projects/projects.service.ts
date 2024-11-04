@@ -4,21 +4,34 @@ import { Repository } from 'typeorm';
 import { Projects } from './entity/projects.entity';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
-import { Users } from '../users/entity/users.entity'; // 유저 엔티티 연결
-import { DeleteItemCommand, DynamoDBClient, ScanCommand } from '@aws-sdk/client-dynamodb'; // 인성추가 db와 aws-sdk
+import { Users } from '../users/entity/users.entity'; 
+import { DeleteItemCommand, DynamoDBClient, ScanCommand } from '@aws-sdk/client-dynamodb'; 
+
+import { ConversationsService } from '../conversations/conversations.service'; 
+
+import { DynamoDBDocumentClient, QueryCommand } from '@aws-sdk/lib-dynamodb';
+import * as AWS from 'aws-sdk';
 
 
 @Injectable()
 export class ProjectsService {
+  private readonly dynamoDB: AWS.DynamoDB.DocumentClient;
   constructor(
     @InjectRepository(Projects)
     private readonly projectRepository: Repository<Projects>,
     @InjectRepository(Users)
     private readonly userRepository: Repository<Users>,
-  ) {}
+    private readonly conversationsService: ConversationsService, 
+  ) {
+    this.dynamoDB = new AWS.DynamoDB.DocumentClient({
+      region: process.env.AWS_REGION,
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  });
+  }
 
   // 새로운 프로젝트 생성
-  async create(createProjectDto, user): Promise<Projects> {
+  async create(createProjectDto: CreateProjectDto, user: Users): Promise<Projects> {
     if (!user) {
       throw new NotFoundException('User not found');
     }
@@ -138,6 +151,30 @@ export class ProjectsService {
     
     return project.UID;
   }
-
-
+  async getMermaidCode(pid: number):Promise<any[]>  {
+    //Find CID with PID
+    const project = await this.projectRepository.findOne({ where: { PID: pid } });
+    if (!project) {
+      throw new NotFoundException('Project not found');
+    }
+    const cid = project.CID;
+    console.log("getMermaidCode: ", cid);
+    const params = {
+      TableName: 'Archboard_keyword',
+      FilterExpression: 'CID = :cid',
+      ExpressionAttributeValues: {
+        ':cid': cid
+      }
+    };
+    try {
+      const result = await this.dynamoDB.scan(params).promise();
+      const items = result.Items || [];
+      console.log("getMermaidCode: ", items);
+      return items;
+    } catch (error) {
+      console.error('Error fetching data from DynamoDB:', error);
+      throw new InternalServerErrorException('Failed to fetch data from DynamoDB');
+    }
+  }
+  
 }
