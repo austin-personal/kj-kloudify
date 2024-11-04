@@ -81,13 +81,14 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
       try {
         const token = localStorage.getItem("token") || "";
         const initialMessages = await open(projectCID, token);
+        console.log(initialMessages)
         setMessages(defaultBotMessage);
         if (initialMessages && initialMessages.length > 0) {
           const formattedMessages: Message[] = initialMessages.flatMap(
             (msg: any, index: number) => {
               // userMessage에서 - 이후의 부분만 가져오기
               const parsedUserMessage = msg.userMessage.includes("-")
-                ? msg.userMessage.slice(msg.userMessage.indexOf("-") + 1).trim()
+                ? msg.userMessage.slice(msg.userMessage.lastIndexOf("-") + 1).trim()
                 : msg.userMessage;
 
               // botResponse에서 ** 이전의 부분만 가져오기
