@@ -10,6 +10,7 @@ import { review } from "../../services/terraforms";
 import { setReviewReady } from "../../store/loadingSlice";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { setFinishData, clearFinishData } from "../../store/finishDataSlice";
+import { setHasSecret } from "../../store/loadingSlice";
 import MermaidChart from "../../components/Mermaid/mermaid";
 
 interface Project {
@@ -38,6 +39,8 @@ const Home: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   console.log("finished:", finishData);
+
+  dispatch(setHasSecret(true));
 
   useEffect(() => {
     const fetchProjectData = async () => {

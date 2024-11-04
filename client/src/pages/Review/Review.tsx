@@ -5,10 +5,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCloudArrowDown } from "@fortawesome/free-solid-svg-icons";
 import { download } from "../../services/terraforms";
 import { useParams } from "react-router-dom";
-import { useAppSelector } from "../../store/hooks";
+import { useAppSelector, useAppDispatch } from "../../store/hooks";
 import MermaidChart from "../../components/Mermaid/mermaid";
+import { setHasSecret } from "../../store/loadingSlice";
 
 const Review: React.FC = () => {
+  const dispatch = useAppDispatch();
   const isReviewReady = useAppSelector((state) => state.loading.isReviewReady);
   const finishData = useAppSelector((state) => state.finishData.finishData);
   const { cid: cidParam } = useParams<{ cid: string }>(); // useParams로 cid 가져오기
@@ -16,6 +18,9 @@ const Review: React.FC = () => {
   const [showOptions, setShowOptions] = useState(false);
   const boardRef = useRef<{ takeScreenshot: () => void } | null>(null);
   const token = localStorage.getItem("token") ?? "";
+
+  //review 페이지면 무조건 키가 있어야 함.
+  dispatch(setHasSecret(true));
 
   const handleScreenshot = () => {
     if (boardRef.current) {
