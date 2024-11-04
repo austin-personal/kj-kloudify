@@ -9,7 +9,7 @@ export const ask = async (msg: string, cid: number) => {
             message: msg,
             CID: cid
         });
-        console.log(msg);
+        console.log("뭐라고 왔냐", response);
         return response.data.content[0].text;
     } catch (error) {
         console.error('응답실패!! : ', error);
