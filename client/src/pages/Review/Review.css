@@ -20,7 +20,8 @@
 
 .download {
   position: absolute;
-  right: 0;
+  top: 5px;
+  right: 5px;
   display: flex;
   justify-content: flex-end; /* 오른쪽 끝으로 정렬 */
 }
