@@ -86,3 +86,43 @@
     transform: translateY(-10px); /* 중간에 위로 이동 */
   }
 }
+
+.popup {
+  z-index: 1000;
+  font-size: 22px;
+  position: absolute;
+  padding: 10px 10px 0 10px;
+  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 10%);
+  background-color: #cbe8f8;
+  cursor: pointer;
+  left: 5px;
+  top: 5px;
+}
+
+.popup.visible {
+  width: 95%;
+  border-radius: 15px;
+  white-space: pre-line;
+  word-wrap: break-word;
+}
+
+.popup.hidden {
+  border-radius: 15px;
+  width: 80px;
+  height: 35px;
+}
+
+/* 추가 텍스트 스타일 */
+.extra-content {
+  margin-top: 20px;
+  opacity: 1;
+  transition: opacity 0.3s ease; /* 추가 텍스트가 부드럽게 나타나도록 설정 */
+}
+
+.popup.hidden .extra-content {
+  opacity: 0; /* 팝업이 닫힐 때 추가 텍스트 숨기기 */
+}
+
+.isNothome {
+  visibility: hidden;
+}

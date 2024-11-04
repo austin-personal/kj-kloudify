@@ -1,4 +1,5 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { useLocation } from "react-router-dom";
 import mermaid from "mermaid";
 import { select, zoom, ZoomBehavior, zoomIdentity } from "d3";
 import "./mermaid.css";
@@ -8,6 +9,17 @@ interface MermaidChartProps {
 }
 
 const MermaidChart: React.FC<MermaidChartProps> = ({ chartCode }) => {
+  const [isDetails, setIsDetails] = useState(false);
+
+  const location = useLocation();
+
+  // `home` 경로에서만 popup 클래스가 적용되도록 설정
+  const isHomePage = location.pathname.startsWith("/home");
+  const popupClass = isHomePage ? "" : "isNothome"; // home 페이지일 때만 popup 클래스 추가
+
+  const togglePopup = () => {
+    setIsDetails(!isDetails);
+  };
   const chartString =
     `${chartCode
       .map((code) => {
@@ -122,6 +134,21 @@ const MermaidChart: React.FC<MermaidChartProps> = ({ chartCode }) => {
 
   return (
     <div className="frame">
+      <div
+        className={`popup ${isDetails ? "visible" : "hidden"} ${popupClass}`}
+        onClick={togglePopup}
+      >
+        {!isDetails ? "Details" : "Close"}
+        {isDetails && (
+          <div className="extra-content">
+            {chartCode.length > 0 ? (
+              <p>요약</p>
+            ) : (
+              <p>값이 없습니다</p> // 값이 없을 때 표시
+            )}
+          </div>
+        )}
+      </div>
       <div className="mermaid-container">
         <div id="mermaid"></div>
       </div>
