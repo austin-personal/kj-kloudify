@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import Board from "../../components/Board/Board";
 import DonutChart from "../../components/DetailPage/DonutChart";
-import { projectOneInfo } from "../../services/projects";
+import { mermaid, projectOneInfo } from "../../services/projects";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCloud } from "@fortawesome/free-solid-svg-icons";
 import "./Detail.css";
@@ -58,7 +58,9 @@ const Detail: React.FC = () => {
             });
           }
           const response = await state(project?.UID, project?.CID, token);
-          console.log("이것이 state? : ",response)
+          console.log("이것이 state? : ", response);
+          const response2 = await mermaid(Number(pid), token);
+          console.log("이것이 mermaid? : ", response2);
         }
       } catch (error) {
         console.error("프로젝트 정보를 가져오는 중 오류 발생:", error);
@@ -73,23 +75,23 @@ const Detail: React.FC = () => {
           const parsedUserMessage = msg.userMessage.includes("-")
             ? msg.userMessage.slice(msg.userMessage.indexOf("-") + 1).trim()
             : msg.userMessage;
-  
+
           // botResponse에서 '!!'나 '**' 앞의 부분을 가져오기
           let parsedBotResponse = msg.botResponse.includes("!!")
             ? msg.botResponse.split("!!")[0].trim()
             : msg.botResponse;
-  
+
           if (parsedBotResponse.includes("**")) {
             parsedBotResponse = parsedBotResponse.split("**")[0].trim();
           }
-  
+
           // templates에서 botResponse가 존재하는지 확인하고 매칭되는 텍스트 사용
           const matchingTemplate = Object.values(templates).find(
             (template) => template.name === parsedBotResponse
           );
-  
+
           const botText = matchingTemplate ? matchingTemplate.text : parsedBotResponse;
-  
+
           return [
             {
               id: uuidv4(),
@@ -102,7 +104,7 @@ const Detail: React.FC = () => {
               sender: "bot",
             },
           ];
-      });
+        });
         setChatHistory(formattedChat);
       } catch (error) {
         console.error("채팅 내역을 가져오는 중 오류 발생:", error);

@@ -90,6 +90,11 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
                 ? msg.userMessage.slice(msg.userMessage.lastIndexOf("-") + 1).trim()
                 : msg.userMessage;
 
+              // '/'가 포함되어 있다면 '/' 앞에 있는 부분만 가져오기
+              const finalParsedMessage = parsedUserMessage.includes("/")
+                ? parsedUserMessage.slice(0, parsedUserMessage.indexOf("/")).trim()
+                : parsedUserMessage;
+
               // botResponse에서 ** 이전의 부분만 가져오기
               const parsedBotResponse = msg.botResponse.includes("**")
                 ? msg.botResponse.split("**")[0].trim()
@@ -106,7 +111,7 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
                 return [
                   {
                     id: uuidv4(),
-                    text: parsedUserMessage,
+                    text: finalParsedMessage,
                     sender: "user",
                   },
                   {
@@ -127,7 +132,7 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
                 return [
                   {
                     id: uuidv4(),
-                    text: parsedUserMessage,
+                    text: finalParsedMessage,
                     sender: "user",
                   },
                   {
@@ -579,8 +584,20 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
             )}
             <div className={`message ${message.sender}-message`}>
 
+              {/* 헤더가 존재하면 렌더링 */}
               {message.header && (
-                <div className="message-header">
+                <div
+                  className={`message-header ${message.header === "서버"
+                      ? "server-class"
+                      : message.header === "데이터베이스"
+                        ? "database-class"
+                        : message.header === "스토리지"
+                          ? "storage-class"
+                          : message.header === "네트워크"
+                            ? "network-class"
+                            : ""
+                    }`}
+                >
                   <strong>{message.header}</strong>
                 </div>
               )}

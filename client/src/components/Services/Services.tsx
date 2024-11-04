@@ -3,8 +3,6 @@ import "./Services.css";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setLoading } from "../../store/loadingSlice";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
 import { deploy } from "../../services/terraforms";
 import { checkSecret } from "../../services/secrets";
 

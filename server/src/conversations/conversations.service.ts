@@ -48,7 +48,6 @@ export class ConversationsService {
             modelSwitchCounter = 4; 
         } else {
             modelSwitchCounter = 6; 
-            return;
         }
 
         await this.saveModelSwitchCounter(CID, modelSwitchCounter);
@@ -92,19 +91,22 @@ export class ConversationsService {
         const modelSwitchCounter = await this.getModelSwitchCounter(CID);
         console.log(`getCustomMessage 호출됨 - CID: ${CID}, modelSwitchCounter: ${modelSwitchCounter}`);
 
-        switch (modelSwitchCounter % 6) {
+        switch (modelSwitchCounter) {
             case 0: // 인트로 오식이
                 return `당신은 사용자의 요구에 맞는 AWS 아키텍처 설계를 돕는 전문 안내자 역할을 합니다.
 
                         목표는 사용자의 요구 사항을 파악하여, 필요한 AWS 서비스의 종류와 개수를 결정하고 이를 mermaid 코드로 간략하게 나타내는 것입니다.
-                        대화 내역 안내:
-                        사용자의 목표와 요구 사항을 이해합니다.
-                        필요한 AWS 서비스들을 식별합니다.
-                        각 서비스 간의 관계를 파악합니다.
+                        사용자의 요구에 맞는 가장 적절한 구조를 구성해야 합니다.
                         대화 내역을 전부 참고하여 질문에 맞지 않는 대답이 있다면 해당 질문을 다시 되물어서 정확한 정보를 얻도록 해주세요.
                         대화 내역을 참고한 결과 필요한 서비스를 어느정도 구성할 수 있다면 구성한 서비스를 보여주며 이대로 진행할꺼냐고 물어봐주세요.
-                        마지막으로 구성된 정보가 마무리되었다면 mermaid 코드로서 AWS 아이콘들의 실제 URL(예:https://icon.icepanel.io/AWS/svg/Compute/EC2.svg)을 사용해서 3티어 아키텍쳐 머메이드로 <img> 사용해서 예쁘게 ** 양식을 붙여서 보내주세요. \n 없이 한 줄로 출력해주세요. 앞에 **을 꼭 넣어주세요.
-                        구성이 완료되고 사용자가 이대로 진행을 요청을 하게되면 아무말 없이 mermaid코드만 \\n없이 한줄로 출력해주세요.`;
+                        마지막으로 구성된 정보가 마무리되었다면 mermaid 코드로서 AWS 아이콘들의 실제 URL(예:https://icon.icepanel.io/AWS/svg/Compute/EC2.svg)을 사용해서 3티어 아키텍쳐 머메이드로 <img> 사용해서 예쁘게 ** 양식을 붙여서 보내주세요. \\n 없이 한 줄로 출력해주세요. 앞에 **을 꼭 넣어주세요.
+
+                        mermaid코드로 구성된 이미지 내용은 가장 단순한 형태로 나타내줘야 하며 사용자가 구성한 서비스를 간략히 잘 보여줘야 합니다.
+                        VPC같은 항목은 영역으로서 각각의 아키텍쳐가 얽혀있는 모양을 논리적으로 표현해주세요.
+
+                        구성이 완료되고 사용자가 이대로 진행을 요청을 하게되면 "다른 텍스트 없이" mermaid코드만 "\\n없이 한줄로" 출력해주세요.
+                        mermaid코드의 존재에 대해 언급하지 마세요`
+                        + "제발 한줄로 만들어";
 
             case 1:
                 return `당신은 사용자의 요구에 맞는 AWS 아키텍처 설계를 돕는 전문 안내자 역할을 합니다. 그 중 서버담당자입니다.
@@ -114,8 +116,14 @@ export class ConversationsService {
                         
                         대화 내역을 전부 참고하여 질문에 맞지 않는 대답이 있다면 해당 질문을 다시 되물어서 정확한 정보를 얻도록 해주세요.
                         대화 내역을 참고한 결과 서버를 가동하는데에 충분한 정보가 모였다면 구성한 서비스를 보여주며 이대로 진행할꺼냐고 물어봐주세요.
-                        마지막으로 구성된 정보가 마무리되었다면 mermaid 코드로서 AWS 아이콘들의 실제 URL을 사용해서 3티어 아키텍쳐 머메이드로 <img> 사용해서 예쁘게 ** 양식을 붙여서 보내주세요. \n 없이 한 줄로 출력해주세요. 앞에 **을 꼭 넣어주세요.
-                        구성이 완료되고 사용자가 이대로 진행을 요청을 하게되면 아무말 없이 mermaid코드만 한줄로 출력해주세요.`;
+                        마지막으로 구성된 정보가 마무리되었다면 mermaid 코드로서 대화내역의 코드를 이어받아 서버 부분의 이미지가 구체화 되도록 AWS 아이콘들의 실제 URL을 사용해서 3티어 아키텍쳐 머메이드로 <img> 사용해서 예쁘게 ** 양식을 붙여서 보내주세요. \\n 없이 한 줄로 출력해주세요. 앞에 **을 꼭 넣어주세요.
+
+                        mermaid코드로 구성된 이미지 내용은 가장 단순한 형태로 나타내줘야 하며 사용자가 구성한 서비스를 간략히 잘 보여줘야 합니다.
+                        VPC같은 항목은 영역으로서 각각의 아키텍쳐가 얽혀있는 모양을 논리적으로 표현해주세요.
+
+                        구성이 완료되고 사용자가 이대로 진행을 요청을 하게되면 "다른 텍스트 없이" mermaid코드만 "\\n없이 한줄로" 출력해주세요.
+                        mermaid코드의 존재에 대해 언급하지 마세요`
+                        + "제발 한줄로 만들어";
             case 2:
                 return `당신은 사용자의 요구에 맞는 AWS 아키텍처 설계를 돕는 전문 안내자 역할을 합니다. 그 중 데이터베이스 담당자입니다.
 
@@ -124,8 +132,14 @@ export class ConversationsService {
 
                         대화 내역을 전부 참고하여 질문에 맞지 않는 대답이 있다면 해당 질문을 다시 되물어서 정확한 정보를 얻도록 해주세요.
                         대화 내역을 참고한 결과 서버를 가동하는데에 충분한 정보가 모였다면 구성한 서비스를 보여주며 이대로 진행할꺼냐고 물어봐주세요.
-                        마지막으로 구성된 정보가 마무리되었다면 mermaid 코드로서 AWS 아이콘들의 실제 URL을 사용해서 3티어 아키텍쳐 머메이드로 <img> 사용해서 예쁘게 ** 양식을 붙여서 보내주세요. \n 없이 한 줄로 출력해주세요. 앞에 **을 꼭 넣어주세요.
-                        구성이 완료되고 사용자가 이대로 진행을 요청을 하게되면 아무말 없이 mermaid코드만 한줄로 출력해주세요.`;
+                        마지막으로 구성된 정보가 마무리되었다면 mermaid 코드로서 대화내역의 코드를 이어받아 서버 부분의 이미지가 구체화 되도록 AWS 아이콘들의 실제 URL을 사용해서 3티어 아키텍쳐 머메이드로 <img> 사용해서 예쁘게 ** 양식을 붙여서 보내주세요. \\n 없이 한 줄로 출력해주세요. 앞에 **을 꼭 넣어주세요.
+                        
+                        mermaid코드로 구성된 이미지 내용은 가장 단순한 형태로 나타내줘야 하며 사용자가 구성한 서비스를 간략히 잘 보여줘야 합니다.
+                        VPC같은 항목은 영역으로서 각각의 아키텍쳐가 얽혀있는 모양을 논리적으로 표현해주세요.
+
+                        구성이 완료되고 사용자가 이대로 진행을 요청을 하게되면 "다른 텍스트 없이" mermaid코드만 "\\n없이 한줄로" 출력해주세요.
+                        mermaid코드의 존재에 대해 언급하지 마세요`
+                        + "제발 한줄로 만들어";
             case 3:
                 return `당신은 사용자의 요구에 맞는 AWS 아키텍처 설계를 돕는 전문 안내자 역할을 합니다. 그 중 스토리지 담당자입니다.
 
@@ -134,8 +148,14 @@ export class ConversationsService {
                         
                         대화 내역을 전부 참고하여 질문에 맞지 않는 대답이 있다면 해당 질문을 다시 되물어서 정확한 정보를 얻도록 해주세요.
                         대화 내역을 참고한 결과 서버를 가동하는데에 충분한 정보가 모였다면 구성한 서비스를 보여주며 이대로 진행할꺼냐고 물어봐주세요.
-                        마지막으로 구성된 정보가 마무리되었다면 mermaid 코드로서 AWS 아이콘들의 실제 URL을 사용해서 3티어 아키텍쳐 머메이드로 <img> 사용해서 예쁘게 ** 양식을 붙여서 보내주세요. \n 없이 한 줄로 출력해주세요. 앞에 **을 꼭 넣어주세요.
-                        구성이 완료되고 사용자가 이대로 진행을 요청을 하게되면 아무말 없이 mermaid코드만 한줄로 출력해주세요.`;
+                        마지막으로 구성된 정보가 마무리되었다면 mermaid 코드로서 대화내역의 코드를 이어받아 서버 부분의 이미지가 구체화 되도록 AWS 아이콘들의 실제 URL을 사용해서 3티어 아키텍쳐 머메이드로 <img> 사용해서 예쁘게 ** 양식을 붙여서 보내주세요. \\n 없이 한 줄로 출력해주세요. 앞에 **을 꼭 넣어주세요.
+                        
+                        mermaid코드로 구성된 이미지 내용은 가장 단순한 형태로 나타내줘야 하며 사용자가 구성한 서비스를 간략히 잘 보여줘야 합니다.
+                        VPC같은 항목은 영역으로서 각각의 아키텍쳐가 얽혀있는 모양을 논리적으로 표현해주세요.
+
+                        구성이 완료되고 사용자가 이대로 진행을 요청을 하게되면 "다른 텍스트 없이" mermaid코드만 "\\n없이 한줄로" 출력해주세요.
+                        mermaid코드의 존재에 대해 언급하지 마세요`
+                        + "제발 한줄로 만들어";
             case 4:
                 return `당신은 사용자의 요구에 맞는 AWS 아키텍처 설계를 돕는 전문 안내자 역할을 합니다. 그 중 네트워크 담당자입니다.
 
@@ -144,9 +164,16 @@ export class ConversationsService {
                         
                         대화 내역을 전부 참고하여 질문에 맞지 않는 대답이 있다면 해당 질문을 다시 되물어서 정확한 정보를 얻도록 해주세요.
                         대화 내역을 참고한 결과 서버를 가동하는데에 충분한 정보가 모였다면 구성한 서비스를 보여주며 이대로 진행할꺼냐고 물어봐주세요.
-                        마지막으로 구성된 정보가 마무리되었다면 mermaid 코드로서 AWS 아이콘들의 실제 URL을 사용해서 3티어 아키텍쳐 머메이드로 <img> 사용해서 예쁘게 ** 양식을 붙여서 보내주세요. \n 없이 한 줄로 출력해주세요. 앞에 **을 꼭 넣어주세요.
-                        구성이 완료되고 사용자가 이대로 진행을 요청을 하게되면 아무말 없이 mermaid코드만 한줄로 출력해주세요.`;
-            case 5: 
+                        마지막으로 구성된 정보가 마무리되었다면 mermaid 코드로서 대화내역의 코드를 이어받아 서버 부분의 이미지가 구체화 되도록 AWS 아이콘들의 실제 URL을 사용해서 3티어 아키텍쳐 머메이드로 <img> 사용해서 예쁘게 ** 양식을 붙여서 보내주세요. \\n 없이 한 줄로 출력해주세요. 앞에 **을 꼭 넣어주세요.
+                        
+                        mermaid코드로 구성된 이미지 내용은 가장 단순한 형태로 나타내줘야 하며 사용자가 구성한 서비스를 간략히 잘 보여줘야 합니다.
+                        VPC같은 항목은 영역으로서 각각의 아키텍쳐가 얽혀있는 모양을 논리적으로 표현해주세요.
+
+                        구성이 완료되고 사용자가 이대로 진행을 요청을 하게되면 "다른 텍스트 없이" mermaid코드만 "\\n없이 한줄로" 출력해주세요.
+                        mermaid코드의 존재에 대해 언급하지 마세요`
+                        + "제발 한줄로 만들어";
+
+            case 5:  // 안쓰는 번호
                 return "당신은 사용자의 요구에 맞는 AWS 서비스 아키텍처를 단계별로 구성하는 안내자 역할을 합니다."
                     + "저비용을 원할 경우 프리 티어 등급의 서비스를 적극적으로 추천해줘"
                     + "답변에서 사용자가 특정 aws의 서비스를 단순히 언급하는게 아닌 '확실하게 사용하겠다고 확정 {ex)ec2를 사용할께 같은 경우}' 지은 경우에만 대답을 완료한 후 별도로 추출하기 쉽도록 텍스트 하단에 "
@@ -156,24 +183,25 @@ export class ConversationsService {
                     + "aws 기본 지역은 서울 지역이야. 해당 지역에 맞는 ami로 작성해줘."
                     + "ec2의 ami와 subnet_id도 내가 구성한 내용을 바탕으로 실제로 사용할 수 있도록 구성해줘. subnet은 별도의 언급이 없다면 기본값으로 설정하고"
                     + "Mermaid로서 구성해줘"
-                    + "S3은 특별한 목적이 없다면 private하게 해줘";
+                    + "S3은 특별한 목적이 없다면 private하게 해줘"
+                    + "제발 한줄로 만들어";
 
             case 6: // 아웃트로 육식이
-                return `지금까지의 대화 내용을 종합하여 필요한 AWS 서비스 구성을 아래 양식으로 생성했습니다. 최종 구성은 Terraform 코드로 변환될 예정이며, 각 서비스와 옵션이 정확히 입력되어야 합니다.
-                
+                return `당신은 사용자의 요구에 맞는 AWS 아키텍처 설계를 돕는 전문 안내자 역할을 합니다. 그 중 최종적으로 대화내역을 검토하는 담당자입니다.
+                    지금까지의 대화 내용을 종합하여 필요한 AWS 서비스 구성을 아래 양식으로 생성해야합니다. 최종 구성은 Terraform 코드로 변환될 예정이며, 각 서비스와 옵션이 정확히 입력되어야 합니다.
+                    생성한 최종구조에 대해 간략하게 설명해주세요. 그리고 설명이 끝나면 다음의 양식대로 **양식 앞에 붙여 \n 없이 한줄로 글을 마무리해주세요
                     생성된 서비스 양식:
-                    !![ { "service": "ec2", "options": { "ami": "ami-xxxxxxxx", "instance_type": "t2.micro", "public": true } },{ "service": "rds", "options": { "engine": "postgres", "instance_class": "db.t2.small", "allocated_storage": 20 } },{ "service": "s3", "options": { "bucket_name": "my-bucket", "access": "public-read" } }]
-                    지역은 서울지역을 기준으로 생성해줘.
-                    위와 같이 필요한 서비스가 정확히 입력되었는지 확인해 주세요. 추가로 수정이 필요하거나 다른 설정이 있으면 알려주시기 바랍니다. 이대로 완료되면 최종적으로 Terraform 코드로 생성됩니다.`;
+                    **{ "service": "ec2", "options": { "ami": "ami-xxxxxxxx", "instance_type": "t2.micro", "public": true } },{ "service": "rds", "options": { "engine": "postgres", "instance_class": "db.t2.small", "allocated_storage": 20 } },{ "service": "s3", "options": { "bucket_name": "my-bucket", "access": "public-read" } }
+                    지역은 서울지역을 기준으로 생성해줘.`
 
             default:
                 return "이 출력값은 버그이므로 어떤 인풋이 들어오든 '에러. 새로고침 필요' 메세지를 출력해야 함";
         }
     }
 
-    static async saveConversation(CID: number, user_question: string, response: string) {
-        console.log(`Saving conversation: CID=${CID}, user_question=${user_question}, response=${response}`);
-    }
+    // static async saveConversation(CID: number, user_question: string, response: string) {
+    //     console.log(`Saving conversation: CID=${CID}, user_question=${user_question}, response=${response}`);
+    // }
 
     createResponse(text: string) {
         return {
@@ -257,7 +285,7 @@ export class ConversationsService {
     }
 
     async askBedrockModel(user_question: string, CID: number): Promise<any> {
-        console.log(`CID received in askBedrockModel: ${CID}`);
+        console.log(`코드 시작 CID received in askBedrockModel: ${CID}`);
 
         // CID별 상태 조회
         let globalMatrix = await this.getStateData(CID);
@@ -456,7 +484,7 @@ export class ConversationsService {
             const botResponse = parsedResponse.content?.[0]?.text;
 
             // 키워드 처리 및 저장 (botResponse, user_question을 사용)
-            let updatedResponse = await this.processTextAndAddKeywords(botResponse, user_question, CID);
+            let updatedResponse = await this.processTextAndAddKeywords(botResponse, user_question, CID, modelSwitchCounter);
 
             if (botResponse.startsWith('**')) {
 
@@ -590,20 +618,24 @@ export class ConversationsService {
 
     // 기존 키워드를 누적하지 않고 새로운 키워드로 덮어쓰는 함수
     async saveKeywords(keywords: string[], CID: number): Promise<void> {
-        // 새로운 키워드를 문자열로 결합
         const newKeywords = keywords.join(', ');
-
+    
         const params = {
             TableName: 'Archboard_keyword',
-            Item: {
-                CID: CID,
-                keyword: newKeywords,
-                timestamp: new Date().toISOString(),
+            Key: { CID: CID },
+            UpdateExpression: 'SET #keyword = :newKeywords, #timestamp = :timestamp',
+            ExpressionAttributeNames: {
+                '#keyword': 'keyword',
+                '#timestamp': 'timestamp'
+            },
+            ExpressionAttributeValues: {
+                ':newKeywords': newKeywords,
+                ':timestamp': new Date().toISOString(),
             }
         };
-
+    
         try {
-            await this.dynamoDB.put(params).promise();
+            await this.dynamoDB.update(params).promise();
             console.log(`키워드 저장 성공: ${newKeywords}`);
         } catch (error) {
             console.error(`키워드 저장 실패: ${error.message}`);
@@ -615,6 +647,7 @@ export class ConversationsService {
         // 새로운 키워드를 문자열로 결합
         const newKeywords = keywords.join(', ');
 
+        
         const params = {
             TableName: 'Archboard_keyword',
             Item: {
@@ -632,30 +665,36 @@ export class ConversationsService {
         }
     }
     
-    async processTextAndAddKeywords(outputText: string, inputText: string, CID: number): Promise<string> {
-        // console.log(`processTextAndAddKeywords 호출됨 - CID: ${CID}, insputText: ${inputText}`);
-        // console.log(`processTextAndAddKeywords 호출됨 - CID: ${CID}, inputText: ${outputText}`);
+    async processTextAndAddKeywords(outputText: string, inputText: string, CID: number, modelSwitchCounter: number): Promise<string> {
+
         // 키워드 추출 및 텍스트 업데이트
         const result = this.extractKeywords(outputText);
         const { keywords, updatedText } = result;
 
-        // 여기서 컨텍스트 스위칭
-        // const triggerKeywords = ['특정텍스트1', '특정텍스트2', '특정텍스트3']; // 여기에 원하는 키워드
-        // const shouldIncrementCounter = triggerKeywords.some(keyword => inputText.includes(keyword));
-        // if (shouldIncrementCounter) {
-        //     console.log(`키워드 조건 만족 - ${inputText}에 특정 키워드 포함됨, modelSwitchCounter 증가`);
-        //     await this.incrementModelCounter(CID);
-        // }
-
         if (keywords.length > 0) {
-            await this.saveMermaid(keywords, CID);
+            if (modelSwitchCounter != 6){
+                await this.saveMermaid(keywords, CID);
+            } else {
+                await this.saveKeywords(keywords, CID);
+            }
         }
 
+        let fetchedKeywords: string[] = [];
+
         // CID로 저장된 키워드 조회
-        const fetchedKeywords = await this.fetchKeywordsByCID(CID);
+        if(modelSwitchCounter != 6){
+            fetchedKeywords = await this.fetchMermaidByCID(CID);
+        }else{
+            fetchedKeywords = await this.fetchKeywordsByCID(CID);
+        }
 
         // 최종적으로 텍스트 끝에 키워드 리스트 추가
-        const finalText = updatedText + `\n**[${fetchedKeywords.join(', ')}]`;
+        let finalText = updatedText;
+
+        // modelSwitchCounter가 6이 아닐 때만 추가
+        if (modelSwitchCounter !== 6) {
+            finalText += `\n**[${fetchedKeywords.join(', ')}]`;
+        }
 
         // 인풋(사용자 입력)과 최종 텍스트 저장
         // await this.saveConversation(CID, inputText, finalText);
@@ -674,9 +713,26 @@ export class ConversationsService {
         if (!result.Items || result.Items.length === 0) {
             return [];
         }
-
+        
         return result.Items.map(item => item.keyword);
     }
+
+    async fetchMermaidByCID(CID: number): Promise<string[]> {
+        const params = {
+            TableName: 'Archboard_keyword',
+            KeyConditionExpression: 'CID = :cid',
+            ExpressionAttributeValues: { ':cid': CID }
+        };
+
+        const result = await this.dynamoDB.query(params).promise();
+        if (!result.Items || result.Items.length === 0) {
+            return [];
+        }
+        
+        return result.Items.map(item => item.mermaid);
+    }
+
+
 
     // CID로 기존에 저장된 키워드를 조회하는 함수
     async fetchExistingKeywords(CID: number): Promise<string | null> {
@@ -770,5 +826,61 @@ export class ConversationsService {
             throw new Error('modelSwitchCounter 저장 실패');
         }
     }
-    
+    // summary들 생산 (가격 정보. 아키 서머리)
+    async generateSummary(cid: number, type: 'summary' | 'price'): Promise<string> {
+        // 1. DynamoDB에서 keyword 데이터 가져오기
+        const params = {
+            TableName: 'Archboard_keyword',
+            Key: { CID: cid },
+            ProjectionExpression: 'keyword',
+        };
+        const result = await this.dynamoDB.get(params).promise();
+
+        const keywordData = result.Item && result.Item.keyword ? result.Item.keyword : '';
+        if (!keywordData) {
+            return ''; // keyword 데이터가 없으면 빈 문자열 반환
+        }
+
+        // 2. Bedrock 요청을 위한 프롬프트 내용 준비
+        const prompt_content = type === 'summary'
+            ? `Please provide a detailed summary of the cloud architecture, including each service's information based on the following keywords: ${keywordData}`
+            : `Please provide a detailed price summary of the cloud architecture, including each service's information based on the following keywords: ${keywordData}`;
+
+        // 3. Bedrock 요청 본문 생성
+        const requestBody = {
+            max_tokens: 1000,
+            anthropic_version: 'bedrock-2023-05-31',
+            messages: [
+                {
+                    role: 'user',
+                    content: prompt_content,
+                },
+            ],
+        };
+
+        try {
+            // 4. Bedrock 모델 호출
+            const response = await this.bedrockClient.invokeModel({
+                body: JSON.stringify(requestBody),
+                contentType: 'application/json',
+                modelId: 'anthropic.claude-3-5-sonnet-20240620-v1:0',
+            }).promise();
+
+            const responseBody = response.body.toString();
+            const parsedResponse = JSON.parse(responseBody);
+
+            // 예상되는 데이터 형식에 따라 응답 반환
+            return parsedResponse.messages[0]?.content || ''; // 적절한 키에 맞게 데이터를 반환
+        } catch (error) {
+            throw new Error(`Bedrock 모델 호출 실패: ${error.message}`);
+        }
+    }
+
+    // Bedrock 클라이언트 설정
+    private bedrockClient = new AWS.BedrockRuntime({
+        region: process.env.AWS_REGION,
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    });
+   
 }

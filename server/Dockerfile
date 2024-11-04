@@ -1,10 +1,7 @@
-# 베이스 이미지로 Node.js 선택
-FROM node:16
+FROM node:22
 
-# 작업 디렉토리 설정
 WORKDIR /app
 
-# 의존성 복사 및 설치
 COPY package*.json ./
 RUN npm install
 
@@ -15,14 +12,10 @@ RUN apt-get update && apt-get install -y gnupg software-properties-common \
     && apt-get update && apt-get install terraform
 
 
-
-# 소스 파일 복사
 COPY . .
 
-# NestJS 애플리케이션 빌드 및 실행
 RUN npm run build
 
-# changed from CMD ["npm", "run", "start:prod"] :prod will need to have dist folder in local
 CMD ["npm", "run", "start"] 
 
 EXPOSE 3000
