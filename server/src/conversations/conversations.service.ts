@@ -609,8 +609,29 @@ export class ConversationsService {
             console.error(`키워드 저장 실패: ${error.message}`);
         }
     }
-    
 
+    // 기존 키워드를 누적하지 않고 새로운 키워드로 덮어쓰는 함수
+    async saveMermaid(keywords: string[], CID: number): Promise<void> {
+        // 새로운 키워드를 문자열로 결합
+        const newKeywords = keywords.join(', ');
+
+        const params = {
+            TableName: 'Archboard_keyword',
+            Item: {
+                CID: CID,
+                mermaid: newKeywords,
+                timestamp: new Date().toISOString(),
+            }
+        };
+
+        try {
+            await this.dynamoDB.put(params).promise();
+            console.log(`키워드 저장 성공: ${newKeywords}`);
+        } catch (error) {
+            console.error(`키워드 저장 실패: ${error.message}`);
+        }
+    }
+    
     async processTextAndAddKeywords(outputText: string, inputText: string, CID: number): Promise<string> {
         // console.log(`processTextAndAddKeywords 호출됨 - CID: ${CID}, insputText: ${inputText}`);
         // console.log(`processTextAndAddKeywords 호출됨 - CID: ${CID}, inputText: ${outputText}`);
@@ -627,7 +648,7 @@ export class ConversationsService {
         // }
 
         if (keywords.length > 0) {
-            await this.saveKeywords(keywords, CID);
+            await this.saveMermaid(keywords, CID);
         }
 
         // CID로 저장된 키워드 조회
