@@ -9,7 +9,7 @@ import {
   faPaperPlane,
 } from "@fortawesome/free-solid-svg-icons";
 import { v4 as uuidv4 } from "uuid"; // UUID 가져오기
-import { useTemplates } from "./TemplateProvider";
+import { Template, useTemplates } from "./TemplateProvider";
 
 interface ChatProps {
   projectCID: number;
@@ -22,7 +22,6 @@ interface Message {
   text: string | JSX.Element;
   subtext?: string;
   sender: "user" | "bot";
-  maxLength?: number;
   buttons?: { id: number; label: string }[];
   checks?: { id: number; label: string }[];
   nocheck?: { id: number; label: string };
@@ -32,7 +31,7 @@ interface Message {
 const defaultBotMessage: Message[] = [
   {
     id: uuidv4(),
-    text: "안녕하세요. 당신의 클라우드를 책임져줄 Kloudify에요. Kloudify와 쉽게 클라우드 아키텍쳐를 설계 해봐요! 우측 상단에 Kloudify와 대화하는 팁을 참고 하여 대화해 보세요.",
+    text: "Kloudify와 쉽게 클라우드 아키텍쳐를 설계 해봐요! 우측 상단에 Kloudify와 대화하는 팁을 참고 하여 대화해 보세요.",
     sender: "bot",
   },
   {
@@ -81,13 +80,14 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
       try {
         const token = localStorage.getItem("token") || "";
         const initialMessages = await open(projectCID, token);
+        console.log(initialMessages)
         setMessages(defaultBotMessage);
         if (initialMessages && initialMessages.length > 0) {
           const formattedMessages: Message[] = initialMessages.flatMap(
             (msg: any, index: number) => {
               // userMessage에서 - 이후의 부분만 가져오기
               const parsedUserMessage = msg.userMessage.includes("-")
-                ? msg.userMessage.slice(msg.userMessage.indexOf("-") + 1).trim()
+                ? msg.userMessage.slice(msg.userMessage.lastIndexOf("-") + 1).trim()
                 : msg.userMessage;
 
               // botResponse에서 ** 이전의 부분만 가져오기
@@ -153,20 +153,10 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
 
             let parsedDataArray: string[] = [];
 
-            try {
-              // JSON 배열로 파싱 시도
-              parsedDataArray = JSON.parse(afterAsterisks);
-              if (!Array.isArray(parsedDataArray)) {
-                throw new Error("파싱된 데이터가 배열이 아님");
-              }
-            } catch (e) {
-              console.error("JSON 파싱 실패, 수동으로 파싱 시도:", e);
-              // 수동으로 파싱
-              let dataString = afterAsterisks.replace(/^\[|\]$/g, "");
-              parsedDataArray = dataString
-                .split(",")
-                .map((item: string) => item.trim());
-            }
+            let dataString = afterAsterisks.replace(/^\[|\]$/g, "");
+            parsedDataArray = dataString
+              .split(",")
+              .map((item: string) => item.trim());
 
             // 부모에게 파싱된 데이터 전달
             if (onFinishData) {
@@ -248,12 +238,14 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
   // 체크박스 클릭 핸들러
   const handleCheckChange = (messageId: string, label: string, isNoCheck?: boolean) => {
     setSelectedChecks((prevState) => {
+      // 만약 noCheck를 클릭했다면 그대로 return
       if (isNoCheck) {
         return {
           ...prevState, [messageId]: [label],
         }
       } else {
         const currentChecks = prevState[messageId] || [];
+        // "알아서 해줘"를 클릭했다면 "알아서 해줘"만 return
         if (currentChecks.includes("알아서 해줘")) {
           const filteredChecks = currentChecks.filter((item) => item !== "알아서 해줘")
           return {
@@ -261,12 +253,13 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
             [messageId]: [...filteredChecks, label],
           };
         }
-
+        // 체크한걸 또 체크했다면 체크에서 빼기
         if (currentChecks.includes(label)) {
           return {
             ...prevState,
             [messageId]: currentChecks.filter((item) => item !== label),
           };
+          // 그게 아니라면 제대로 체크
         } else {
           return {
             ...prevState,
@@ -283,21 +276,22 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
     const message = messages.find((msg) => msg.id === messageId);
 
     if (message?.servicechecks) {
-      // servicechecks가 있는 경우만 처리
+      // servicechecks가 있는 경우 targetTemplateNames 확인
       const uncheckedLabels = targetTemplateNames.filter(
         (name) => !selectedLabels.includes(name)
       );
 
+      // 선택한거랑 선택안한거 둘 다 BackEnd한테 보내기
       if (selectedLabels.length > 0) {
         handleButtonClick(messageId, {
           id: 0,
-          label: `${selectedLabels.join(", ")} 선택 - ${uncheckedLabels.join(", ")} 선택안함`,
+          label: `${selectedLabels.join(", ")} 선택 / ${uncheckedLabels.join(", ")} 선택안함`,
         });
       } else {
         // 선택된 항목이 없는 경우에도 선택되지 않은 항목을 포함해 메시지를 보냄
         handleButtonClick(messageId, {
           id: 0,
-          label: `선택되지 않음 - ${uncheckedLabels.join(", ")} 선택안함`,
+          label: `선택되지 않음 / ${uncheckedLabels.join(", ")} 선택안함`,
         });
       }
 
@@ -312,6 +306,29 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
     }
   };
 
+  // 새로운 메시지를 생성하고 메시지 배열에 추가하는 함수
+  const createAndAddMessage = (template?: Template, text?: string) => {
+    const newMessage: Message = template
+      ? {
+        header: template.header,
+        id: uuidv4(),
+        text: template.text,
+        subtext: template.subtext,
+        sender: "bot",
+        buttons: template.buttons,
+        checks: template.checks,
+        nocheck: template.nocheck,
+        servicechecks: template.servicechecks,
+      }
+      : {
+        id: uuidv4(),
+        text: text || "",
+        sender: "bot",
+      };
+
+    setMessages((prevMessages) => [...prevMessages, newMessage]);
+  };
+
   // 응답 메시지를 처리하는 함수
   const processResponseMessage = (responseMessage: string) => {
     if (responseMessage.includes("**")) {
@@ -321,13 +338,10 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
 
       // "**"뒤에 있는 데이터를 배열형태로 받기
       let parsedDataArray: string[] = [];
-
-      // 만약 JSON배열이 아니면 매뉴얼대로 파싱
       let dataString = afterAsterisks.replace(/^\[|\]$/g, "");
       parsedDataArray = dataString.split(",").map((item) => item.trim());
 
       // 부모에게 파싱된 데이터 보내기
-      console.log("** 파싱: ", parsedDataArray);
       if (onFinishData) {
         onFinishData(parsedDataArray);
       }
@@ -337,61 +351,14 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
         (template) => template.name === beforeAsterisks
       );
 
-      // 만약 일치한다면
-      if (matchingTemplate) {
-        // 템플릿을 묘사해라
-        const newBotMessage: Message = {
-          header: matchingTemplate.header,
-          id: uuidv4(),
-          text: matchingTemplate.text,
-          subtext: matchingTemplate.subtext,
-          sender: "bot",
-          buttons: matchingTemplate.buttons,
-          checks: matchingTemplate.checks,
-          nocheck: matchingTemplate.nocheck,
-          servicechecks: matchingTemplate.servicechecks,
-        };
-        setMessages((prevMessages) => [...prevMessages, newBotMessage]);
-        // 일치 안한다면
-      } else {
-        // 그냥 평범하게 메세지 출력해라
-        const botMessage: Message = {
-          id: uuidv4(),
-          text: beforeAsterisks,
-          sender: "bot",
-        };
-        setMessages((prevMessages) => [...prevMessages, botMessage]);
-      }
+      // 일치하는 템플릿이 있으면 템플릿 메시지를 추가하고, 없으면 일반 메시지를 추가
+      createAndAddMessage(matchingTemplate, beforeAsterisks);
     } else {
       const matchingTemplate = Object.values(templates).find(
         (template) => template.name === responseMessage
       );
-      // 만약 일치한다면
-      if (matchingTemplate) {
-        // 템플릿을 묘사해라
-        const newBotMessage: Message = {
-          header: matchingTemplate.header,
-          id: uuidv4(),
-          text: matchingTemplate.text,
-          subtext: matchingTemplate.subtext,
-          sender: "bot",
-          buttons: matchingTemplate.buttons,
-          checks: matchingTemplate.checks,
-          nocheck: matchingTemplate.nocheck,
-          servicechecks: matchingTemplate.servicechecks,
-        };
-        setMessages((prevMessages) => [...prevMessages, newBotMessage]);
-        // 일치 안한다면
-      } else {
-        // 일반적인 응답 처리
-        const botMessage: Message = {
-          id: uuidv4(),
-          text: responseMessage,
-          sender: "bot",
-          maxLength: 50,
-        };
-        setMessages((prevMessages) => [...prevMessages, botMessage]);
-      }
+
+      createAndAddMessage(matchingTemplate, responseMessage);
     }
   };
 
@@ -427,18 +394,15 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
       let messageToSend = "";
 
       if (lastBotMessage) {
-        // 템플릿의 text와 일치하는지 확인
-        const matchingTemplate = Object.values(templates).find(
-          (template) => template.text === lastBotMessage.text
-        );
         messageToSend = `${lastBotMessage.text} - ${input}`;
       } else {
         messageToSend = input;
       }
 
       let responseMessage = await ask(messageToSend, projectCID);
+      console.log("responseMessage : ", responseMessage)
       if (responseMessage === "template6-1") {
-        responseMessage = await ask("trigger", projectCID);
+        responseMessage = await ask("template6-1", projectCID);
       }
 
       // 로딩 메시지 제거
@@ -449,7 +413,6 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
       // 응답 메시지 처리
       processResponseMessage(responseMessage);
     } catch (error) {
-      console.error("메시지 전송 오류:", error);
 
       // 로딩 메시지 제거
       setMessages((prevMessages) =>
@@ -467,7 +430,7 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === "Enter" && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey && e.nativeEvent.isComposing === false) {
       e.preventDefault(); // 기본 Enter 동작 방지 (줄바꿈 방지)
       handleSendMessage(); // 메시지 전송 함수 호출
       if (textAreaRef.current) {
@@ -495,9 +458,14 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
 
     userMessageText = button.label;
 
+    let parsedUserMessageText = userMessageText
+    if (userMessageText.includes("/")) {
+      parsedUserMessageText = userMessageText.split("/")[0].trim();
+    }
+
     const userMessage: Message = {
       id: uuidv4(),
-      text: userMessageText,
+      text: parsedUserMessageText,
       sender: "user",
     };
     setMessages((prevMessages) => [...prevMessages, userMessage]);
@@ -520,18 +488,15 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
       let messageToSend = "";
 
       if (lastBotMessage) {
-        // 템플릿의 text와 일치하는지 확인
-        const matchingTemplate = Object.values(templates).find(
-          (template) => template.text === lastBotMessage.text
-        );
         messageToSend = `${lastBotMessage.text} - ${userMessageText}`;
       } else {
         messageToSend = userMessageText;
       }
 
-      console.log("response : ", messageToSend)
-
-      const responseMessage = await ask(messageToSend, projectCID);
+      let responseMessage = await ask(messageToSend, projectCID);
+      if (responseMessage === "template6-1") {
+        responseMessage = await ask("이대로 만들어줘", projectCID);
+      }
 
       // 로딩 메시지 제거
       setMessages((prevMessages) =>

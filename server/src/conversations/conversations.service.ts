@@ -364,8 +364,17 @@ export class ConversationsService {
             // "-" 기호 뒤의 내용을 추출
             const dashIndex = remainingText.indexOf('-');
             if (dashIndex !== -1) {
-                const textAfterDash = remainingText.substring(dashIndex + 1).trim();
+                let textAfterDash = remainingText.substring(dashIndex + 1).trim();
+
+                const slashIndex = textAfterDash.indexOf('/');
+
+                if (slashIndex !== -1) { // / 기준으로 자르기
+                    textAfterDash = textAfterDash.substring(0, slashIndex).trim();
+                }
                 
+                // "선택" 글자 제거
+                textAfterDash = textAfterDash.replace(/ 선택/g, '').trim();
+
                 // "," 기준으로 행렬로 변환
                 const extractedKeywords = textAfterDash.split(',').map(keyword => keyword.trim());
 
@@ -446,8 +455,6 @@ export class ConversationsService {
             // 응답에서 'content' 필드의 'text' 값을 추출하여 botResponse로 사용
             const botResponse = parsedResponse.content?.[0]?.text;
 
-            console.log("bot response? ", responseBody);
-
             // 키워드 처리 및 저장 (botResponse, user_question을 사용)
             let updatedResponse = await this.processTextAndAddKeywords(botResponse, user_question, CID);
 
@@ -475,14 +482,22 @@ export class ConversationsService {
 
                 this.updateModelCounter(CID,nextItem);
 
-                await this.saveConversation(CID, user_question, nextTemplate + updatedResponse);
+                let answer = '';
+
+                if (nextTemplate === 'template6-1'){
+                    answer = nextTemplate
+                } else {
+                    answer = nextTemplate + updatedResponse;
+                }
+
+                await this.saveConversation(CID, user_question, nextTemplate);
 
                 return {
                     ...parsedResponse,
                     content: [
                         {
                             type: "text",
-                            text: nextTemplate + updatedResponse // 업데이트된 텍스트 (키워드 리스트 포함)
+                            text: answer // 업데이트된 텍스트 (키워드 리스트 포함)
                         }
                     ]
                 };
@@ -594,8 +609,29 @@ export class ConversationsService {
             console.error(`키워드 저장 실패: ${error.message}`);
         }
     }
-    
 
+    // 기존 키워드를 누적하지 않고 새로운 키워드로 덮어쓰는 함수
+    async saveMermaid(keywords: string[], CID: number): Promise<void> {
+        // 새로운 키워드를 문자열로 결합
+        const newKeywords = keywords.join(', ');
+
+        const params = {
+            TableName: 'Archboard_keyword',
+            Item: {
+                CID: CID,
+                mermaid: newKeywords,
+                timestamp: new Date().toISOString(),
+            }
+        };
+
+        try {
+            await this.dynamoDB.put(params).promise();
+            console.log(`키워드 저장 성공: ${newKeywords}`);
+        } catch (error) {
+            console.error(`키워드 저장 실패: ${error.message}`);
+        }
+    }
+    
     async processTextAndAddKeywords(outputText: string, inputText: string, CID: number): Promise<string> {
         // console.log(`processTextAndAddKeywords 호출됨 - CID: ${CID}, insputText: ${inputText}`);
         // console.log(`processTextAndAddKeywords 호출됨 - CID: ${CID}, inputText: ${outputText}`);
@@ -612,7 +648,7 @@ export class ConversationsService {
         // }
 
         if (keywords.length > 0) {
-            await this.saveKeywords(keywords, CID);
+            await this.saveMermaid(keywords, CID);
         }
 
         // CID로 저장된 키워드 조회
