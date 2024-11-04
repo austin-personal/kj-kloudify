@@ -402,7 +402,7 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
       let responseMessage = await ask(messageToSend, projectCID);
       console.log("responseMessage : ", responseMessage)
       if (responseMessage === "template6-1") {
-        responseMessage = await ask("이대로 만들어줘", projectCID);
+        responseMessage = await ask("template6-1", projectCID);
       }
 
       // 로딩 메시지 제거
