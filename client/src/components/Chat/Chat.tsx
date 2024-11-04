@@ -154,20 +154,10 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
 
             let parsedDataArray: string[] = [];
 
-            try {
-              // JSON 배열로 파싱 시도
-              parsedDataArray = JSON.parse(afterAsterisks);
-              if (!Array.isArray(parsedDataArray)) {
-                throw new Error("파싱된 데이터가 배열이 아님");
-              }
-            } catch (e) {
-              console.error("JSON 파싱 실패, 수동으로 파싱 시도:", e);
-              // 수동으로 파싱
-              let dataString = afterAsterisks.replace(/^\[|\]$/g, "");
-              parsedDataArray = dataString
-                .split(",")
-                .map((item: string) => item.trim());
-            }
+            let dataString = afterAsterisks.replace(/^\[|\]$/g, "");
+            parsedDataArray = dataString
+              .split(",")
+              .map((item: string) => item.trim());
 
             // 부모에게 파싱된 데이터 전달
             if (onFinishData) {
