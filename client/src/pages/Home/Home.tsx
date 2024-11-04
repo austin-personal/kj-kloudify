@@ -39,7 +39,7 @@ const Home: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   console.log("finished:", finishData);
-
+  //home 페이지면 무조건 키가 있어야 함.
   dispatch(setHasSecret(true));
 
   useEffect(() => {
