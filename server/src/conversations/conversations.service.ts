@@ -364,8 +364,17 @@ export class ConversationsService {
             // "-" 기호 뒤의 내용을 추출
             const dashIndex = remainingText.indexOf('-');
             if (dashIndex !== -1) {
-                const textAfterDash = remainingText.substring(dashIndex + 1).trim();
+                let textAfterDash = remainingText.substring(dashIndex + 1).trim();
+
+                const slashIndex = textAfterDash.indexOf('-');
+
+                if (slashIndex !== -1) { // / 기준으로 자르기
+                    textAfterDash = textAfterDash.substring(0, slashIndex).trim();
+                }
                 
+                // "선택" 글자 제거
+                textAfterDash = textAfterDash.replace(/ 선택/g, '').trim();
+
                 // "," 기준으로 행렬로 변환
                 const extractedKeywords = textAfterDash.split(',').map(keyword => keyword.trim());
 
@@ -446,8 +455,6 @@ export class ConversationsService {
             // 응답에서 'content' 필드의 'text' 값을 추출하여 botResponse로 사용
             const botResponse = parsedResponse.content?.[0]?.text;
 
-            console.log("bot response? ", responseBody);
-
             // 키워드 처리 및 저장 (botResponse, user_question을 사용)
             let updatedResponse = await this.processTextAndAddKeywords(botResponse, user_question, CID);
 
@@ -475,14 +482,22 @@ export class ConversationsService {
 
                 this.updateModelCounter(CID,nextItem);
 
-                await this.saveConversation(CID, user_question, nextTemplate + updatedResponse);
+                let answer = '';
+
+                if (nextTemplate === 'template6-1'){
+                    answer = nextTemplate
+                } else {
+                    nextTemplate + updatedResponse
+                }
+
+                await this.saveConversation(CID, user_question, nextTemplate);
 
                 return {
                     ...parsedResponse,
                     content: [
                         {
                             type: "text",
-                            text: nextTemplate + updatedResponse // 업데이트된 텍스트 (키워드 리스트 포함)
+                            text: answer // 업데이트된 텍스트 (키워드 리스트 포함)
                         }
                     ]
                 };
