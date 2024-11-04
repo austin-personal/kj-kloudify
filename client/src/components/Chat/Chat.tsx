@@ -584,8 +584,20 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
             )}
             <div className={`message ${message.sender}-message`}>
 
+              {/* 헤더가 존재하면 렌더링 */}
               {message.header && (
-                <div className="message-header">
+                <div
+                  className={`message-header ${message.header === "서버"
+                      ? "server-class"
+                      : message.header === "데이터베이스"
+                        ? "database-class"
+                        : message.header === "스토리지"
+                          ? "storage-class"
+                          : message.header === "네트워크"
+                            ? "network-class"
+                            : ""
+                    }`}
+                >
                   <strong>{message.header}</strong>
                 </div>
               )}
