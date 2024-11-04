@@ -1,36 +1,36 @@
 services:
   client:
-    build:
-      context: ${CLIENT_PATH}
+    image: "ausitn/client:latest"
     ports:
       - "80:80"
-    volumes:
-      - ${CLIENT_PATH}:/app
-    depends_on:
-      - server
     environment:
-      - REACT_APP_SERVER_URL=http://localhost:3000  # 서버의 URL을 환경 변수로 전달
+      - REACT_APP_SERVER_URL=http://server:3000
     networks:
       - webnet
+    depends_on:
+      - server
 
   server:
-    build:
-      context: ${SERVER_PATH}
+    image: "ausitn/server:latest"
     ports:
       - "3000:3000"
-    volumes:
-      - ${SERVER_PATH}:/app
     environment:
-      - DATABASE_HOST=host.docker.internal
-      - DATABASE_PORT=5432
-      - DATABASE_USER=postgres
-      - DATABASE_PASSWORD=1234
-      - DATABASE_NAME=my_test
+      - DATABASE_HOST=${DATABASE_HOST}
+      - DATABASE_PORT=${DATABASE_PORT}
+      - DATABASE_USER=${DATABASE_USER}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+      - DATABASE_NAME=${DATABASE_NAME}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_REGION=${AWS_REGION}
+      - DYNAMO_TABLE_NAME=${DYNAMO_TABLE_NAME}
+      - TERRAFORM_BUCKET=${TERRAFORM_BUCKET}
+      - TERRAFORM_LAMBDA_FUNCTION=${TERRAFORM_LAMBDA_FUNCTION}
+      - ENCRYPTION_KEY=${ENCRYPTION_KEY}
+      - DOCKER_USERNAME=ausitn
     networks:
       - webnet
 
 networks:
   webnet:
     driver: bridge
-
-# Test# Test
