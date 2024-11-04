@@ -177,32 +177,4 @@ export class ProjectsService {
     }
   }
   
-  // 프로젝트 클라우드 아키텍처 요약
-  async archSummery(pid: number):Promise< summary: string >  {
-    // 1. Get CID of the PID
-    const project = await this.projectRepository.findOne({ where: { PID: pid } });
-    if (!project) {
-      throw new NotFoundException('Project not found');
-    }
-    const cid = project.CID;
-    console.log("getMermaidCode: ", cid);
-    try {
-      const summary = await this.conversationsService.getSummary(cid);
-      return summary;
-    } catch (error) {
-      console.error('Error fetching data from DynamoDB:', error);
-      throw new InternalServerErrorException('Failed to fetch data from DynamoDB');
-    }
-  }
-  
-  // 프로젝트 예상 가격 
-  async getPrice(cid: number):Promise< price: string >  {
-    try {
-      const price = await this.conversationsService.getPrice(cid);
-      return price;
-    } catch (error) {
-      console.error('Error fetching data from DynamoDB:', error);
-      throw new InternalServerErrorException('Failed to fetch data from DynamoDB');
-    }
-  }
 }
