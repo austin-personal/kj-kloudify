@@ -366,7 +366,7 @@ export class ConversationsService {
             if (dashIndex !== -1) {
                 let textAfterDash = remainingText.substring(dashIndex + 1).trim();
 
-                const slashIndex = textAfterDash.indexOf('-');
+                const slashIndex = textAfterDash.indexOf('/');
 
                 if (slashIndex !== -1) { // / 기준으로 자르기
                     textAfterDash = textAfterDash.substring(0, slashIndex).trim();
@@ -487,7 +487,7 @@ export class ConversationsService {
                 if (nextTemplate === 'template6-1'){
                     answer = nextTemplate
                 } else {
-                    nextTemplate + updatedResponse
+                    answer = nextTemplate + updatedResponse;
                 }
 
                 await this.saveConversation(CID, user_question, nextTemplate);
