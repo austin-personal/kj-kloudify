@@ -63,35 +63,32 @@ const Review: React.FC = () => {
   return (
     <div className="review">
       <div className="review-board">
-        <MermaidChart chartCode={finishData}></MermaidChart>
-        {/* <ReactFlowProvider>
-          <Board
-            ref={boardRef}
-            height="100%"
-            borderRadius="20px 20px 20px 20px"
-            parsedData={[]}
-            finishData={finishData}
-          />
-        </ReactFlowProvider> */}
         <div className="download">
-          <div
-            className="download-container"
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-          >
-            <button className="download-button">
-              <FontAwesomeIcon
-                icon={faCloudArrowDown}
-                className="download-icon"
-              />
-              Download
-            </button>
-            <div className={`download-options ${showOptions ? "show" : ""}`}>
-              <button onClick={() => handleDownload()}>Terraform Code</button>
-              <button onClick={handleScreenshot}>Architecture</button>
+          {isReviewReady ? (
+            <div
+              className="download-container"
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+            >
+              <button className="download-button">
+                <FontAwesomeIcon
+                  icon={faCloudArrowDown}
+                  className="download-icon"
+                />
+                Download
+              </button>
+              <div className={`download-options ${showOptions ? "show" : ""}`}>
+                <button onClick={() => handleDownload()}>Terraform Code</button>
+                <button onClick={handleScreenshot}>Architecture</button>
+              </div>
             </div>
-          </div>
+          ) : (
+            <button className="download-button loading" disabled>
+              <div className="spinner"></div>
+            </button>
+          )}
         </div>
+        <MermaidChart chartCode={finishData}></MermaidChart>
       </div>
 
       <div className="vertical-line"></div>
