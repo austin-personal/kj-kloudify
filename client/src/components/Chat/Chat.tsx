@@ -430,7 +430,7 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === "Enter" && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey && e.nativeEvent.isComposing === false) {
       e.preventDefault(); // 기본 Enter 동작 방지 (줄바꿈 방지)
       handleSendMessage(); // 메시지 전송 함수 호출
       if (textAreaRef.current) {
