@@ -1,6 +1,6 @@
 import React from "react";
 
-interface Template {
+export interface Template {
     header?: string;
     name: string;
     text: string;
