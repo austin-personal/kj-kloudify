@@ -90,6 +90,11 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
                 ? msg.userMessage.slice(msg.userMessage.lastIndexOf("-") + 1).trim()
                 : msg.userMessage;
 
+              // '/'가 포함되어 있다면 '/' 앞에 있는 부분만 가져오기
+              const finalParsedMessage = parsedUserMessage.includes("/")
+                ? parsedUserMessage.slice(0, parsedUserMessage.indexOf("/")).trim()
+                : parsedUserMessage;
+
               // botResponse에서 ** 이전의 부분만 가져오기
               const parsedBotResponse = msg.botResponse.includes("**")
                 ? msg.botResponse.split("**")[0].trim()
@@ -106,7 +111,7 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
                 return [
                   {
                     id: uuidv4(),
-                    text: parsedUserMessage,
+                    text: finalParsedMessage,
                     sender: "user",
                   },
                   {
@@ -127,7 +132,7 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
                 return [
                   {
                     id: uuidv4(),
-                    text: parsedUserMessage,
+                    text: finalParsedMessage,
                     sender: "user",
                   },
                   {
