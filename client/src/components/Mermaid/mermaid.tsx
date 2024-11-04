@@ -95,6 +95,25 @@ const MermaidChart: React.FC<MermaidChartProps> = ({ chartCode }) => {
               });
 
             svgRef.current.call(zoomBehavior.current);
+
+            const imgElements = element.querySelectorAll("#mermaid img");
+            if (imgElements) {
+              // 이미지를 Base64로 변환하는 함수는 블록 밖에 정의
+
+              // 각 이미지 요소의 src를 Base64로 변환하고 덮어씌움
+              imgElements.forEach((imgElement, index) => {
+                const imgSrc = (imgElement as HTMLImageElement).src;
+                console.log(`Image ${index + 1} src:`, imgSrc);
+
+                convertImageToBase64(imgSrc, (base64Data) => {
+                  if (base64Data) {
+                    // 변환된 Base64 데이터를 imgElement의 src에 설정
+                    (imgElement as HTMLImageElement).src = base64Data;
+                  }
+                });
+              });
+            }
+
             if (chartCode.length === 0) {
               //아키텍쳐 보드 데이터가 없을 때 나오는 Mermaid가 생성한 <p> 요소에 애니메이션 클래스 추가
               const textElement = element.querySelector("#mermaid p");
@@ -165,5 +184,32 @@ const MermaidChart: React.FC<MermaidChartProps> = ({ chartCode }) => {
     </div>
   );
 };
+
+function convertImageToBase64(
+  url: string,
+  callback: (base64Data: string | null) => void
+) {
+  const img = new Image();
+  img.src = url;
+  img.crossOrigin = "Anonymous";
+  img.onload = function () {
+    const canvas = document.createElement("canvas");
+    canvas.width = img.width;
+    canvas.height = img.height;
+
+    const ctx = canvas.getContext("2d");
+    if (ctx) {
+      const dataURL = canvas.toDataURL("image/png"); // Base64로 변환
+      callback(dataURL);
+    } else {
+      callback(null);
+    }
+  };
+
+  img.onerror = function () {
+    console.error(`Failed to load image at ${url}`);
+    callback(null);
+  };
+}
 
 export default MermaidChart;
