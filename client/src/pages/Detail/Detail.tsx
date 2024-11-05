@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { ReactFlowProvider } from "@xyflow/react";
 import { useParams } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
-import Board from "../../components/Board/Board";
 import DonutChart from "../../components/DetailPage/DonutChart";
 import { mermaid, projectOneInfo } from "../../services/projects";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -73,8 +71,10 @@ const Detail: React.FC = () => {
               setIsLoading(false);
             });
           }
-          const mermaidtemp = await mermaid(Number(pid), token);
-          setMermaidCode([mermaidtemp]);
+          const response = await state(project?.CID, token);
+          console.log("제대로 왔냐? ",response);
+          const mermaidTemp = await mermaid(Number(pid), token);
+          setMermaidCode([mermaidTemp]);
         }
       } catch (error) {
         console.error("프로젝트 정보를 가져오는 중 오류 발생:", error);
