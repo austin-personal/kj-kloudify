@@ -9,9 +9,14 @@ import { checkSecret } from "../../services/secrets";
 interface ServicesProps {
   cid: number;
   isReviewReady: boolean;
+  chartCode: string[];
 }
 
-const Services: React.FC<ServicesProps> = ({ cid, isReviewReady }) => {
+const Services: React.FC<ServicesProps> = ({
+  cid,
+  isReviewReady,
+  chartCode,
+}) => {
   // 모달 열림 상태 관리
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
@@ -21,11 +26,20 @@ const Services: React.FC<ServicesProps> = ({ cid, isReviewReady }) => {
   const dispatch = useDispatch();
   const data = localStorage.getItem("finishData");
 
+  const getImagePath = (name: string) => {
+    try {
+      return require(`../../img/aws-icons/${name}.svg`);
+    } catch (error) {
+      console.warn(`Image not found: ${name}. Using default image.`);
+      return "https://icon.icepanel.io/AWS/svg/Compute/EC2.svg"; // 기본 이미지 경로 설정
+    }
+  };
   //서비스 이름 추출
   let filteredMatches: string[] = [];
-  if (data) {
-    const reData = JSON.parse(data);
-    const chartString = `${reData
+
+  let serviceNames: string[] = [];
+  if (chartCode) {
+    const chartString = `${chartCode
       .map(
         (code: string) =>
           `${code.replace(/^\[|\]$/g, "").replace(/;/g, "\n  ")}`
@@ -33,8 +47,20 @@ const Services: React.FC<ServicesProps> = ({ cid, isReviewReady }) => {
       .join("\n  ")}`;
     // `[]` 안의 문자열 추출
     const matches = Array.from(chartString.matchAll(/\[(.*?)\]/g)).map(
-      (match) => match[1]
+      (match) => {
+        const content = match[1];
+        // <br/> 태그 뒤의 텍스트 추출
+        const serviceName = content
+          .split("<br/>")
+          .pop()
+          ?.replace(/"$/, "") // 끝의 " 제거
+          .trim() // 앞뒤 공백 제거
+          .replace(/\s+/g, "-"); // 공백을 "-"로 대체
+        return serviceName || ""; // null or undefined 방지
+      }
     );
+    serviceNames = matches;
+    console.log("서비스이름!:", serviceNames);
     // `사용자` 또는 `client` 키워드를 포함하지 않는 항목만 필터링
     filteredMatches = matches.filter(
       (item) =>
@@ -62,13 +88,11 @@ const Services: React.FC<ServicesProps> = ({ cid, isReviewReady }) => {
       dispatch(setLoading(true));
       // deploy 함수 호출 (딱히 반환값을 사용하지 않으므로 await로만 호출)
       await deploy(cid, token);
-      alert("배포성공")
-      navigate("/profile")
-
+      alert("배포성공");
+      navigate("/profile");
     } catch (error) {
-      alert("배포실패")
+      alert("배포실패");
       navigate(-1);
-
     } finally {
       dispatch(setLoading(false));
     }
@@ -83,7 +107,7 @@ const Services: React.FC<ServicesProps> = ({ cid, isReviewReady }) => {
     <div className="services">
       <div className="price-summary-header">
         <span className="top-label-service">서비스</span>
-        <span className="top-label-price">예상 비용</span>
+        <span className="top-label-price">상세 정보</span>
         <button className="top-price-summary-btn" onClick={toggleModal}>
           Price Summary
         </button>
@@ -93,12 +117,12 @@ const Services: React.FC<ServicesProps> = ({ cid, isReviewReady }) => {
           <div key={index}>
             <div className="service-element">
               <img
-                src="https://icon.icepanel.io/AWS/svg/Compute/EC2.svg"
+                src={getImagePath(item)}
                 alt="ec2"
                 className="service-image"
               />
               <span className="service-label">{item}</span>
-              <span className="price-label">$9/per month</span>
+              <span className="price-label">블라블라블라블라</span>
             </div>
           </div>
         ))}
