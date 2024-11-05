@@ -111,7 +111,7 @@ export const state = async (cid: number | undefined, token: string | null) => {
                     Authorization: `Bearer ${token}`
                 }
             })
-        return response.data;
+        return response.data.serviceStates;
     } catch (error) {
         console.error('스테이트 개박살!! ;', error)
         throw error;

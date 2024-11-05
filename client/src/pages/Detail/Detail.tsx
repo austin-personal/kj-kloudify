@@ -18,12 +18,6 @@ interface Project {
   ARCTID: number;
   projectName: string;
   createdDate: string;
-  services: {
-    id: number;
-    name: string;
-    status: string;
-    price: number;
-  }[];
 }
 
 interface ChatMessage {
@@ -56,6 +50,7 @@ const Detail: React.FC = () => {
   const token = localStorage.getItem("token");
   const [isLoading, setIsLoading] = useState(true);
   const [mermaidCode, setMermaidCode] = useState<string[]>([]);
+  const [stateData, setStateData] = useState<{ [key: string]: any }>({});
   useEffect(() => {
     const fetchProjectData = async () => {
       try {
@@ -64,8 +59,11 @@ const Detail: React.FC = () => {
             const response = await projectOneInfo(Number(pid), token);
             const projectData = response.data;
             setProject(projectData);
-            const response1 = await state(projectData.CID, token);
-            console.log("제발제발", response1)
+            const stateTemp = await state(projectData.CID, token);
+            console.log("십", stateTemp);
+            const mermaidTemp = await mermaid(Number(pid), token);
+            setStateData(stateTemp);
+            setMermaidCode([mermaidTemp]);
           }
           // Chat history를 불러올 때 CID를 사용
           if (project?.CID && isChatting && isLoading) {
@@ -74,8 +72,6 @@ const Detail: React.FC = () => {
             });
           }
 
-          const mermaidTemp = await mermaid(Number(pid), token);
-          setMermaidCode([mermaidTemp]);
         }
       } catch (error) {
         console.error("프로젝트 정보를 가져오는 중 오류 발생:", error);
@@ -212,17 +208,18 @@ const Detail: React.FC = () => {
           </div>
           <div className="service-status-th">
             <h3>Service Status</h3>
-            <DonutChart slices={[25, 35, 40]} />
-            {project.services?.map((service) => (
-              <div key={service.id} className={`service ${service.status}`}>
-                {service.name}: {service.status}
-              </div>
-            ))}
+            <div className="service-status-list">
+              {Object.entries(stateData).map(([key, value]) => (
+                <div key={key} className="service-status-item">
+                  {value.resourceType} : {value.isRunning ? "Running" : "Stopped"}
+                </div>
+              ))}
+            </div>
+            {/* <DonutChart slices={[25, 35, 40]} /> */}
           </div>
         </div>
         <div className="architecture-box">
           <MermaidChart chartCode={mermaidCode}></MermaidChart>
-          {/* 스크린샷 들어갈 예정 */}
         </div>
       </div>
     </div>
