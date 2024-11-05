@@ -179,6 +179,7 @@ export class ConversationsService {
                     + "답변에서 사용자가 특정 aws의 서비스를 단순히 언급하는게 아닌 '확실하게 사용하겠다고 확정 {ex)ec2를 사용할께 같은 경우}' 지은 경우에만 대답을 완료한 후 별도로 추출하기 쉽도록 텍스트 하단에 "
                     + `**[ { "service": "", "options": { "ami": "", "instance_type": "", "public": ""} } ]
                     이런 포맷으로 서비스 종류 하나씩 출력하세요. \\n 없이 한줄로 출력해줘. 앞에 **을 꼭 넣어줘`
+                    
                     + "혹시 사용자가 aws와 관련없는 주제로 대답할 경우 aws 선택을 할 수 있도록 주제를 계속해서 상기시켜줘"
                     + "aws 기본 지역은 서울 지역이야. 해당 지역에 맞는 ami로 작성해줘."
                     + "ec2의 ami와 subnet_id도 내가 구성한 내용을 바탕으로 실제로 사용할 수 있도록 구성해줘. subnet은 별도의 언급이 없다면 기본값으로 설정하고"
@@ -348,27 +349,32 @@ export class ConversationsService {
                 }
             }
 
-            const isNextQuestion = user_question.includes('다음문항');
-            if ((templateKey === '그 외에 필요한 기능이 있나요' || isNextQuestion) && globalMatrix) {
-                if (globalMatrix.length === 0) {
-                    await this.deleteState(CID);
-                    return this.createResponse("종료");
-                }
+            // const isNextQuestion = user_question.includes('다음문항');
+            // if ((templateKey === '그 외에 필요한 기능이 있나요' || isNextQuestion) && globalMatrix) {
+            //     if (globalMatrix.length === 0) {
+            //         await this.deleteState(CID);
+            //         return this.createResponse("종료");
+            //     }
 
-                const nextItem = globalMatrix.shift();
-                if (nextItem && level4Questions[nextItem]) {
-                    // 상태 저장
-                    try {
-                        await this.saveStateData(CID, globalMatrix);
-                    } catch (error) {
-                        console.error('상태 저장 중 에러 발생:', error);
-                    }
-                    return this.createResponse(level4Questions[nextItem]);
-                } else {
-                    await this.deleteState(CID);
-                    return this.createResponse("다음 질문이 없습니다.");
-                }
-            }
+            //     const nextItem = globalMatrix.shift();
+            //     if (nextItem && level4Questions[nextItem]) {
+            //         // 상태 저장
+            //         try {
+            //             await this.saveStateData(CID, globalMatrix);
+            //         } catch (error) {
+            //             console.error('상태 저장 중 에러 발생:', error);
+            //         }
+            //         return this.createResponse(level4Questions[nextItem]);
+            //     } else {
+            //         await this.deleteState(CID);
+            //         return this.createResponse("다음 질문이 없습니다.");
+            //     }
+            // }
+            let mermaid1: string[] = [];
+
+            mermaid1 = await this.fetchMermaidByCID(CID);
+            
+            console.log("템플릿 머메이드가 찍히나?",`\n**[${mermaid1.join(', ')}]`);
 
             // 템플릿 응답 반환
             try {
@@ -376,7 +382,7 @@ export class ConversationsService {
             } catch (error) {
                 console.error('대화 내용 저장 중 에러 발생:', error);
             }
-            return this.createResponse(templateResponse);
+            return this.createResponse(templateResponse + `\n**[${mermaid1.join(', ')}]`);
         }
 
 
