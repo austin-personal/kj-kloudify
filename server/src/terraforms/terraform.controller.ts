@@ -99,4 +99,22 @@ export class TerraformController {
       throw new InternalServerErrorException(`Failed to retrieve state for CID: ${deployDto.CID}`);
     }
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('error')
+  async handleError(@Body() deployDto: DeployDto, @Req() req) {
+    const email = req.user.email;
+    const userInfo = await this.usersService.findOneByEmail(email); // 이메일로 사용자 조회
+    const userId = userInfo.UID;
+
+    try {
+      // 특정 로직 실행 (여기에 원하는 에러 처리 로직을 추가할 수 있습니다)
+      const result = await this.terraformService.getInfrastructureErrorState(deployDto.CID, userId);
+      return result;
+    } catch (error) {
+      throw new InternalServerErrorException(`Failed to retrieve error state for CID: ${deployDto.CID}`);
+    }
+  }
+
+
 }
