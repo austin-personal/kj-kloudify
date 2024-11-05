@@ -133,7 +133,7 @@ const MermaidChart: React.FC<MermaidChartProps> = ({ chartCode }) => {
               } catch (error) {
                 console.log("????");
                 (imgElement as HTMLImageElement).src =
-                  require(`../../img/aws-icons/EC2.svg`).default; //경로에 없을 시 ec2 이미지가 디폴트로 나올것임.
+                  require(`../../img/aws-icons/default.svg`).default;
               }
 
               console.log("어디서 멈춤?");
