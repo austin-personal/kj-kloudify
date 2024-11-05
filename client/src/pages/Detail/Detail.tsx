@@ -64,6 +64,8 @@ const Detail: React.FC = () => {
             const response = await projectOneInfo(Number(pid), token);
             const projectData = response.data;
             setProject(projectData);
+            const response1 = await state(projectData.CID, token);
+            console.log("제발제발", response1)
           }
           // Chat history를 불러올 때 CID를 사용
           if (project?.CID && isChatting && isLoading) {
@@ -71,8 +73,7 @@ const Detail: React.FC = () => {
               setIsLoading(false);
             });
           }
-          const response = await state(project?.CID, token);
-          console.log("제대로 왔냐? ",response);
+
           const mermaidTemp = await mermaid(Number(pid), token);
           setMermaidCode([mermaidTemp]);
         }
@@ -91,15 +92,15 @@ const Detail: React.FC = () => {
             // userMessage에서 - 이후의 부분만 가져오기
             const parsedUserMessage = msg.userMessage.includes("-")
               ? msg.userMessage
-                  .slice(msg.userMessage.lastIndexOf("-") + 1)
-                  .trim()
+                .slice(msg.userMessage.lastIndexOf("-") + 1)
+                .trim()
               : msg.userMessage;
 
             // '/'가 포함되어 있다면 '/' 앞에 있는 부분만 가져오기
             const finalParsedMessage = parsedUserMessage.includes("/")
               ? parsedUserMessage
-                  .slice(0, parsedUserMessage.indexOf("/"))
-                  .trim()
+                .slice(0, parsedUserMessage.indexOf("/"))
+                .trim()
               : parsedUserMessage;
 
             // botResponse에서 ** 이전의 부분만 가져오기
@@ -154,7 +155,7 @@ const Detail: React.FC = () => {
           });
           setChatHistory(formattedChat);
         }
-      } catch (error) {}
+      } catch (error) { }
     };
 
     fetchProjectData();
@@ -180,9 +181,8 @@ const Detail: React.FC = () => {
             <FontAwesomeIcon className="bot-icon" icon={faCloud} />
           </button>
           <div
-            className={`previous-chat-explanation-th  ${
-              isChatting ? "hide" : "visible"
-            }`}
+            className={`previous-chat-explanation-th  ${isChatting ? "hide" : "visible"
+              }`}
           >
             Previous chat
           </div>
@@ -201,9 +201,8 @@ const Detail: React.FC = () => {
                 {chatHistory.map((message) => (
                   <div
                     key={message.id}
-                    className={`chat-message ${
-                      message.sender === "bot" ? "bot-message" : "user-message"
-                    }`}
+                    className={`chat-message ${message.sender === "bot" ? "bot-message" : "user-message"
+                      }`}
                   >
                     <span>{message.text}</span>
                   </div>

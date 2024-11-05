@@ -102,7 +102,7 @@ export const download = async (cid: number, token: string) => {
 
 export const state = async (cid: number | undefined, token: string | null) => {
     try {
-        const response = await axios.post(`${API_URL}/download`,
+        const response = await axios.post(`${API_URL}/state`,
             {
                 CID: cid
             },
