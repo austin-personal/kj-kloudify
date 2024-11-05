@@ -12,7 +12,7 @@ const MermaidChart: React.FC<MermaidChartProps> = ({ chartCode }) => {
   const [isDetails, setIsDetails] = useState(false);
   const data = localStorage.getItem("finishData");
   const location = useLocation();
-
+  console.log("파싱파싱22:", chartCode);
   // `home` 경로에서만 popup 클래스가 적용되도록 설정
   const isHomePage = location.pathname.startsWith("/home");
   const popupClass = isHomePage ? "" : "isNothome"; // home 페이지일 때만 popup 클래스 추가
