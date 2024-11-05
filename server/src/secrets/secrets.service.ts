@@ -75,7 +75,7 @@ export class SecretsService {
     /**
    * 사용자 자격 증명 조회 및 복호화
    */
-    async getUserCredentials(userId: number): Promise<{ accessKey: string; secretAccessKey: string; }> {
+    async getUserCredentials(userId: number): Promise<{ accessKey: string; secretAccessKey: string; region: string;}> {
       const secrets = await this.secretsRepository.findOne({ where: { UID: userId } });
       if (!secrets) {
         throw new InternalServerErrorException('User credentials not found');
@@ -84,10 +84,12 @@ export class SecretsService {
       // Decrypt the stored access keys
       const decryptedAccessKeyId = this.decrypt(secrets.AccessKey);
       const decryptedSecretAccessKey = this.decrypt(secrets.SecretAccessKey);
+      const region = secrets.region;
     
       return {
         accessKey: decryptedAccessKeyId,
         secretAccessKey: decryptedSecretAccessKey,
+        region: region
       };
     }
   /**
