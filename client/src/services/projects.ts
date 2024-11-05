@@ -91,7 +91,7 @@ export const mermaid = async (pid: number, token: string | null) => {
                 Authorization: `Bearer ${token}`
             }
         });
-        return response;
+        return response.data.code[0].mermaid;
     } catch (error) {
         console.error('머메이드 코드 개박살!! :', error);
         throw error;

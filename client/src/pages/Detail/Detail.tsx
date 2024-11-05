@@ -11,6 +11,7 @@ import "./Detail.css";
 import { open } from "../../services/conversations";
 import { useTemplates } from "../../components/Chat/TemplateProvider";
 import { state } from "../../services/terraforms";
+import MermaidChart from "../../components/Mermaid/mermaid";
 
 interface Project {
   PID: number;
@@ -56,6 +57,8 @@ const Detail: React.FC = () => {
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
   const token = localStorage.getItem("token");
   const [isLoading, setIsLoading] = useState(true);
+  let mermaidtemp: any[] = []
+  let ans: string[] = []
 
   useEffect(() => {
     const fetchProjectData = async () => {
@@ -72,10 +75,11 @@ const Detail: React.FC = () => {
               setIsLoading(false)
             });
           }
-          const response = await state(project?.UID, project?.CID, token);
-          console.log("이것이 state? : ", response);
-          const response2 = await mermaid(Number(pid), token);
-          console.log("이것이 mermaid? : ", response2);
+          // const response = await state(project?.UID, project?.CID, token);
+          // console.log("이것이 state? : ", response);
+          mermaidtemp = await mermaid(Number(pid), token);
+          ans = [JSON.stringify(mermaidtemp)]
+          console.log(mermaidtemp)
         }
       } catch (error) {
         console.error("프로젝트 정보를 가져오는 중 오류 발생:", error);
@@ -211,6 +215,7 @@ const Detail: React.FC = () => {
           </div>
         </div>
         <div className="architecture-box">
+          <MermaidChart chartCode={ans}></MermaidChart>
           {/* 스크린샷 들어갈 예정 */}
         </div>
       </div>
