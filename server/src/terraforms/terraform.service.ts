@@ -36,6 +36,7 @@ export class TerraformService {
   private lambda: Lambda;
   private dynamoDBClient: DynamoDBClient; 
   private dynamoDbDocClient: DynamoDBDocumentClient;
+  private dynamoDB: AWS.DynamoDB.DocumentClient;
 
   constructor(
     private readonly projectsService: ProjectsService,
@@ -54,7 +55,6 @@ export class TerraformService {
    */
   private async generateTerraformCode(keywords: string[], projectName: string, PID: number): Promise<string> {
 
-
     const uid = await this.projectsService.getUIDByPID(PID);
     if (uid === null) {
       throw new Error('UID cannot be null');
@@ -63,6 +63,10 @@ export class TerraformService {
 
     const randomInt = Math.floor(Math.random() * (999999999 - 0 + 1)) + 0;
     const randomName = "AWS - " + projectName + randomInt.toString();
+
+    let errorMessage = 'None';
+
+    // this.getErrorMessageByCID(CID);
 
     const prompt_content = `
       Generate Terraform code based on the following keywords:
@@ -350,7 +354,7 @@ export class TerraformService {
       };
     } catch (error) {
 
-      this.saveError(error: string, CID: number)
+      this.saveError(error, CID);
       console.error('Deployment error:', error);
       throw new InternalServerErrorException(`Failed to deploy infrastructure: ${error.message}`);
     }
@@ -564,26 +568,53 @@ export class TerraformService {
     }
   }
 
-  async saveError(errorMessage: string, CID: number): Promise<void> {
+// 에러 메시지 저장 메서드
+async saveError(errorMessage: string, CID: number): Promise<void> {
+  const params = {
+    TableName: 'Archboard_errors',
+    Key: { CID: CID },
+    UpdateExpression: 'SET #errorMessage = :errorMessage, #timestamp = :timestamp',
+    ExpressionAttributeNames: {
+      '#errorMessage': 'errorMessage',
+      '#timestamp': 'timestamp',
+    },
+    ExpressionAttributeValues: {
+      ':errorMessage': errorMessage,
+      ':timestamp': new Date().toISOString(),
+    },
+  };
+
+  try {
+    // update 메서드와 .promise() 사용
+      await this.dynamoDB.update(params).promise();
+      console.log(`에러 메시지 저장 성공: ${errorMessage}`);
+    } catch (error) {
+      console.error(`에러 메시지 저장 실패: ${error.message}`);
+      throw new Error('stateData 저장 실패');
+    }
+  }
+
+  // CID로 에러 메시지 가져오기 메서드
+  async getErrorMessageByCID(CID: number): Promise<string | null> {
     const params = {
-        TableName: 'Archboard_errors',
-        Key: { CID: CID },
-        UpdateExpression: 'SET #errorMessage = :errorMessage, #timestamp = :timestamp',
-        ExpressionAttributeNames: {
-            '#errorMessage': 'errorMessage',
-            '#timestamp': 'timestamp'
-        },
-        ExpressionAttributeValues: {
-            ':errorMessage': errorMessage,
-            ':timestamp': new Date().toISOString(),
-        }
+      TableName: 'Archboard_errors',
+      Key: { CID: CID },
+      ProjectionExpression: 'errorMessage', // errorMessage 컬럼만 가져오기
     };
 
     try {
-        await this.dynamoDB.update(params).promise();
-        console.log(`에러 메시지 저장 성공: ${errorMessage}`);
+      // get 메서드와 .promise() 사용
+      const result = await this.dynamoDB.get(params).promise();
+      if (result.Item && result.Item.errorMessage) {
+        console.log(`에러 메시지 불러오기 성공: ${result.Item.errorMessage}`);
+        return result.Item.errorMessage;
+      } else {
+        console.log(`CID ${CID}에 대한 에러 메시지를 찾을 수 없습니다.`);
+        return null;
+      }
     } catch (error) {
-        console.error(`에러 메시지 저장 실패: ${error.message}`);
+      console.error(`에러 메시지 불러오기 실패: ${error.message}`);
+      throw new Error(`Failed to retrieve error message for CID: ${CID}`);
     }
   }
 
