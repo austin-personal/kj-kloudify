@@ -52,7 +52,14 @@ export class TerraformService {
   /**
    * AWS Bedrock Claude 3.5 Sonnet을 사용하여 Terraform 코드 생성
    */
-  private async generateTerraformCode(keywords: string[], projectName: string): Promise<string> {
+  private async generateTerraformCode(keywords: string[], projectName: string, PID: number): Promise<string> {
+
+
+    const uid = await this.projectsService.getUIDByPID(PID);
+    if (uid === null) {
+      throw new Error('UID cannot be null');
+    }
+    const { accessKey, secretAccessKey , region} = await this.secretsService.getUserCredentials(uid);
 
     const randomInt = Math.floor(Math.random() * (999999999 - 0 + 1)) + 0;
     const randomName = "AWS - " + projectName + randomInt.toString();
@@ -64,7 +71,7 @@ export class TerraformService {
       The generated Terraform code should:
       1. You must produce Output only the complete Terraform code without additional explanations, ensuring it is fully deployable with just the AWS credentials and other essential variables specified.
       2. Use variables only for essential credentials or dynamic values that must be configurable at runtime. Specifically, define variables for:
-        - \`aws_access_key\` and \`aws_secret_key\` to allow secure credential configuration
+        - \`aws_access_key\` and \`aws_secret_key\` and \`aws_region\` to allow secure credential configuration
         - Any other critical dynamic values specified in the keywords list that must be adjustable.
         - ${randomName} to specify the name of resources created by this Terraform code
 
@@ -76,8 +83,8 @@ export class TerraformService {
      \`\`\`hcl
      <Terraform Code>
      \`\`\`
-      6. region is np-northeast-2.
-      7. please make s3 privately.
+      6. please make s3 privately.
+      7. region is ${region}. Please create the AMI to match the region.
       `;
 
     // 베드락 설정
@@ -138,8 +145,9 @@ export class TerraformService {
     const projectName = await this.getProjectName(PID);
     let terraformCode: any;
     // 2. Terraform 코드 생성
+
     if (projectName) {
-      terraformCode = await this.generateTerraformCode([keyword], projectName);
+      terraformCode = await this.generateTerraformCode([keyword], projectName, PID);
     } else {
         throw new Error('Project name not found');
     }
@@ -292,7 +300,8 @@ export class TerraformService {
         throw new Error(`User credentials not found for user ID: ${userId}`);
       }
   
-      const { accessKey, secretAccessKey } = credentials;
+      const { accessKey, secretAccessKey , region} = credentials;
+      console.log("뜨냐?",region);
   
       // AWS S3 클라이언트 설정
       const s3 = new S3({
@@ -323,7 +332,7 @@ export class TerraformService {
       console.log('Terraform 초기화 완료');
   
       const { stdout, stderr } = await execAsync(
-        `terraform -chdir=${localTerraformPath} apply -auto-approve -var "aws_access_key=${accessKey}" -var "aws_secret_key=${secretAccessKey}"`
+        `terraform -chdir=${localTerraformPath} apply -auto-approve -var "aws_access_key=${accessKey}" -var "aws_secret_key=${secretAccessKey}" -var "aws_region=${region}"`
       );
       console.log('Terraform 적용 완료:', stdout);
   
@@ -403,7 +412,7 @@ export class TerraformService {
         throw new Error(`User credentials not found for user ID: ${userId}`);
       }
   
-      const { accessKey, secretAccessKey } = credentials;
+      const { accessKey, secretAccessKey , region} = credentials;
   
       // 해당 경로에 Terraform 파일이 존재하는지 확인
       if (!fs.existsSync(mainTfFilePath)) {
@@ -417,7 +426,7 @@ export class TerraformService {
   
       // Terraform destroy 명령 실행 (자격 증명 전달)
       const { stdout, stderr } = await execAsync(
-        `terraform -chdir=${localTerraformPath} destroy -auto-approve -var "aws_access_key=${accessKey}" -var "aws_secret_key=${secretAccessKey}"`
+        `terraform -chdir=${localTerraformPath} destroy -auto-approve -var "aws_access_key=${accessKey}" -var "aws_secret_key=${secretAccessKey}" -var "aws_region=${region}"`
       );
       console.log('Terraform 삭제 완료:', stdout);
   

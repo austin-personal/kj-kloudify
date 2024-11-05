@@ -10,6 +10,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { v4 as uuidv4 } from "uuid"; // UUID 가져오기
 import { Template, useTemplates } from "./TemplateProvider";
+import { activate, deactivate } from "../../store/btnSlice";
+import { useAppDispatch } from "../../store/hooks";
 
 interface ChatProps {
   projectCID: number;
@@ -55,12 +57,13 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
   const [input, setInput] = useState("");
   const [showScrollButton, setShowScrollButton] = useState(false);
   const scrollRef = useRef<HTMLDivElement | null>(null);
+  const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
   const [selectedChecks, setSelectedChecks] = useState<{
     [key: string]: string[];
   }>({});
   const [isHovered, setIsHovered] = useState(false);
 
-  const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
+  const dispatch = useAppDispatch();
 
   const handleInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     if (textAreaRef.current) {
@@ -79,10 +82,11 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
     const fetchMessages = async () => {
       try {
         const token = localStorage.getItem("token") || "";
+        dispatch(deactivate())
         const initialMessages = await open(projectCID, token);
-        console.log(initialMessages)
         setMessages(defaultBotMessage);
         if (initialMessages && initialMessages.length > 0) {
+          let temp = -2;
           const formattedMessages: Message[] = initialMessages.flatMap(
             (msg: any, index: number) => {
               // userMessage에서 - 이후의 부분만 가져오기
@@ -104,44 +108,51 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
                 (template) => template.name === parsedBotResponse
               );
 
-              // 마지막 메시지인지 확인
-              const isLastMessage = index === initialMessages.length - 1;
-
-              if (matchingTemplate) {
+              // 만약 template6-1이 존재하면 review활성화, user chat만 보이게
+              if (parsedBotResponse === "template6-1") {
+                dispatch(activate());
+                temp = index;
                 return [
                   {
                     id: uuidv4(),
                     text: finalParsedMessage,
                     sender: "user",
-                  },
-                  {
-                    header: matchingTemplate.header,
-                    id: uuidv4(),
-                    text: matchingTemplate.text,
-                    subtext: matchingTemplate.subtext,
-                    sender: "bot",
-                    checks: isLastMessage ? matchingTemplate.checks : undefined,
-                    buttons: isLastMessage
-                      ? matchingTemplate.buttons
-                      : undefined,
-                    nocheck: isLastMessage ? matchingTemplate.nocheck : undefined,
-                    servicechecks: isLastMessage ? matchingTemplate.servicechecks : undefined,
-                  },
-                ];
-              } else {
-                return [
-                  {
-                    id: uuidv4(),
-                    text: finalParsedMessage,
-                    sender: "user",
-                  },
-                  {
-                    id: uuidv4(),
-                    text: parsedBotResponse,
-                    sender: "bot",
                   },
                 ];
               }
+
+              // 마지막 메시지인지 확인
+              const isLastMessage = index === initialMessages.length - 1;
+              // template6-1 다음 메시지인지 확인
+              const triggerMessage = index === temp + 1;
+
+              // 공통 Bot 메시지 생성 함수
+              const createBotMessage = (template: any, responseText: string) => ({
+                id: uuidv4(),
+                sender: "bot",
+                header: template?.header,
+                text: template ? template.text : responseText,
+                subtext: template?.subtext,
+                checks: isLastMessage ? template?.checks : undefined,
+                buttons: isLastMessage ? template?.buttons : undefined,
+                nocheck: isLastMessage ? template?.nocheck : undefined,
+                servicechecks: isLastMessage ? template?.servicechecks : undefined,
+              });
+
+              // triggerMessage일 때는 bot 메시지만 반환
+              if (triggerMessage) {
+                return [createBotMessage(matchingTemplate, parsedBotResponse)];
+              }
+
+              // 일반 메시지 형식 반환
+              return [
+                {
+                  id: uuidv4(),
+                  text: finalParsedMessage,
+                  sender: "user",
+                },
+                createBotMessage(matchingTemplate, parsedBotResponse),
+              ];
             }
           );
           setMessages((prevMessages) => [
@@ -408,6 +419,7 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
       console.log("responseMessage : ", responseMessage)
       if (responseMessage === "template6-1") {
         responseMessage = await ask("template6-1", projectCID);
+        dispatch(activate())
       }
 
       // 로딩 메시지 제거
@@ -500,7 +512,8 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
 
       let responseMessage = await ask(messageToSend, projectCID);
       if (responseMessage === "template6-1") {
-        responseMessage = await ask("이대로 만들어줘", projectCID);
+        responseMessage = await ask("template6-1", projectCID);
+        dispatch(activate())
       }
 
       // 로딩 메시지 제거
@@ -588,14 +601,14 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
               {message.header && (
                 <div
                   className={`message-header ${message.header === "서버"
-                      ? "server-class"
-                      : message.header === "데이터베이스"
-                        ? "database-class"
-                        : message.header === "스토리지"
-                          ? "storage-class"
-                          : message.header === "네트워크"
-                            ? "network-class"
-                            : ""
+                    ? "server-class"
+                    : message.header === "데이터베이스"
+                      ? "database-class"
+                      : message.header === "스토리지"
+                        ? "storage-class"
+                        : message.header === "네트워크"
+                          ? "network-class"
+                          : ""
                     }`}
                 >
                   <strong>{message.header}</strong>

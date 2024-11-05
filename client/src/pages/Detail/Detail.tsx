@@ -30,8 +30,23 @@ interface Project {
 interface ChatMessage {
   id: string;
   text: string;
+  subtext?: string;
   sender: "bot" | "user";
 }
+
+const defaultBotMessage: ChatMessage[] = [
+  {
+    id: uuidv4(),
+    text: "Kloudify와 쉽게 클라우드 아키텍쳐를 설계 해봐요! 우측 상단에 Kloudify와 대화하는 팁을 참고 하여 대화해 보세요.",
+    sender: "bot",
+  },
+  {
+    id: uuidv4(),
+    text: "먼저, 당신의 웹서비스에 대해 알고 싶어요. 당신의 웹 서비스의 주요 목적과 기능은 무엇인가요?",
+    sender: "bot",
+    subtext: "자유롭게 당신의 서비스를 설명해주세요."
+  }
+];
 
 const Detail: React.FC = () => {
   const templates = useTemplates();
@@ -70,44 +85,71 @@ const Detail: React.FC = () => {
     const openChatHistory = async (cid: number) => {
       try {
         const response = await open(cid, token);
-        const formattedChat = response.flatMap((msg: any) => {
-          // userMessage에서 첫 번째 '-' 이후의 부분만 가져오기
-          const parsedUserMessage = msg.userMessage.includes("-")
-            ? msg.userMessage.slice(msg.userMessage.indexOf("-") + 1).trim()
-            : msg.userMessage;
+        setChatHistory(defaultBotMessage);
+        if (response && response.length > 0) {
+          let temp = -2;
+          const formattedChat = response.flatMap((msg: any, index: number) => {
+            // userMessage에서 - 이후의 부분만 가져오기
+            const parsedUserMessage = msg.userMessage.includes("-")
+              ? msg.userMessage.slice(msg.userMessage.lastIndexOf("-") + 1).trim()
+              : msg.userMessage;
 
-          // botResponse에서 '!!'나 '**' 앞의 부분을 가져오기
-          let parsedBotResponse = msg.botResponse.includes("!!")
-            ? msg.botResponse.split("!!")[0].trim()
-            : msg.botResponse;
+            // '/'가 포함되어 있다면 '/' 앞에 있는 부분만 가져오기
+            const finalParsedMessage = parsedUserMessage.includes("/")
+              ? parsedUserMessage.slice(0, parsedUserMessage.indexOf("/")).trim()
+              : parsedUserMessage;
 
-          if (parsedBotResponse.includes("**")) {
-            parsedBotResponse = parsedBotResponse.split("**")[0].trim();
-          }
+            // botResponse에서 ** 이전의 부분만 가져오기
+            const parsedBotResponse = msg.botResponse.includes("**")
+              ? msg.botResponse.split("**")[0].trim()
+              : msg.botResponse;
 
-          // templates에서 botResponse가 존재하는지 확인하고 매칭되는 텍스트 사용
-          const matchingTemplate = Object.values(templates).find(
-            (template) => template.name === parsedBotResponse
-          );
+            // templates에서 botResponse가 존재하는지 확인하고 매칭되는 텍스트 사용
+            const matchingTemplate = Object.values(templates).find(
+              (template) => template.name === parsedBotResponse
+            );
 
-          const botText = matchingTemplate ? matchingTemplate.text : parsedBotResponse;
+            // 만약 template6-1이 존재하면 review활성화, user chat만 보이게
+            if (parsedBotResponse === "template6-1") {
+              temp = index;
+              return [
+                {
+                  id: uuidv4(),
+                  text: finalParsedMessage,
+                  sender: "user",
+                },
+              ];
+            }
+            // template6-1 다음 메시지인지 확인
+            const triggerMessage = index === temp + 1;
 
-          return [
-            {
-              id: uuidv4(),
-              text: parsedUserMessage,
-              sender: "user",
-            },
-            {
-              id: uuidv4(),
-              text: botText,
-              sender: "bot",
-            },
-          ];
-        });
-        setChatHistory(formattedChat);
+            const botText = matchingTemplate ? matchingTemplate.text : parsedBotResponse;
+
+            if (triggerMessage) {
+              return [
+                {
+                  id: uuidv4(),
+                  text: botText,
+                  sender: "bot",
+                },
+              ]
+            }
+            return [
+              {
+                id: uuidv4(),
+                text: parsedUserMessage,
+                sender: "user",
+              },
+              {
+                id: uuidv4(),
+                text: botText,
+                sender: "bot",
+              },
+            ];
+          });
+          setChatHistory(formattedChat);
+        }
       } catch (error) {
-        console.error("채팅 내역을 가져오는 중 오류 발생:", error);
       }
     };
 
