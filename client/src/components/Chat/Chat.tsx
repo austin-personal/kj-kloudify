@@ -12,10 +12,10 @@ import { v4 as uuidv4 } from "uuid"; // UUID 가져오기
 import { Template, useTemplates } from "./TemplateProvider";
 import { activate, deactivate } from "../../store/btnSlice";
 import { useAppDispatch } from "../../store/hooks";
+import { clearFinishData, setFinishData } from "../../store/finishDataSlice";
 
 interface ChatProps {
   projectCID: number;
-  onFinishData?: (data: string[]) => void; // 새로운 prop 추가
 }
 
 interface Message {
@@ -44,7 +44,7 @@ const defaultBotMessage: Message[] = [
   }
 ];
 
-const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
+const Chat: React.FC<ChatProps> = ({ projectCID }) => {
   const templates = useTemplates();
   const targetTemplateNames = [
     "서버",
@@ -83,6 +83,7 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
       try {
         const token = localStorage.getItem("token") || "";
         dispatch(deactivate())
+        dispatch(clearFinishData())
         const initialMessages = await open(projectCID, token);
         setMessages(defaultBotMessage);
         if (initialMessages && initialMessages.length > 0) {
@@ -170,14 +171,9 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
             let parsedDataArray: string[] = [];
 
             let dataString = afterAsterisks.replace(/^\[|\]$/g, "");
-            parsedDataArray = dataString
-              .split(",")
-              .map((item: string) => item.trim());
+            parsedDataArray = dataString.split(",").map((item: string) => item.trim());
 
-            // 부모에게 파싱된 데이터 전달
-            if (onFinishData) {
-              onFinishData(parsedDataArray);
-            }
+            dispatch(setFinishData(parsedDataArray));
           }
         }
       } catch (error) {
@@ -357,10 +353,7 @@ const Chat: React.FC<ChatProps> = ({ projectCID, onFinishData }) => {
       let dataString = afterAsterisks.replace(/^\[|\]$/g, "");
       parsedDataArray = dataString.split(",").map((item) => item.trim());
 
-      // 부모에게 파싱된 데이터 보내기
-      if (onFinishData) {
-        onFinishData(parsedDataArray);
-      }
+      dispatch(setFinishData(parsedDataArray));
 
       // 이제 beforeAsterisks가 템플릿 이름과 매치하는지 찾기
       const matchingTemplate = Object.values(templates).find(
