@@ -349,27 +349,6 @@ export class ConversationsService {
                 }
             }
 
-            // const isNextQuestion = user_question.includes('다음문항');
-            // if ((templateKey === '그 외에 필요한 기능이 있나요' || isNextQuestion) && globalMatrix) {
-            //     if (globalMatrix.length === 0) {
-            //         await this.deleteState(CID);
-            //         return this.createResponse("종료");
-            //     }
-
-            //     const nextItem = globalMatrix.shift();
-            //     if (nextItem && level4Questions[nextItem]) {
-            //         // 상태 저장
-            //         try {
-            //             await this.saveStateData(CID, globalMatrix);
-            //         } catch (error) {
-            //             console.error('상태 저장 중 에러 발생:', error);
-            //         }
-            //         return this.createResponse(level4Questions[nextItem]);
-            //     } else {
-            //         await this.deleteState(CID);
-            //         return this.createResponse("다음 질문이 없습니다.");
-            //     }
-            // }
             let mermaid1: string[] = [];
 
             mermaid1 = await this.fetchMermaidByCID(CID);
