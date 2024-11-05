@@ -11,6 +11,7 @@ import "./Detail.css";
 import { open } from "../../services/conversations";
 import { useTemplates } from "../../components/Chat/TemplateProvider";
 import { state } from "../../services/terraforms";
+import MermaidChart from "../../components/Mermaid/mermaid";
 
 interface Project {
   PID: number;
@@ -44,8 +45,8 @@ const defaultBotMessage: ChatMessage[] = [
     id: uuidv4(),
     text: "먼저, 당신의 웹서비스에 대해 알고 싶어요. 당신의 웹 서비스의 주요 목적과 기능은 무엇인가요?",
     sender: "bot",
-    subtext: "자유롭게 당신의 서비스를 설명해주세요."
-  }
+    subtext: "자유롭게 당신의 서비스를 설명해주세요.",
+  },
 ];
 
 const Detail: React.FC = () => {
@@ -56,7 +57,7 @@ const Detail: React.FC = () => {
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
   const token = localStorage.getItem("token");
   const [isLoading, setIsLoading] = useState(true);
-
+  const [mermaidCode, setMermaidCode] = useState<string[]>([]);
   useEffect(() => {
     const fetchProjectData = async () => {
       try {
@@ -69,13 +70,11 @@ const Detail: React.FC = () => {
           // Chat history를 불러올 때 CID를 사용
           if (project?.CID && isChatting && isLoading) {
             openChatHistory(project.CID).then(() => {
-              setIsLoading(false)
+              setIsLoading(false);
             });
           }
-          const response = await state(project?.UID, project?.CID, token);
-          console.log("이것이 state? : ", response);
-          const response2 = await mermaid(Number(pid), token);
-          console.log("이것이 mermaid? : ", response2);
+          const mermaidtemp = await mermaid(Number(pid), token);
+          setMermaidCode([mermaidtemp]);
         }
       } catch (error) {
         console.error("프로젝트 정보를 가져오는 중 오류 발생:", error);
@@ -91,12 +90,16 @@ const Detail: React.FC = () => {
           const formattedChat = response.flatMap((msg: any, index: number) => {
             // userMessage에서 - 이후의 부분만 가져오기
             const parsedUserMessage = msg.userMessage.includes("-")
-              ? msg.userMessage.slice(msg.userMessage.lastIndexOf("-") + 1).trim()
+              ? msg.userMessage
+                  .slice(msg.userMessage.lastIndexOf("-") + 1)
+                  .trim()
               : msg.userMessage;
 
             // '/'가 포함되어 있다면 '/' 앞에 있는 부분만 가져오기
             const finalParsedMessage = parsedUserMessage.includes("/")
-              ? parsedUserMessage.slice(0, parsedUserMessage.indexOf("/")).trim()
+              ? parsedUserMessage
+                  .slice(0, parsedUserMessage.indexOf("/"))
+                  .trim()
               : parsedUserMessage;
 
             // botResponse에서 ** 이전의 부분만 가져오기
@@ -123,7 +126,9 @@ const Detail: React.FC = () => {
             // template6-1 다음 메시지인지 확인
             const triggerMessage = index === temp + 1;
 
-            const botText = matchingTemplate ? matchingTemplate.text : parsedBotResponse;
+            const botText = matchingTemplate
+              ? matchingTemplate.text
+              : parsedBotResponse;
 
             if (triggerMessage) {
               return [
@@ -132,7 +137,7 @@ const Detail: React.FC = () => {
                   text: botText,
                   sender: "bot",
                 },
-              ]
+              ];
             }
             return [
               {
@@ -149,8 +154,7 @@ const Detail: React.FC = () => {
           });
           setChatHistory(formattedChat);
         }
-      } catch (error) {
-      }
+      } catch (error) {}
     };
 
     fetchProjectData();
@@ -162,7 +166,8 @@ const Detail: React.FC = () => {
     <div className="detail-page">
       <div className="project-header">
         <p className="project-name-title-th">
-          Project Name : <span className="project-name-th">{project.projectName}</span>
+          Project Name :{" "}
+          <span className="project-name-th">{project.projectName}</span>
         </p>
       </div>
 
@@ -175,13 +180,17 @@ const Detail: React.FC = () => {
             <FontAwesomeIcon className="bot-icon" icon={faCloud} />
           </button>
           <div
-            className={`previous-chat-explanation-th  ${isChatting ? "hide" : "visible"}`}
+            className={`previous-chat-explanation-th  ${
+              isChatting ? "hide" : "visible"
+            }`}
           >
             Previous chat
           </div>
         </div>
         <div className="left-content">
-          <div className={`previous-chatting-th ${isChatting ? "open" : "close"}`}>
+          <div
+            className={`previous-chatting-th ${isChatting ? "open" : "close"}`}
+          >
             {isLoading ? (
               <div className="loading-indicator">
                 <div className="spinner"></div> {/* 로딩 스피너 */}
@@ -192,7 +201,9 @@ const Detail: React.FC = () => {
                 {chatHistory.map((message) => (
                   <div
                     key={message.id}
-                    className={`chat-message ${message.sender === "bot" ? "bot-message" : "user-message"}`}
+                    className={`chat-message ${
+                      message.sender === "bot" ? "bot-message" : "user-message"
+                    }`}
                   >
                     <span>{message.text}</span>
                   </div>
@@ -211,6 +222,7 @@ const Detail: React.FC = () => {
           </div>
         </div>
         <div className="architecture-box">
+          <MermaidChart chartCode={mermaidCode}></MermaidChart>
           {/* 스크린샷 들어갈 예정 */}
         </div>
       </div>
