@@ -14,6 +14,7 @@ import { info } from "../../services/users";
 
 const NavBar: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태
+  const [errorMessage, setErrorMessage] = useState(""); // 오류 메시지 상태
   const navigate = useNavigate(); // useNavigate 훅 사용
   const location = useLocation();
   const [userProfile, setUserProfile] = useState("");
@@ -88,11 +89,13 @@ const NavBar: React.FC = () => {
       navigate("/guide");
     } else {
       setIsModalOpen(true);
+      setErrorMessage(""); // 모달 열 때 오류 메시지 초기화
     }
   };
 
   const handleNewProjectClose = () => {
     setIsModalOpen(false);
+    setErrorMessage(""); // 모달 닫을 때 오류 메시지 초기화
   };
 
   const handleProjectSubmit = async (
@@ -100,8 +103,15 @@ const NavBar: React.FC = () => {
   ) => {
     event.preventDefault();
     const projectName = (event.target as HTMLFormElement).projectName.value;
-    console.log("New Project Name:", projectName);
     sessionStorage.removeItem("nodes"); // 세션 스토리지에서 노드 데이터 삭제
+
+    // 프로젝트 이름 유효성 검사
+    const projectNamePattern = /^[a-zA-Z0-9]+$/; // 영어와 숫자만 허용하는 정규식
+    if (!projectNamePattern.test(projectName)) {
+      setErrorMessage("영어와 숫자로 이루어진 프로젝트명을 입력해주세요");
+      return; // 유효하지 않으면 함수 종료
+    }
+
     //prohectName을 DB에 넘김
     try {
       const token = localStorage.getItem("token");
@@ -111,7 +121,6 @@ const NavBar: React.FC = () => {
       const cid = await create(projectName, token); // token이 string임을 보장
       navigate(`/home/${cid}`);
     } catch (error) {
-      console.log(error);
     }
     setIsModalOpen(false); // 제출 후 모달을 닫기
   };
@@ -172,6 +181,10 @@ const NavBar: React.FC = () => {
                   name="projectName"
                   required
                 />
+                {/* 오류 메시지 표시 */}
+                {errorMessage && (
+                  <p className="error-message">{errorMessage}</p>
+                )}
                 <div className="modal-actions">
                   <button
                     type="button"

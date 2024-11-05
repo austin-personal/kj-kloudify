@@ -9,7 +9,6 @@ import { projectOneInfo } from "../../services/projects";
 import { review } from "../../services/terraforms";
 
 import { setReviewReady, setHasSecret } from "../../store/loadingSlice";
-import { setFinishData, clearFinishData } from "../../store/finishDataSlice";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 
 interface Project {
@@ -39,6 +38,7 @@ const Home: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const finishData = useAppSelector((state) => state.finishData.finishData);
+
   const isActive = useAppSelector((state) => state.button.isActive);
   //home 페이지면 무조건 키가 있어야 함.
   dispatch(setHasSecret(true));
@@ -64,7 +64,6 @@ const Home: React.FC = () => {
       }
     };
 
-    dispatch(clearFinishData());
     fetchProjectData();
   }, [pid, navigate, dispatch]);
 
@@ -95,10 +94,6 @@ const Home: React.FC = () => {
     }
   };
 
-  const handleFinishData = (data: string[]) => {
-    dispatch(setFinishData(data));
-  };
-
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -107,7 +102,7 @@ const Home: React.FC = () => {
     <div className="home">
       {/* 슬라이드바 삭제 */}
       {/* <SideBar isOpen={isOpen} setIsOpen={setIsOpen} /> */}
-      <Chat projectCID={project!.CID} onFinishData={handleFinishData} />
+      <Chat projectCID={project!.CID} />
       <div className="vertical-line"></div>
       <div className="right-side">
         <div className="project-name-container">

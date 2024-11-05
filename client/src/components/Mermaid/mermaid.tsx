@@ -12,7 +12,7 @@ const MermaidChart: React.FC<MermaidChartProps> = ({ chartCode }) => {
   const [isDetails, setIsDetails] = useState(false);
   const data = localStorage.getItem("finishData");
   const location = useLocation();
-
+  console.log("파싱파싱22:", chartCode);
   // `home` 경로에서만 popup 클래스가 적용되도록 설정
   const isHomePage = location.pathname.startsWith("/home");
   const popupClass = isHomePage ? "" : "isNothome"; // home 페이지일 때만 popup 클래스 추가
@@ -104,7 +104,7 @@ const MermaidChart: React.FC<MermaidChartProps> = ({ chartCode }) => {
             );
             paragraphsWithImages.forEach((paragraph, index) => {
               let textContent = paragraph.textContent || "";
-
+              textContent = textContent.trimStart();
               // "Amazon"으로 시작하는 경우 "Amazon" 제거
               if (textContent.startsWith("Amazon")) {
                 textContent = textContent.replace(/^Amazon\s*/, ""); // "Amazon " (뒤 공백 포함) 제거
