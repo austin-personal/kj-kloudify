@@ -1,17 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { ReactFlowProvider } from "@xyflow/react";
 import { useNavigate, useParams } from "react-router-dom";
-import SideBar from "../../components/SideBar/SideBar";
-import Chat from "../../components/Chat/Chat";
-import Board from "../../components/Board/Board";
 import "./Home.css";
+
+import Chat from "../../components/Chat/Chat";
+import MermaidChart from "../../components/Mermaid/mermaid";
+
 import { projectOneInfo } from "../../services/projects";
 import { review } from "../../services/terraforms";
-import { setReviewReady } from "../../store/loadingSlice";
-import { useAppDispatch, useAppSelector } from "../../store/hooks";
+
+import { setReviewReady, setHasSecret } from "../../store/loadingSlice";
 import { setFinishData, clearFinishData } from "../../store/finishDataSlice";
-import { setHasSecret } from "../../store/loadingSlice";
-import MermaidChart from "../../components/Mermaid/mermaid";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
 
 interface Project {
   PID: number;
@@ -33,12 +32,14 @@ interface Project {
 const Home: React.FC = () => {
   const [project, setProject] = useState<Project | null>(null);
   const [loading, setLoading] = useState(true);
-  const finishData = useAppSelector((state) => state.finishData.finishData);
-  const token = localStorage.getItem("token");
   const { pid } = useParams<{ pid: string }>();
+  
+  const token = localStorage.getItem("token");
+  
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  console.log("finished:", finishData);
+  const finishData = useAppSelector((state) => state.finishData.finishData);
+  const isActive = useAppSelector((state) => state.button.isActive);
   //home 페이지면 무조건 키가 있어야 함.
   dispatch(setHasSecret(true));
 
@@ -117,9 +118,9 @@ const Home: React.FC = () => {
           <button
             onClick={handleFinish}
             className={`review-btn-${
-              finishData.length === 0 ? "disabled" : "enabled"
+              !isActive ? "disabled" : "enabled"
             }`}
-            disabled={finishData.length === 0}
+            disabled={!isActive}
           >
             Review
           </button>
