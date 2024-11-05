@@ -10,13 +10,16 @@ interface MermaidChartProps {
 
 const MermaidChart: React.FC<MermaidChartProps> = ({ chartCode }) => {
   const [isDetails, setIsDetails] = useState(false);
-
+  const data = localStorage.getItem("finishData");
   const location = useLocation();
 
   // `home` 경로에서만 popup 클래스가 적용되도록 설정
   const isHomePage = location.pathname.startsWith("/home");
   const popupClass = isHomePage ? "" : "isNothome"; // home 페이지일 때만 popup 클래스 추가
-
+  // if (chartCode.length === 0) {
+  //   const temp = data ? data.replace(/^\[|\]$/g, "").replace(/^"|"$/g, "") : ""; // data가 null일 경우 빈 문자열
+  //   chartCode = [temp];
+  // }
   const togglePopup = () => {
     setIsDetails(!isDetails);
   };
@@ -96,23 +99,47 @@ const MermaidChart: React.FC<MermaidChartProps> = ({ chartCode }) => {
 
             svgRef.current.call(zoomBehavior.current);
 
-            const imgElements = element.querySelectorAll("#mermaid img");
-            if (imgElements) {
-              // 이미지를 Base64로 변환하는 함수는 블록 밖에 정의
+            const paragraphsWithImages = element.querySelectorAll(
+              "#mermaid p:has(img)"
+            );
+            paragraphsWithImages.forEach((paragraph, index) => {
+              let textContent = paragraph.textContent || "";
 
-              // 각 이미지 요소의 src를 Base64로 변환하고 덮어씌움
-              imgElements.forEach((imgElement, index) => {
-                const imgSrc = (imgElement as HTMLImageElement).src;
-                console.log(`Image ${index + 1} src:`, imgSrc);
+              // "Amazon"으로 시작하는 경우 "Amazon" 제거
+              if (textContent.startsWith("Amazon")) {
+                textContent = textContent.replace(/^Amazon\s*/, ""); // "Amazon " (뒤 공백 포함) 제거
+              } else if (textContent.startsWith("AWS")) {
+                textContent = textContent.replace(/^AWS\s*/, ""); // "Amazon " (뒤 공백 포함) 제거
+              }
+              textContent = textContent.replace(/\s+/g, "-");
 
-                convertImageToBase64(imgSrc, (base64Data) => {
-                  if (base64Data) {
-                    // 변환된 Base64 데이터를 imgElement의 src에 설정
-                    (imgElement as HTMLImageElement).src = base64Data;
-                  }
-                });
-              });
-            }
+              const imgElement = paragraph.querySelector("img");
+
+              const imgSrc = (imgElement as HTMLImageElement).src;
+              const extractedName = imgSrc
+                .split("/")
+                .pop()
+                ?.replace(".svg", "");
+
+              try {
+                (
+                  imgElement as HTMLImageElement
+                ).src = require(`../../img/aws-icons/${textContent}.svg`);
+                console.log(
+                  `잘? ${index + 1} img src: ${
+                    (imgElement as HTMLImageElement).src
+                  }`
+                );
+              } catch (error) {
+                console.log("????");
+                (imgElement as HTMLImageElement).src =
+                  require(`../../img/aws-icons/EC2.svg`).default; //경로에 없을 시 ec2 이미지가 디폴트로 나올것임.
+              }
+
+              console.log("어디서 멈춤?");
+              console.log(`Paragraph ${index + 1} img src: ${imgSrc}`);
+              console.log(`Paragraph ${index + 1} text: ${textContent}`);
+            });
 
             if (chartCode.length === 0) {
               //아키텍쳐 보드 데이터가 없을 때 나오는 Mermaid가 생성한 <p> 요소에 애니메이션 클래스 추가

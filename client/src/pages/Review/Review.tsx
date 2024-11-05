@@ -9,7 +9,7 @@ import { useParams } from "react-router-dom";
 import { useAppSelector, useAppDispatch } from "../../store/hooks";
 import MermaidChart from "../../components/Mermaid/mermaid";
 import { setHasSecret } from "../../store/loadingSlice";
-import html2canvas from "html2canvas";
+const domtoimage = require("dom-to-image");
 
 const Review: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -25,22 +25,18 @@ const Review: React.FC = () => {
 
   const handleScreenshot = async () => {
     if (mermaidRef.current) {
-      try {
-        // HTML 요소를 캔버스로 캡처
-        const canvas = await html2canvas(mermaidRef.current, {
-          useCORS: true,
-          allowTaint: false,
+      // div 요소를 PNG 이미지로 변환
+      domtoimage
+        .toPng(mermaidRef.current)
+        .then((dataUrl: string) => {
+          const link = document.createElement("a");
+          link.href = dataUrl;
+          link.download = "capture.png";
+          link.click();
+        })
+        .catch((error: any) => {
+          console.error("Error capturing image:", error);
         });
-        // 캔버스를 이미지로 변환
-        const dataUrl = canvas.toDataURL("image/png");
-        // 이미지 다운로드 링크 생성 및 자동 다운로드
-        const link = document.createElement("a");
-        link.href = dataUrl;
-        link.download = "capture.png";
-        link.click();
-      } catch (error) {
-        console.error("Error capturing image:", error);
-      }
     }
   };
 
