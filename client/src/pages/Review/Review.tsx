@@ -9,7 +9,7 @@ import { useParams } from "react-router-dom";
 import { useAppSelector, useAppDispatch } from "../../store/hooks";
 import MermaidChart from "../../components/Mermaid/mermaid";
 import { setHasSecret } from "../../store/loadingSlice";
-import mermaid from "mermaid";
+import html2canvas from "html2canvas";
 
 const Review: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -26,53 +26,20 @@ const Review: React.FC = () => {
   const handleScreenshot = async () => {
     if (mermaidRef.current) {
       try {
-        // 1. Mermaid 다이어그램을 SVG 문자열로 생성
-        let { svg } = await mermaid.render(
-          "generatedChart",
-          finishData.join("\n")
-        );
-
-        // 2. XML 네임스페이스가 없을 경우 추가
-        if (!svg.includes("xmlns")) {
-          svg = svg.replace(
-            "<svg ",
-            '<svg xmlns="http://www.w3.org/2000/svg" '
-          );
-        }
-        console.log("안녕!");
-
-        // 3. SVG 문자열을 Blob으로 변환
-        const svgBlob = new Blob([svg], {
-          type: "image/svg+xml;charset=utf-8",
+        // HTML 요소를 캔버스로 캡처
+        const canvas = await html2canvas(mermaidRef.current, {
+          useCORS: true,
+          allowTaint: false,
         });
-        const url = URL.createObjectURL(svgBlob);
-
-        // 4. `Image` 객체에 Blob URL 로드
-        const img = new Image();
-        img.src = url;
-        img.onload = () => {
-          const canvas = document.createElement("canvas");
-          canvas.width = img.width || 800;
-          canvas.height = img.height || 600;
-          const ctx = canvas.getContext("2d");
-          if (ctx) {
-            ctx.drawImage(img, 0, 0);
-            // 5. 캔버스를 PNG로 변환하여 다운로드
-            const canvasDataUrl = canvas.toDataURL("image/png");
-            const link = document.createElement("a");
-            link.href = canvasDataUrl;
-            link.download = `architecture_screenshot_${cid}.png`;
-            link.click();
-          }
-          // URL 정리
-          URL.revokeObjectURL(url);
-        };
-
-        img.onerror = (error) => {
-          console.error("Error loading SVG image for canvas:", error);
-        };
+        // 캔버스를 이미지로 변환
+        const dataUrl = canvas.toDataURL("image/png");
+        // 이미지 다운로드 링크 생성 및 자동 다운로드
+        const link = document.createElement("a");
+        link.href = dataUrl;
+        link.download = "capture.png";
+        link.click();
       } catch (error) {
-        console.error("Screenshot capture failed:", error);
+        console.error("Error capturing image:", error);
       }
     }
   };
