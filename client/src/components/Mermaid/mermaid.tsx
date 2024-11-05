@@ -104,7 +104,7 @@ const MermaidChart: React.FC<MermaidChartProps> = ({ chartCode }) => {
             );
             paragraphsWithImages.forEach((paragraph, index) => {
               let textContent = paragraph.textContent || "";
-
+              textContent = textContent.trimStart();
               // "Amazon"으로 시작하는 경우 "Amazon" 제거
               if (textContent.startsWith("Amazon")) {
                 textContent = textContent.replace(/^Amazon\s*/, ""); // "Amazon " (뒤 공백 포함) 제거
