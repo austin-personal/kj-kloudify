@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./Services.css";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setLoading } from "../../store/loadingSlice";
 import { deploy } from "../../services/terraforms";
 import { checkSecret } from "../../services/secrets";
+import { projectSummary } from "../../services/projects";
 
 interface ServicesProps {
   cid: number;
@@ -24,7 +25,22 @@ const Services: React.FC<ServicesProps> = ({
   const navigate = useNavigate();
   const token = localStorage.getItem("token") ?? "";
   const dispatch = useDispatch();
-  const data = localStorage.getItem("finishData");
+
+  useEffect(() => {
+    const fetchProjectData = async () => {
+      try {
+        if (token) {
+          const response = await projectSummary(cid, token);
+        } else {
+          console.error("토큰이 없습니다. 인증 문제가 발생할 수 있습니다.");
+        }
+      } catch (error) {
+        console.error("프로젝트 정보를 가져오는 중 오류 발생:", error);
+      }
+    };
+
+    fetchProjectData();
+  }, [cid, navigate]);
 
   const getImagePath = (name: string) => {
     try {
