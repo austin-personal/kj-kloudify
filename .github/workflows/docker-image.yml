@@ -37,7 +37,7 @@ jobs:
           docker build ./client \
             -t ${{ secrets.DOCKER_USERNAME }}/client:$APP_VERSION \
             -t ${{ secrets.DOCKER_USERNAME }}/client:latest \
-            --build-arg REACT_APP_SERVER_URL=http://43.203.208.235:3000
+            --build-arg REACT_APP_SERVER_URL=/api
           docker push ${{ secrets.DOCKER_USERNAME }}/client:$APP_VERSION 
           docker push ${{ secrets.DOCKER_USERNAME }}/client:latest
   deploy:
