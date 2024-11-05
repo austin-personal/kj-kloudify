@@ -454,6 +454,8 @@ export class TerraformService {
     return projectName;
   }
 
+///////////////////////////////////////////////////////////////////////////////////
+
   async getInfrastructureState(CID: number, userId: number): Promise<any> {
     const localTerraformPath = `/temp/${CID}`;
     const stateFilePath = `${localTerraformPath}/terraform.tfstate`;
@@ -468,7 +470,7 @@ export class TerraformService {
       }
   
       // AWS 자격 증명 및 옵션 설정
-      const { accessKey, secretAccessKey } = await this.secretsService.getUserCredentials(userId);
+      const { accessKey, secretAccessKey , region} = await this.secretsService.getUserCredentials(userId);
       const options = {
         env: {
           AWS_ACCESS_KEY_ID: accessKey,
