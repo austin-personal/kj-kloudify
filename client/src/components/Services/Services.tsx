@@ -15,33 +15,31 @@ const Services: React.FC<ServicesProps> = ({ cid, isReviewReady }) => {
   // 모달 열림 상태 관리
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
+
   const navigate = useNavigate();
   const token = localStorage.getItem("token") ?? "";
   const dispatch = useDispatch();
   const data = localStorage.getItem("finishData");
+
   //서비스 이름 추출
   let filteredMatches: string[] = [];
   if (data) {
     const reData = JSON.parse(data);
-
     const chartString = `${reData
       .map(
         (code: string) =>
           `${code.replace(/^\[|\]$/g, "").replace(/;/g, "\n  ")}`
       )
       .join("\n  ")}`;
-    console.log(chartString);
     // `[]` 안의 문자열 추출
     const matches = Array.from(chartString.matchAll(/\[(.*?)\]/g)).map(
       (match) => match[1]
     );
-    console.log(matches);
     // `사용자` 또는 `client` 키워드를 포함하지 않는 항목만 필터링
     filteredMatches = matches.filter(
       (item) =>
         !item.includes("사용자") && !item.toLowerCase().includes("client")
     );
-    console.log(filteredMatches);
   }
 
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -62,25 +60,20 @@ const Services: React.FC<ServicesProps> = ({ cid, isReviewReady }) => {
       }
 
       dispatch(setLoading(true));
-
       // deploy 함수 호출 (딱히 반환값을 사용하지 않으므로 await로만 호출)
-      const response = await deploy(cid, token);
-      console.log(response);
-      console.log("배포가 성공적으로 시작되었습니다.");
+      await deploy(cid, token);
+      alert("배포성공")
+      navigate("/profile")
 
-      // 세션 스토리지에서 노드 정보 삭제
-      sessionStorage.removeItem("nodes");
-      navigate("/profile");
     } catch (error) {
-      console.error("배포 중 오류 발생:", error);
+      alert("배포실패")
+      navigate(-1);
+
     } finally {
       dispatch(setLoading(false));
     }
   };
 
-  const handleGuide = () => {
-    navigate("/guide");
-  };
   // 모달 열고 닫는 함수
   const toggleModal = () => {
     setIsModalOpen(!isModalOpen);
