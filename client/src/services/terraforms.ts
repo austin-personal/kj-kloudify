@@ -102,7 +102,7 @@ export const download = async (cid: number, token: string) => {
 
 export const state = async (cid: number | undefined, token: string | null) => {
     try {
-        const response = await axios.post(`${API_URL}/download`,
+        const response = await axios.post(`${API_URL}/state`,
             {
                 CID: cid
             },
@@ -111,7 +111,7 @@ export const state = async (cid: number | undefined, token: string | null) => {
                     Authorization: `Bearer ${token}`
                 }
             })
-        return response.data;
+        return response.data.serviceStates;
     } catch (error) {
         console.error('스테이트 개박살!! ;', error)
         throw error;
