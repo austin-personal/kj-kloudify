@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Req, UseGuards, Res, Query , InternalServerErrorException } from '@nestjs/common';
+import { Controller, Post, Body, Req, UseGuards, Res, Query , InternalServerErrorException , BadRequestException } from '@nestjs/common';
 import { Response } from 'express';
 import { TerraformService } from './terraform.service';
 import { UsersService } from '../users/users.service';
@@ -88,14 +88,21 @@ export class TerraformController {
   @UseGuards(JwtAuthGuard)
   @Post('state')
   async getState(@Body() deployDto: DeployDto, @Req() req) {
+    const controller = new AbortController();
+    const signal = controller.signal;
+  
     const email = req.user.email;
-    const userInfo = await this.usersService.findOneByEmail(email); // 이메일로 사용자 조회
+    const userInfo = await this.usersService.findOneByEmail(email);
     const userId = userInfo.UID;
-
+  
     try {
-      const result = await this.terraformService.getInfrastructureState(deployDto.CID, userId);
+      // signal 객체를 서비스로 전달
+      const result = await this.terraformService.getInfrastructureState(deployDto.CID, userId, signal);
       return result;
     } catch (error) {
+      if (error.message === 'Request was aborted by the client') {
+        throw new BadRequestException('Request was aborted by the client');
+      }
       throw new InternalServerErrorException(`Failed to retrieve state for CID: ${deployDto.CID}`);
     }
   }
