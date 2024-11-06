@@ -3,9 +3,9 @@ import axios from 'axios';
 // 태현 api 주소 확인!!!
 const API_URL = `${process.env.REACT_APP_SERVER_URL}/projects`;
 
-export const create = async (projectName: string,token: string) => {
+export const create = async (projectName: string, token: string) => {
     try {
-        const response = await axios.post(`${API_URL}`,  
+        const response = await axios.post(`${API_URL}`,
             { projectName },  // createProjectDto로 보내질 부분
             {
                 headers: {
@@ -19,15 +19,15 @@ export const create = async (projectName: string,token: string) => {
     }
 };
 
-export const deleteProject = async (PID:number,token:string) => {
+export const deleteProject = async (PID: number, token: string | null) => {
     try {
         // 태현 api 주소 확인!!!
         const response = await axios.delete(`${API_URL}`, {
             headers: {
                 Authorization: `Bearer ${token}`,
-              },
-              data: { PID }, // PID를 body로 전달
-            });
+            },
+            data: { PID }, // PID를 body로 전달
+        });
         return response;
     } catch (error) {
         console.error('프로젝트 삭제 개박살!! :', error);

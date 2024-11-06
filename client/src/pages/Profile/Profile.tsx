@@ -43,8 +43,8 @@ const Profile: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
   const [modalType, setModalType] = useState<string>(""); // 모달 타입을 구분하는 상태
-  const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
   const [filterType, setFilterType] = useState("all"); // 필터링 타입 상태 추가
   const [isDropdownOpen, setIsDropdownOpen] = useState(false); // 드롭다운 상태 추가
   const itemsPerPage = 5; // 한 페이지에 보여줄 항목 수
@@ -166,18 +166,22 @@ const Profile: React.FC = () => {
       throw new Error("토큰이 존재하지 않습니다.");
     }
 
-    if (modalType === "deleteProject" && projectToDelete) {
-      // 프로젝트 삭제 로직
-      await destroy(projectToDelete.CID, token);
-      await deleteProject(projectToDelete.PID, token);
+    try {
+      if (modalType === "deleteProject" && projectToDelete) {
+        // 프로젝트 삭제 로직
+        await destroy(projectToDelete.CID, token);
+        await deleteProject(projectToDelete.PID, token);
 
-      console.log(`Deleting project with PID: ${projectToDelete.PID}`);
-      setProjects(projects.filter((p) => p.PID !== projectToDelete.PID));
-    } else if (modalType === "deleteAWSKey") {
-      // AWS Key 삭제 로직
-      const response = await deleteSecret(token);
-      alert(response);
-      dispatch(setHasSecret(false));
+        console.log(`Deleting project with PID: ${projectToDelete.PID}`);
+        setProjects(projects.filter((p) => p.PID !== projectToDelete.PID));
+      } else if (modalType === "deleteAWSKey") {
+        // AWS Key 삭제 로직
+        const response = await deleteSecret(token);
+        alert(response);
+        dispatch(setHasSecret(false));
+      }
+    } catch (error) {
+      setModalType("error"); // 모달 타입 설정
     }
 
     setShowDeleteModal(false);
@@ -249,8 +253,8 @@ const Profile: React.FC = () => {
                   {filterType === "all"
                     ? "All"
                     : filterType === "deployed"
-                    ? "완료"
-                    : "진행중"}{" "}
+                      ? "완료"
+                      : "진행중"}{" "}
                   &nbsp;
                   <FontAwesomeIcon icon={faChevronDown} />
                 </button>
@@ -291,9 +295,8 @@ const Profile: React.FC = () => {
                   <td>{project.projectName}</td>
                   <td className="status">
                     <div
-                      className={`status-common ${
-                        project.isDeployed ? "completed" : "in-progress"
-                      }`}
+                      className={`status-common ${project.isDeployed ? "completed" : "in-progress"
+                        }`}
                     >
                       {project.isDeployed ? "완료" : "진행중"}
                     </div>
@@ -348,9 +351,8 @@ const Profile: React.FC = () => {
             {Array.from({ length: totalPages }, (_, i) => (
               <span
                 key={i + 1}
-                className={`page-number ${
-                  currentPage === i + 1 ? "active" : ""
-                }`}
+                className={`page-number ${currentPage === i + 1 ? "active" : ""
+                  }`}
                 onClick={() => setCurrentPage(i + 1)}
               >
                 {i + 1}
@@ -370,27 +372,53 @@ const Profile: React.FC = () => {
       {showDeleteModal && (
         <div className="delete-modal">
           <div className="delete-modal-content">
-            <h3>
-              {modalType === "deleteProject"
-                ? "프로젝트를 정말 삭제하시겠습니까?"
-                : "AWS Key를 정말 삭제하시겠습니까?"}
-            </h3>
-            {modalType === "deleteProject" && (
-              <p>프로젝트: {projectToDelete?.projectName}</p>
-            )}
+            {modalType === "deleteAWSKey" &&
+              <>
+                <h3>AWS Key를 정말 삭제하시겠습니까?</h3>
+              </>
+            }
+            {modalType === "deleteProject" &&
+              <>
+                <h3>경고: 모든 AWS 리소스 종료 작업</h3>
+                <p>이 버튼을 클릭하면 현재 계정 내 모든 AWS 서비스와 리소스가 영구적으로 종료됩니다.</p>
+                <p>이로 인해 서비스 중단, 데이터 손실, 복구 불가능한 결과가 발생할 수 있습니다.</p>
+                <p>이 작업을 수행하시겠습니까?</p>
+                <h4>⚠️ 한 번 더 확인해주세요. 이 작업은 취소할 수 없습니다.</h4>
+              </>
+            }
+            {modalType === "error" &&
+              <>
+                <p>요청하신 작업 중 오류가 발생했습니다.</p>
+                <p>잠시뒤 다시 시작해주세요.</p>
+              </>
+            }
             <div className="delete-modal-buttons">
-              <button
-                className="delete-cancel-button"
-                onClick={handleCancelDelete}
-              >
-                취소
-              </button>
-              <button
-                className="delete-confirm-button"
-                onClick={handleConfirmDelete}
-              >
-                삭제
-              </button>
+              {(modalType === "deleteProject" || modalType === "deleteAWSKey") &&
+                <>
+                  <button
+                    className="delete-cancel-button"
+                    onClick={handleCancelDelete}
+                  >
+                    취소
+                  </button>
+                  <button
+                    className="delete-confirm-button"
+                    onClick={handleConfirmDelete}
+                  >
+                    삭제
+                  </button>
+                </>
+              }
+              {modalType === "error" &&
+                <>
+                  <button
+                    className="delete-cancel-button-th"
+                    onClick={handleCancelDelete}
+                  >
+                    확인
+                  </button>
+                </>
+              }
             </div>
           </div>
         </div>

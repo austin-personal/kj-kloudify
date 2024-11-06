@@ -171,3 +171,27 @@
     transform: rotate(360deg);
   }
 }
+
+/* 취소 버튼 */
+.delete-cancel-button-th,
+.delete-confirm-button-th {
+  width: 150px;
+  height: 55px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 22px;
+  font-family: "NanumSquareRound", sans-serif;
+}
+
+/* 취소 버튼 스타일 */
+.delete-cancel-button-th {
+  background-color: #ccc;
+}
+
+/* 삭제 버튼 스타일 */
+.delete-confirm-button-th {
+  background-color: #ff4d4f;
+  color: white;
+}
