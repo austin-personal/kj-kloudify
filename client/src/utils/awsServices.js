@@ -72,6 +72,7 @@ export const awsServices = [
   "Elastic-IP",
   "Application-Load-Balancer",
   "ALB",
+  "Backup",
 ];
 
 // 약어와 원본 매핑 객체
