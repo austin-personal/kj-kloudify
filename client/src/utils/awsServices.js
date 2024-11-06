@@ -77,6 +77,7 @@ export const awsServices = [
 // 약어와 원본 매핑 객체
 const serviceAliases = {
   CloudWatch: "CloudWatch",
+  NAT: "NAT-Gateway",
   S3: "S3",
   RDS: "RDS",
   EC2: "EC2",
