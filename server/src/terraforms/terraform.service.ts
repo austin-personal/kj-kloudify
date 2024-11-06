@@ -473,111 +473,122 @@ export class TerraformService {
 
 ///////////////////////////////////////////////////////////////////////////////////
 
-  async getInfrastructureState(CID: number, userId: number): Promise<any> {
-    const localTerraformPath = `/temp/${CID}`;
-    const stateFilePath = `${localTerraformPath}/terraform.tfstate`;
+async getInfrastructureState(CID: number, userId: number, signal: AbortSignal): Promise<any> {
+  const localTerraformPath = `/temp/${CID}`;
+  const stateFilePath = `${localTerraformPath}/terraform.tfstate`;
 
-    // AWS CLI 경로를 상단에 정의
-    const awsCliPath = "C:/Program Files/Amazon/AWSCLIV2/aws";
+  // AWS CLI 경로를 상단에 정의
+  const awsCliPath = "C:/Program Files/Amazon/AWSCLIV2/aws";
 
-    try {
-      // 상태 파일이 존재하는지 확인
-      if (!fs.existsSync(stateFilePath)) {
-        throw new Error(`State file not found for CID: ${CID}`);
-      }
-
-      // AWS 자격 증명 및 옵션 설정
-      const { accessKey, secretAccessKey, region } = await this.secretsService.getUserCredentials(userId);
-      const options = {
-        env: {
-          AWS_ACCESS_KEY_ID: accessKey,
-          AWS_SECRET_ACCESS_KEY: secretAccessKey,
-        },
-      };
-
-      // Terraform state list 명령어 실행
-      console.log(`Executing: terraform -chdir=${localTerraformPath} state list`);
-      const listOutputBuffer = execSync(`terraform -chdir=${localTerraformPath} state list`);
-      const stateList = listOutputBuffer.toString().split('\n').filter(line => line.trim() !== '');
-
-      // 리소스 상태 확인 결과를 저장할 객체
-      const serviceStates: any = {};
-
-      // 리소스 타입 추출 함수
-      function getResourceType(resourceAddress: string): string | null {
-        const parts = resourceAddress.split('.');
-        for (let i = 0; i < parts.length; i++) {
-          if (parts[i].startsWith('aws_')) {
-            return parts[i];
-          }
-        }
-        return null;
-      }
-
-      // 각 리소스에 대해 비동기적으로 상태 확인
-      await Promise.all(stateList.map(async resource => {
-        console.log(`Retrieving details for: ${resource}`);
-        const detailOutputBuffer = execSync(`terraform -chdir=${localTerraformPath} state show ${resource}`);
-        const details = detailOutputBuffer.toString();
-        const resourceType = getResourceType(resource);
-
-        let resourceId: string | null = null;
-        let isRunning = false;
-
-        if (resourceType === "aws_instance") {
-          // EC2 인스턴스 ID 추출
-          const instanceIdMatch = details.match(/id\s+=\s+"(i-[a-zA-Z0-9]+)"/);
-          if (instanceIdMatch) {
-            resourceId = instanceIdMatch[1];
-            console.log(`Checking running status for EC2 instance: ${resourceId}`);
-            try {
-              const statusOutputBuffer = execSync(`"${awsCliPath}" ec2 describe-instance-status --instance-ids ${resourceId} --region ${region}`, options);
-              const statusData = JSON.parse(statusOutputBuffer.toString());
-              isRunning = statusData.InstanceStatuses?.some((status: any) => status.InstanceState.Name === "running");
-            } catch (awsError) {
-              console.error(`Error retrieving EC2 instance status for ${resourceId}:`, awsError);
-            }
-          }
-        } else if (resourceType === "aws_rds_instance") {
-          // RDS 인스턴스 ID 추출
-          const dbInstanceIdMatch = details.match(/id\s+=\s+"(db-[a-zA-Z0-9]+)"/);
-          if (dbInstanceIdMatch) {
-            resourceId = dbInstanceIdMatch[1];
-            console.log(`Checking running status for RDS instance: ${resourceId}`);
-            try {
-              const statusOutputBuffer = execSync(`"${awsCliPath}" rds describe-db-instances --db-instance-identifier ${resourceId} --region ${region}`, options);
-              const statusData = JSON.parse(statusOutputBuffer.toString());
-              isRunning = statusData.DBInstances?.some((dbInstance: any) => dbInstance.DBInstanceStatus === "available");
-            } catch (awsError) {
-              console.error(`Error retrieving RDS instance status for ${resourceId}:`, awsError);
-            }
-          }
-        } else if (resourceType === "aws_s3_bucket") {
-          // S3 버킷 상태 확인 (S3는 'running'과 같은 상태가 없음)
-          const bucketNameMatch = details.match(/bucket\s+=\s+"([^"]+)"/);
-          if (bucketNameMatch) {
-            resourceId = bucketNameMatch[1];
-            console.log(`S3 bucket ${resourceId} is assumed to be accessible`);
-            isRunning = true; // S3 버킷은 별도의 실행 상태가 없으므로 항상 'accessible'로 간주
-          }
-        }
-
-        if (resourceId) {
-          serviceStates[resourceId] = { resourceType, isRunning };
-        }
-      }));
-
-      console.log('Service states:', serviceStates);
-
-      return {
-        status: 'State retrieved successfully',
-        serviceStates,
-      };
-    } catch (error) {
-      console.error('State retrieval error:', error);
-      throw new Error(`Failed to retrieve state for CID: ${CID}`);
+  try {
+    // 요청 취소 시 로직 중단
+    if (signal.aborted) {
+      throw new Error('Request was aborted by the client');
     }
+
+    // 상태 파일이 존재하는지 확인
+    if (!fs.existsSync(stateFilePath)) {
+      throw new Error(`State file not found for CID: ${CID}`);
+    }
+
+    // AWS 자격 증명 및 옵션 설정
+    const { accessKey, secretAccessKey, region } = await this.secretsService.getUserCredentials(userId);
+    const options = {
+      env: {
+        AWS_ACCESS_KEY_ID: accessKey,
+        AWS_SECRET_ACCESS_KEY: secretAccessKey,
+      },
+    };
+
+    // Terraform state list 명령어 실행
+    console.log(`Executing: terraform -chdir=${localTerraformPath} state list`);
+    const listOutputBuffer = execSync(`terraform -chdir=${localTerraformPath} state list`);
+    const stateList = listOutputBuffer.toString().split('\n').filter(line => line.trim() !== '');
+
+    // 리소스 상태 확인 결과를 저장할 객체
+    const serviceStates: any = {};
+
+    // 리소스 타입 추출 함수
+    function getResourceType(resourceAddress: string): string | null {
+      const parts = resourceAddress.split('.');
+      for (let i = 0; i < parts.length; i++) {
+        if (parts[i].startsWith('aws_')) {
+          return parts[i];
+        }
+      }
+      return null;
+    }
+
+    // 각 리소스에 대해 비동기적으로 상태 확인
+    await Promise.all(stateList.map(async resource => {
+      if (signal.aborted) {
+        throw new Error('Request was aborted by the client');
+      }
+
+      console.log(`Retrieving details for: ${resource}`);
+      const detailOutputBuffer = execSync(`terraform -chdir=${localTerraformPath} state show ${resource}`);
+      const details = detailOutputBuffer.toString();
+      const resourceType = getResourceType(resource);
+
+      let resourceId: string | null = null;
+      let isRunning = false;
+
+      if (resourceType === "aws_instance") {
+        const instanceIdMatch = details.match(/id\s+=\s+"(i-[a-zA-Z0-9]+)"/);
+        if (instanceIdMatch) {
+          resourceId = instanceIdMatch[1];
+          console.log(`Checking running status for EC2 instance: ${resourceId}`);
+          try {
+            const statusOutputBuffer = execSync(`"${awsCliPath}" ec2 describe-instance-status --instance-ids ${resourceId} --region ${region}`, options);
+            const statusData = JSON.parse(statusOutputBuffer.toString());
+            isRunning = statusData.InstanceStatuses?.some((status: any) => status.InstanceState.Name === "running");
+          } catch (awsError) {
+            console.error(`Error retrieving EC2 instance status for ${resourceId}:`, awsError);
+          }
+        }
+      } else if (resourceType === "aws_rds_instance") {
+        const dbInstanceIdMatch = details.match(/id\s+=\s+"(db-[a-zA-Z0-9]+)"/);
+        if (dbInstanceIdMatch) {
+          resourceId = dbInstanceIdMatch[1];
+          console.log(`Checking running status for RDS instance: ${resourceId}`);
+          try {
+            const statusOutputBuffer = execSync(`"${awsCliPath}" rds describe-db-instances --db-instance-identifier ${resourceId} --region ${region}`, options);
+            const statusData = JSON.parse(statusOutputBuffer.toString());
+            isRunning = statusData.DBInstances?.some((dbInstance: any) => dbInstance.DBInstanceStatus === "available");
+          } catch (awsError) {
+            console.error(`Error retrieving RDS instance status for ${resourceId}:`, awsError);
+          }
+        }
+      } else if (resourceType === "aws_s3_bucket") {
+        const bucketNameMatch = details.match(/bucket\s+=\s+"([^"]+)"/);
+        if (bucketNameMatch) {
+          resourceId = bucketNameMatch[1];
+          console.log(`S3 bucket ${resourceId} is assumed to be accessible`);
+          isRunning = true;
+        }
+      }
+
+      if (resourceId) {
+        serviceStates[resourceId] = { resourceType, isRunning };
+      }
+    }));
+
+    console.log('Service states:', serviceStates);
+
+    return {
+      status: 'State retrieved successfully',
+      serviceStates,
+    };
+  } catch (error) {
+    if (signal.aborted) {
+      console.error('Request was aborted by the client');
+      throw new Error('Request was aborted by the client');
+    }
+    console.error('State retrieval error:', error);
+    throw new Error(`Failed to retrieve state for CID: ${CID}`);
   }
+}
+
 
 // 에러 메시지 저장 메서드
 async saveError(errorMessage: string, CID: number): Promise<void> {
