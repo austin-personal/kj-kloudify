@@ -6,7 +6,7 @@ import { setLoading } from "../../store/loadingSlice";
 import { deploy } from "../../services/terraforms";
 import { checkSecret } from "../../services/secrets";
 import { projectSummary } from "../../services/projects";
-
+import { extractServiceName } from "../../utils/awsServices";
 interface ServicesProps {
   cid: number;
   isReviewReady: boolean;
@@ -31,7 +31,6 @@ const Services: React.FC<ServicesProps> = ({
       try {
         if (token) {
           const response = await projectSummary(cid, token);
-          console.log(response);
         } else {
           console.error("토큰이 없습니다. 인증 문제가 발생할 수 있습니다.");
         }
@@ -45,7 +44,10 @@ const Services: React.FC<ServicesProps> = ({
 
   const getImagePath = (name: string) => {
     try {
-      return require(`../../img/aws-icons/${name}.svg`);
+      console.log("전:", name);
+      const serviceName = extractServiceName(name);
+      console.log("??????:", serviceName);
+      return require(`../../img/aws-icons/${serviceName}.svg`);
     } catch (error) {
       console.warn(`Image not found: ${name}. Using default image.`);
       return "https://icon.icepanel.io/AWS/svg/Compute/EC2.svg"; // 기본 이미지 경로 설정

@@ -73,8 +73,12 @@ export const awsServices = [
 
 // 약어와 원본 매핑 객체
 const serviceAliases = {
+  EIP: "Elastic-IP",
   Internet: "Internet-Gateway",
+  IGW: "Internet-Gateway",
+  R53: "Route-53",
   ELP: "Elastic-IP",
+  NATGW: "NAT-Gateway",
   ElasticLoadBalancing: "ELB",
   ELB: "ELB", // 다른 약어도 추가 가능
   ECR: "Elastic-Container-Registry",
