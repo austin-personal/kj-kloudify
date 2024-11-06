@@ -708,7 +708,6 @@ const Chat: React.FC<ChatProps> = ({ projectCID }) => {
                 </button>
               )}
 
-
               {/* 버튼이 존재하면 렌더링 */}
               {message.buttons &&
                 message.buttons.map((button) => (

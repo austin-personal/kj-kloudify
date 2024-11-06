@@ -125,6 +125,7 @@
   width: 420px;
   font-size: 20px;
   margin-top: 20px;
+  cursor: pointer;
 }
 
 .template-btn-th:hover {
@@ -152,6 +153,7 @@
   width: 420px;
   font-size: 22px;
   margin-top: 20px;
+  cursor: pointer;
 }
 
 .important-template-btn-th:hover {
