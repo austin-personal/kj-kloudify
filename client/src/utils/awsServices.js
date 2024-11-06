@@ -80,6 +80,7 @@ const serviceAliases = {
   EIP: "Elastic-IP",
   Internet: "Internet-Gateway",
   IGW: "Internet-Gateway",
+  "Route-table": "Route-53",
   R53: "Route-53",
   ELP: "Elastic-IP",
   NATGW: "NAT-Gateway",
@@ -95,7 +96,6 @@ const serviceAliases = {
   // "Auto Scaling": "Auto-Scaling",
   // "Internet Gateway": "Internet-Gateway",
   User: "Users",
-  User: "User",
   // "API Gateway": "API-Gateway",
 };
 
