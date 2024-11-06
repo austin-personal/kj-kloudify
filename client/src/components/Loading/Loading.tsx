@@ -7,8 +7,8 @@ import Loadinganimation from "./LoadingAnimation.json"
 const Loading: React.FC = () => {
     return (
         <div className="loading-page">
-            <Lottie animationData={Loadinganimation} />
             <p>Loading...</p>
+            <Lottie animationData={Loadinganimation} />
         </div>
     );
 };

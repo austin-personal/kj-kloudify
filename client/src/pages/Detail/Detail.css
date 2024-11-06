@@ -88,6 +88,8 @@
 }
 
 .previous-chatting-th {
+  display: flex;
+  justify-content: center;
   border-radius: 20px;
   background-color: #e7e3c7;
   width: 150%;
@@ -99,6 +101,12 @@
   transition: opacity 0.5s ease;
   overflow-y: auto;
   opacity: 0;
+}
+
+.detail-loading-chat {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 /* 스크롤바 감추기 */
@@ -133,7 +141,11 @@
 }
 
 .service-status-th {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   width: 100%;
+  height: 100%;
   padding: 10px;
 }
 
