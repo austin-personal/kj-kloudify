@@ -85,6 +85,7 @@ const Chat: React.FC<ChatProps> = ({ projectCID }) => {
         dispatch(deactivate())
         dispatch(clearFinishData())
         const initialMessages = await open(projectCID, token);
+        console.log("ㅁ널ㄴ먀ㅓ래ㅑㄴ머래ㅑㅁ너래ㅑ",initialMessages);
         setMessages(defaultBotMessage);
         if (initialMessages && initialMessages.length > 0) {
           let temp = -2;
