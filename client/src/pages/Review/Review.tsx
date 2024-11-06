@@ -1,6 +1,7 @@
 // Review.tsx
 import React, { useRef, useState } from "react";
 import Services from "../../components/Services/Services";
+import Toast from "../../components/Toast/Toast";
 import "./Review.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCloudArrowDown } from "@fortawesome/free-solid-svg-icons";
@@ -18,6 +19,7 @@ const Review: React.FC = () => {
   const { cid: cidParam } = useParams<{ cid: string }>();
   const cid = cidParam ? parseInt(cidParam, 10) : null;
   const [showOptions, setShowOptions] = useState(false);
+  const [showToast, setShowToast] = useState(true);
   const mermaidRef = useRef<HTMLDivElement>(null); // MermaidChart 요소를 참조할 ref 추가
   const token = localStorage.getItem("token") ?? "";
 
@@ -92,6 +94,8 @@ const Review: React.FC = () => {
           ) : (
             <button className="download-button loading" disabled>
               <div className="spinner"></div>
+
+              <div className="tooltip">환경 설정중입니다. 기다려 주세요.</div>
             </button>
           )}
         </div>
@@ -106,6 +110,18 @@ const Review: React.FC = () => {
         isReviewReady={isReviewReady}
         chartCode={finishData}
       />
+      <div>
+        {showToast && (
+          <Toast
+            message={
+              isReviewReady
+                ? "생성이 완료되었습니다.\n이제 배포할 준비가 되었습니다!"
+                : "테라폼 코드 생성 중입니다...\n잠시만 기다려주세요."
+            }
+            onClose={() => setShowToast(false)}
+          />
+        )}
+      </div>
     </div>
   );
 };

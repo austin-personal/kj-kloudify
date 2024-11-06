@@ -1,6 +1,7 @@
 .review {
   display: flex;
   margin: 0px 50px 0 50px;
+  position: relative;
 }
 
 .vertical-line {
@@ -70,6 +71,31 @@
   align-items: center;
   margin-top: 10px;
   border-top: 3px solid #8ae37e;
+}
+
+/* 툴팁 스타일 */
+.download-button .tooltip {
+  visibility: hidden; /* 기본적으로 보이지 않도록 설정 */
+  background-color: #333;
+  color: #ffffff;
+  text-align: center;
+  padding: 5px 10px;
+  border-radius: 5px;
+  position: absolute;
+  bottom: -35px; /* 버튼 위에 툴팁 표시 */
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-size: 0.9rem;
+  opacity: 0;
+  z-index: 1500;
+  transition: opacity 0.3s;
+}
+
+/* 버튼에 마우스가 올라갔을 때 툴팁 보이게 하기 */
+.download-button:hover .tooltip {
+  visibility: visible;
+  opacity: 1;
 }
 
 .download-button:hover {
