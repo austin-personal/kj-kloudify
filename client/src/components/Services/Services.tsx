@@ -95,10 +95,10 @@ const Services: React.FC<ServicesProps> = ({
       dispatch(setLoading(true));
       // deploy 함수 호출 (딱히 반환값을 사용하지 않으므로 await로만 호출)
       await deploy(cid, token);
-      alert("배포성공");
+      alert("배포 성공! propile 페이지로 이동합니다.");
       navigate("/profile");
     } catch (error) {
-      alert("배포실패");
+      alert("배포 실패! 리뷰창으로 돌아갑니다. 다시 Deploy를 시도하세요.");
       navigate(-1);
     } finally {
       dispatch(setLoading(false));

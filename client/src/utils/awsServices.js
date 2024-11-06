@@ -62,6 +62,7 @@ export const awsServices = [
   "Security-Group",
   "ELB",
   "User",
+  "Users",
   "API-Gateway",
   "NAT-Gateway",
   "Systems-Manager",
@@ -93,7 +94,8 @@ const serviceAliases = {
   "Network ACLs": "NACL",
   // "Auto Scaling": "Auto-Scaling",
   // "Internet Gateway": "Internet-Gateway",
-  Users: "User",
+  User: "Users",
+  User: "User",
   // "API Gateway": "API-Gateway",
 };
 
