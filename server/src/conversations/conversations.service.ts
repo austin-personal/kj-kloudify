@@ -362,15 +362,15 @@ export class ConversationsService {
 
             mermaid1 = await this.fetchMermaidByCID(CID);
             
-            console.log("템플릿 머메이드가 찍히나?",`\n**[${mermaid1.join(', ')}]`);
+            console.log("템플릿 머메이드가 찍히나?",`\n**${mermaid1.join(', ')}`);
 
             // 템플릿 응답 반환
             try {
-                await this.saveConversation(CID, user_question, templateResponse + `\n**[${mermaid1.join(', ')}]`);
+                await this.saveConversation(CID, user_question, templateResponse + `\n**${mermaid1.join(', ')}`);
             } catch (error) {
                 console.error('대화 내용 저장 중 에러 발생:', error);
             }
-            return this.createResponse(templateResponse + `\n**[${mermaid1.join(', ')}]`);
+            return this.createResponse(templateResponse + `\n**${mermaid1.join(', ')}`);
         }
 
 
