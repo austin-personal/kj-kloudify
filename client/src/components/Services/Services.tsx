@@ -99,7 +99,6 @@ const Services: React.FC<ServicesProps> = ({
       navigate("/profile");
     } catch (error) {
       alert("배포 실패! 리뷰창으로 돌아갑니다. 다시 Deploy를 시도하세요.");
-      navigate(-1);
     } finally {
       dispatch(setLoading(false));
     }
