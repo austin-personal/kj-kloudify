@@ -44,9 +44,9 @@ const Services: React.FC<ServicesProps> = ({
 
   const getImagePath = (name: string) => {
     try {
-      console.log("전:", name);
+      // console.log("전:", name);
       const serviceName = extractServiceName(name);
-      console.log("??????:", serviceName);
+      // console.log("후2:", serviceName);
       return require(`../../img/aws-icons/${serviceName}.svg`);
     } catch (error) {
       console.warn(`Image not found: ${name}. Using default image.`);
@@ -65,8 +65,8 @@ const Services: React.FC<ServicesProps> = ({
     const chartString = result[0];
     const serviceNames = Array.from(
       chartString.matchAll(/(\b\w+)(?=\s*\[<img\s)/g)
-    ).map((match) => match[1]);
-    // console.log("서비스 이름:", serviceNames);
+    ).map((match) => match[1].toUpperCase());
+    console.log("서비스 이름:", serviceNames);
 
     // `사용자` 또는 `client` 키워드를 포함하지 않는 항목만 필터링
     filteredMatches = serviceNames.filter(
@@ -129,7 +129,7 @@ const Services: React.FC<ServicesProps> = ({
                 className="service-image"
               />
               <span className="service-label">{item}</span>
-              <span className="price-label">블라블라블라블라</span>
+              <span className="price-label">서비스 상세정보</span>
             </div>
           </div>
         ))}

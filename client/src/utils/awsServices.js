@@ -76,11 +76,16 @@ export const awsServices = [
 
 // 약어와 원본 매핑 객체
 const serviceAliases = {
+  CloudWatch: "CloudWatch",
+  NAT: "NAT-Gateway",
+  S3: "S3",
+  RDS: "RDS",
+  EC2: "EC2",
   ALB: "Application-Load-Balancer",
   EIP: "Elastic-IP",
+  Route: "Route-53",
   Internet: "Internet-Gateway",
   IGW: "Internet-Gateway",
-  "Route-table": "Route-53",
   R53: "Route-53",
   ELP: "Elastic-IP",
   NATGW: "NAT-Gateway",
@@ -89,15 +94,16 @@ const serviceAliases = {
   ECR: "Elastic-Container-Registry",
   ECS: "Elastic-Container-Service",
   EBS: "Elastic-Block-Store",
-  "Security Groups": "Security-Group",
-  // "Security Group": "Security-Group",
+  Security: "Security-Group",
   // "Network ACL": "NACL",
   "Network ACLs": "NACL",
+  ACL: "NACL",
   // "Auto Scaling": "Auto-Scaling",
-  // "Internet Gateway": "Internet-Gateway",
   User: "Users",
   // "API Gateway": "API-Gateway",
 };
+
+// AWS 서비스 이름 배열과 약어 매핑은 기존 그대로 유지
 
 // 매핑된 키로 변환하는 함수
 function normalizeServiceName(text) {
@@ -118,12 +124,13 @@ function normalizeServiceName(text) {
 export function extractServiceName(text) {
   // 공백을 하이픈으로 변환 후 약어 변환
   const normalizedText = normalizeServiceName(text);
-  console.log("text:", text);
+
+  // 서비스 이름 뒤에 숫자나 문자 등 다른 텍스트가 추가로 와도 매칭되도록 정규식 수정
   const regex = new RegExp(
-    `\\b(${awsServices.map((name) => name).join("|")})\\b`,
+    `\\b(${awsServices.map((name) => name).join("|")})(\\w+)?\\b`,
     "i"
   );
-  console.log("text:", regex);
+
   const match = normalizedText.match(regex);
-  return match ? match[0] : null;
+  return match ? match[1] : null; // 매칭된 서비스 이름만 반환
 }
