@@ -14,10 +14,6 @@
   overflow-y: auto;
 }
 
-.service-container::-webkit-scrollbar {
-  display: none; /* Chrome, Safari에서 스크롤바 숨기기 */
-}
-
 .modal-container::-webkit-scrollbar {
   width: 20px;
   height: 8px;

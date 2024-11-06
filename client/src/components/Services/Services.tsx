@@ -31,6 +31,7 @@ const Services: React.FC<ServicesProps> = ({
       try {
         if (token) {
           const response = await projectSummary(cid, token);
+          console.log(response);
         } else {
           console.error("토큰이 없습니다. 인증 문제가 발생할 수 있습니다.");
         }
@@ -55,30 +56,18 @@ const Services: React.FC<ServicesProps> = ({
 
   let serviceNames: string[] = [];
   if (chartCode) {
-    const chartString = `${chartCode
-      .map(
-        (code: string) =>
-          `${code.replace(/^\[|\]$/g, "").replace(/;/g, "\n  ")}`
-      )
-      .join("\n  ")}`;
-    // `[]` 안의 문자열 추출
-    const matches = Array.from(chartString.matchAll(/\[(.*?)\]/g)).map(
-      (match) => {
-        const content = match[1];
-        // <br/> 태그 뒤의 텍스트 추출
-        const serviceName = content
-          .split("<br/>")
-          .pop()
-          ?.replace(/"$/, "") // 끝의 " 제거
-          .trim() // 앞뒤 공백 제거
-          .replace(/\s+/g, "-"); // 공백을 "-"로 대체
-        return serviceName || ""; // null or undefined 방지
-      }
-    );
-    serviceNames = matches;
-    console.log("서비스이름!:", serviceNames);
+    const result = chartCode.map((code) => {
+      // 양 끝에 있는 대괄호 제거
+      return code.replace(/^\[|\]$/g, "");
+    });
+    const chartString = result[0];
+    const serviceNames = Array.from(
+      chartString.matchAll(/(\b\w+)(?=\s*\[<img\s)/g)
+    ).map((match) => match[1]);
+    // console.log("서비스 이름:", serviceNames);
+
     // `사용자` 또는 `client` 키워드를 포함하지 않는 항목만 필터링
-    filteredMatches = matches.filter(
+    filteredMatches = serviceNames.filter(
       (item) =>
         !item.includes("사용자") && !item.toLowerCase().includes("client")
     );
