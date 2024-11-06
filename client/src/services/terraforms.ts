@@ -100,7 +100,7 @@ export const download = async (cid: number, token: string) => {
     }
 }
 
-export const state = async (cid: number | undefined, token: string | null) => {
+export const state = async (cid: number | undefined, token: string | null, options: { signal?: AbortSignal } = {}) => {
     try {
         const response = await axios.post(`${API_URL}/state`,
             {
@@ -109,11 +109,18 @@ export const state = async (cid: number | undefined, token: string | null) => {
             {
                 headers: {
                     Authorization: `Bearer ${token}`
-                }
+                },
+                signal: options.signal,
             })
         return response.data.serviceStates;
     } catch (error) {
-        console.error('스테이트 개박살!! ;', error)
-        throw error;
+        if (axios.isCancel(error)) {
+            console.log("요청이 취소되었습니다.");
+        } else {
+            console.error("스테이트 개박살!! ;", error);
+        }
+        if (!axios.isCancel(error)) {
+            throw error;
+        }
     }
 }
