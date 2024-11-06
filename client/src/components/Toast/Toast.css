@@ -10,7 +10,7 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   bottom: 20px; /* 아래쪽에서 20px 위치 */
   right: 20px; /* 오른쪽에서 20px 위치 */
-  z-index: 1000;
+  z-index: 0;
   animation: fadeIn 0.3s ease;
 }
 
