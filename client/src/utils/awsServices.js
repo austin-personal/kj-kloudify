@@ -69,10 +69,13 @@ export const awsServices = [
   "Cost-Explorer",
   "Read-Replica",
   "Elastic-IP",
+  "Application-Load-Balancer",
+  "ALB",
 ];
 
 // 약어와 원본 매핑 객체
 const serviceAliases = {
+  ALB: "Application-Load-Balancer",
   EIP: "Elastic-IP",
   Internet: "Internet-Gateway",
   IGW: "Internet-Gateway",
