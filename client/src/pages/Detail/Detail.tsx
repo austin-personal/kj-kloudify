@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import DonutChart from "../../components/DetailPage/DonutChart";
-import { mermaid, projectOneInfo } from "../../services/projects";
+import { deleteProject, mermaid, projectOneInfo } from "../../services/projects";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCloud } from "@fortawesome/free-solid-svg-icons";
 import "./Detail.css";
 import { open } from "../../services/conversations";
 import { useTemplates } from "../../components/Chat/TemplateProvider";
-import { state } from "../../services/terraforms";
+import { destroy, state } from "../../services/terraforms";
 import MermaidChart from "../../components/Mermaid/mermaid";
+import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
 
 interface Project {
   PID: number;
@@ -51,6 +52,10 @@ const Detail: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [mermaidCode, setMermaidCode] = useState<string[]>([]);
   const [stateData, setStateData] = useState<{ [key: string]: any }>({});
+  const [modalType, setModalType] = useState<string>(""); // 모달 타입을 구분하는 상태
+  const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
+  const navigate = useNavigate();
+
   useEffect(() => {
     const fetchProjectData = async () => {
       try {
@@ -59,11 +64,10 @@ const Detail: React.FC = () => {
             const response = await projectOneInfo(Number(pid), token);
             const projectData = response.data;
             setProject(projectData);
-            const stateTemp = await state(projectData.CID, token);
-            console.log("십", stateTemp);
             const mermaidTemp = await mermaid(Number(pid), token);
-            setStateData(stateTemp);
             setMermaidCode([mermaidTemp]);
+            const stateTemp = await state(projectData.CID, token);
+            setStateData(stateTemp);
           }
           // Chat history를 불러올 때 CID를 사용
           if (project?.CID && isChatting && isLoading) {
@@ -159,6 +163,29 @@ const Detail: React.FC = () => {
 
   if (!project) return <div>Loading...</div>;
 
+  const handleDeleteClick = (project: Project) => {
+    setModalType("deleteProject"); // 모달 타입 설정
+    setShowDeleteModal(true); // 모달 띄우기
+  };
+
+  const handleCancelDelete = () => {
+    setShowDeleteModal(false);
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
+      if (modalType === "deleteProject") {
+        // 프로젝트 삭제 로직
+        await destroy(project.CID, token);
+        await deleteProject(project.PID, token);
+        setShowDeleteModal(false);
+      }
+      navigate("/profile")
+    } catch (error) {
+      setModalType("error"); // 모달 타입 설정
+    }
+  };
+
   return (
     <div className="detail-page">
       <div className="project-header">
@@ -166,6 +193,19 @@ const Detail: React.FC = () => {
           Project Name :{" "}
           <span className="project-name-th">{project.projectName}</span>
         </p>
+        <button
+          className="deleteButton"
+          onClick={(e) => {
+            e.stopPropagation();
+            handleDeleteClick(project);
+          }}
+        >
+          <FontAwesomeIcon
+            icon={faTrashCan}
+            size="xl"
+            className="svg"
+          />
+        </button>
       </div>
 
       <div className="main-content">
@@ -222,6 +262,56 @@ const Detail: React.FC = () => {
           <MermaidChart chartCode={mermaidCode}></MermaidChart>
         </div>
       </div>
+      {/* 삭제 확인 모달 */}
+      {showDeleteModal && (
+        <div className="delete-modal">
+          <div className="delete-modal-content">
+            {modalType === "deleteProject" &&
+              <>
+                <h3>경고: 모든 AWS 리소스 종료 작업</h3>
+                <p>이 버튼을 클릭하면 현재 계정 내 모든 AWS 서비스와 리소스가 영구적으로 종료됩니다.</p>
+                <p>이로 인해 서비스 중단, 데이터 손실, 복구 불가능한 결과가 발생할 수 있습니다.</p>
+                <p>이 작업을 수행하시겠습니까?</p>
+                <h4>⚠️ 한 번 더 확인해주세요. 이 작업은 취소할 수 없습니다.</h4>
+              </>
+            }
+            {modalType === "error" &&
+              <>
+                <p>요청하신 작업 중 오류가 발생했습니다.</p>
+                <p>잠시뒤 다시 시작해주세요.</p>
+              </>
+            }
+            <div className="delete-modal-buttons">
+              {modalType === "deleteProject" &&
+                <>
+                  <button
+                    className="delete-cancel-button-th"
+                    onClick={handleCancelDelete}
+                  >
+                    취소
+                  </button>
+                  <button
+                    className="delete-confirm-button-th"
+                    onClick={handleConfirmDelete}
+                  >
+                    삭제
+                  </button>
+                </>
+              }
+              {modalType === "error" &&
+                <>
+                  <button
+                    className="delete-cancel-button-th"
+                    onClick={handleCancelDelete}
+                  >
+                    확인
+                  </button>
+                </>
+              }
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
