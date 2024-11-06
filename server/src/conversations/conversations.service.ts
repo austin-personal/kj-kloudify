@@ -111,10 +111,9 @@ export class ConversationsService {
                         3. 각 AWS 서비스는 다음 형식으로 노드를 생성하세요:
                         serviceName[<img src='https://icon.icepanel.io/AWS/svg/ServiceName.svg'><br>ServiceName]
                         4. 노드 간의 관계는 화살표로 표현하세요(-->)
-                        5. 전체 코드는 줄바꿈 없이 한 줄로 작성하세요
-                        6. 코드 시작 전에 **를 붙여주세요
+                        5. 코드 시작 전에 **를 붙여주세요
 
-                        구성이 완료되고 사용자가 이대로 진행을 요청하면 다른 텍스트 없이 mermaid 코드만 한 줄로 출력해주세요.
+                        구성이 완료되고 사용자가 이대로 진행을 요청하면 다른 텍스트 없이 mermaid 코드만 출력해주세요.
                         mermaid 코드의 존재나 특성에 대해 별도로 언급하지 마세요.`
 
             case 1:
@@ -594,20 +593,23 @@ export class ConversationsService {
     // **로 감싸진 텍스트에서 키워드 추출
     extractKeywords(text: string): { keywords: string[], updatedText: string } {
         if (!text) {
-            return { keywords: [], updatedText: text };
+            return { keywords: [], updatedText: '' };
         }
-
-        const regex = /\*\*(.*?)(\n|$)/g;
-        const matches: string[] = [];
-        let updatedText = text;
-
-        let match;
-        while ((match = regex.exec(text)) !== null) {
-            matches.push(match[1].trim());
-            updatedText = updatedText.replace(match[0], '');
+    
+        // 줄바꿈 문자를 포함하여 문자열 끝까지 매치
+        const regex = /\*\*(.*)$/s;
+        const keywords: string[] = [];
+        let match = text.match(regex);
+    
+        if (match) {
+            keywords.push(match[1].trim());
+            // '**'부터 문자열 끝까지 제거
+            const updatedText = text.replace(regex, '').trim();
+            return { keywords, updatedText };
+        } else {
+            // '**'로 시작하는 부분이 없으면 원본 텍스트 반환
+            return { keywords: [], updatedText: text.trim() };
         }
-
-        return { keywords: matches, updatedText: updatedText.trim() };
     }
 
     // 기존 키워드를 누적하지 않고 새로운 키워드로 덮어쓰는 함수
