@@ -64,13 +64,11 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSwitchToLogin }) => {
     if (!validateEmail(email)) {
       return;
     }
-
     try {
       const isDuplicate = await checkEmail(email);
       if (isDuplicate) {
         setErrors((prevErrors) => ({ ...prevErrors, email: "Email is already in use." }));
       } else {
-        alert("Email is available.");
         setIsEmailChecked(true);
         setErrors((prevErrors) => ({ ...prevErrors, email: undefined }));
       }

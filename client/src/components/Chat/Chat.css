@@ -115,13 +115,57 @@
 }
 
 .template-btn-th {
-  width: 300px;
+  padding: 12.5px 30px;
+  border: 0;
+  border-radius: 100px;
+  background-color: #f9f5d9;
+  font-weight: Bold;
+  transition: all 0.5s;
+  -webkit-transition: all 0.5s;
+  width: 420px;
+  font-size: 20px;
+  margin-top: 20px;
+}
+
+.template-btn-th:hover {
+  background-color: #fefbd1;
+  box-shadow: 0 0 20px #6fc5ff50;
+  transform: scale(1.1);
+}
+
+.template-btn-th:active {
+  background-color: #f2eebd;
+  transition: all 0.25s;
+  -webkit-transition: all 0.25s;
+  box-shadow: none;
+  transform: scale(0.98);
+}
+
+.important-template-btn-th {
+  padding: 12.5px 30px;
+  border: 0;
+  border-radius: 100px;
+  background-color: #f5c8c0;
+  font-weight: Bold;
+  transition: all 0.5s;
+  -webkit-transition: all 0.5s;
+  width: 420px;
   font-size: 22px;
-  margin-top: 10px;
-  border: none;
-  border-radius: 20px;
-  background-color: #fffce8;
-  cursor: pointer;
+  margin-top: 20px;
+}
+
+.important-template-btn-th:hover {
+  background-color: #f7d4cf;
+  box-shadow: 0 0 20px #6fc5ff50;
+  transform: scale(1.1);
+}
+
+.important-template-btn-th:active {
+  background-color: #f2a89c;
+  transition: all 0.25s;
+  -webkit-transition: all 0.25s;
+  box-shadow: none;
+  transform: scale(0.98);
 }
 
 .template-sub-th {
@@ -147,6 +191,7 @@
 
 .message-content {
   white-space: pre-line;
+  padding: 5px;
 }
 
 .chat-form {
@@ -334,35 +379,60 @@
   cursor: pointer;
 }
 
-.checkbox-mark {
-  width: 18px;
-  height: 18px;
-  border: 2px solid #007bff;
-  border-radius: 4px;
-  display: inline-block;
-  margin-right: 8px;
+.custom-checkbox svg {
+  margin: 0 10px;
+  overflow: visible;
+}
+
+.path {
+  fill: none;
+  stroke: black;
+  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: stroke-dasharray 0.5s ease, stroke-dashoffset 0.5s ease;
+  stroke-dasharray: 241 9999999;
+  stroke-dashoffset: 0;
+}
+
+.important-path-th {
+  stroke: #ff5b89;
+}
+
+.custom-checkbox input:checked~svg .path {
+  stroke-dasharray: 70.5096664428711 9999999;
+  stroke-dashoffset: -262.2723388671875;
+}
+
+.important-check-message-th {
   position: relative;
-  transition: background-color 0.3s;
+  z-index: 1;
+  padding: 3px 10px;
 }
 
-.custom-checkbox input[type="checkbox"]:checked+.checkbox-mark {
-  background-color: #007bff;
-  border-color: #007bff;
+.check-message-th {
+  padding: 3px 10px;
 }
 
-.checkbox-mark::after {
-  content: "";
+.important-check-message-th::before {
+  content: '';
   position: absolute;
-  display: none;
-  left: 4px;
   top: 0;
-  width: 5px;
-  height: 10px;
-  border: solid white;
-  border-width: 0 2px 2px 0;
-  transform: rotate(45deg);
+  left: 0;
+  width: 0%;
+  height: 100%;
+  background: #ff5b89;
+  border-radius: 10px;
+  /* 원하는 그라데이션 색상 */
+  transition: width 0.5s ease;
+  z-index: -1;
 }
 
-.custom-checkbox input[type="checkbox"]:checked+.checkbox-mark::after {
-  display: block;
+.custom-checkbox input[type="checkbox"]:checked~.important-check-message-th::before {
+  width: 100%;
+}
+
+.custom-checkbox input[type="checkbox"]:checked~.important-check-message-th {
+  color: white;
+  /* 텍스트 색상을 변경하여 가독성 확보 */
 }
