@@ -456,7 +456,7 @@ export class ConversationsService {
 
         // 요청 바디 구성
         const requestBody = {
-            max_tokens: 1000,
+            max_tokens: 2000,
             anthropic_version: 'bedrock-2023-05-31',
             messages: [
                 {
