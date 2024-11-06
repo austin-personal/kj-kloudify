@@ -76,6 +76,7 @@ export const awsServices = [
 
 // 약어와 원본 매핑 객체
 const serviceAliases = {
+  ASG: "Auto-Scaling",
   CloudWatch: "CloudWatch",
   NAT: "NAT-Gateway",
   S3: "S3",
@@ -127,10 +128,12 @@ export function extractServiceName(text) {
 
   // 서비스 이름 뒤에 숫자나 문자 등 다른 텍스트가 추가로 와도 매칭되도록 정규식 수정
   const regex = new RegExp(
-    `\\b(${awsServices.map((name) => name).join("|")})(\\w+)?\\b`,
+    `\\b(${awsServices.map((name) => name).join("|")}|${Object.keys(
+      serviceAliases
+    ).join("|")})(\\w+)?\\b`,
     "i"
   );
 
   const match = normalizedText.match(regex);
-  return match ? match[1] : null; // 매칭된 서비스 이름만 반환
+  return match ? serviceAliases[match[1]] || match[1] : null; // 매칭된 서비스 이름 반환
 }
