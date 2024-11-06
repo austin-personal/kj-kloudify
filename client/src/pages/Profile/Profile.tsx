@@ -14,6 +14,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import { destroy } from "../../services/terraforms";
+import Lottie from "lottie-react";
+import Loadinganimation from "./LoadingDestroy.json"
 
 // 유저 프로필 타입 정의
 interface UserProfile {
@@ -47,6 +49,7 @@ const Profile: React.FC = () => {
   const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
   const [filterType, setFilterType] = useState("all"); // 필터링 타입 상태 추가
   const [isDropdownOpen, setIsDropdownOpen] = useState(false); // 드롭다운 상태 추가
+  const [isDeleting, setIsDeleting] = useState<boolean>(false); // 삭제 작업 상태 추가
   const itemsPerPage = 5; // 한 페이지에 보여줄 항목 수
   const token = localStorage.getItem("token");
 
@@ -167,6 +170,8 @@ const Profile: React.FC = () => {
     }
 
     try {
+      setShowDeleteModal(false);
+      setIsDeleting(true); // 삭제 작업 시작 전 로딩 상태로 설정
       if (modalType === "deleteProject" && projectToDelete) {
         // 프로젝트 삭제 로직
         await destroy(projectToDelete.CID, token);
@@ -183,8 +188,7 @@ const Profile: React.FC = () => {
     } catch (error) {
       setModalType("error"); // 모달 타입 설정
     }
-
-    setShowDeleteModal(false);
+    setIsDeleting(false); // 삭제 작업 완료 후 로딩 상태 해제
     setProjectToDelete(null); // 초기화
   };
 
@@ -421,6 +425,14 @@ const Profile: React.FC = () => {
               }
             </div>
           </div>
+        </div>
+      )}
+
+      {/* 삭제 작업 중일 때 오버레이 표시 */}
+      {isDeleting && (
+        <div className="profile-loading-th">
+          <Lottie animationData={Loadinganimation} style={{ width: "300px", height: "300px" }} />
+          <h3>삭제중입니다...</h3>
         </div>
       )}
     </div>
