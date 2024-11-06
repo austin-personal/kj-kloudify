@@ -1,5 +1,5 @@
 import { Email } from './../../node_modules/aws-sdk/clients/finspacedata.d';
-import { Controller, Post, Patch, Body, UseGuards, Req, UnauthorizedException , Get} from '@nestjs/common'; // UseGuards, Req 추가
+import { Controller, Post, Patch, Body, UseGuards, Req, UnauthorizedException , Get, BadRequestException } from '@nestjs/common'; // UseGuards, Req 추가
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginDto } from './dto/login.dto';  // LoginDto 추가
@@ -12,14 +12,22 @@ import { NotFoundException } from '@nestjs/common';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-
   // 회원가입 엔드포인트
   @Post('signUp')
   async signUp(@Body() createUserDto: CreateUserDto) {
-    const user = await this.usersService.findOne(createUserDto.email);
-    if (user) {
-      throw new UnauthorizedException('User already exists');
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$/;
+
+    // 이메일 유효성 검사
+    if (!emailRegex.test(createUserDto.email)) {
+      throw new BadRequestException('Invalid email format');
     }
+
+    // 비밀번호 유효성 검사
+    if (!passwordRegex.test(createUserDto.password)) {
+      throw new BadRequestException('Password must be 8-20 characters long, with uppercase, lowercase, number, and special character');
+    }
+
     const newUser = await this.usersService.createUser(
       createUserDto.username,
       createUserDto.password,
@@ -27,6 +35,14 @@ export class UsersController {
     );
     return this.usersService.login(newUser); // 회원가입 후 로그인
   }
+
+  // 이메일 중복 체크  API
+  @Post('check-email')
+  async checkEmail(@Body('email') email: string): Promise<{ exists: boolean }> {
+    const user = await this.usersService.findOne(email);
+    return { exists: !!user }; // 사용자가 있으면 true, 없으면 false 반환
+  }
+
 
   // 로그인 엔드포인트
   @Post('login')

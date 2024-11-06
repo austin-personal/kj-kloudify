@@ -47,7 +47,11 @@ export class TerraformService {
     this.s3 = new S3({ region: process.env.AWS_REGION });
     this.lambda = new Lambda({ region: process.env.AWS_REGION });
     this.dynamoDBClient = new DynamoDBClient({ region: process.env.AWS_REGION });
-
+    this.dynamoDB = new AWS.DynamoDB.DocumentClient({
+      region: process.env.AWS_REGION,
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  });
     this.dynamoDbDocClient = DynamoDBDocumentClient.from(this.dynamoDBClient);
   }
   /**
@@ -64,11 +68,16 @@ export class TerraformService {
     const randomInt = Math.floor(Math.random() * (999999999 - 0 + 1)) + 0;
     const randomName = "AWS - " + projectName + randomInt.toString();
 
-    let errorMessage = 'None';
+    let errorMessage = await this.getErrorMessageByCID(PID);
 
-    // this.getErrorMessageByCID(CID);
+    if (!errorMessage){
+      errorMessage = 'None';
+    }
 
     const prompt_content = `
+      recently error:
+      ${errorMessage}
+
       Generate Terraform code based on the following keywords:
       ${JSON.stringify(keywords)}
 
@@ -196,36 +205,38 @@ export class TerraformService {
 
 
     const execAsync = promisify(exec);
-    // const credentials = await this.secretsService.getUserCredentials(userId);
 
-    // console.log('Retrieved credentials:', credentials);
-    // if (!credentials) {
-    //   throw new Error(`User credentials not found for user ID: ${userId}`);
-    // }
-
-    try {
-    const uid = await this.projectsService.getUIDByPID(PID);
-    if (uid === null) {
-      throw new Error('UID not found'); // UID가 null일 경우에 대한 예외 처리
-    }
+  //   try {
+  //   const uid = await this.projectsService.getUIDByPID(PID);
+  //   if (uid === null) {
+  //     throw new Error('UID not found'); // UID가 null일 경우에 대한 예외 처리
+  //   }
   
-  const { accessKey, secretAccessKey } = await this.secretsService.getUserCredentials(uid);
+  //   const { accessKey, secretAccessKey } = await this.secretsService.getUserCredentials(uid);
 
-    // Terraform plan 명령어 실행 (async/await 사용)
-    const { stdout, stderr } = await execAsync(
-      `terraform -chdir=${tmpDir} plan -var "aws_access_key=${accessKey}" -var "aws_secret_key=${secretAccessKey}"`
-    );
+  //   const { stdout: initStdout, stderr: initStderr } = await execAsync(
+  //     `terraform -chdir=${tmpDir} init`
+  //   );
+  //   if (initStderr) {
+  //     console.error(`Terraform init 에러: ${initStderr}`);
+  //   } else {
+  //     console.log(`Terraform init 성공: ${initStdout}`);
+  //   }
 
-    console.log('Terraform plan 결과:', stdout);
-    if (stderr) {
-      console.error('Terraform plan 중 오류:', stderr);
-      return {message :stderr,
-              bool : false}
-    }
-  } catch (error) {
-    console.error('Terraform plan 실행 중 오류가 발생했습니다:', error.message);
-  }
+  //   // Terraform plan 명령어 실행 (async/await 사용)
+  //   const { stdout, stderr } = await execAsync(
+  //     `terraform -chdir=${tmpDir} plan -var "aws_access_key=${accessKey}" -var "aws_secret_key=${secretAccessKey}"`
+  //   );
 
+  //   console.log('Terraform plan 결과:', stdout);
+  //   if (stderr) {
+  //     console.error('Terraform plan 중 오류:', stderr);
+  //     return {message :stderr,
+  //             bool : false}
+  //   }
+  // } catch (error) {
+  //   console.error('Terraform plan 실행 중 오류가 발생했습니다:', error.message);
+  // }
 
     // 5. S3에 Terraform 파일 업로드
     const s3Bucket = process.env.TERRAFORM_BUCKET;
@@ -571,7 +582,7 @@ export class TerraformService {
 // 에러 메시지 저장 메서드
 async saveError(errorMessage: string, CID: number): Promise<void> {
   const params = {
-    TableName: 'Archboard_errors',
+    TableName: 'Archboard_keyword',
     Key: { CID: CID },
     UpdateExpression: 'SET #errorMessage = :errorMessage, #timestamp = :timestamp',
     ExpressionAttributeNames: {
@@ -597,13 +608,12 @@ async saveError(errorMessage: string, CID: number): Promise<void> {
   // CID로 에러 메시지 가져오기 메서드
   async getErrorMessageByCID(CID: number): Promise<string | null> {
     const params = {
-      TableName: 'Archboard_errors',
+      TableName: 'Archboard_keyword',
       Key: { CID: CID },
-      ProjectionExpression: 'errorMessage', // errorMessage 컬럼만 가져오기
+      ProjectionExpression: 'errorMessage', // errorMessage 필드만 가져오기
     };
 
     try {
-      // get 메서드와 .promise() 사용
       const result = await this.dynamoDB.get(params).promise();
       if (result.Item && result.Item.errorMessage) {
         console.log(`에러 메시지 불러오기 성공: ${result.Item.errorMessage}`);

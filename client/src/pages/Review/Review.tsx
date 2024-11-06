@@ -101,7 +101,11 @@ const Review: React.FC = () => {
       </div>
 
       <div className="vertical-line"></div>
-      <Services cid={cid ?? 0} isReviewReady={isReviewReady} />
+      <Services
+        cid={cid ?? 0}
+        isReviewReady={isReviewReady}
+        chartCode={finishData}
+      />
     </div>
   );
 };

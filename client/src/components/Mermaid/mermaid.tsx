@@ -36,8 +36,7 @@ const MermaidChart: React.FC<MermaidChartProps> = ({ chartCode }) => {
           // 시작 부분에 [가 없으면 끝의 ]를 제거하지 않음
           return code
             .replace(/^\[/, "") // 시작 부분의 [ 만 제거
-            .replace(/;/g, "\n  ") // 끝의 세미콜론을 제거
-            .replace(/[()]/g, ""); // 끝의 () 괄호만 제거
+            .replace(/;/g, "\n  "); // 끝의 세미콜론을 제거
         }
       })
       .join("\n  ")}` ||
