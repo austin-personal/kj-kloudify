@@ -60,6 +60,9 @@ const Detail: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    const controller = new AbortController();
+    const signal = controller.signal;
+
     const fetchProjectData = async () => {
       try {
         if (pid) {
@@ -71,7 +74,7 @@ const Detail: React.FC = () => {
             setMermaidCode([mermaidTemp]);
 
             setIsStateLoading(true);
-            const stateTemp = await state(projectData.CID, token);
+            const stateTemp = await state(projectData.CID, token, { signal });
             setStateData(stateTemp);
             setIsStateLoading(false);
           }
@@ -83,7 +86,7 @@ const Detail: React.FC = () => {
           }
 
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error("프로젝트 정보를 가져오는 중 오류 발생:", error);
       }
     };
@@ -165,6 +168,10 @@ const Detail: React.FC = () => {
     };
 
     fetchProjectData();
+
+    return () => {
+      controller.abort(); // 컴포넌트 언마운트 시 요청 취소
+    };
   }, [pid, token, isChatting]);
 
   if (!project) return <div>Loading...</div>;
