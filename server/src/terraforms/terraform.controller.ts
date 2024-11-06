@@ -85,26 +85,29 @@ export class TerraformController {
     }
   }
 
-  @UseGuards(JwtAuthGuard)
   @Post('state')
-  async getState(@Body() deployDto: DeployDto, @Req() req) {
+  async getState(@Body() deployDto: DeployDto, @Req() req, @Res() res) {
     const controller = new AbortController();
     const signal = controller.signal;
+  
+    // 클라이언트 연결 종료 시 이벤트 감지
+    req.on('close', () => {
+      console.log('Client connection closed');
+      controller.abort(); // 비동기 작업 중단
+    });
   
     const email = req.user.email;
     const userInfo = await this.usersService.findOneByEmail(email);
     const userId = userInfo.UID;
   
     try {
-      // signal 객체를 서비스로 전달
       const result = await this.terraformService.getInfrastructureState(deployDto.CID, userId, signal);
-      return result;
+      return res.status(200).send(result);
     } catch (error) {
-      if (error.message === 'Request was aborted by the client') {
-        throw new BadRequestException('Request was aborted by the client');
+      if (signal.aborted) {
+        return res.status(400).send('Request was aborted by the client');
       }
-      throw new InternalServerErrorException(`Failed to retrieve state for CID: ${deployDto.CID}`);
+      return res.status(500).send(`Failed to retrieve state for CID: ${deployDto.CID}`);
     }
   }
-
 }

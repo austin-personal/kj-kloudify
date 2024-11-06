@@ -481,10 +481,15 @@ export class TerraformService {
     const awsCliPath = "C:/Program Files/Amazon/AWSCLIV2/aws";
 
     try {
-      // 요청 취소 시 로직 중단
+      // 요청 취소 시 로직 중단을 위한 이벤트 리스너 설정
       if (signal.aborted) {
         throw new Error('Request was aborted by the client');
       }
+
+      signal.addEventListener('abort', () => {
+        console.log('Request was aborted by the client');
+        throw new Error('Request was aborted by the client');
+      });
 
       // 상태 파일이 존재하는지 확인
       if (!fs.existsSync(stateFilePath)) {
@@ -499,14 +504,6 @@ export class TerraformService {
           AWS_SECRET_ACCESS_KEY: secretAccessKey,
         },
       };
-
-      // 1초마다 요청이 중단되었는지 확인하는 코드
-      const intervalId = setInterval(() => {
-        if (signal.aborted) {
-          clearInterval(intervalId);
-          throw new Error('Request was aborted by the client');
-        }
-      }, 1000);
 
       // Terraform state list 명령어 실행
       console.log(`Executing: terraform -chdir=${localTerraformPath} state list`);
@@ -530,7 +527,6 @@ export class TerraformService {
       // 각 리소스에 대해 비동기적으로 상태 확인
       await Promise.all(stateList.map(async resource => {
         if (signal.aborted) {
-          clearInterval(intervalId);
           throw new Error('Request was aborted by the client');
         }
 
@@ -582,7 +578,6 @@ export class TerraformService {
         }
       }));
 
-      clearInterval(intervalId); // 모든 작업이 완료되면 interval 정리
       console.log('Service states:', serviceStates);
 
       return {
