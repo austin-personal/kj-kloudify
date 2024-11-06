@@ -47,7 +47,7 @@ const defaultBotMessage: Message[] = [
 
 const Chat: React.FC<ChatProps> = ({ projectCID }) => {
   const templates = useTemplates();
-  const targetTemplateNames = ["서버", "데이터베이스", "스토리지", "네트워크"];
+  const targetTemplateNames = ["서버", "데이터베이스", "스토리지", "추가적인 네트워크 설정"];
 
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
