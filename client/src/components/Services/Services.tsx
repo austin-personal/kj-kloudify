@@ -55,13 +55,11 @@ const Services: React.FC<ServicesProps> = ({
 
   let serviceNames: string[] = [];
   if (chartCode) {
-    const chartString = `${chartCode
-      .map(
-        (code: string) =>
-          `${code.replace(/^\[|\]$/g, "").replace(/;/g, "\n  ")}`
-      )
-      .join("\n  ")}`;
-    // `[]` 안의 문자열 추출
+    const result = chartCode.map((code) => {
+      // 양 끝에 있는 대괄호 제거
+      return code.replace(/^\[|\]$/g, "");
+    });
+    const chartString = result[0];
     const matches = Array.from(chartString.matchAll(/\[(.*?)\]/g)).map(
       (match) => {
         const content = match[1];
