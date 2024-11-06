@@ -690,7 +690,7 @@ export class ConversationsService {
 
         // modelSwitchCounter가 6이 아닐 때만 추가
         if (modelSwitchCounter !== 6) {
-            finalText += `\n**[${fetchedKeywords.join(', ')}]`;
+            finalText += `\n**${fetchedKeywords.join(', ')}`;
         }
 
         // 인풋(사용자 입력)과 최종 텍스트 저장
