@@ -25,6 +25,7 @@ interface Message {
   subtext?: string;
   sender: "user" | "bot";
   buttons?: { id: number; label: string }[];
+  nobutton?: { id: number; label: string };
   checks?: { id: number; label: string }[];
   nocheck?: { id: number; label: string };
   servicechecks?: { id: number; label: string }[];
@@ -85,7 +86,6 @@ const Chat: React.FC<ChatProps> = ({ projectCID }) => {
         dispatch(deactivate())
         dispatch(clearFinishData())
         const initialMessages = await open(projectCID, token);
-        console.log("ㅁ널ㄴ먀ㅓ래ㅑㄴ머래ㅑㅁ너래ㅑ",initialMessages);
         setMessages(defaultBotMessage);
         if (initialMessages && initialMessages.length > 0) {
           let temp = -2;
@@ -137,6 +137,7 @@ const Chat: React.FC<ChatProps> = ({ projectCID }) => {
                 subtext: template?.subtext,
                 checks: isLastMessage ? template?.checks : undefined,
                 buttons: isLastMessage ? template?.buttons : undefined,
+                nobutton: isLastMessage ? template?.nobutton : undefined,
                 nocheck: isLastMessage ? template?.nocheck : undefined,
                 servicechecks: isLastMessage ? template?.servicechecks : undefined,
               });
@@ -218,7 +219,7 @@ const Chat: React.FC<ChatProps> = ({ projectCID }) => {
           message.sender === "bot" &&
           message.buttons
         ) {
-          return { ...message, buttons: undefined };
+          return { ...message, buttons: undefined, nobutton: undefined };
         }
         return message;
       });
@@ -329,6 +330,7 @@ const Chat: React.FC<ChatProps> = ({ projectCID }) => {
         subtext: template.subtext,
         sender: "bot",
         buttons: template.buttons,
+        nobutton: template.nobutton,
         checks: template.checks,
         nocheck: template.nocheck,
         servicechecks: template.servicechecks,
@@ -459,7 +461,7 @@ const Chat: React.FC<ChatProps> = ({ projectCID }) => {
     setMessages((prevMessages) =>
       prevMessages.map((msg) =>
         msg.id === messageId
-          ? { ...msg, buttons: undefined, checks: undefined, servicechecks: undefined }
+          ? { ...msg, buttons: undefined, nobutton: undefined, checks: undefined, servicechecks: undefined }
           : msg
       )
     );
@@ -614,19 +616,6 @@ const Chat: React.FC<ChatProps> = ({ projectCID }) => {
               {/* 체크박스가 존재하면 렌더링 */}
               {message.checks &&
                 <div className="checkbox-container-th">
-                  {message.checks.map((check) => (
-                    <label className="custom-checkbox" key={check.label}>
-                      <input
-                        type="checkbox"
-                        checked={selectedChecks[message.id]?.includes(check.label) || false}
-                        onChange={() =>
-                          handleCheckChange(message.id, check.label)
-                        }
-                      />
-                      <span className="checkbox-mark"></span>
-                      {check.label}
-                    </label>
-                  ))}
                   {message.nocheck && (
                     <label className="custom-checkbox" key={message.nocheck.label}>
                       <input
@@ -636,10 +625,27 @@ const Chat: React.FC<ChatProps> = ({ projectCID }) => {
                           message.nocheck?.label && handleCheckChange(message.id, message.nocheck?.label, true)
                         }
                       />
-                      <span className="checkbox-mark"></span>
-                      {message.nocheck.label}
+                      <svg viewBox="0 0 64 64" height="20px" width="20px">
+                        <path d="M 0 16 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 16 L 32 48 L 64 16 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 16" pathLength="575.0541381835938" className="path important-path-th"></path>
+                      </svg>
+                      <div className="important-check-message-th">{message.nocheck.label}</div>
                     </label>
                   )}
+                  {message.checks.map((check) => (
+                    <label className="custom-checkbox" key={check.label}>
+                      <input
+                        type="checkbox"
+                        checked={selectedChecks[message.id]?.includes(check.label) || false}
+                        onChange={() =>
+                          handleCheckChange(message.id, check.label)
+                        }
+                      />
+                      <svg viewBox="0 0 64 64" height="20px" width="20px">
+                        <path d="M 0 16 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 16 L 32 48 L 64 16 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 16" pathLength="575.0541381835938" className="path"></path>
+                      </svg>
+                      <div className="check-message-th">{check.label}</div>
+                    </label>
+                  ))}
                 </div>
               }
 
@@ -655,8 +661,11 @@ const Chat: React.FC<ChatProps> = ({ projectCID }) => {
                           handleCheckChange(message.id, check.label)
                         }
                       />
-                      <span className="checkbox-mark"></span>
-                      {check.label}
+                      <svg viewBox="0 0 64 64" height="20px" width="20px">
+                        <path d="M 0 16 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 16 L 32 48 L 64 16 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 16" pathLength="575.0541381835938" className="path"></path>
+                      </svg>
+                      <div className="check-message-th">{check.label}</div>
+
                     </label>
                   ))}
                 </div>
@@ -666,6 +675,18 @@ const Chat: React.FC<ChatProps> = ({ projectCID }) => {
               {message.subtext && (
                 <p className="template-sub-th">{message.subtext}</p>
               )}
+
+              {/* 노버튼이 존재하면 렌더링 */}
+              {message.nobutton && (
+                <button
+                  key={message.nobutton.id}
+                  className="important-template-btn-th"
+                  onClick={() => message.nobutton && handleButtonClick(message.id, message.nobutton)}
+                >
+                  {message.nobutton.label}
+                </button>
+              )}
+
 
               {/* 버튼이 존재하면 렌더링 */}
               {message.buttons &&

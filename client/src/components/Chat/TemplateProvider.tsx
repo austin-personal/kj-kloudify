@@ -6,6 +6,7 @@ export interface Template {
     text: string;
     subtext?: string;
     buttons?: { id: number; label: string }[];
+    nobutton?: { id: number; label: string };
     checks?: { id: number; label: string }[];
     nocheck?: { id: number; label: string };
     servicechecks?: { id: number; label: string }[];
@@ -16,7 +17,7 @@ const templates: Record<number, Template> = {
         header: "구조 설정",
         name: "template1-1",
         text: "먼저, 당신의 웹서비스에 대해 알고 싶어요. 당신의 웹 서비스의 주요 목적과 기능은 무엇인가요?",
-        subtext: "자유롭게 당신의 서비스를 설명해주세요."
+        subtext: "자세히 당신의 서비스를 설명해주세요."
     },
     3: {
         header: "구조 설정",
@@ -60,13 +61,14 @@ const templates: Record<number, Template> = {
             { id: 14, label: "서버" },
             { id: 15, label: "데이터베이스" },
             { id: 16, label: "스토리지" },
-            { id: 17, label: "네트워크" },
+            { id: 17, label: "추가적인 네트워크 설정" },
         ],
+        nocheck: { id: 1, label: "알아서 해줘" }
     },
     7: {
         header: "서버",
         name: "template2-1",
-        text: "애플리케이션의 워크로드 특성이 있나요? (다중선택)",
+        text: "서버는 어떤 특징이 필요하나요? (다중선택)",
         checks: [
             { id: 18, label: "CPU 집약적" },
             { id: 19, label: "Memory 집약적" },
@@ -79,12 +81,12 @@ const templates: Record<number, Template> = {
         header: "서버",
         name: "template2-2",
         text: "어떠한 서버 타입이 필요하시나요?",
+        nobutton: { id: 27, label: "알아서 해줘" },
         buttons: [
             { id: 23, label: "기본 서버" },
             { id: 24, label: "컨테이너 서버" },
             { id: 25, label: "배포, 관리, 확장 자동화 서버" },
-            { id: 26, label: "이벤트 기반 서버" },
-            { id: 27, label: "알아서 해줘" },
+            { id: 26, label: "이벤트 기반 서버" }
         ]
     },
     9: {
@@ -103,19 +105,20 @@ const templates: Record<number, Template> = {
         header: "데이터베이스",
         name: "template3-1",
         text: "데이터베이스 유형이 어떻게 되나요?",
+        nobutton: { id: 27, label: "알아서 해줘" },
         buttons: [
             { id: 33, label: "관계형 데이터베이스 (postgres)" },
             { id: 34, label: "관계형 데이터베이스 (MySQL)" },
             { id: 35, label: "NoSQL (완전 관리형)" },
             { id: 36, label: "NoSQL (MongoDB호환형)" },
-            { id: 37, label: "알아서 해줘" },
         ]
     },
     11: {
         header: "데이터베이스",
         name: "template3-2",
-        text: "추가적인 데이터베이스 정보를 알려주세요. 가장 중요한 가치는 무엇인가요?",
+        text: "추가적인 데이터베이스 정보를 알려주세요.\n 가장 중요한 가치는 무엇인가요?",
         buttons: [
+            { id: 1, label: "기본 설정" },
             { id: 38, label: "가격 최적화" },
             { id: 39, label: "고가용성" },
             { id: 40, label: "고성능" },
@@ -127,20 +130,20 @@ const templates: Record<number, Template> = {
         header: "스토리지",
         name: "template4-1",
         text: "스토리지의 사용 패턴은 어떻게 되나요?",
+        nobutton: { id: 27, label: "알아서 해줘" },
         buttons: [
+            { id: 44, label: "기본 접근" },
             { id: 43, label: "아주 가끔식만 접근" },
-            { id: 44, label: "평균 접근" },
-            { id: 45, label: "자주 접근" },
-            { id: 46, label: "알아서 해줘" },
         ],
     },
     13: {
         header: "스토리지",
         name: "template4-2",
         text: "스토리지의 사용 목적은 무엇인가요?",
+        nobutton: { id: 27, label: "알아서 해줘" },
         buttons: [
+            { id: 48, label: "기본 파일" },
             { id: 47, label: "미디어 저장 (사진, 동영상등등)" },
-            { id: 48, label: "파일(저장)" },
             { id: 49, label: "정적 웹호스팅" }
         ]
     },
@@ -161,6 +164,7 @@ const templates: Record<number, Template> = {
         name: "template5-1",
         text: "애플리케이션의 네트워크 요구사항은 무엇인가요? (다중선택)",
         checks: [
+            { id: 46, label: "기본 성능의 보안과 네트워크" },
             { id: 55, label: "추가적인 보안" },
             { id: 56, label: "퍼블릭 인터넷과 연결" }
         ],
