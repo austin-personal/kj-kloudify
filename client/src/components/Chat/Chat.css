@@ -145,7 +145,7 @@
   padding: 12.5px 30px;
   border: 0;
   border-radius: 100px;
-  background-color: #f5c8c0;
+  background-color: #fdc36d;
   font-weight: Bold;
   transition: all 0.5s;
   -webkit-transition: all 0.5s;
@@ -155,17 +155,52 @@
 }
 
 .important-template-btn-th:hover {
-  background-color: #f7d4cf;
+  background-color: #ffd28a;
   box-shadow: 0 0 20px #6fc5ff50;
+  animation: jello-horizontal 0.9s both;
   transform: scale(1.1);
 }
 
 .important-template-btn-th:active {
-  background-color: #f2a89c;
+  background-color: #ffbe6b;
   transition: all 0.25s;
   -webkit-transition: all 0.25s;
   box-shadow: none;
   transform: scale(0.98);
+}
+
+@keyframes jello-horizontal {
+  0% {
+    transform: scale3d(1, 1, 1);
+  }
+
+  30% {
+    transform: scale3d(1.2, 0.9, 1);
+  }
+
+  40% {
+    transform: scale3d(0.9, 1.2, 1);
+  }
+
+  50% {
+    transform: scale3d(1.2, 0.95, 1);
+  }
+
+  65% {
+    transform: scale3d(0.95, 1.2, 1);
+  }
+
+  75% {
+    transform: scale3d(1, 1.15, 1);
+  }
+
+  90% {
+    transform: scale3d(1.15, 1, 1);
+  }
+
+  100% {
+    transform: scale3d(1.1, 1.1, 1.1);
+  }
 }
 
 .template-sub-th {

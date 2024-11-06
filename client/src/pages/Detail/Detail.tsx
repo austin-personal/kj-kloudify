@@ -11,6 +11,8 @@ import { useTemplates } from "../../components/Chat/TemplateProvider";
 import { destroy, state } from "../../services/terraforms";
 import MermaidChart from "../../components/Mermaid/mermaid";
 import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
+import Lottie from "lottie-react";
+import Loadinganimation from "./LoadingService.json"
 
 interface Project {
   PID: number;
@@ -50,6 +52,7 @@ const Detail: React.FC = () => {
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
   const token = localStorage.getItem("token");
   const [isLoading, setIsLoading] = useState(true);
+  const [isStateLoading, setIsStateLoading] = useState(true);
   const [mermaidCode, setMermaidCode] = useState<string[]>([]);
   const [stateData, setStateData] = useState<{ [key: string]: any }>({});
   const [modalType, setModalType] = useState<string>(""); // 모달 타입을 구분하는 상태
@@ -66,8 +69,11 @@ const Detail: React.FC = () => {
             setProject(projectData);
             const mermaidTemp = await mermaid(Number(pid), token);
             setMermaidCode([mermaidTemp]);
+
+            setIsStateLoading(true);
             const stateTemp = await state(projectData.CID, token);
             setStateData(stateTemp);
+            setIsStateLoading(false);
           }
           // Chat history를 불러올 때 CID를 사용
           if (project?.CID && isChatting && isLoading) {
@@ -228,9 +234,8 @@ const Detail: React.FC = () => {
             className={`previous-chatting-th ${isChatting ? "open" : "close"}`}
           >
             {isLoading ? (
-              <div className="loading-indicator">
-                <div className="spinner"></div> {/* 로딩 스피너 */}
-                <p>Loading chat history...</p>
+              <div className="detail-loading-chat">
+                <Lottie animationData={Loadinganimation} style={{ width: "200px", height: "200px" }} />
               </div>
             ) : (
               <div className="chat-history">
@@ -248,13 +253,17 @@ const Detail: React.FC = () => {
           </div>
           <div className="service-status-th">
             <h3>Service Status</h3>
-            <div className="service-status-list">
-              {Object.entries(stateData).map(([key, value]) => (
-                <div key={key} className="service-status-item">
-                  {value.resourceType} : {value.isRunning ? "Running" : "Stopped"}
-                </div>
-              ))}
-            </div>
+            {isStateLoading ? ( // 로딩 중일 때 스피너 표시
+              <Lottie animationData={Loadinganimation} style={{ width: "200px", height: "200px" }} />
+            ) : (
+              <div className="service-status-list">
+                {Object.entries(stateData).map(([key, value]) => (
+                  <div key={key} className="service-status-item">
+                    {value.resourceType} : {value.isRunning ? "Running" : "Stopped"}
+                  </div>
+                ))}
+              </div>
+            )}
             {/* <DonutChart slices={[25, 35, 40]} /> */}
           </div>
         </div>
