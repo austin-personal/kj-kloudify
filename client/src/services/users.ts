@@ -23,7 +23,7 @@ export const login = async (email: string, password: string) => {
     try {
         // 태현 api 주소 확인!!!
         console.log("뭐냐이거", process.env)
-        console.log("변수값은",email,password);
+        console.log("변수값은", email, password);
         const response = await axios.post(`${API_URL}/login`, {
             email,
             password,
@@ -51,3 +51,16 @@ export const info = async (token: string) => {
     }
 };
 // 프로필 페이지
+
+export const checkEmail = async (email: string) => {
+    try {
+        // 태현 api 주소 확인!!!
+        const response = await axios.post(`${API_URL}/check-email`, {
+            email
+        });
+    return response.data;
+} catch (error) {
+    console.error('유저 중복 개박살!! :', error);
+    throw error;
+}
+};

@@ -37,25 +37,27 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignup }) => {
       </div>
       <form className="login-form" onSubmit={handleLogin}>
         <input
+          className="login-form-input"
           type="id"
           placeholder="이메일을 입력하세요"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
         <input
+          className="login-form-input"
           type="password"
           placeholder="비밀번호를 입력하세요"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <button type="submit">로그인</button>
+        <button className="login-form-button" type="submit">로그인</button>
       </form>
       <div className="separator">
         <hr className="line" />
         <div>또는</div>
         <hr className="line" />
       </div>
-      <button className="google-login">
+      <button className="login-form-button google-login">
         {" "}
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -81,7 +83,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignup }) => {
         </svg>
         Google로 로그인
       </button>
-      <div className="auth-signup">
+      <div className="auth-login">
         계정이 없으신가요?{" "}
         <span className="signup-toggle" onClick={onSwitchToSignup}>
           가입하기
