@@ -512,7 +512,7 @@ export class ConversationsService {
                     answer = nextTemplate + updatedResponse;
                 }
 
-                await this.saveConversation(CID, user_question, nextTemplate);
+                await this.saveConversation(CID, user_question, answer);
 
                 return {
                     ...parsedResponse,
