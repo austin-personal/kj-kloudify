@@ -22,6 +22,7 @@ const MermaidChart: React.FC<MermaidChartProps> = ({ chartCode }) => {
     // 양 끝에 있는 대괄호 제거
     return code.replace(/^\[|\]$/g, "");
   });
+
   const chartString =
     result[0] ||
     `flowchart LR
@@ -34,7 +35,6 @@ const MermaidChart: React.FC<MermaidChartProps> = ({ chartCode }) => {
   const togglePopup = () => {
     setIsDetails(!isDetails);
   };
-
   const svgRef = useRef<d3.Selection<
     SVGSVGElement,
     unknown,
@@ -88,11 +88,19 @@ const MermaidChart: React.FC<MermaidChartProps> = ({ chartCode }) => {
             const paragraphsWithImages = element.querySelectorAll(
               "#mermaid p:has(img)"
             );
+
+            const serviceNames = Array.from(
+              chartString.matchAll(/(\b\w+)(?=\s*\[<img\s)/g)
+            ).map((match) => match[1]);
+            // console.log("서비스 이름:", serviceNames);
+
             paragraphsWithImages.forEach((paragraph, index) => {
               let textContent = paragraph.textContent || "";
               console.log("정규식 전:", textContent);
-              const serviceName = extractServiceName(textContent);
+              const serviceName = extractServiceName(serviceNames[index]);
+              textContent = extractServiceName(textContent);
               console.log("정규식 후:", serviceName);
+              console.log("정규식 후2:", textContent);
 
               const imgElement = paragraph.querySelector("img");
               const imgSrc = (imgElement as HTMLImageElement).src;
@@ -104,16 +112,16 @@ const MermaidChart: React.FC<MermaidChartProps> = ({ chartCode }) => {
               try {
                 (
                   imgElement as HTMLImageElement
-                ).src = require(`../../img/aws-icons/${serviceName}.svg`);
+                ).src = require(`../../img/aws-icons/${
+                  serviceName || textContent
+                }.svg`);
                 (imgElement as HTMLImageElement).style.width = "35.5px";
                 (imgElement as HTMLImageElement).style.height = "35.5px";
-                // console.log(
-                //   `잘? ${index + 1} img src: ${
-                //     (imgElement as HTMLImageElement).src
-                //   }`
-                // );
               } catch (error) {
-                console.log("????");
+                console.error(
+                  `이미지를 로드할 수 없습니다: ${serviceName}`,
+                  error
+                );
                 (imgElement as HTMLImageElement).src =
                   require(`../../img/aws-icons/default.svg`).default;
               }

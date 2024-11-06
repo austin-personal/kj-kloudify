@@ -68,10 +68,13 @@ export const awsServices = [
   "Spot-Instances",
   "Cost-Explorer",
   "Read-Replica",
+  "Elastic-IP",
 ];
 
 // 약어와 원본 매핑 객체
 const serviceAliases = {
+  Internet: "Internet-Gateway",
+  ELP: "Elastic-IP",
   ElasticLoadBalancing: "ELB",
   ELB: "ELB", // 다른 약어도 추가 가능
   ECR: "Elastic-Container-Registry",
@@ -111,6 +114,7 @@ export function extractServiceName(text) {
     `\\b(${awsServices.map((name) => name).join("|")})\\b`,
     "i"
   );
+  console.log("text:", regex);
   const match = normalizedText.match(regex);
   return match ? match[0] : null;
 }

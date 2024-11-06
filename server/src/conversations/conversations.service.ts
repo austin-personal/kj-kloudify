@@ -501,7 +501,7 @@ export class ConversationsService {
                 let answer = '';
 
                 if (nextTemplate === 'template6-1'){
-                    answer = nextTemplate + updatedResponse;
+                    answer = nextTemplate;
                 } else {
                     answer = nextTemplate + updatedResponse;
                 }
@@ -673,19 +673,16 @@ export class ConversationsService {
         let fetchedKeywords: string[] = [];
 
         // CID로 저장된 키워드 조회
-        if(modelSwitchCounter != 6){
-            fetchedKeywords = await this.fetchMermaidByCID(CID);
-        }else{
-            fetchedKeywords = await this.fetchKeywordsByCID(CID);
-        }
+
+        fetchedKeywords = await this.fetchMermaidByCID(CID);
+
 
         // 최종적으로 텍스트 끝에 키워드 리스트 추가
         let finalText = updatedText;
 
-        // modelSwitchCounter가 6이 아닐 때만 추가
-        if (modelSwitchCounter !== 6) {
-            finalText += `\n**${fetchedKeywords.join(', ')}`;
-        }
+
+        finalText += `\n**${fetchedKeywords.join(', ')}`;
+
 
         // 인풋(사용자 입력)과 최종 텍스트 저장
         // await this.saveConversation(CID, inputText, finalText);
