@@ -97,3 +97,19 @@ export const mermaid = async (pid: number, token: string | null) => {
         throw error;
     }
 };
+
+//summeray 가져오기
+export const projectSummary = async (cid: number, token: string | null) => {
+    try {
+        // 태현 api 주소 확인!!!
+        const response = await axios.get(`${API_URL}/${cid}/summary`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        return response.data.code[0].mermaid;
+    } catch (error) {
+        console.error('summary 개박살!! :', error);
+        throw error;
+    }
+};

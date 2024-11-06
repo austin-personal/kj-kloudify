@@ -18,12 +18,6 @@ interface Project {
   ARCTID: number;
   projectName: string;
   createdDate: string;
-  services: {
-    id: number;
-    name: string;
-    status: string;
-    price: number;
-  }[];
 }
 
 interface ChatMessage {
@@ -56,6 +50,7 @@ const Detail: React.FC = () => {
   const token = localStorage.getItem("token");
   const [isLoading, setIsLoading] = useState(true);
   const [mermaidCode, setMermaidCode] = useState<string[]>([]);
+  const [stateData, setStateData] = useState<{ [key: string]: any }>({});
   useEffect(() => {
     const fetchProjectData = async () => {
       try {
@@ -64,6 +59,11 @@ const Detail: React.FC = () => {
             const response = await projectOneInfo(Number(pid), token);
             const projectData = response.data;
             setProject(projectData);
+            const stateTemp = await state(projectData.CID, token);
+            console.log("십", stateTemp);
+            const mermaidTemp = await mermaid(Number(pid), token);
+            setStateData(stateTemp);
+            setMermaidCode([mermaidTemp]);
           }
           // Chat history를 불러올 때 CID를 사용
           if (project?.CID && isChatting && isLoading) {
@@ -71,10 +71,7 @@ const Detail: React.FC = () => {
               setIsLoading(false);
             });
           }
-          const response = await state(project?.CID, token);
-          console.log("제대로 왔냐? ",response);
-          const mermaidTemp = await mermaid(Number(pid), token);
-          setMermaidCode([mermaidTemp]);
+
         }
       } catch (error) {
         console.error("프로젝트 정보를 가져오는 중 오류 발생:", error);
@@ -91,15 +88,15 @@ const Detail: React.FC = () => {
             // userMessage에서 - 이후의 부분만 가져오기
             const parsedUserMessage = msg.userMessage.includes("-")
               ? msg.userMessage
-                  .slice(msg.userMessage.lastIndexOf("-") + 1)
-                  .trim()
+                .slice(msg.userMessage.lastIndexOf("-") + 1)
+                .trim()
               : msg.userMessage;
 
             // '/'가 포함되어 있다면 '/' 앞에 있는 부분만 가져오기
             const finalParsedMessage = parsedUserMessage.includes("/")
               ? parsedUserMessage
-                  .slice(0, parsedUserMessage.indexOf("/"))
-                  .trim()
+                .slice(0, parsedUserMessage.indexOf("/"))
+                .trim()
               : parsedUserMessage;
 
             // botResponse에서 ** 이전의 부분만 가져오기
@@ -154,7 +151,7 @@ const Detail: React.FC = () => {
           });
           setChatHistory(formattedChat);
         }
-      } catch (error) {}
+      } catch (error) { }
     };
 
     fetchProjectData();
@@ -180,9 +177,8 @@ const Detail: React.FC = () => {
             <FontAwesomeIcon className="bot-icon" icon={faCloud} />
           </button>
           <div
-            className={`previous-chat-explanation-th  ${
-              isChatting ? "hide" : "visible"
-            }`}
+            className={`previous-chat-explanation-th  ${isChatting ? "hide" : "visible"
+              }`}
           >
             Previous chat
           </div>
@@ -201,9 +197,8 @@ const Detail: React.FC = () => {
                 {chatHistory.map((message) => (
                   <div
                     key={message.id}
-                    className={`chat-message ${
-                      message.sender === "bot" ? "bot-message" : "user-message"
-                    }`}
+                    className={`chat-message ${message.sender === "bot" ? "bot-message" : "user-message"
+                      }`}
                   >
                     <span>{message.text}</span>
                   </div>
@@ -213,17 +208,18 @@ const Detail: React.FC = () => {
           </div>
           <div className="service-status-th">
             <h3>Service Status</h3>
-            <DonutChart slices={[25, 35, 40]} />
-            {project.services?.map((service) => (
-              <div key={service.id} className={`service ${service.status}`}>
-                {service.name}: {service.status}
-              </div>
-            ))}
+            <div className="service-status-list">
+              {Object.entries(stateData).map(([key, value]) => (
+                <div key={key} className="service-status-item">
+                  {value.resourceType} : {value.isRunning ? "Running" : "Stopped"}
+                </div>
+              ))}
+            </div>
+            {/* <DonutChart slices={[25, 35, 40]} /> */}
           </div>
         </div>
         <div className="architecture-box">
           <MermaidChart chartCode={mermaidCode}></MermaidChart>
-          {/* 스크린샷 들어갈 예정 */}
         </div>
       </div>
     </div>
