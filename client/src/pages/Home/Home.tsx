@@ -9,6 +9,7 @@ import { projectOneInfo } from "../../services/projects";
 import { review } from "../../services/terraforms";
 
 import { setReviewReady, setHasSecret } from "../../store/loadingSlice";
+import { clearFinishData } from "../../store/finishDataSlice";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 
 interface Project {
@@ -32,9 +33,9 @@ const Home: React.FC = () => {
   const [project, setProject] = useState<Project | null>(null);
   const [loading, setLoading] = useState(true);
   const { pid } = useParams<{ pid: string }>();
-  
+
   const token = localStorage.getItem("token");
-  
+
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const finishData = useAppSelector((state) => state.finishData.finishData);
@@ -63,7 +64,7 @@ const Home: React.FC = () => {
         setLoading(false);
       }
     };
-
+    dispatch(clearFinishData());
     fetchProjectData();
   }, [pid, navigate, dispatch]);
 
@@ -112,9 +113,7 @@ const Home: React.FC = () => {
         <div className="review-btn-container">
           <button
             onClick={handleFinish}
-            className={`review-btn-${
-              !isActive ? "disabled" : "enabled"
-            }`}
+            className={`review-btn-${!isActive ? "disabled" : "enabled"}`}
             disabled={!isActive}
           >
             Review
