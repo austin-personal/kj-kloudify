@@ -5,16 +5,20 @@
   background-color: #f2eed1;
   border-radius: 8px;
   height: 590px;
-  width: 440px;
+  width: 500px;
   border: solid 1px rgb(160, 158, 138, 0.5);
   color: #312d26;
+}
+
+.auth-form h2 {
+  margin-top: 0px;
 }
 
 .login-form {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 326px;
+  width: 450px;
   color: #312d26;
 }
 
@@ -26,6 +30,7 @@
   margin-bottom: 32px;
   margin-top: 80px;
 }
+
 .auth-icon {
   font-size: 54px;
   color: #fdc36d;
@@ -46,10 +51,10 @@
   margin-top: 100px;
 }
 
-.login-form input {
+.login-form-input {
   padding-left: 20px;
   box-sizing: border-box;
-  width: 326px;
+  width: 370px;
   outline: none;
   margin: 5px 0;
   height: 43px;
@@ -64,22 +69,18 @@
   opacity: 0.5;
 }
 
-.auth-form button {
+.login-form-button {
   font-family: "NanumSquareRound", sans-serif;
   font-size: 22px;
-  width: 326px;
-  border-radius: 8px;
-  padding: 10px 20px;
-  height: 43px;
-  cursor: pointer;
-}
-
-.login-form button {
-  margin-top: 30px;
-  font-family: "NanumSquareRound", sans-serif;
   font-weight: bold;
-  background-color: #fdc36d;
+  width: 370px;
+  height: 43px;
   border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  margin-top: 30px;
+  padding: 10px 20px;
+  cursor: pointer;
+  background-color: #fdc36d;
 }
 
 .login-form button:hover {
@@ -88,30 +89,36 @@
 
 .separator {
   display: flex;
-  align-items: center; /* 요소들을 수평으로 정렬 */
-  justify-content: center; /* 가운데에 텍스트 배치 */
-  width: 326px;
+  align-items: center;
+  /* 요소들을 수평으로 정렬 */
+  justify-content: center;
+  /* 가운데에 텍스트 배치 */
+  width: 370px;
   margin: 20px 0;
   font-size: 22px;
   color: rgba(0, 0, 0, 20%);
 }
 
 .separator .line {
-  flex-grow: 1; /* 선이 양쪽으로 균등하게 늘어나게 함 */
+  flex-grow: 1;
+  /* 선이 양쪽으로 균등하게 늘어나게 함 */
   height: 1px;
   border: 0;
   background-color: rgba(0, 0, 0, 20%);
-  margin: 0 10px; /* 선과 텍스트 사이의 여백 */
+  margin: 0 10px;
+  /* 선과 텍스트 사이의 여백 */
 }
 
 .google-login {
   display: flex;
-  justify-content: center; /* 가운데에 텍스트 배치 */
+  justify-content: center;
+  /* 가운데에 텍스트 배치 */
   background-color: #ffffff;
   color: #312d26;
   font-weight: bold;
   border: none;
   box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 13%);
+  margin-top: 0px;
 }
 
 .google-login svg {
@@ -119,14 +126,14 @@
   height: 100%;
 }
 
+.auth-login {
+  font-size: 20px;
+  margin-top: 50px;
+}
+
 .auth-signup {
   font-size: 20px;
   margin-top: 60px;
-}
-
-.auth-login {
-  font-size: 20px;
-  margin-top: 120px;
 }
 
 .signup-toggle,
@@ -134,4 +141,74 @@
   font-weight: bold;
   cursor: pointer;
   color: #6b3ed4;
+}
+
+.email-check-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 370px;
+}
+
+.email-input-th {
+  padding-left: 20px;
+  box-sizing: border-box;
+  width: 270px;
+  outline: none;
+  margin: 5px 0;
+  height: 43px;
+  border: solid 1px #d6d6d6;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  font-size: 22px;
+}
+
+.email-btn-th {
+  font-family: "NanumSquareRound", sans-serif;
+  font-size: 22px;
+  font-weight: bold;
+  width: 326px;
+  height: 43px;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  cursor: pointer;
+  padding: 10px 20px;
+  background-color: #fdc36d;
+  margin-left: 10px;
+}
+
+.input-container-th {
+  position: relative;
+  margin-bottom: 10px;
+}
+
+.error-space {
+  padding: 0 10px;
+  width: 360px;
+  height: 20px; /* 에러 메시지 표시 공간 */
+}
+
+.error-message-th {
+  color: #e74c3c;
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+.signup-title-th {
+  font-size: 36px;
+  font-weight: bold;
+  margin: 30px 0;
+}
+
+.signup-button-th {
+  font-family: "NanumSquareRound", sans-serif;
+  font-size: 22px;
+  font-weight: bold;
+  width: 370px;
+  height: 43px;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  padding: 10px 20px;
+  cursor: pointer;
+  background-color: #fdc36d;
 }
