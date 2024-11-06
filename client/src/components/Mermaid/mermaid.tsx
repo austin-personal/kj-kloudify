@@ -137,7 +137,7 @@ const MermaidChart: React.FC<MermaidChartProps> = ({ chartCode }) => {
               // 원하는 스타일 속성 적용
               (nodeDiv as HTMLElement).style.lineHeight = "1"; // 예시로 높이 설정
               (nodeDiv as HTMLElement).style.flex = "1"; // 예시로 높이 설정
-              (nodeDiv as HTMLElement).style.position = "absolute";
+              // (nodeDiv as HTMLElement).style.position = "absolute";
               (nodeDiv as HTMLElement).style.height = "100%";
               // 추가 스타일 설정 가능
             });

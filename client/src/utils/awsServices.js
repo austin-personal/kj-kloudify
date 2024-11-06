@@ -63,6 +63,11 @@ export const awsServices = [
   "ELB",
   "User",
   "API-Gateway",
+  "NAT-Gateway",
+  "Systems-Manager",
+  "Spot-Instances",
+  "Cost-Explorer",
+  "Read-Replica",
 ];
 
 // 약어와 원본 매핑 객체
@@ -73,13 +78,13 @@ const serviceAliases = {
   ECS: "Elastic-Container-Service",
   EBS: "Elastic-Block-Store",
   "Security Groups": "Security-Group",
-  "Security Group": "Security-Group",
-  "Network ACL": "NACL",
+  // "Security Group": "Security-Group",
+  // "Network ACL": "NACL",
   "Network ACLs": "NACL",
-  "Auto Scaling": "Auto-Scaling",
-  "Internet Gateway": "Internet-Gateway",
+  // "Auto Scaling": "Auto-Scaling",
+  // "Internet Gateway": "Internet-Gateway",
   Users: "User",
-  "API Gateway": "API-Gateway",
+  // "API Gateway": "API-Gateway",
 };
 
 // 매핑된 키로 변환하는 함수
