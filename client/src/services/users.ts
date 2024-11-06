@@ -58,7 +58,7 @@ export const checkEmail = async (email: string) => {
         const response = await axios.post(`${API_URL}/check-email`, {
             email
         });
-    return response.data;
+    return response.data.exists;
 } catch (error) {
     console.error('유저 중복 개박살!! :', error);
     throw error;

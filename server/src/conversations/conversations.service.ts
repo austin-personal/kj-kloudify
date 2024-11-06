@@ -26,7 +26,7 @@ export class ConversationsService {
         let modelSwitchCounter = await this.getModelSwitchCounter(CID);
         console.log(`현재 modelSwitchCounter 값: ${modelSwitchCounter}`);
         modelSwitchCounter += 1;
-    
+
         await this.saveModelSwitchCounter(CID, modelSwitchCounter);
         console.log(`증가된 modelSwitchCounter 값: ${modelSwitchCounter}`);
     }
@@ -43,11 +43,11 @@ export class ConversationsService {
         } else if (action === '데이터베이스') {
             modelSwitchCounter = 2; // double의 경우 두 배로 설정
         } else if (action === '스토리지') {
-            modelSwitchCounter = 3; 
+            modelSwitchCounter = 3;
         } else if (action === '네트워크') {
-            modelSwitchCounter = 4; 
+            modelSwitchCounter = 4;
         } else {
-            modelSwitchCounter = 6; 
+            modelSwitchCounter = 6;
         }
 
         await this.saveModelSwitchCounter(CID, modelSwitchCounter);
@@ -93,30 +93,20 @@ export class ConversationsService {
 
         switch (modelSwitchCounter) {
             case 0: // 인트로 오식이
-                return `당신은 사용자의 요구에 맞는 AWS 아키텍처 설계를 돕는 전문 안내자 역할을 합니다.
+                return `당신은 사용자의 요구에 맞춘 AWS 아키텍처 설계를 지원하는 전문가입니다.
 
-                        목표는 사용자의 요구 사항을 파악하여, 필요한 AWS 서비스의 종류와 개수를 결정하고 이를 구조화하여 mermaid 코드로 나타내는 것입니다.
-                        사용자의 요구에 맞는 가장 적절한 구조를 구성해야 합니다.
-                        대화 내역을 전부 참고하여 질문에 맞지 않는 대답이 있다면 해당 질문을 다시 되물어서 정확한 정보를 얻도록 해주세요.
-                        대화 내역을 참고한 결과 필요한 서비스를 어느정도 구성할 수 있다면 구성한 서비스를 보여주며 이대로 진행할꺼냐고 물어봐주세요.
-                        서비스를 구성하는데 필수적인 기능만 최소한으로 표현해주고 선택적인 서비스는 별도로 표시하며 추천만 해서 사용자가 원할경우 추가로 선택할 수 있도록 하세요.
-                        사용자가 선택적인 서비스에 대해 별도로 언급하지 않으면, 사용하지 않는것으로 간주해주세요.
-
-                        마지막으로 구성된 정보가 마무리되었다면 Mermaid 코드를 생성할 때 다음 규칙을 따라주세요:
-                        1. graph LR으로 시작하세요
-                        2. AWS 아키텍처의 논리적 구성요소(VPC, 서브넷 등)는 subgraph로 영역을 구분하여 표현하세요:
-                        - Public/Private 서브넷
-                        - 가용영역(AZ)
-                        - VPC 경계
-                        각 영역은 style 명령어로 배경색과 테두리를 구분하여 시각화하세요
-                        3. 각 AWS 서비스는 다음 형식으로 노드를 생성하세요:
+                        사용자의 요구 사항을 파악하여 필요한 AWS 서비스의 종류와 개수를 결정하고, 이를 구조화합니다.
+                        대화 중 사용자 질문에 맞지 않는 응답이 있다면 다시 질문하여 정확한 정보를 얻습니다.
+                        대화를 통해 필요한 AWS 서비스 구성이 명확해지면 해당 구성을 제안하고, 그대로 진행할지 사용자에게 확인합니다.
+                        필수 기능만 포함하여 최소한의 서비스로만 구성합니다. 선택적인 기능은 추가하지 않습니다.
+                        구성이 완료되면 다음 규칙에 따라 결과를 생성합니다:
+                        graph LR로 시작합니다.
+                        VPC, 서브넷 등의 논리적 구성요소는 subgraph로 구분하여 표현하며, Public/Private 서브넷, VPC 경계 등을 나누고 style 명령어로 영역을 시각화합니다.
+                        각 AWS 서비스 노드는 다음 형식으로 작성합니다:
                         serviceName[<img src='https://icon.icepanel.io/AWS/svg/ServiceName.svg'><br>ServiceName]
-                        4. 노드 간의 관계는 화살표로 표현하세요(-->)
-                        5. 코드 시작 전에 **를 붙여주세요
-
-                        사용자가 선택적인 서비스에 대해 별도로 언급하지 않으면, 사용하지 않는것으로 간주해주세요.
-                        구성이 완료되고 사용자가 이대로 진행을 요청하면 다른 텍스트 없이 mermaid 코드만 한 줄로 출력해주세요.
-                        mermaid 코드의 존재나 특성에 대해 별도로 언급하지 마세요.`;
+                        코드 내 객체가 정렬되도록 생성하며, 화살표는 최대한 곡선 없이 직선으로 표현합니다.
+                        코드 시작 전에 **를 붙여줍니다.
+                        구성이 완료되고 사용자가 진행 요청 시 코드만 출력합니다.`;
 
             case 1:
                 return `당신은 사용자의 요구에 맞는 AWS 아키텍처 설계를 돕는 전문 안내자 역할을 합니다. 그 중 서버담당자입니다.
@@ -134,7 +124,7 @@ export class ConversationsService {
 
                         구성이 완료되고 사용자가 이대로 진행을 요청을 하게되면 "다른 텍스트 없이" mermaid코드만 **을 붙여서 출력해주세요.
                         mermaid 코드의 존재나 특성에 대해 별도로 언급하지 마세요.`;
-                        
+
             case 2:
                 return `당신은 사용자의 요구에 맞는 AWS 아키텍처 설계를 돕는 전문 안내자 역할을 합니다. 그 중 데이터베이스 담당자입니다.
 
@@ -151,7 +141,7 @@ export class ConversationsService {
 
                         구성이 완료되고 사용자가 이대로 진행을 요청을 하게되면 "다른 텍스트 없이" mermaid코드만 **을 붙여서 출력해주세요.
                         mermaid 코드의 존재나 특성에 대해 별도로 언급하지 마세요.`;
-                        
+
             case 3:
                 return `당신은 사용자의 요구에 맞는 AWS 아키텍처 설계를 돕는 전문 안내자 역할을 합니다. 그 중 스토리지 담당자입니다.
 
@@ -168,7 +158,7 @@ export class ConversationsService {
 
                         구성이 완료되고 사용자가 이대로 진행을 요청을 하게되면 "다른 텍스트 없이" mermaid코드만 **을 붙여서 출력해주세요.
                         mermaid 코드의 존재나 특성에 대해 별도로 언급하지 마세요.`;
-                        
+
             case 4:
                 return `당신은 사용자의 요구에 맞는 AWS 아키텍처 설계를 돕는 전문 안내자 역할을 합니다. 그 중 네트워크 담당자입니다.
 
@@ -185,7 +175,7 @@ export class ConversationsService {
 
                         구성이 완료되고 사용자가 이대로 진행을 요청을 하게되면 "다른 텍스트 없이" mermaid코드만 **을 붙여서 출력해주세요.
                         mermaid 코드의 존재나 특성에 대해 별도로 언급하지 마세요.`;
-                        
+
 
             case 5:  // 안쓰는 번호
                 return "이 프롬프트는 도달할 수 없습니다. 만약 이 메세지를 보게된다면 도망가십시오.";
@@ -300,7 +290,7 @@ export class ConversationsService {
         }
 
         let modelSwitchCounter = await this.getModelSwitchCounter(CID);
-        
+
 
 
         // 특정 입력에 대한 템플릿 응답 설정 - 여기선 해당 질문에 좌표 찍어주는 역할
@@ -311,7 +301,7 @@ export class ConversationsService {
             '추가적인 무언가가 필요한가요': 'template1-5',
             // '당신의 웹서비스는 어떤 클라우드 기술이 필요한가요': '질문의 끝',
 
-            '애플리케이션의 워크로드 특성이 있나요': 'template2-2',
+            '서버는 어떤 특징이 필요하나요': 'template2-2',
             '어떠한 서버 타입이 필요하시나요': 'template2-3',
             // '가장 중요한 가치는 무엇인가요': '질문의 끝',
 
@@ -323,7 +313,7 @@ export class ConversationsService {
             // '스토리지에서 가장 중요한 가치는 무엇인가요': '질문의 끝',
 
             // '애플리케이션의 네트워크 요구사항은 무엇인가요': '마지막 질문',
-            '계활' : "컨텍스트 스위칭",
+            '계활': "컨텍스트 스위칭",
             '특정텍스트1': '컨텍스트 스위칭' // 여기서 답변 매칭해줌
         };
 
@@ -355,8 +345,8 @@ export class ConversationsService {
             let mermaid1: string[] = [];
 
             mermaid1 = await this.fetchMermaidByCID(CID);
-            
-            console.log("템플릿 머메이드가 찍히나?",`\n**${mermaid1.join(', ')}`);
+
+            console.log("템플릿 머메이드가 찍히나?", `\n**${mermaid1.join(', ')}`);
 
             // 템플릿 응답 반환
             try {
@@ -387,7 +377,7 @@ export class ConversationsService {
                 if (slashIndex !== -1) { // / 기준으로 자르기
                     textAfterDash = textAfterDash.substring(0, slashIndex).trim();
                 }
-                
+
                 // "선택" 글자 제거
                 textAfterDash = textAfterDash.replace(/ 선택/g, '').trim();
 
@@ -478,11 +468,11 @@ export class ConversationsService {
 
                 let nextItem = globalMatrix.shift();
                 this.saveStateData(CID, globalMatrix);
-                if (!nextItem){
+                if (!nextItem) {
                     nextItem = "끝";
                 }
                 let nextTemplate = '';
-            
+
                 // nextItem에 따라 nextTemplate 설정
                 if (nextItem === '서버') {
                     nextTemplate = 'template2-1';
@@ -496,11 +486,11 @@ export class ConversationsService {
                     nextTemplate = 'template6-1';
                 }
 
-                this.updateModelCounter(CID,nextItem);
+                this.updateModelCounter(CID, nextItem);
 
                 let answer = '';
 
-                if (nextTemplate === 'template6-1'){
+                if (nextTemplate === 'template6-1') {
                     answer = nextTemplate;
                 } else {
                     answer = nextTemplate + updatedResponse;
@@ -590,12 +580,12 @@ export class ConversationsService {
         if (!text) {
             return { keywords: [], updatedText: '' };
         }
-    
+
         // 줄바꿈 문자를 포함하여 문자열 끝까지 매치
         const regex = /\*\*(.*)$/s;
         const keywords: string[] = [];
         let match = text.match(regex);
-    
+
         if (match) {
             keywords.push(match[1].trim());
             // '**'부터 문자열 끝까지 제거
@@ -610,7 +600,7 @@ export class ConversationsService {
     // 기존 키워드를 누적하지 않고 새로운 키워드로 덮어쓰는 함수
     async saveKeywords(keywords: string[], CID: number): Promise<void> {
         const newKeywords = keywords.join(', ');
-    
+
         const params = {
             TableName: 'Archboard_keyword',
             Key: { CID: CID },
@@ -624,7 +614,7 @@ export class ConversationsService {
                 ':timestamp': new Date().toISOString(),
             }
         };
-    
+
         try {
             await this.dynamoDB.update(params).promise();
             console.log(`키워드 저장 성공: ${newKeywords}`);
@@ -638,7 +628,7 @@ export class ConversationsService {
         // 새로운 키워드를 문자열로 결합
         const newKeywords = keywords.join(', ');
 
-        
+
         const params = {
             TableName: 'Archboard_keyword',
             Item: {
@@ -655,7 +645,7 @@ export class ConversationsService {
             console.error(`키워드 저장 실패: ${error.message}`);
         }
     }
-    
+
     async processTextAndAddKeywords(outputText: string, inputText: string, CID: number, modelSwitchCounter: number): Promise<string> {
 
         // 키워드 추출 및 텍스트 업데이트
@@ -663,7 +653,7 @@ export class ConversationsService {
         const { keywords, updatedText } = result;
 
         if (keywords.length > 0) {
-            if (modelSwitchCounter != 6){
+            if (modelSwitchCounter != 6) {
                 await this.saveMermaid(keywords, CID);
             } else {
                 await this.saveKeywords(keywords, CID);
@@ -701,7 +691,7 @@ export class ConversationsService {
         if (!result.Items || result.Items.length === 0) {
             return [];
         }
-        
+
         return result.Items.map(item => item.keyword);
     }
 
@@ -716,7 +706,7 @@ export class ConversationsService {
         if (!result.Items || result.Items.length === 0) {
             return [];
         }
-        
+
         return result.Items.map(item => item.mermaid);
     }
 
@@ -744,7 +734,7 @@ export class ConversationsService {
                 ':stateData': stateData,
             },
         };
-    
+
         try {
             await this.dynamoDB.update(params).promise();
             console.log(`CID ${CID}의 stateData가 저장되었습니다.`);
@@ -760,7 +750,7 @@ export class ConversationsService {
             Key: { CID: CID },
             ProjectionExpression: 'stateData',
         };
-    
+
         try {
             const result = await this.dynamoDB.get(params).promise();
             if (result.Item && result.Item.stateData) {
@@ -779,7 +769,7 @@ export class ConversationsService {
             Key: { CID: CID },
             ProjectionExpression: 'modelSwitchCounter',
         };
-    
+
         try {
             const result = await this.dynamoDB.get(params).promise();
             if (result.Item && result.Item.modelSwitchCounter !== undefined) {
@@ -792,7 +782,7 @@ export class ConversationsService {
             throw new Error('modelSwitchCounter 조회 실패');
         }
     }
-    
+
 
     async saveModelSwitchCounter(CID: number, modelSwitchCounter: number): Promise<void> {
 
@@ -870,5 +860,5 @@ export class ConversationsService {
         accessKeyId: process.env.AWS_ACCESS_KEY_ID,
         secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
     });
-   
+
 }
