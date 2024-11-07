@@ -473,14 +473,10 @@ export class TerraformService {
 
 ///////////////////////////////////////////////////////////////////////////////////
 
-
-
-
   async getInfrastructureState(CID: number, userId: number, signal: AbortSignal): Promise<any> {
     const localTerraformPath = `/temp/${CID}`;
     const stateFilePath = `${localTerraformPath}/terraform.tfstate`;
     const execAsync = promisify(exec);
-
     // AWS CLI 경로
     const awsCliPath = `"C:/Program Files/Amazon/AWSCLIV2/aws"`;
 
@@ -600,7 +596,6 @@ export class TerraformService {
       throw new Error(`Failed to retrieve state for CID: ${CID}`);
     }
   }
-
 
 
 // 에러 메시지 저장 메서드

@@ -207,3 +207,108 @@
   background-color: #ff4d4f;
   color: white;
 }
+
+/* Detail.css 또는 적절한 CSS 파일에 추가 */
+
+/* 서비스 상태 아이템 스타일 */
+.service-status-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.resource-name {
+  flex: 1;
+  font-weight: bold;
+}
+
+/* 상태 아이콘과 텍스트 스타일 */
+.status-icon {
+  margin-right: 8px;
+}
+
+.status-text {
+  font-weight: bold;
+}
+
+/* Running 상태 스타일 */
+.service-status-item.running .status-text {
+  color: green;
+}
+
+.service-status-item.running .status-icon svg {
+  color: green;
+}
+
+/* Stopped 상태 스타일 */
+.service-status-item.stopped .status-text {
+  color: red;
+}
+
+.service-status-item.stopped .status-icon svg {
+  color: red;
+}
+
+
+/* 카드 스타일 */
+.service-status-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+  text-align: center;
+  background-color: #f9f9f9;
+}
+
+/* 상태별 카드 색상 변경 */
+.service-status-card.running {
+  border-color: #28a745;
+}
+
+.service-status-card.stopped {
+  border-color: #dc3545;
+}
+
+/* 카드 헤더 스타일 */
+.card-header {
+  margin-bottom: 8px;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+/* 카드 바디 스타일 */
+.card-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.card-body .status-icon {
+  margin-bottom: 8px;
+}
+
+.card-body .status-text {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+/* 상태별 텍스트 및 아이콘 색상 변경 */
+.service-status-card.running .status-text,
+.service-status-card.running .status-icon svg {
+  color: #28a745;
+}
+
+.service-status-card.stopped .status-text,
+.service-status-card.stopped .status-icon svg {
+  color: #dc3545;
+}
+
+
+.service-status-card {
+  transition: border-color 0.3s, background-color 0.3s;
+}
+
+.service-status-card.running .status-icon svg,
+.service-status-card.stopped .status-icon svg {
+  transition: color 0.3s;
+}

@@ -84,19 +84,19 @@ export class TerraformController {
       throw new InternalServerErrorException(`Failed to destroy infrastructure for CID: ${destroyDto.CID}`);
     }
   }
-
+  
   @UseGuards(JwtAuthGuard)
   @Post('state')
   async getState(@Body() deployDto: DeployDto, @Req() req, @Res() res) {
     const controller = new AbortController();
     const signal = controller.signal;
-
-    // 클라이언트 연결 종료 감지
+  
+    // 클라이언트 연결 종료 시 이벤트 감지
     req.on('close', () => {
       console.log('Client connection closed');
       controller.abort(); // 비동기 작업 중단
     });
-
+  
     const email = req.user.email;
     const userInfo = await this.usersService.findOneByEmail(email);
     const userId = userInfo.UID;
@@ -111,7 +111,4 @@ export class TerraformController {
       return res.status(500).send(`Failed to retrieve state for CID: ${deployDto.CID}`);
     }
   }
-
-  
-
 }
