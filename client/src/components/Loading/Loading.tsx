@@ -7,8 +7,9 @@ import Loadinganimation from "./LoadingAnimation.json"
 const Loading: React.FC = () => {
     return (
         <div className="loading-page">
-            <h4>배포중입니다</h4>
-            <h4>시간이 오래 걸릴수 있으니 기다려주세요</h4>
+            <div className="loading-banner">
+                <div className="loading-text"><h3>잠시만 기다려 주세요, 서비스 배포 중입니다. 조금만 기다려 주세요!</h3></div>
+            </div>
             <Lottie animationData={Loadinganimation} />
         </div>
     );

@@ -84,7 +84,8 @@ export class TerraformController {
       throw new InternalServerErrorException(`Failed to destroy infrastructure for CID: ${destroyDto.CID}`);
     }
   }
-
+  
+  @UseGuards(JwtAuthGuard)
   @Post('state')
   async getState(@Body() deployDto: DeployDto, @Req() req, @Res() res) {
     const controller = new AbortController();

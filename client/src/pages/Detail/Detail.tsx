@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 import DonutChart from "../../components/DetailPage/DonutChart";
 import { deleteProject, mermaid, projectOneInfo } from "../../services/projects";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlayCircle, faStopCircle } from "@fortawesome/free-solid-svg-icons";
 import { faCloud } from "@fortawesome/free-solid-svg-icons";
 import "./Detail.css";
 import { open } from "../../services/conversations";
@@ -43,6 +44,99 @@ const defaultBotMessage: ChatMessage[] = [
     subtext: "자유롭게 당신의 서비스를 설명해주세요.",
   },
 ];
+
+// 컴포넌트 상단에 매핑 객체를 정의합니다.
+const resourceTypeNames: { [key: string]: string } = {
+  aws_instance: "EC2 Instance",
+  aws_s3_bucket: "S3 Bucket",
+  aws_lambda_function: "Lambda Function",
+  aws_rds_instance: "RDS Instance",
+  aws_dynamodb_table: "DynamoDB Table",
+  aws_iam_role: "IAM Role",
+  aws_iam_policy: "IAM Policy",
+  aws_iam_user: "IAM User",
+  aws_vpc: "VPC",
+  aws_subnet: "Subnet",
+  aws_security_group: "Security Group",
+  aws_ecs_cluster: "ECS Cluster",
+  aws_ecs_task_definition: "ECS Task Definition",
+  aws_eks_cluster: "EKS Cluster",
+  aws_elb: "Elastic Load Balancer (ELB)",
+  aws_alb: "Application Load Balancer (ALB)",
+  aws_glacier_vault: "Glacier Vault",
+  aws_cloudfront_distribution: "CloudFront Distribution",
+  aws_cloudwatch_alarm: "CloudWatch Alarm",
+  aws_cloudwatch_log_group: "CloudWatch Log Group",
+  aws_autoscaling_group: "Auto Scaling Group",
+  aws_autoscaling_policy: "Auto Scaling Policy",
+  aws_kinesis_stream: "Kinesis Stream",
+  aws_sqs_queue: "SQS Queue",
+  aws_sns_topic: "SNS Topic",
+  aws_route53_zone: "Route 53 Hosted Zone",
+  aws_route53_record: "Route 53 Record",
+  aws_elasticache_cluster: "ElastiCache Cluster",
+  aws_redshift_cluster: "Redshift Cluster",
+  aws_kms_key: "KMS Key",
+  aws_secretsmanager_secret: "Secrets Manager Secret",
+  aws_acm_certificate: "ACM Certificate",
+  aws_stepfunctions_state_machine: "Step Functions State Machine",
+  aws_emr_cluster: "EMR Cluster",
+  aws_batch_job_queue: "Batch Job Queue",
+  aws_batch_compute_environment: "Batch Compute Environment",
+  aws_sagemaker_notebook_instance: "SageMaker Notebook Instance",
+  aws_sagemaker_endpoint: "SageMaker Endpoint",
+  aws_apigateway_rest_api: "API Gateway REST API",
+  aws_apigatewayv2_api: "API Gateway v2",
+  aws_cloudformation_stack: "CloudFormation Stack",
+  aws_elastic_beanstalk_environment: "Elastic Beanstalk Environment",
+  aws_elastic_beanstalk_application: "Elastic Beanstalk Application",
+  aws_eip: "Elastic IP",
+  aws_rds_cluster: "RDS Cluster",
+  aws_efs_file_system: "EFS File System",
+  aws_msk_cluster: "MSK Cluster (Kafka)",
+  aws_neptune_cluster: "Neptune Cluster",
+  aws_network_acl: "Network ACL",
+  aws_nat_gateway: "NAT Gateway",
+  aws_transit_gateway: "Transit Gateway",
+  aws_codebuild_project: "CodeBuild Project",
+  aws_codepipeline: "CodePipeline",
+  aws_codecommit_repository: "CodeCommit Repository",
+  aws_codedeploy_application: "CodeDeploy Application",
+  aws_opsworks_stack: "OpsWorks Stack",
+  aws_backup_vault: "Backup Vault",
+  aws_workspaces_directory: "WorkSpaces Directory",
+  aws_directory_service_directory: "Directory Service Directory",
+  aws_route_table: "Route Table",
+  aws_route: "Route",
+  aws_rds_parameter_group: "RDS Parameter Group",
+  aws_sqs_dead_letter_queue: "SQS Dead Letter Queue",
+  aws_inspector_assessment_template: "Inspector Assessment Template",
+  aws_appmesh_mesh: "App Mesh",
+  aws_licensemanager_license_configuration: "License Manager Configuration",
+  aws_mq_broker: "MQ Broker",
+  aws_network_interface: "Network Interface",
+  aws_s3_access_point: "S3 Access Point",
+  aws_ec2_capacity_reservation: "EC2 Capacity Reservation",
+  aws_elastictranscoder_pipeline: "Elastic Transcoder Pipeline",
+  aws_glue_crawler: "Glue Crawler",
+  aws_glue_job: "Glue Job",
+  aws_ssm_parameter: "SSM Parameter",
+  aws_elasticsearch_domain: "Elasticsearch Domain",
+  aws_documentdb_cluster: "DocumentDB Cluster",
+  aws_athena_database: "Athena Database",
+  aws_gamelift_fleet: "GameLift Fleet",
+  aws_kendra_index: "Kendra Index",
+  aws_network_firewall: "Network Firewall",
+  aws_outposts_outpost: "Outpost",
+  aws_qldb_ledger: "QLDB Ledger",
+  aws_amplify_app: "Amplify App",
+  aws_appstream_fleet: "AppStream Fleet",
+  aws_apigatewayv2_stage: "API Gateway v2 Stage",
+  aws_cloud9_environment_ec2: "Cloud9 Environment",
+  aws_cognito_user_pool: "Cognito User Pool",
+  aws_cognito_identity_pool: "Cognito Identity Pool",
+  aws_dataexchange_dataset: "Data Exchange Dataset",
+};
 
 const Detail: React.FC = () => {
   const templates = useTemplates();
@@ -259,16 +353,33 @@ const Detail: React.FC = () => {
             )}
           </div>
           <div className="service-status-th">
-            <h3>Service Status</h3>
+            <h3>주요 서비스 상태</h3>
             {isStateLoading ? ( // 로딩 중일 때 스피너 표시
               <Lottie animationData={Loadinganimation} style={{ width: "200px", height: "200px" }} />
             ) : (
               <div className="service-status-list">
-                {Object.entries(stateData).map(([key, value]) => (
-                  <div key={key} className="service-status-item">
-                    {value.resourceType} : {value.isRunning ? "Running" : "Stopped"}
-                  </div>
-                ))}
+                {Object.entries(stateData).map(([key, value]) => {
+                  const isRunning = value.isRunning;
+                  const statusText = isRunning ? "Running" : "Stopped";
+                  const statusClass = isRunning ? "running" : "stopped";
+                  const statusIcon = isRunning ? faPlayCircle : faStopCircle;
+
+                  return (
+                    <div key={key} className={`service-status-card ${statusClass}`}>
+                      <div className="card-header">
+                        <span className="resource-name">
+                          {resourceTypeNames[value.resourceType] || value.resourceType}
+                        </span>
+                      </div>
+                      <div className="card-body">
+                        <span className="status-icon">
+                          <FontAwesomeIcon icon={statusIcon} size="2x" />
+                        </span>
+                        <span className="status-text">{statusText}</span>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             )}
             {/* <DonutChart slices={[25, 35, 40]} /> */}

@@ -19,6 +19,9 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  width: 100vh;
+  height: 100vh;
+  background-color: #fffce8;
 }
 
 .loading-spinner {
@@ -45,4 +48,29 @@
   font-size: 1.2rem;
   color: #333;
   margin: 0;
+}
+
+.loading-banner {
+  overflow: hidden;
+  white-space: nowrap;
+  position: relative;
+  padding: 10px;
+  color: #333;
+  font-size: 1.2em;
+}
+
+.loading-text {
+  display: inline-block;
+  padding-right: 100%;
+  animation: scroll 8s linear infinite;
+  width: 500px;
+}
+
+@keyframes scroll {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
 }
