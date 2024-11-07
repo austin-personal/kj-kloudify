@@ -499,7 +499,7 @@ export class ConversationsService {
                     nextTemplate = 'template3-1';
                 } else if (nextItem === '스토리지') {
                     nextTemplate = 'template4-1';
-                } else if (nextItem === '네트워크') {
+                } else if (nextItem === '추가적인 네트워크 설정') {
                     nextTemplate = 'template5-1';
                 } else {
                     nextTemplate = 'template6-1';
