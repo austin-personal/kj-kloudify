@@ -473,15 +473,19 @@ export class TerraformService {
 
 ///////////////////////////////////////////////////////////////////////////////////
 
+
+
+
   async getInfrastructureState(CID: number, userId: number, signal: AbortSignal): Promise<any> {
     const localTerraformPath = `/temp/${CID}`;
     const stateFilePath = `${localTerraformPath}/terraform.tfstate`;
+    const execAsync = promisify(exec);
 
-    // AWS CLI 경로를 상단에 정의
-    const awsCliPath = "C:/Program Files/Amazon/AWSCLIV2/aws";
+    // AWS CLI 경로
+    const awsCliPath = `"C:/Program Files/Amazon/AWSCLIV2/aws"`;
 
     try {
-      // 요청 취소 시 로직 중단
+      // 요청이 중단되었는지 확인
       if (signal.aborted) {
         throw new Error('Request was aborted by the client');
       }
@@ -498,22 +502,15 @@ export class TerraformService {
           AWS_ACCESS_KEY_ID: accessKey,
           AWS_SECRET_ACCESS_KEY: secretAccessKey,
         },
+        signal, // AbortSignal 전달
       };
 
-      // 1초마다 요청이 중단되었는지 확인하는 코드
-      const intervalId = setInterval(() => {
-        if (signal.aborted) {
-          clearInterval(intervalId);
-          throw new Error('Request was aborted by the client');
-        }
-      }, 1000);
-
-      // Terraform state list 명령어 실행
+      // Terraform state list 명령어를 비동기적으로 실행
       console.log(`Executing: terraform -chdir=${localTerraformPath} state list`);
-      const listOutputBuffer = execSync(`terraform -chdir=${localTerraformPath} state list`);
-      const stateList = listOutputBuffer.toString().split('\n').filter(line => line.trim() !== '');
+      const { stdout: listOutput } = await execAsync(`terraform -chdir=${localTerraformPath} state list`, { signal });
+      const stateList = listOutput.split('\n').filter(line => line.trim() !== '');
 
-      // 리소스 상태 확인 결과를 저장할 객체
+      // 리소스 상태를 저장할 객체
       const serviceStates: any = {};
 
       // 리소스 타입 추출 함수
@@ -530,13 +527,13 @@ export class TerraformService {
       // 각 리소스에 대해 비동기적으로 상태 확인
       await Promise.all(stateList.map(async resource => {
         if (signal.aborted) {
-          clearInterval(intervalId);
           throw new Error('Request was aborted by the client');
         }
 
         console.log(`Retrieving details for: ${resource}`);
-        const detailOutputBuffer = execSync(`terraform -chdir=${localTerraformPath} state show ${resource}`);
-        const details = detailOutputBuffer.toString();
+        // Terraform state show 명령어를 비동기적으로 실행
+        const { stdout: detailOutput } = await execAsync(`terraform -chdir=${localTerraformPath} state show ${resource}`, { signal });
+        const details = detailOutput;
         const resourceType = getResourceType(resource);
 
         let resourceId: string | null = null;
@@ -548,8 +545,11 @@ export class TerraformService {
             resourceId = instanceIdMatch[1];
             console.log(`Checking running status for EC2 instance: ${resourceId}`);
             try {
-              const statusOutputBuffer = execSync(`"${awsCliPath}" ec2 describe-instance-status --instance-ids ${resourceId} --region ${region}`, options);
-              const statusData = JSON.parse(statusOutputBuffer.toString());
+              const { stdout: statusOutput } = await execAsync(
+                `${awsCliPath} ec2 describe-instance-status --instance-ids ${resourceId} --region ${region}`,
+                options
+              );
+              const statusData = JSON.parse(statusOutput);
               isRunning = statusData.InstanceStatuses?.some((status: any) => status.InstanceState.Name === "running");
             } catch (awsError) {
               console.error(`Error retrieving EC2 instance status for ${resourceId}:`, awsError);
@@ -561,8 +561,11 @@ export class TerraformService {
             resourceId = dbInstanceIdMatch[1];
             console.log(`Checking running status for RDS instance: ${resourceId}`);
             try {
-              const statusOutputBuffer = execSync(`"${awsCliPath}" rds describe-db-instances --db-instance-identifier ${resourceId} --region ${region}`, options);
-              const statusData = JSON.parse(statusOutputBuffer.toString());
+              const { stdout: statusOutput } = await execAsync(
+                `${awsCliPath} rds describe-db-instances --db-instance-identifier ${resourceId} --region ${region}`,
+                options
+              );
+              const statusData = JSON.parse(statusOutput);
               isRunning = statusData.DBInstances?.some((dbInstance: any) => dbInstance.DBInstanceStatus === "available");
             } catch (awsError) {
               console.error(`Error retrieving RDS instance status for ${resourceId}:`, awsError);
@@ -572,7 +575,7 @@ export class TerraformService {
           const bucketNameMatch = details.match(/bucket\s+=\s+"([^"]+)"/);
           if (bucketNameMatch) {
             resourceId = bucketNameMatch[1];
-            console.log(`S3 bucket ${resourceId} is assumed to be accessible`);
+            console.log(`S3 버킷 ${resourceId}는 접근 가능한 것으로 간주됩니다`);
             isRunning = true;
           }
         }
@@ -582,7 +585,6 @@ export class TerraformService {
         }
       }));
 
-      clearInterval(intervalId); // 모든 작업이 완료되면 interval 정리
       console.log('Service states:', serviceStates);
 
       return {
