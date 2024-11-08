@@ -12,29 +12,29 @@ import { NotFoundException } from '@nestjs/common';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  // 회원가입 엔드포인트
-  @Post('signUp')
-  async signUp(@Body() createUserDto: CreateUserDto) {
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$/;
+  // // 회원가입 엔드포인트
+  // @Post('signUp')
+  // async signUp(@Body() createUserDto: CreateUserDto) {
+  //   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  //   const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$/;
 
-    // 이메일 유효성 검사
-    if (!emailRegex.test(createUserDto.email)) {
-      throw new BadRequestException('Invalid email format');
-    }
+  //   // 이메일 유효성 검사
+  //   if (!emailRegex.test(createUserDto.email)) {
+  //     throw new BadRequestException('Invalid email format');
+  //   }
 
-    // 비밀번호 유효성 검사
-    if (!passwordRegex.test(createUserDto.password)) {
-      throw new BadRequestException('Password must be 8-20 characters long, with uppercase, lowercase, number, and special character');
-    }
+  //   // 비밀번호 유효성 검사
+  //   if (!passwordRegex.test(createUserDto.password)) {
+  //     throw new BadRequestException('Password must be 8-20 characters long, with uppercase, lowercase, number, and special character');
+  //   }
 
-    const newUser = await this.usersService.createUser(
-      createUserDto.username,
-      createUserDto.password,
-      createUserDto.email
-    );
-    return this.usersService.login(newUser); // 회원가입 후 로그인
-  }
+  //   const newUser = await this.usersService.createUser(
+  //     createUserDto.username,
+  //     createUserDto.password,
+  //     createUserDto.email
+  //   );
+  //   return this.usersService.login(newUser); // 회원가입 후 로그인
+  // }
 
   // 이메일 중복 체크  API
   @Post('check-email')

@@ -17,7 +17,6 @@
 }
 
 .project-header {
-  border-bottom: 1px solid #cccaba;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -26,6 +25,40 @@
   width: 75%;
   margin: 20px;
   padding: 0px 50px;
+}
+
+.deleteButton-detail {
+  background-color: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: gray;
+  width: 60px;
+  height: 60px;
+}
+
+.deleteButton-detail:hover {
+  background-color: #f6b755;
+  overflow: visible;
+  color: white;
+}
+
+.deleteButton-detail:active {
+  transform: scale(0.98);
+}
+
+.deleteButton-detail:hover {
+  opacity: 1;
+}
+
+.project-name-container-detail {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  width: 100%;
+  height: 100px;
+  padding: 0 10px;
 }
 
 .project-name-title-th {
