@@ -125,7 +125,7 @@ export class ConversationsService {
                         노드 간의 관계를 설정할 때 방향을 명확히 하여 정렬이 잘 되도록 합니다. 
                         코드 시작 전에 **를 붙여줍니다.
                         구조가 결정되고 사용자가 긍정할 시, 코드만 출력합니다.
-                        mermaid 코드에 대해 언급하지마세요`;
+                        mermaid 코드에 대해 절대 언급하지마세요`;
 
             case 1:
                 return `당신은 사용자의 요구에 맞는 AWS 아키텍처 설계를 돕는 전문 안내자 역할을 합니다. 그 중 서버담당자입니다.
@@ -202,13 +202,15 @@ export class ConversationsService {
             case 6: // 아웃트로 육식이
                 return `당신은 사용자의 요구에 맞는 AWS 아키텍처 설계를 돕는 전문 안내자 역할을 합니다. 그 중 최종적으로 대화내역을 검토하는 담당자입니다.
                     지금까지의 대화 내용을 종합하여 필요한 AWS 서비스 구성을 아래 양식으로 생성해야합니다. 최종 구성은 Terraform 코드로 변환될 예정이며, 각 서비스와 옵션이 정확히 입력되어야 합니다.
-                    생성한 최종구조에 대해 간략하게 설명해주세요. 그리고 설명이 끝나면 다음의 양식대로 **양식 앞에 붙여 \n 없이 한줄로 글을 마무리해주세요
-                    생성된 서비스 양식:
-                    **{ "service": "", "options": { "ami": "", "instance_type": "", "public":  } },{ "service": "", "options": { "engine": "", "instance_class": "", "allocated_storage":  } },{ "service": "", "options": { "bucket_name": "", "access": "" } }
+                    생성한 최종구조에 대해 간략하게 설명해주세요. 그리고 설명이 끝나면 다음의 양식대로 **양식 앞에 붙여 \n 없이 한줄로 글을 마무리해주세요.
+                    각각 생성된 코드에 대해서는 절대 언급하지 말아주세요.
 
-                    그리고 해당 양식에 대해서 mermaid코드 또한 생성해주세요. 대화 로그를 참조하여 구조를 짜주세요.
+                    생성된 서비스 양식:
+                    !!{ "service": "", "options": { "ami": "", "instance_type": "", "public":  } },{ "service": "", "options": { "engine": "", "instance_class": "", "allocated_storage":  } },{ "service": "", "options": { "bucket_name": "", "access": "" } }
+
+                    그리고 해당 양식에 대해서 mermaid코드 또한 생성해주세요. 대화 로그를 참조하여 구조를 짜주세요. 구조에 변화가 없다면 대화로그를 참조하여 그대로 출력해주세요.
                     생성된 mermaid 양식:
-                    !![graphTD ...]
+                    **[graphTD ...]
                     `;
 
             default:
@@ -322,7 +324,8 @@ export class ConversationsService {
             '당신의 웹서비스 규모에 대해 알고 싶어요': 'template1-3',
             '당신의 예산과 비용 관리 계획은 어떻게 되나요': 'template1-4',
             '추가적인 무언가가 필요한가요': 'template1-5',
-            // '당신의 웹서비스는 어떤 클라우드 기술이 필요한가요': '질문의 끝',
+            // '당신의 웹서비스는 어떤 클라우드 기술이 필요한가요': 'template1-6',
+            // 'template1-6' : '질문의 끝'
 
             '서버는 어떤 특징이 필요하나요': 'template2-2',
             '어떠한 서버 타입이 필요하시나요': 'template2-3',
@@ -341,12 +344,12 @@ export class ConversationsService {
         };
 
         // 이 질문의 역할은? - 아 메트릭스에서 나온 키워드에 따라 다음 질문을 매핑하는 역할. 즉, 각 스테이지의 첫 질문 트리거
-        const level4Questions = {
-            '디비': 'template3-1',
-            '서버': 'template2-1',
-            '스토리지': 'template3-1',
-            '네트워크': 'template4-1',
-        };
+        // const level4Questions = {
+        //     '디비': 'template3-1',
+        //     '서버': 'template2-1',
+        //     '스토리지': 'template3-1',
+        //     '네트워크': 'template4-1',
+        // };
 
         // 템플릿 키를 확인하고 응답 생성
         const templateKey = Object.keys(templateResponses).find(key => user_question.includes(key));
@@ -599,7 +602,7 @@ export class ConversationsService {
     }
 
     // **로 감싸진 텍스트에서 키워드 추출
-    extractKeywords(text: string): { keywords: string[], updatedText: string } {
+    extractMermaid(text: string): { keywords: string[], updatedText: string } {
         if (!text) {
             return { keywords: [], updatedText: '' };
         }
@@ -617,6 +620,27 @@ export class ConversationsService {
         } else {
             // '**'로 시작하는 부분이 없으면 원본 텍스트 반환
             return { keywords: [], updatedText: text.trim() };
+        }
+    }
+
+    extractKeywords(text: string): { keywords2: string[], updatedText2: string } {
+        if (!text) {
+            return { keywords2: [], updatedText2: '' };
+        }
+    
+        // 줄바꿈 문자를 포함하여 문자열 끝까지 매치하는 정규식 수정
+        const regex = /!!(.*)$/s;
+        const keywords2: string[] = [];
+        let match = text.match(regex);
+    
+        if (match) {
+            keywords2.push(match[1].trim());
+            // '!!'부터 문자열 끝까지 제거
+            const updatedText2 = text.replace(regex, '').trim();
+            return { keywords2, updatedText2 };
+        } else {
+            // '!!'로 시작하는 부분이 없으면 원본 텍스트 반환
+            return { keywords2: [], updatedText2: text.trim() };
         }
     }
 
@@ -663,23 +687,30 @@ export class ConversationsService {
 
         try {
             await this.dynamoDB.put(params).promise();
-            console.log(`키워드 저장 성공: ${newKeywords}`);
+            console.log(`머메이드 저장 성공: ${newKeywords}`);
         } catch (error) {
-            console.error(`키워드 저장 실패: ${error.message}`);
+            console.error(`머메이드 저장 실패: ${error.message}`);
         }
     }
 
     async processTextAndAddKeywords(outputText: string, inputText: string, CID: number, modelSwitchCounter: number): Promise<string> {
 
         // 키워드 추출 및 텍스트 업데이트
-        const result = this.extractKeywords(outputText);
+        const result = this.extractMermaid(outputText);
+
         const { keywords, updatedText } = result;
 
+        const Keywordresult = this.extractKeywords(result.updatedText);
+
+        const { keywords2, updatedText2 } = Keywordresult;
+
         if (keywords.length > 0) {
-            if (modelSwitchCounter != 6) {
-                await this.saveMermaid(keywords, CID);
-            } else {
-                await this.saveKeywords(keywords, CID);
+
+            await this.saveMermaid(keywords, CID);
+
+            if (modelSwitchCounter === 6) {
+                
+                await this.saveKeywords(keywords2, CID);
             }
         }
 
@@ -691,7 +722,7 @@ export class ConversationsService {
 
 
         // 최종적으로 텍스트 끝에 키워드 리스트 추가
-        let finalText = updatedText;
+        let finalText = updatedText2;
 
 
         finalText += `\n**${fetchedKeywords.join(', ')}`;
