@@ -43,7 +43,7 @@ const App: React.FC = () => {
 
             {/* 슬아 리뷰페이지 추가 */}
             <Route
-              path="/review/:cid"
+              path="/review/:pid/:cid"
               element={
                 <ProtectedRoute>
                   <Review />

@@ -126,7 +126,8 @@
   -webkit-transition: all 0.5s;
   width: 420px;
   font-size: 20px;
-  margin-top: 20px;
+  margin: 0 20px;
+  margin-bottom: 15px;
   cursor: pointer;
 }
 
@@ -148,25 +149,26 @@
   padding: 12.5px 30px;
   border: 0;
   border-radius: 100px;
-  background-color: #fdc36d;
+  background-color: #ff5b89;
+  color: white;
   font-weight: Bold;
   transition: all 0.5s;
   -webkit-transition: all 0.5s;
   width: 420px;
   font-size: 22px;
-  margin-top: 20px;
+  margin: 15px 20px;
   cursor: pointer;
 }
 
 .important-template-btn-th:hover {
-  background-color: #ffd28a;
+  background-color: #ff7c9f;
   box-shadow: 0 0 20px #6fc5ff50;
   animation: jello-horizontal 0.9s both;
   transform: scale(1.1);
 }
 
 .important-template-btn-th:active {
-  background-color: #ffbe6b;
+  background-color: #e1446f;
   transition: all 0.25s;
   -webkit-transition: all 0.25s;
   box-shadow: none;
@@ -230,7 +232,7 @@
 
 .message-content {
   white-space: pre-line;
-  padding: 5px;
+  padding: 5px 10px;
 }
 
 .chat-form {
