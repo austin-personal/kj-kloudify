@@ -3,18 +3,20 @@ import "./Services.css";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setLoading } from "../../store/loadingSlice";
-import { deploy } from "../../services/terraforms";
+import { deploy, review } from "../../services/terraforms";
 import { checkSecret } from "../../services/secrets";
 import { projectSummary } from "../../services/projects";
 import { extractServiceName } from "../../utils/awsServices";
 interface ServicesProps {
   cid: number;
+  pid: number;
   isReviewReady: boolean;
   chartCode: string[];
 }
 
 const Services: React.FC<ServicesProps> = ({
   cid,
+  pid,
   isReviewReady,
   chartCode,
 }) => {
@@ -96,10 +98,11 @@ const Services: React.FC<ServicesProps> = ({
       dispatch(setLoading(true));
       // deploy 함수 호출 (딱히 반환값을 사용하지 않으므로 await로만 호출)
       await deploy(cid, token);
-      alert("배포 성공! propile 페이지로 이동합니다.");
-      navigate("/profile");
+      alert("배포 성공! detail 페이지로 이동합니다.");
+      navigate(`/detail/${pid}`);
     } catch (error) {
       alert("배포 실패! 리뷰창으로 돌아갑니다. 다시 Deploy를 시도하세요.");
+      await review(cid, pid, token);
     } finally {
       dispatch(setLoading(false));
     }

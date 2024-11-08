@@ -85,7 +85,7 @@ const Home: React.FC = () => {
           navigate(`/home/${pid}`);
         }
       });
-      navigate(`/review/${cid}`, { state: { isReviewReady: false } });
+      navigate(`/review/${pid}/${cid}`);
     } catch (error) {
       console.error("review API 호출 실패:", error);
       alert(
@@ -107,7 +107,8 @@ const Home: React.FC = () => {
       <div className="vertical-line"></div>
       <div className="right-side">
         <div className="project-name-container">
-          <h1 className="project-name">Project: {project!.projectName}</h1>
+          <div className="project-name-label">Project</div>
+          <div className="home-project-name">{project!.projectName}</div>
         </div>
         <MermaidChart chartCode={finishData}></MermaidChart>
         <div className="review-btn-container">

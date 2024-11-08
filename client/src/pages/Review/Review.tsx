@@ -17,7 +17,9 @@ const Review: React.FC = () => {
   const isReviewReady = useAppSelector((state) => state.loading.isReviewReady);
   const finishData = useAppSelector((state) => state.finishData.finishData);
   const { cid: cidParam } = useParams<{ cid: string }>();
+  const { pid: pidParam } = useParams<{ pid: string }>();
   const cid = cidParam ? parseInt(cidParam, 10) : null;
+  const pid = pidParam ? parseInt(pidParam, 10) : null;
   const [showOptions, setShowOptions] = useState(false);
   const [showToast, setShowToast] = useState(true);
   const mermaidRef = useRef<HTMLDivElement>(null); // MermaidChart 요소를 참조할 ref 추가
@@ -128,6 +130,7 @@ const Review: React.FC = () => {
       <div className="vertical-line"></div>
       <Services
         cid={cid ?? 0}
+        pid={pid ?? 0}
         isReviewReady={isReviewReady}
         chartCode={finishData}
       />
