@@ -217,6 +217,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  font-size: 20px;
 }
 
 /* 모달 컨텐츠 */

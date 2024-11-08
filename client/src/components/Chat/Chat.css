@@ -20,7 +20,7 @@
 
 .space {
   margin: 0 5px;
-  color: #c16b6b;
+  color: #fdc36d;
 }
 
 .download-button-th {
@@ -33,23 +33,25 @@
 }
 
 .home-chat-guide-th {
+  opacity: 0;
+  pointer-events: none;
   position: absolute;
-  left: 77%;
-  width: 620px;
+  width: 550px;
   border-radius: 8px;
   background-color: white;
-  border: 3px dashed #c16b6b;
-  margin-left: 10px;
+  margin-left: 20px;
   font-size: 22px;
-  padding: 10px;
+  padding: 5px;
   z-index: 2000;
   color: #312d26;
-  box-shadow: 5px 4px 20px 0px rgba(0, 0, 0, 13%);
+  box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
+  transition: all 0.7s ease-in-out;
 }
 
-.home-chat-guide-th h4 {
-  margin: 0;
-  padding: 0;
+.download-button-th:hover .home-chat-guide-th {
+  transform: translate(27px, 6px);
+  transition: all 0.7s ease-in-out;
+  opacity: 1;
 }
 
 /* 메시지 목록 스타일 */
@@ -472,4 +474,62 @@
 .custom-checkbox input[type="checkbox"]:checked~.important-check-message-th {
   color: white;
   /* 텍스트 색상을 변경하여 가독성 확보 */
+}
+
+/* From Uiverse.io by vinodjangid07 */
+.faq-button {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: none;
+  background-color: #fdc36d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 5px 4px 20px 0px rgba(0, 0, 0, 8%);
+  position: relative;
+}
+
+.faq-button svg {
+  height: 15px;
+  fill: white;
+}
+
+.faq-button:hover svg {
+  animation: jello-vertical 0.7s both;
+}
+
+@keyframes jello-vertical {
+  0% {
+    transform: scale3d(1, 1, 1);
+  }
+
+  30% {
+    transform: scale3d(0.75, 1.25, 1);
+  }
+
+  40% {
+    transform: scale3d(1.25, 0.75, 1);
+  }
+
+  50% {
+    transform: scale3d(0.85, 1.15, 1);
+  }
+
+  65% {
+    transform: scale3d(1.05, 0.95, 1);
+  }
+
+  75% {
+    transform: scale3d(0.95, 1.05, 1);
+  }
+
+  100% {
+    transform: scale3d(1, 1, 1);
+  }
+}
+
+.chat-upper-text-th {
+  opacity: 0.8;
 }
