@@ -107,6 +107,22 @@ export const projectSummary = async (cid: number, token: string | null) => {
                 Authorization: `Bearer ${token}`
             }
         });
+        return response.data.summary;
+    } catch (error) {
+        console.error('summary 개박살!! :', error);
+        throw error;
+    }
+};
+
+//price 가져오기
+export const projectPrice = async (cid: number, token: string | null) => {
+    try {
+        console.log("cid,token:", cid, token);
+        const response = await axios.get(`${API_URL}/${cid}/price`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
         return response.data;
     } catch (error) {
         console.error('summary 개박살!! :', error);
