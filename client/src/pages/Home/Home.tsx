@@ -85,7 +85,7 @@ const Home: React.FC = () => {
           navigate(`/home/${pid}`);
         }
       });
-      navigate(`/review/${cid}`, { state: { isReviewReady: false } });
+      navigate(`/review/${pid}/${cid}`);
     } catch (error) {
       console.error("review API 호출 실패:", error);
       alert(
