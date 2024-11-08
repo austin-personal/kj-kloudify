@@ -2,7 +2,11 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import DonutChart from "../../components/DetailPage/DonutChart";
-import { deleteProject, mermaid, projectOneInfo } from "../../services/projects";
+import {
+  deleteProject,
+  mermaid,
+  projectOneInfo,
+} from "../../services/projects";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlayCircle, faStopCircle } from "@fortawesome/free-solid-svg-icons";
 import { faCloud } from "@fortawesome/free-solid-svg-icons";
@@ -13,7 +17,7 @@ import { destroy, state } from "../../services/terraforms";
 import MermaidChart from "../../components/Mermaid/mermaid";
 import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
 import Lottie from "lottie-react";
-import Loadinganimation from "./LoadingService.json"
+import Loadinganimation from "./LoadingService.json";
 
 interface Project {
   PID: number;
@@ -149,7 +153,7 @@ const Detail: React.FC = () => {
   const [isStateLoading, setIsStateLoading] = useState(true);
   const [mermaidCode, setMermaidCode] = useState<string[]>([]);
   const [stateData, setStateData] = useState<{ [key: string]: any }>({});
-  const [modalType, setModalType] = useState<string>(""); // 모달 타입을 구분하는 상태
+  const [modalType, setModalType] = useState<string>("");
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
   const navigate = useNavigate();
 
@@ -160,28 +164,31 @@ const Detail: React.FC = () => {
     const fetchProjectData = async () => {
       try {
         if (pid) {
-          if (!project) {
-            const response = await projectOneInfo(Number(pid), token);
-            const projectData = response.data;
-            setProject(projectData);
-            const mermaidTemp = await mermaid(Number(pid), token);
-            setMermaidCode([mermaidTemp]);
+          const response = await projectOneInfo(Number(pid), token);
+          const projectData = response.data;
+          setProject(projectData);
 
-            setIsStateLoading(true);
-            const stateTemp = await state(projectData.CID, token, { signal });
-            setStateData(stateTemp);
-            setIsStateLoading(false);
-          }
-          // Chat history를 불러올 때 CID를 사용
-          if (project?.CID && isChatting && isLoading) {
-            openChatHistory(project.CID).then(() => {
+          const mermaidTemp = await mermaid(Number(pid), token);
+          setMermaidCode([mermaidTemp]);
+
+          // 채팅 내역을 처음에 불러옵니다.
+          if (projectData.CID) {
+            openChatHistory(projectData.CID).then(() => {
               setIsLoading(false);
             });
           }
 
+          setIsStateLoading(true);
+          const stateTemp = await state(projectData.CID, token, { signal });
+          setStateData(stateTemp || {});
+          setIsStateLoading(false);
+
         }
-      } catch (error: any) {
+      } catch (error) {
         console.error("프로젝트 정보를 가져오는 중 오류 발생:", error);
+        setStateData({});
+        setIsStateLoading(false);
+        setIsLoading(false);
       }
     };
 
@@ -258,7 +265,9 @@ const Detail: React.FC = () => {
           });
           setChatHistory(formattedChat);
         }
-      } catch (error) { }
+      } catch (error) {
+        console.error("채팅 기록을 불러오는 중 오류 발생:", error);
+      }
     };
 
     fetchProjectData();
@@ -266,7 +275,7 @@ const Detail: React.FC = () => {
     return () => {
       controller.abort(); // 컴포넌트 언마운트 시 요청 취소
     };
-  }, [pid, token, isChatting]);
+  }, [pid, token]);
 
   if (!project) return <div>Loading...</div>;
 
@@ -287,7 +296,7 @@ const Detail: React.FC = () => {
         await deleteProject(project.PID, token);
         setShowDeleteModal(false);
       }
-      navigate("/profile")
+      navigate("/profile");
     } catch (error) {
       setModalType("error"); // 모달 타입 설정
     }
@@ -307,11 +316,7 @@ const Detail: React.FC = () => {
             handleDeleteClick(project);
           }}
         >
-          <FontAwesomeIcon
-            icon={faTrashCan}
-            size="xl"
-            className="svg"
-          />
+          <FontAwesomeIcon icon={faTrashCan} size="xl" className="svg" />
         </button>
       </div>
 
@@ -332,11 +337,15 @@ const Detail: React.FC = () => {
         </div>
         <div className="left-content">
           <div
-            className={`previous-chatting-th ${isChatting ? "open" : "close"}`}
+            className={`previous-chatting-th ${isChatting ? "open" : "close"
+              }`}
           >
             {isLoading ? (
               <div className="detail-loading-chat">
-                <Lottie animationData={Loadinganimation} style={{ width: "200px", height: "200px" }} />
+                <Lottie
+                  animationData={Loadinganimation}
+                  style={{ width: "200px", height: "200px" }}
+                />
               </div>
             ) : (
               <div className="chat-history">
@@ -354,9 +363,13 @@ const Detail: React.FC = () => {
           </div>
           <div className="service-status-th">
             <h3>주요 서비스 상태</h3>
-            {isStateLoading ? ( // 로딩 중일 때 스피너 표시
-              <Lottie animationData={Loadinganimation} style={{ width: "200px", height: "200px" }} />
-            ) : (
+            {isStateLoading ? (
+              // 로딩 중일 때 로딩 애니메이션 표시
+              <Lottie
+                animationData={Loadinganimation}
+                style={{ width: "200px", height: "200px" }}
+              />
+            ) : stateData && Object.entries(stateData).length > 0 ? (
               <div className="service-status-list">
                 {Object.entries(stateData).map(([key, value]) => {
                   const isRunning = value.isRunning;
@@ -365,10 +378,14 @@ const Detail: React.FC = () => {
                   const statusIcon = isRunning ? faPlayCircle : faStopCircle;
 
                   return (
-                    <div key={key} className={`service-status-card ${statusClass}`}>
+                    <div
+                      key={key}
+                      className={`service-status-card ${statusClass}`}
+                    >
                       <div className="card-header">
                         <span className="resource-name">
-                          {resourceTypeNames[value.resourceType] || value.resourceType}
+                          {resourceTypeNames[value.resourceType] ||
+                            value.resourceType}
                         </span>
                       </div>
                       <div className="card-body">
@@ -381,6 +398,8 @@ const Detail: React.FC = () => {
                   );
                 })}
               </div>
+            ) : (
+              <div>데이터가 없습니다.</div>
             )}
             {/* <DonutChart slices={[25, 35, 40]} /> */}
           </div>
@@ -393,23 +412,29 @@ const Detail: React.FC = () => {
       {showDeleteModal && (
         <div className="delete-modal">
           <div className="delete-modal-content">
-            {modalType === "deleteProject" &&
+            {modalType === "deleteProject" && (
               <>
                 <h3>경고: 모든 AWS 리소스 종료 작업</h3>
-                <p>이 버튼을 클릭하면 현재 계정 내 모든 AWS 서비스와 리소스가 영구적으로 종료됩니다.</p>
-                <p>이로 인해 서비스 중단, 데이터 손실, 복구 불가능한 결과가 발생할 수 있습니다.</p>
+                <p>
+                  이 버튼을 클릭하면 현재 계정 내 모든 AWS 서비스와 리소스가
+                  영구적으로 종료됩니다.
+                </p>
+                <p>
+                  이로 인해 서비스 중단, 데이터 손실, 복구 불가능한 결과가 발생할
+                  수 있습니다.
+                </p>
                 <p>이 작업을 수행하시겠습니까?</p>
                 <h4>⚠️ 한 번 더 확인해주세요. 이 작업은 취소할 수 없습니다.</h4>
               </>
-            }
-            {modalType === "error" &&
+            )}
+            {modalType === "error" && (
               <>
                 <p>요청하신 작업 중 오류가 발생했습니다.</p>
-                <p>잠시뒤 다시 시작해주세요.</p>
+                <p>잠시 뒤 다시 시도해주세요.</p>
               </>
-            }
+            )}
             <div className="delete-modal-buttons">
-              {modalType === "deleteProject" &&
+              {modalType === "deleteProject" && (
                 <>
                   <button
                     className="delete-cancel-button-th"
@@ -424,8 +449,8 @@ const Detail: React.FC = () => {
                     삭제
                   </button>
                 </>
-              }
-              {modalType === "error" &&
+              )}
+              {modalType === "error" && (
                 <>
                   <button
                     className="delete-cancel-button-th"
@@ -434,7 +459,7 @@ const Detail: React.FC = () => {
                     확인
                   </button>
                 </>
-              }
+              )}
             </div>
           </div>
         </div>
