@@ -29,6 +29,7 @@ import { writeFile , mkdir } from 'fs/promises';
 import { ProjectsService } from '../projects/projects.service';
 import { execSync } from 'child_process';
 
+const readFileAsync = promisify(fs.readFile);
 
 @Injectable()
 export class TerraformService {
@@ -644,6 +645,16 @@ async saveError(errorMessage: string, CID: number): Promise<void> {
     } catch (error) {
       console.error(`에러 메시지 불러오기 실패: ${error.message}`);
       throw new Error(`Failed to retrieve error message for CID: ${CID}`);
+    }
+  }
+
+  async getLocalFileContent(filePath: string): Promise<string> {
+    try {
+      // utf-8 인코딩으로 파일을 비동기적으로 읽기
+      const content = await readFileAsync(filePath, 'utf-8');
+      return content;
+    } catch (error) {
+      throw new Error(`Error reading file: ${error.message}`);
     }
   }
 
