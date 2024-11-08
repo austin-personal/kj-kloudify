@@ -88,11 +88,13 @@ const serviceAliases = {
   ALB: "Application-Load-Balancer",
   EIP: "Elastic-IP",
   Route: "Route-53",
+  IG: "Internet-Gateway",
   Internet: "Internet-Gateway",
   IGW: "Internet-Gateway",
   R53: "Route-53",
   ELP: "Elastic-IP",
   NATGW: "NAT-Gateway",
+  "Simple-Storage-Service": "S3",
   "Elastic-Load-Balancing": "ELB",
   "Elastic-Load-Balancer": "ELB",
   ELB: "ELB", // 다른 약어도 추가 가능

@@ -13,6 +13,8 @@ import { Template, useTemplates } from "./TemplateProvider";
 import { activate, deactivate } from "../../store/btnSlice";
 import { useAppDispatch } from "../../store/hooks";
 import { clearFinishData, setFinishData } from "../../store/finishDataSlice";
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 interface ChatProps {
   projectCID: number;
@@ -57,7 +59,6 @@ const Chat: React.FC<ChatProps> = ({ projectCID }) => {
   const [selectedChecks, setSelectedChecks] = useState<{
     [key: string]: string[];
   }>({});
-  const [isHovered, setIsHovered] = useState(false);
 
   const dispatch = useAppDispatch();
 
@@ -89,15 +90,15 @@ const Chat: React.FC<ChatProps> = ({ projectCID }) => {
               // userMessage에서 - 이후의 부분만 가져오기
               const parsedUserMessage = msg.userMessage.includes("-")
                 ? msg.userMessage
-                    .slice(msg.userMessage.lastIndexOf("-") + 1)
-                    .trim()
+                  .slice(msg.userMessage.lastIndexOf("-") + 1)
+                  .trim()
                 : msg.userMessage;
 
               // '/'가 포함되어 있다면 '/' 앞에 있는 부분만 가져오기
               const finalParsedMessage = parsedUserMessage.includes("/")
                 ? parsedUserMessage
-                    .slice(0, parsedUserMessage.indexOf("/"))
-                    .trim()
+                  .slice(0, parsedUserMessage.indexOf("/"))
+                  .trim()
                 : parsedUserMessage;
 
               // botResponse에서 ** 이전의 부분만 가져오기
@@ -343,10 +344,10 @@ const Chat: React.FC<ChatProps> = ({ projectCID }) => {
         servicechecks: template.servicechecks,
       }
       : {
-          id: uuidv4(),
-          text: text || "",
-          sender: "bot",
-        };
+        id: uuidv4(),
+        text: text || "",
+        sender: "bot",
+      };
 
     setMessages((prevMessages) => [...prevMessages, newMessage]);
   };
@@ -546,49 +547,27 @@ const Chat: React.FC<ChatProps> = ({ projectCID }) => {
   return (
     <div className="chat-container">
       <div className="notice-text">
-        우측 상단의{" "}
-        <FontAwesomeIcon className="space" icon={faCircleQuestion} />에 마우스를
-        올리면 가이드를 볼 수 있어요.
+        <div className="chat-upper-text-th">
+          우측 상단의{" "}
+          <FontAwesomeIcon className="space" icon={faCircleQuestion} />에 마우스를
+          올리면 가이드를 볼 수 있어요.
+        </div>
         <div className="download-button-th">
-          <FontAwesomeIcon
-            icon={faCircleQuestion}
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-          />
-          {isHovered && (
-            <div className="home-chat-guide-th">
-              <h4>
-                안내: Kloudify 챗봇과 원활하게 소통하기 위해, 아래와 같은
-                방식으로 질문하고 정보를 제공해주세요.
-              </h4>
-              1. 필요한 목적을 명확히 작성하기
-              <br />
-              예시: “개인 프로젝트에 필요한 웹 애플리케이션을 위해 서버와
-              데이터베이스가 필요해요.”
-              <br />
-              <br />
-              2. 간단하고 구체적으로 설명하기
-              <br />
-              예시: “트래픽이 많은 웹사이트가 아닌, 일반적인 블로그 서비스
-              정도의 서버 성능이 필요해요.”
-              <br />
-              <br />
-              3. 자신의 클라우드 경험 레벨을 알려주기
-              <br />
-              예시: “클라우드는 처음이라 기본적인 설정부터 배우고 싶어요.”
-              <br />
-              <br />
-              4. 현재까지 구상한 구조를 공유하기 (혹은 필요한 구성 요소만
-              열거해도 좋아요)
-              <br />
-              예시: “데이터베이스와 백엔드 서버만 있으면 됩니다.”
-              <br />
-              <br />
-              챗봇 팁: 각 질문에 대한 답변을 바탕으로 클라우드 아키텍처가
-              단계별로 설계됩니다. 필요에 따라 질문에 추가 정보를 더하거나,
-              불필요한 부분을 생략해도 좋습니다.
-            </div>
-          )}
+          <button
+            className="faq-button"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+              <path
+                d="M80 160c0-35.3 28.7-64 64-64h32c35.3 0 64 28.7 64 64v3.6c0 21.8-11.1 42.1-29.4 53.8l-42.2 27.1c-25.2 16.2-40.4 44.1-40.4 74V320c0 17.7 14.3 32 32 32s32-14.3 32-32v-1.4c0-8.2 4.2-15.8 11-20.2l42.2-27.1c36.6-23.6 58.8-64.1 58.8-107.7V160c0-70.7-57.3-128-128-128H144C73.3 32 16 89.3 16 160c0 17.7 14.3 32 32 32s32-14.3 32-32zm80 320a40 40 0 1 0 0-80 40 40 0 1 0 0 80z"
+              ></path>
+            </svg>
+          </button>
+          <div className="home-chat-guide-th">
+            <ReactMarkdown >
+              {` - 팁\n   - 필요한 목적은 정확하게 말해주세요.\n    - 자세할수록 좋아요!\n    - 적극적으로 커스터마이즈 해보세요!\n- 주의 사항\n    - 아직은 AWS 밖에 지원 하지 않아요.\n   - 저희 서비스는 간단한 웹 사이트에 특화 되어있어요.
+                `}
+            </ReactMarkdown>
+          </div>
         </div>
       </div>
       <div className="message-list" ref={scrollRef}>
@@ -601,17 +580,16 @@ const Chat: React.FC<ChatProps> = ({ projectCID }) => {
               {/* 헤더가 존재하면 렌더링 */}
               {message.header && (
                 <div
-                  className={`message-header ${
-                    message.header === "서버"
-                      ? "server-class"
-                      : message.header === "데이터베이스"
+                  className={`message-header ${message.header === "서버"
+                    ? "server-class"
+                    : message.header === "데이터베이스"
                       ? "database-class"
                       : message.header === "스토리지"
-                      ? "storage-class"
-                      : message.header === "네트워크"
-                      ? "network-class"
-                      : ""
-                  }`}
+                        ? "storage-class"
+                        : message.header === "네트워크"
+                          ? "network-class"
+                          : ""
+                    }`}
                 >
                   <strong>{message.header}</strong>
                 </div>

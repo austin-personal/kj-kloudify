@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import "./Home.css";
 
 import Chat from "../../components/Chat/Chat";
+import SideBar from "../../components/SideBar/SideBar";
 import MermaidChart from "../../components/Mermaid/mermaid";
 
 import { projectOneInfo } from "../../services/projects";
@@ -51,7 +52,6 @@ const Home: React.FC = () => {
         if (token) {
           const response = await projectOneInfo(Number(pid), token);
           setProject(response.data);
-
           if (response.data.isDeployed === true) {
             navigate("/profile");
           }
@@ -85,7 +85,7 @@ const Home: React.FC = () => {
           navigate(`/home/${pid}`);
         }
       });
-      navigate(`/review/${cid}`, { state: { isReviewReady: false } });
+      navigate(`/review/${pid}/${cid}`);
     } catch (error) {
       console.error("review API 호출 실패:", error);
       alert(
@@ -102,12 +102,13 @@ const Home: React.FC = () => {
   return (
     <div className="home">
       {/* 슬라이드바 삭제 */}
-      {/* <SideBar isOpen={isOpen} setIsOpen={setIsOpen} /> */}
+      <SideBar />
       <Chat projectCID={project!.CID} />
       <div className="vertical-line"></div>
       <div className="right-side">
         <div className="project-name-container">
-          <h1 className="project-name">Project: {project!.projectName}</h1>
+          <div className="project-name-label">Project</div>
+          <div className="home-project-name">{project!.projectName}</div>
         </div>
         <MermaidChart chartCode={finishData}></MermaidChart>
         <div className="review-btn-container">

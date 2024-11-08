@@ -9,18 +9,13 @@ interface MermaidChartProps {
 }
 
 const MermaidChart: React.FC<MermaidChartProps> = ({ chartCode }) => {
-  const [isDetails, setIsDetails] = useState(false);
   const data = localStorage.getItem("finishData");
   const location = useLocation();
   console.log("파싱파싱22:", chartCode);
 
-  // `home` 경로에서만 popup 클래스가 적용되도록 설정
-  const isHomePage = location.pathname.startsWith("/home");
-  const popupClass = isHomePage ? "" : "isNothome"; // home 페이지일 때만 popup 클래스 추가
-
   const result = chartCode.map((code) => {
-    // 양 끝에 있는 대괄호 제거
-    return code.replace(/^\[|\]$/g, "");
+    // 양 끝의 대괄호만 제거하고, 문자열 내 모든 소괄호 제거
+    return code.replace(/^\[|\]$/g, "").replace(/[()]/g, "");
   });
 
   const chartString =
@@ -32,9 +27,7 @@ const MermaidChart: React.FC<MermaidChartProps> = ({ chartCode }) => {
   classDef transparent fill-opacity:0,stroke-width:0
   class A,B transparent`;
   console.log("result:", result[0]);
-  const togglePopup = () => {
-    setIsDetails(!isDetails);
-  };
+
   const svgRef = useRef<d3.Selection<
     SVGSVGElement,
     unknown,
@@ -89,39 +82,27 @@ const MermaidChart: React.FC<MermaidChartProps> = ({ chartCode }) => {
               "#mermaid p:has(img)"
             );
 
-            // const serviceNames = Array.from(
-            //   chartString.matchAll(/(\b\w+)(?=\s*\[<img\s)/g)
-            // ).map((match) => match[1]);
-            // console.log("서비스 이름:", serviceNames);
-
             paragraphsWithImages.forEach((paragraph, index) => {
               let textContent = paragraph.textContent || "";
-              console.log("정규식 전:", textContent);
-              // const serviceName = extractServiceName(serviceNames[index]);
-              textContent = extractServiceName(textContent);
-              // console.log("정규식 후:", serviceName);
-              console.log("정규식 후2:", textContent);
-
               const imgElement = paragraph.querySelector("img");
               const imgSrc = (imgElement as HTMLImageElement).src;
-              const extractedName = imgSrc
-                .split("/")
-                .pop()
-                ?.replace(".svg", "");
-
+              let extractedName = imgSrc.split("/").pop()?.replace(".svg", "");
+              extractedName = extractServiceName(extractedName);
               try {
                 (
                   imgElement as HTMLImageElement
-                ).src = require(`../../img/aws-icons/${textContent}.svg`);
+                ).src = require(`../../img/aws-icons/${extractedName}.svg`);
                 (imgElement as HTMLImageElement).style.width = "35.5px";
                 (imgElement as HTMLImageElement).style.height = "35.5px";
               } catch (error) {
                 console.error(
-                  `이미지를 로드할 수 없습니다: ${textContent}`,
+                  `이미지를 로드할 수 없습니다: ${extractedName}`,
                   error
                 );
                 (imgElement as HTMLImageElement).src =
                   require(`../../img/aws-icons/default.svg`).default;
+                (imgElement as HTMLImageElement).style.width = "35.5px";
+                (imgElement as HTMLImageElement).style.height = "35.5px";
               }
               // console.log(`Paragraph ${index + 1} img src: ${imgSrc}`);
               // console.log(`Paragraph ${index + 1} text: ${textContent}`);
@@ -188,21 +169,6 @@ const MermaidChart: React.FC<MermaidChartProps> = ({ chartCode }) => {
 
   return (
     <div className="frame">
-      <div
-        className={`popup ${isDetails ? "visible" : "hidden"} ${popupClass}`}
-        onClick={togglePopup}
-      >
-        {!isDetails ? "Details" : "Close"}
-        {isDetails && (
-          <div className="extra-content">
-            {chartCode.length > 0 ? (
-              <p>요약</p>
-            ) : (
-              <p>값이 없습니다</p> // 값이 없을 때 표시
-            )}
-          </div>
-        )}
-      </div>
       <div className="mermaid-container">
         <div id="mermaid"></div>
       </div>

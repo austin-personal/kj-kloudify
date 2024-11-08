@@ -3,18 +3,20 @@ import "./Services.css";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setLoading } from "../../store/loadingSlice";
-import { deploy } from "../../services/terraforms";
+import { deploy, review } from "../../services/terraforms";
 import { checkSecret } from "../../services/secrets";
 import { projectSummary } from "../../services/projects";
 import { extractServiceName } from "../../utils/awsServices";
 interface ServicesProps {
   cid: number;
+  pid: number;
   isReviewReady: boolean;
   chartCode: string[];
 }
 
 const Services: React.FC<ServicesProps> = ({
   cid,
+  pid,
   isReviewReady,
   chartCode,
 }) => {
@@ -25,22 +27,6 @@ const Services: React.FC<ServicesProps> = ({
   const navigate = useNavigate();
   const token = localStorage.getItem("token") ?? "";
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    const fetchProjectData = async () => {
-      try {
-        if (token) {
-          const response = await projectSummary(cid, token);
-        } else {
-          console.error("토큰이 없습니다. 인증 문제가 발생할 수 있습니다.");
-        }
-      } catch (error) {
-        console.error("프로젝트 정보를 가져오는 중 오류 발생:", error);
-      }
-    };
-
-    fetchProjectData();
-  }, [cid, navigate]);
 
   const getImagePath = (name: string) => {
     try {
@@ -62,7 +48,7 @@ const Services: React.FC<ServicesProps> = ({
       // 양 끝에 있는 대괄호 제거
       return code.replace(/^\[|\]$/g, "");
     });
-    const chartString = result[0];
+    const chartString = result[0] ?? "";
     const serviceNames = Array.from(
       chartString.matchAll(/(\b\w+)(?=\s*\[<img\s)/g)
     ).map((match) => match[1].toUpperCase());
@@ -74,6 +60,23 @@ const Services: React.FC<ServicesProps> = ({
         !item.includes("사용자") && !item.toLowerCase().includes("client")
     );
   }
+
+  useEffect(() => {
+    const fetchProjectData = async () => {
+      try {
+        if (token) {
+          const response = await projectSummary(cid, token);
+          console.log("응답왔나?:", response);
+        } else {
+          console.error("토큰이 없습니다. 인증 문제가 발생할 수 있습니다.");
+        }
+      } catch (error) {
+        console.error("프로젝트 summary를 가져오는 중 오류 발생:", error);
+      }
+    };
+
+    fetchProjectData();
+  }, [navigate]);
 
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setIsChecked(e.target.checked);
@@ -95,10 +98,11 @@ const Services: React.FC<ServicesProps> = ({
       dispatch(setLoading(true));
       // deploy 함수 호출 (딱히 반환값을 사용하지 않으므로 await로만 호출)
       await deploy(cid, token);
-      alert("배포 성공! propile 페이지로 이동합니다.");
-      navigate("/profile");
+      alert("배포 성공! detail 페이지로 이동합니다.");
+      navigate(`/detail/${pid}`);
     } catch (error) {
       alert("배포 실패! 리뷰창으로 돌아갑니다. 다시 Deploy를 시도하세요.");
+      await review(cid, pid, token);
     } finally {
       dispatch(setLoading(false));
     }

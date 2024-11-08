@@ -88,7 +88,7 @@ export class TerraformService {
         - \`aws_access_key\` and \`aws_secret_key\` and \`aws_region\` to allow secure credential configuration
         - Any other critical dynamic values specified in the keywords list that must be adjustable.
         - ${randomName} to specify the name of resources created by this Terraform code
-        - File names must start with a letter, not a number or special character.
+        - object names must start with a letter, not a number or special character.
       3. Other configurations, such as instance types, AMIs, and static setup values, can be hardcoded directly into the Terraform code to simplify deployment.
 
       4. Avoid including AWS credentials directly in the code; assume credentials will be provided through environment variables, such as process.env.AWS_ACCESS_KEY_ID and process.env.AWS_SECRET_ACCESS_KEY, or set up securely through Lambda configuration.
