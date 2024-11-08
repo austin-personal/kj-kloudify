@@ -26,22 +26,6 @@ const Services: React.FC<ServicesProps> = ({
   const token = localStorage.getItem("token") ?? "";
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    const fetchProjectData = async () => {
-      try {
-        if (token) {
-          const response = await projectSummary(cid, token);
-        } else {
-          console.error("토큰이 없습니다. 인증 문제가 발생할 수 있습니다.");
-        }
-      } catch (error) {
-        console.error("프로젝트 정보를 가져오는 중 오류 발생:", error);
-      }
-    };
-
-    fetchProjectData();
-  }, [cid, navigate]);
-
   const getImagePath = (name: string) => {
     try {
       // console.log("전:", name);
@@ -62,7 +46,7 @@ const Services: React.FC<ServicesProps> = ({
       // 양 끝에 있는 대괄호 제거
       return code.replace(/^\[|\]$/g, "");
     });
-    const chartString = result[0];
+    const chartString = result[0] ?? "";
     const serviceNames = Array.from(
       chartString.matchAll(/(\b\w+)(?=\s*\[<img\s)/g)
     ).map((match) => match[1].toUpperCase());
@@ -74,6 +58,23 @@ const Services: React.FC<ServicesProps> = ({
         !item.includes("사용자") && !item.toLowerCase().includes("client")
     );
   }
+
+  useEffect(() => {
+    const fetchProjectData = async () => {
+      try {
+        if (token) {
+          const response = await projectSummary(cid, token);
+          console.log("응답왔나?:", response);
+        } else {
+          console.error("토큰이 없습니다. 인증 문제가 발생할 수 있습니다.");
+        }
+      } catch (error) {
+        console.error("프로젝트 summary를 가져오는 중 오류 발생:", error);
+      }
+    };
+
+    fetchProjectData();
+  }, [navigate]);
 
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setIsChecked(e.target.checked);
