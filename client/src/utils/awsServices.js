@@ -74,6 +74,7 @@ export const awsServices = [
   "ALB",
   "Backup",
   "Elastic-Load-Balancing",
+  "Elastic-Load-Balancer",
 ];
 
 // 약어와 원본 매핑 객체
@@ -93,6 +94,7 @@ const serviceAliases = {
   ELP: "Elastic-IP",
   NATGW: "NAT-Gateway",
   "Elastic-Load-Balancing": "ELB",
+  "Elastic-Load-Balancer": "ELB",
   ELB: "ELB", // 다른 약어도 추가 가능
   ECR: "Elastic-Container-Registry",
   ECS: "Elastic-Container-Service",
