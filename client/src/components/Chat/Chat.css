@@ -79,7 +79,6 @@
   flex-direction: column;
   align-items: center;
   max-width: 80%;
-  padding: 10px;
   border-radius: 15px;
   word-wrap: break-word;
   box-shadow: 5px 4px 20px 0px rgba(0, 0, 0, 13%);
@@ -210,6 +209,7 @@
 
 .template-sub-th {
   font-size: 18px;
+  padding: 0 15px;
   align-self: flex-start;
   text-align: left;
 }
@@ -231,7 +231,7 @@
 
 .message-content {
   white-space: pre-line;
-  padding: 5px 10px;
+  padding: 12px 17px;
 }
 
 .chat-form {
@@ -368,6 +368,7 @@
 
 /* HTML: <div class="loader"></div> */
 .loader {
+  height: 25px;
   width: 50px;
   aspect-ratio: 2;
   --_g: no-repeat radial-gradient(circle closest-side, #ffffff 90%, #0000);
@@ -533,4 +534,8 @@
 
 .chat-upper-text-th {
   opacity: 0.8;
+}
+
+.loading-text-th {
+  padding: 0 15px;
 }

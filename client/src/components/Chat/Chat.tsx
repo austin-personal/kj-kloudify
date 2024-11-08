@@ -23,7 +23,8 @@ interface ChatProps {
 interface Message {
   id: string;
   header?: string;
-  text: string | JSX.Element;
+  text?: string;
+  element?: JSX.Element; // 추가
   subtext?: string;
   sender: "user" | "bot";
   buttons?: { id: number; label: string }[];
@@ -36,12 +37,13 @@ interface Message {
 const defaultBotMessage: Message[] = [
   {
     id: uuidv4(),
-    text: "Kloudify와 쉽게 클라우드 아키텍쳐를 설계 해봐요! 우측 상단에 Kloudify와 대화하는 팁을 참고 하여 대화해 보세요.",
+    text: "Kloudify와 쉽게 클라우드 아키텍쳐를 설계 해봐요!\n 우측 상단에 Kloudify와 대화하는 팁을 참고 하여 대화해 보세요.",
     sender: "bot",
   },
   {
     id: uuidv4(),
-    text: "먼저, 당신의 웹서비스에 대해 알고 싶어요. 당신의 웹 서비스의 주요 목적과 기능은 무엇인가요?",
+    header: "구조 설정",
+    text: "먼저, 당신의 웹서비스에 대해 알고 싶어요.\n 당신의 웹 서비스의 주요 목적과 기능은 무엇인가요?",
     sender: "bot",
     subtext: "자유롭게 당신의 서비스를 설명해주세요.",
   },
@@ -82,6 +84,7 @@ const Chat: React.FC<ChatProps> = ({ projectCID }) => {
         dispatch(deactivate());
         dispatch(clearFinishData());
         const initialMessages = await open(projectCID, token);
+        console.log(initialMessages);
         setMessages(defaultBotMessage);
         if (initialMessages && initialMessages.length > 0) {
           let temp = -2;
@@ -395,7 +398,7 @@ const Chat: React.FC<ChatProps> = ({ projectCID }) => {
 
     const loadingMessage: Message = {
       id: uuidv4(),
-      text: <div className="loader"></div>,
+      element: <div className="loader"></div>,
       sender: "bot",
     };
     setMessages((prevMessages) => [...prevMessages, loadingMessage]);
@@ -493,7 +496,7 @@ const Chat: React.FC<ChatProps> = ({ projectCID }) => {
     // 로딩 메시지 추가
     const loadingMessage: Message = {
       id: uuidv4(),
-      text: <div className="loader"></div>,
+      element: <div className="loader"></div>,
       sender: "bot",
     };
     setMessages((prevMessages) => [...prevMessages, loadingMessage]);
@@ -595,7 +598,17 @@ const Chat: React.FC<ChatProps> = ({ projectCID }) => {
                 </div>
               )}
 
-              <div className="message-content">{message.text}</div>
+              <div className="message-content">
+                {message.text ? (
+                  <>
+                    {message.text}
+                  </>
+                ) : (
+                  <div className="loading-text-th">
+                    {message.element}
+                  </div>
+                )}
+              </div>
 
               {/* 체크박스가 존재하면 렌더링 */}
               {message.checks && (

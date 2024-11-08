@@ -77,38 +77,70 @@
 }
 
 .previous-chat {
-  display: flex;
-  flex-direction: column;
-  justify-content: end;
-  position: relative;
-}
-
-.previous-chat-explanation-th {
-  font-size: 22px;
-  padding: 20px;
-  width: 146px;
   position: absolute;
-  bottom: 50px;
-  left: 100%;
-  border-radius: 25px 25px 25px 0;
-  background-color: #b6d6ed;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  z-index: 3;
+  bottom: 10px;
+  right: 10px;
 }
 
 .chat-button {
-  background: none;
-  /* 배경 색 제거 */
+  width: 140px;
+  height: 50px;
+  border-radius: 50px;
+  background-color: rgb(255, 255, 255, 00.8s);
   border: none;
-  /* 테두리 제거 */
-  width: 40px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0px 0px 0px 4px rgba(180, 160, 255, 0.253);
   cursor: pointer;
+  transition-duration: 0.3s;
+  overflow: hidden;
+  position: relative;
+  z-index: 5;
 }
 
-.chat-button:hover~.visible {
+.svgIcon {
+  width: 27px;
+  transition-duration: 0.3s;
+}
+
+.chat-button:hover {
+  border-radius: 50px;
+  transition-duration: 0.3s;
+  background-color: rgb(181, 160, 255);
+  align-items: center;
+}
+
+.chat-button:hover .svgIcon,
+.chat-button:hover .detail-chat-btn-text-th {
+  /* width: 20px; */
+  transition-duration: 0.3s;
+  transform: translateY(-200%);
+}
+
+.chat-button::before {
   position: absolute;
+  bottom: -20px;
+  content: "Click Me";
+  color: white;
+  /* transition-duration: .3s; */
+  font-size: 0px;
+  z-index: 5;
+}
+
+.chat-button:hover::before {
+  font-size: 22px;
   opacity: 1;
+  bottom: unset;
+  /* transform: translateY(-30px); */
+  transition-duration: 0.3s;
+}
+
+.detail-chat-btn-text-th {
+  font-size: 22px;
+  margin-left: 10px;
+  transition-duration: 0.3s;
 }
 
 .hide {
@@ -123,17 +155,14 @@
 .previous-chatting-th {
   display: flex;
   justify-content: center;
-  border-radius: 20px;
-  background-color: #e7e3c7;
-  width: 150%;
-  height: 85%;
-  padding: 20px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  background-color: white;
+  border-radius: 15px;
+  width: 100%;
+  height: 100%;
   position: absolute;
-  left: 20px;
-  bottom: 10px;
-  transition: opacity 0.5s ease;
   overflow-y: auto;
-  opacity: 0;
+  z-index: 2;
 }
 
 .detail-loading-chat {
@@ -153,24 +182,20 @@
   flex-direction: column;
   gap: 10px;
   /* 메시지 사이 간격 */
+  padding: 25px;
 }
 
 .chat-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   max-width: 80%;
-  word-break: break-word;
-  /* 긴 텍스트 줄바꿈 */
   padding: 10px;
-  border-radius: 8px;
-}
-
-.previous-chatting-th.open {
-  opacity: 1;
-  z-index: 2;
-}
-
-.previous-chatting-th.close {
-  opacity: 0;
-  z-index: 0;
+  border-radius: 15px;
+  word-wrap: break-word;
+  box-shadow: 5px 4px 20px 0px rgba(0, 0, 0, 13%);
+  position: relative;
+  font-size: 20px;
 }
 
 .service-status-th {
@@ -184,6 +209,19 @@
 
 .architecture-box {
   width: 67%;
+  position: relative;
+}
+
+.download-container-detail {
+  position: absolute;
+  display: inline-block;
+  right: 0;
+}
+
+.download-container-detail:hover .download-options {
+  opacity: 1; /* 보이도록 설정 */
+  transform: translateY(0); /* 원래 위치로 이동 */
+  pointer-events: auto; /* 보일 때 클릭 가능하도록 설정 */
 }
 
 /* Detail.css */
