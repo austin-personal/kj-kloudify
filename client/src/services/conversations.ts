@@ -32,3 +32,27 @@ export const open = async (cid: number, token: string | null) => {
         throw error;
     }
 };
+
+//서비스 키워드 가져오는 api
+export const fetch = async (cid: number, token: string | null) => {
+    try {
+        const response = await axios.post(`${API_URL}/fetch`,
+            { CID: cid },
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+          
+        // response.data가 JSON 문자열이라면 파싱 필요
+        const data = typeof response.data === 'string' ? JSON.parse(`[${response.data}]`) : response.data;
+
+        // 각 항목의 service 필드만 배열로 추출
+        const services = Array.isArray(data) ? data.map((item: { service: string }) => item.service) : [];
+
+        return services;
+    } catch (error) {
+        console.error('대화 실패!! : ', error);
+        throw error;
+    }
+};

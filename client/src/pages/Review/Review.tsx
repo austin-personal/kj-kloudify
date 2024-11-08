@@ -1,11 +1,12 @@
 // Review.tsx
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import Services from "../../components/Services/Services";
 import Toast from "../../components/Toast/Toast";
+import CodeBlock from "../../components/CodeBlock/CodeBlock";
 import "./Review.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCloudArrowDown } from "@fortawesome/free-solid-svg-icons";
-import { download } from "../../services/terraforms";
+import { download, terraInfo } from "../../services/terraforms";
 import { useParams } from "react-router-dom";
 import { useAppSelector, useAppDispatch } from "../../store/hooks";
 import MermaidChart from "../../components/Mermaid/mermaid";
@@ -24,8 +25,32 @@ const Review: React.FC = () => {
   const [showToast, setShowToast] = useState(true);
   const mermaidRef = useRef<HTMLDivElement>(null); // MermaidChart 요소를 참조할 ref 추가
   const token = localStorage.getItem("token") ?? "";
-
+  const [isTerraformVisible, setIsTerraformVisible] = useState(false);
+  const [terraData, setTerraData] = useState<string>("");
   dispatch(setHasSecret(true));
+
+  useEffect(() => {
+    // isReviewReady가 true가 될 때 terraInfo 요청을 보냄
+    const fetchTerraInfo = async () => {
+      try {
+        if (cid !== null) {
+          // cid가 null이 아닐 때만 요청
+          const data = await terraInfo(cid, token); // terraInfo 요청
+          setTerraData(data); // 가져온 데이터를 상태에 저장
+        }
+      } catch (error) {
+        console.error("terraInfo 요청 실패:", error);
+      }
+    };
+
+    if (isReviewReady) {
+      fetchTerraInfo();
+    }
+  }, [isReviewReady, cid, token]);
+
+  const handleCheckboxChange = () => {
+    setIsTerraformVisible(!isTerraformVisible); // 상태 토글
+  };
 
   const handleScreenshot = async () => {
     if (mermaidRef.current) {
@@ -71,9 +96,23 @@ const Review: React.FC = () => {
     }
   };
 
+  if (isReviewReady) {
+  }
+
   return (
     <div className="review">
       <div className="review-board">
+        <div className="container">
+          <input
+            type="checkbox"
+            className="checkbox"
+            id="checkbox"
+            onChange={handleCheckboxChange}
+          />
+          <label className="switch" htmlFor="checkbox">
+            <span className="slider"></span>
+          </label>
+        </div>
         <div className="download">
           {isReviewReady ? (
             <div
@@ -101,9 +140,19 @@ const Review: React.FC = () => {
             </button>
           )}
         </div>
-        <div ref={mermaidRef} className="mermaid-chart">
-          <MermaidChart chartCode={finishData}></MermaidChart>
-        </div>
+        {isTerraformVisible ? (
+          <div className="terraform-code">
+            <div className="terraform-frame">
+              <div className="terraform-container">
+                <CodeBlock code={terraData} className="code" />
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div ref={mermaidRef} className="mermaid-chart">
+            <MermaidChart chartCode={finishData} />
+          </div>
+        )}
       </div>
 
       <div className="vertical-line"></div>

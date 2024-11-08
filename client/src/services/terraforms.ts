@@ -124,3 +124,23 @@ export const state = async (cid: number | undefined, token: string | null, optio
         }
     }
 }
+
+
+export const terraInfo = async (cid: number, token: string) => {
+    try {
+        console.log("terraInfo",cid,token);
+        const response = await axios.post(`${API_URL}/terraInfo`,
+            {
+                CID: cid
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+        return response.data;
+    } catch (error) {
+        console.error('테라폼 코드 개박살!! ;', error)
+        throw error;
+    }
+}
