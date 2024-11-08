@@ -10,7 +10,7 @@ const Loading: React.FC = () => {
             <div className="loading-banner">
                 <div className="loading-text"><h3>잠시만 기다려 주세요, 서비스 배포 중입니다. 조금만 기다려 주세요!</h3></div>
             </div>
-            <Lottie animationData={Loadinganimation} />
+            <Lottie animationData={Loadinganimation} style={{width: "200px", height: "200px"}}/>
         </div>
     );
 };
