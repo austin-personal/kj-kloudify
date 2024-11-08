@@ -13,12 +13,6 @@ export interface Template {
 }
 
 const templates: Record<number, Template> = {
-    2: {
-        header: "구조 설정",
-        name: "template1-1",
-        text: "먼저, 당신의 웹서비스에 대해 알고 싶어요. 당신의 웹 서비스의 주요 목적과 기능은 무엇인가요?",
-        subtext: "자세히 당신의 서비스를 설명해주세요."
-    },
     3: {
         header: "구조 설정",
         name: "template1-2",
@@ -36,7 +30,6 @@ const templates: Record<number, Template> = {
         text: "당신의 예산과 비용 관리 계획은 어떻게 되나요?",
         buttons: [
             { id: 5, label: "저렴하게 사용" },
-            { id: 6, label: "중간 금액 (월 $50)" },
             { id: 7, label: "금액 상관 없음" },
         ]
     },
@@ -68,8 +61,9 @@ const templates: Record<number, Template> = {
     7: {
         header: "서버",
         name: "template2-1",
-        text: "서버는 어떤 특징이 필요하나요? (다중선택)",
+        text: "지금부터는 서버에 대한 세부 설정을 할거예요.\n서버는 어떤 특징이 필요하나요? (다중선택)",
         checks: [
+            { id: 1, label: "기본 서버" },
             { id: 18, label: "CPU 집약적" },
             { id: 19, label: "Memory 집약적" },
             { id: 20, label: "통신 집약적" },
@@ -104,7 +98,7 @@ const templates: Record<number, Template> = {
     10: {
         header: "데이터베이스",
         name: "template3-1",
-        text: "데이터베이스 유형이 어떻게 되나요?",
+        text: "지금부터는 데이터베이스에 대한 세부 설정을 할거예요.\n데이터베이스 유형이 어떻게 되나요?",
         nobutton: { id: 27, label: "알아서 해줘" },
         buttons: [
             { id: 33, label: "관계형 데이터베이스 (postgres)" },
@@ -129,7 +123,7 @@ const templates: Record<number, Template> = {
     12: {
         header: "스토리지",
         name: "template4-1",
-        text: "스토리지의 사용 패턴은 어떻게 되나요?",
+        text: "지금부터는 스토리지에 대한 세부 설정을 할거예요.\n스토리지의 사용 패턴은 어떻게 되나요?",
         nobutton: { id: 27, label: "알아서 해줘" },
         buttons: [
             { id: 44, label: "기본 접근" },
@@ -162,7 +156,7 @@ const templates: Record<number, Template> = {
     15: {
         header: "네트워크",
         name: "template5-1",
-        text: "애플리케이션의 네트워크 요구사항은 무엇인가요? (다중선택)",
+        text: "지금부터는 네트워크에 대한 세부 설정을 할거예요.\n애플리케이션의 네트워크 요구사항은 무엇인가요? (다중선택)",
         checks: [
             { id: 46, label: "기본 성능의 보안과 네트워크" },
             { id: 55, label: "추가적인 보안" },
