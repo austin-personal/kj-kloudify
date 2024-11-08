@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import "./Home.css";
 
 import Chat from "../../components/Chat/Chat";
+import SideBar from "../../components/SideBar/SideBar";
 import MermaidChart from "../../components/Mermaid/mermaid";
 
 import { projectOneInfo } from "../../services/projects";
@@ -51,7 +52,6 @@ const Home: React.FC = () => {
         if (token) {
           const response = await projectOneInfo(Number(pid), token);
           setProject(response.data);
-
           if (response.data.isDeployed === true) {
             navigate("/profile");
           }
@@ -102,7 +102,7 @@ const Home: React.FC = () => {
   return (
     <div className="home">
       {/* 슬라이드바 삭제 */}
-      {/* <SideBar isOpen={isOpen} setIsOpen={setIsOpen} /> */}
+      <SideBar />
       <Chat projectCID={project!.CID} />
       <div className="vertical-line"></div>
       <div className="right-side">
