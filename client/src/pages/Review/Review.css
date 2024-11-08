@@ -19,6 +19,59 @@
   position: relative;
 }
 
+/* The switch - the box around the slider */
+.container {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  display: flex;
+  justify-content: flex-start;
+  width: 51px;
+  height: 31px;
+  z-index: 2;
+}
+
+/* Hide default HTML checkbox */
+.checkbox {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+}
+
+.switch {
+  width: 100%;
+  height: 100%;
+  display: block;
+  background-color: #e9e9eb;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease-out;
+}
+
+/* The slider */
+.slider {
+  width: 27px;
+  height: 27px;
+  position: absolute;
+  left: calc(50% - 27px / 2 - 10px);
+  top: calc(50% - 27px / 2);
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.15), 0px 3px 1px rgba(0, 0, 0, 0.06);
+  transition: all 0.2s ease-out;
+  cursor: pointer;
+}
+
+.checkbox:checked + .switch {
+  background-color: #34c759;
+}
+
+.checkbox:checked + .switch .slider {
+  left: calc(50% - 27px / 2 + 10px);
+  top: calc(50% - 27px / 2);
+}
+
 .download {
   position: absolute;
   top: 5px;
@@ -55,6 +108,22 @@
   border-style: solid;
   border-width: 1px;
   border-color: #6bb961;
+}
+
+.terraform-code {
+  width: 100%;
+  height: 100%;
+}
+
+.code {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background-color: white;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 15px;
 }
 
 .mermaid-chart {

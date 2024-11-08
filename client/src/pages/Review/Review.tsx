@@ -22,8 +22,12 @@ const Review: React.FC = () => {
   const [showToast, setShowToast] = useState(true);
   const mermaidRef = useRef<HTMLDivElement>(null); // MermaidChart 요소를 참조할 ref 추가
   const token = localStorage.getItem("token") ?? "";
-
+  const [isTerraformVisible, setIsTerraformVisible] = useState(false);
   dispatch(setHasSecret(true));
+
+  const handleCheckboxChange = () => {
+    setIsTerraformVisible(!isTerraformVisible); // 상태 토글
+  };
 
   const handleScreenshot = async () => {
     if (mermaidRef.current) {
@@ -72,6 +76,17 @@ const Review: React.FC = () => {
   return (
     <div className="review">
       <div className="review-board">
+        <div className="container">
+          <input
+            type="checkbox"
+            className="checkbox"
+            id="checkbox"
+            onChange={handleCheckboxChange}
+          />
+          <label className="switch" htmlFor="checkbox">
+            <span className="slider"></span>
+          </label>
+        </div>
         <div className="download">
           {isReviewReady ? (
             <div
@@ -99,9 +114,15 @@ const Review: React.FC = () => {
             </button>
           )}
         </div>
-        <div ref={mermaidRef} className="mermaid-chart">
-          <MermaidChart chartCode={finishData}></MermaidChart>
-        </div>
+        {isTerraformVisible ? (
+          <div className="terraform-code">
+            <div className="code"></div>
+          </div>
+        ) : (
+          <div ref={mermaidRef} className="mermaid-chart">
+            <MermaidChart chartCode={finishData} />
+          </div>
+        )}
       </div>
 
       <div className="vertical-line"></div>
