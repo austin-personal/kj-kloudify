@@ -126,8 +126,7 @@
   -webkit-transition: all 0.5s;
   width: 420px;
   font-size: 20px;
-  margin: 0 20px;
-  margin-bottom: 15px;
+  margin: 10px 20px;
   cursor: pointer;
 }
 
@@ -156,7 +155,7 @@
   -webkit-transition: all 0.5s;
   width: 420px;
   font-size: 22px;
-  margin: 15px 20px;
+  margin: 10px 20px;
   cursor: pointer;
 }
 

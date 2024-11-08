@@ -305,18 +305,18 @@ const Detail: React.FC = () => {
   return (
     <div className="detail-page">
       <div className="project-header">
-        <p className="project-name-title-th">
-          Project Name :{" "}
-          <span className="project-name-th">{project.projectName}</span>
-        </p>
+        <div className="project-name-container-detail">
+          <div className="project-name-label">Project</div>
+          <div className="home-project-name">{project.projectName}</div>
+        </div>
         <button
-          className="deleteButton"
+          className="deleteButton-detail"
           onClick={(e) => {
             e.stopPropagation();
             handleDeleteClick(project);
           }}
         >
-          <FontAwesomeIcon icon={faTrashCan} size="xl" className="svg" />
+          <FontAwesomeIcon icon={faTrashCan} size="3x" className="svg" />
         </button>
       </div>
 

@@ -177,22 +177,18 @@
 
 /* From Uiverse.io by vinodjangid07 */
 .deleteButton {
-  width: 40px;
-  height: 40px;
   background-color: transparent;
   border: none;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s;
   color: gray;
-}
-
-.deleteButton svg {
-  width: 80%;
+  width: 40px;
+  height: 40px;
 }
 
 .deleteButton:hover {
-  background-color: #e37e7e;
+  background-color: #f6b755;
   overflow: visible;
   color: white;
 }
