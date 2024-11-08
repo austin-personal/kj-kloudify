@@ -68,7 +68,7 @@ export class ProjectsService {
     return project;
   }
 
-  // PID로 프로젝트 삭제
+  // 해당 프로젝트에 관한 모든 것 삭제.
   async remove(pid: number, uid: number): Promise<void> {
     const project = await this.projectRepository.findOne({ where: { PID: pid } });
     if (!project) {
@@ -77,49 +77,53 @@ export class ProjectsService {
   
     const cid = project.CID;  // 프로젝트의 CID 값 가져오기 (문자열)
     console.log("Deleting project with PID:", pid, "and CID:", cid);
-    
+  
     // RDB에서 프로젝트 삭제
     await this.projectRepository.remove(project);
   
     // DynamoDB 설정
-    const dynamoDBClient = new DynamoDBClient({ region: 'ap-northeast-2' }); // 서울 리전
-  
-    // DynamoDB에서 CID 값을 가진 항목을 스캔해서 모두 삭제
-    const scanParams = {
-      TableName: 'Conversations',  // DynamoDB 테이블 이름
-      FilterExpression: 'CID = :cid',
-      ExpressionAttributeValues: {
-        ':cid': { S: cid.toString() },  // CID는 문자열로 처리
-      },
-    };
+    const dynamoDBClient = new DynamoDBClient({ region: 'ap-northeast-2' }); 
+    
+    // 삭제할 테이블 목록
+    const tables = ['Archboard_keyword', 'Conversations', 'ConversationsState'];
   
     try {
-      // 1. CID에 해당하는 항목을 스캔
-      const scanResult = await dynamoDBClient.send(new ScanCommand(scanParams));
-      const itemsToDelete = scanResult.Items ?? [];  // itemsToDelete가 undefined인 경우 빈 배열로 초기화
+      for (const tableName of tables) {
+        const scanParams = {
+          TableName: tableName,  
+          FilterExpression: 'CID = :CID',
+          ExpressionAttributeValues: {
+            ':CID': { N: cid.toString() },  
+          },
+        };
   
-      if (itemsToDelete.length === 0) {
-        console.log(`No items found for CID: ${cid}`);
-        return;
-      }
+        // 1. CID에 해당하는 항목을 스캔
+        const scanResult = await dynamoDBClient.send(new ScanCommand(scanParams));
+        const itemsToDelete = scanResult.Items ?? [];  // itemsToDelete가 undefined인 경우 빈 배열로 초기화
   
-      // 2. 스캔한 각 항목을 삭제 (ID 사용)
-      for (const item of itemsToDelete) {
-        if (item.ID && item.ID.N) { // ID는 숫자(N)
-          const deleteParams = {
-            TableName: 'Conversations',
-            Key: {
-              ID: { N: item.ID.N },  // 숫자로 저장된 ID 값만 사용하여 삭제
-            }
-          };
-          console.log("Deleting item with ID:", item.ID.N);
-          await dynamoDBClient.send(new DeleteItemCommand(deleteParams));
-        } else {
-          console.error(`Skipping item due to missing ID: ${JSON.stringify(item)}`);
+        if (itemsToDelete.length === 0) {
+          console.log(`No items found for CID: ${cid} in table: ${tableName}`);
+          continue;
         }
-      }
   
-      console.log(`Deleted ${itemsToDelete.length} items from DynamoDB with CID: ${cid}`);
+        // 2. 스캔한 각 항목을 삭제 (ID 사용)
+        for (const item of itemsToDelete) {
+          if (item.ID && item.ID.N) { // ID는 숫자(N)
+            const deleteParams = {
+              TableName: tableName,
+              Key: {
+                ID: { N: item.ID.N },  // 숫자로 저장된 ID 값만 사용하여 삭제
+              }
+            };
+            console.log(`Deleting item with ID: ${item.ID.N} from table: ${tableName}`);
+            await dynamoDBClient.send(new DeleteItemCommand(deleteParams));
+          } else {
+            console.error(`Skipping item due to missing ID: ${JSON.stringify(item)}`);
+          }
+        }
+  
+        console.log(`Deleted ${itemsToDelete.length} items from DynamoDB table: ${tableName} with CID: ${cid}`);
+      }
     } catch (error) {
       console.error("Error deleting items from DynamoDB:", error);
       throw new InternalServerErrorException('Failed to delete items from DynamoDB');
