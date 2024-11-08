@@ -14,8 +14,8 @@ const MermaidChart: React.FC<MermaidChartProps> = ({ chartCode }) => {
   console.log("파싱파싱22:", chartCode);
 
   const result = chartCode.map((code) => {
-    // 양 끝에 있는 대괄호 제거
-    return code.replace(/^\[|\]$/g, "");
+    // 양 끝의 대괄호만 제거하고, 문자열 내 모든 소괄호 제거
+    return code.replace(/^\[|\]$/g, "").replace(/[()]/g, "");
   });
 
   const chartString =
