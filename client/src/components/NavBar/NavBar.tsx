@@ -120,8 +120,7 @@ const NavBar: React.FC = () => {
       }
       const cid = await create(projectName, token); // token이 string임을 보장
       navigate(`/home/${cid}`);
-    } catch (error) {
-    }
+    } catch (error) {}
     setIsModalOpen(false); // 제출 후 모달을 닫기
   };
 
@@ -172,7 +171,7 @@ const NavBar: React.FC = () => {
               <h2>Create New Project</h2>
               <form onSubmit={handleProjectSubmit}>
                 <label htmlFor="projectName">
-                  먼저, 프로젝트 이름을 입력해주세요.
+                  먼저, 영어로 프로젝트 이름을 입력해주세요.
                 </label>
                 <input
                   className="projectName-input"
