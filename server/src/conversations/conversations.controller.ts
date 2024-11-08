@@ -14,11 +14,10 @@ export class ConversationsController {
     return response;
   }
 
-  // @Post('increment')
-  // incrementCounter(): string {
-  //     ConversationsService.incrementModelCounter();
-  //     return `Counter incremented to ${ConversationsService.modelSwitchCounter}`;
-  // }
+  @Post('fetch')
+  async fetchKeywords(@Body('CID') CID: number): Promise<any> {
+    return this.conversationsService.fetchExistingKeywords(CID); // 인스턴스 메서드 호출
+  }
 
   @Post('open')
   async openConversation(@Body('CID') CID: number): Promise<any> {
