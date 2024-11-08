@@ -205,6 +205,10 @@ export class ConversationsService {
                     생성한 최종구조에 대해 간략하게 설명해주세요. 그리고 설명이 끝나면 다음의 양식대로 **양식 앞에 붙여 \n 없이 한줄로 글을 마무리해주세요
                     생성된 서비스 양식:
                     **{ "service": "", "options": { "ami": "", "instance_type": "", "public":  } },{ "service": "", "options": { "engine": "", "instance_class": "", "allocated_storage":  } },{ "service": "", "options": { "bucket_name": "", "access": "" } }
+
+                    그리고 해당 양식에 대해서 mermaid코드 또한 생성해주세요. 대화 로그를 참조하여 구조를 짜주세요.
+                    생성된 mermaid 양식:
+                    !![graphTD ...]
                     `;
 
             default:
@@ -824,11 +828,12 @@ export class ConversationsService {
         }
     }
     // summary들 생산 (가격 정보. 아키 서머리)
-    async generateSummary(cid: number, type: 'summary' | 'price'): Promise<string> {
+    async generateSummary(CID: number, type: 'summary' | 'price'): Promise<string> {
         // 1. DynamoDB에서 keyword 데이터 가져오기
+        const FuckingCID = Number(CID);
         const params = {
             TableName: 'Archboard_keyword',
-            Key: { CID: cid },
+            Key: { CID: FuckingCID },
             ProjectionExpression: 'keyword',
         };
         const result = await this.dynamoDB.get(params).promise();
@@ -840,8 +845,42 @@ export class ConversationsService {
 
         // 2. Bedrock 요청을 위한 프롬프트 내용 준비
         const prompt_content = type === 'summary'
-            ? `Please provide a detailed summary of the cloud architecture, including each service's information based on the following keywords: ${keywordData}`
-            : `Please provide a detailed price summary of the cloud architecture, including each service's information based on the following keywords: ${keywordData}`;
+            ? `다음 키워드를 기반으로 각 서비스의 정보를 포함한 클라우드 아키텍처에 대한 상세 요약을 제공해 주세요. 각 서비스에 대해 두 줄 이내의 설명을 포함해 주세요. 순수 내용만 나오게 해주세요. 추가 설명은 필요 없습니다.
+
+아래와 같은 JSON 형식으로 출력해 주세요:
+
+{
+  "aws_services": {
+    "<서비스_이름>": {
+      "title": "<서비스 제목>",
+      "description": [
+        "<첫 번째 설명 문장>",
+        "<두 번째 설명 문장>"
+      ]
+    },
+    // 키워드에 포함된 각 서비스마다 반복
+  }
+}
+
+키워드: ${keywordData}
+`
+            : `다음 키워드 내용을 바탕으로, 각 서비스의 가격 정보와 월간 총 예상 비용을 포함하여 불필요한 도입부나 마무리 멘트 없이 아래 형식으로 깔끔하게 정리해 주세요. 서비스의 개수는 유동적입니다.
+
+            [각 서비스 반복 시작]
+            [서비스 이름]
+              - [세부 정보]
+              - 가격: [가격 정보]
+            [각 서비스 반복 끝]
+            
+            총 예상 비용 (월간):
+            - [서비스 이름]: [월간 비용]
+            - ...
+            
+            총계: [총 월간 비용]/월
+            
+            참고: 실제 비용은 사용량, 리전, 데이터 전송 등에 따라 달라질 수 있습니다.
+            
+            키워드: ${keywordData}`;
 
         // 3. Bedrock 요청 본문 생성
         const requestBody = {
@@ -854,7 +893,6 @@ export class ConversationsService {
                 },
             ],
         };
-
         try {
             // 4. Bedrock 모델 호출
             const response = await this.bedrockClient.invokeModel({
@@ -866,8 +904,11 @@ export class ConversationsService {
             const responseBody = response.body.toString();
             const parsedResponse = JSON.parse(responseBody);
 
+
+            console.log(parsedResponse);
+
             // 예상되는 데이터 형식에 따라 응답 반환
-            return parsedResponse.messages[0]?.content || ''; // 적절한 키에 맞게 데이터를 반환
+            return parsedResponse.content[0] || ''; // 적절한 키에 맞게 데이터를 반환
         } catch (error) {
             throw new Error(`Bedrock 모델 호출 실패: ${error.message}`);
         }

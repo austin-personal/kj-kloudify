@@ -5,7 +5,8 @@ import { useDispatch } from "react-redux";
 import { setLoading } from "../../store/loadingSlice";
 import { deploy, review } from "../../services/terraforms";
 import { checkSecret } from "../../services/secrets";
-import { projectSummary } from "../../services/projects";
+import { projectSummary, projectPrice } from "../../services/projects";
+import { fetch } from "../../services/conversations";
 import { extractServiceName } from "../../utils/awsServices";
 interface ServicesProps {
   cid: number;
@@ -23,7 +24,9 @@ const Services: React.FC<ServicesProps> = ({
   // 모달 열림 상태 관리
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
-
+  const [serviceNames, setServiceNames] = useState<string[]>([]);
+  const [summary, setSummary] = useState<any>(null);
+  const [priceResponse, setPriceResponse] = useState<any>(null);
   const navigate = useNavigate();
   const token = localStorage.getItem("token") ?? "";
   const dispatch = useDispatch();
@@ -39,34 +42,25 @@ const Services: React.FC<ServicesProps> = ({
       return "https://icon.icepanel.io/AWS/svg/Compute/EC2.svg"; // 기본 이미지 경로 설정
     }
   };
-  //서비스 이름 추출
-  let filteredMatches: string[] = [];
-
-  let serviceNames: string[] = [];
-  if (chartCode) {
-    const result = chartCode.map((code) => {
-      // 양 끝에 있는 대괄호 제거
-      return code.replace(/^\[|\]$/g, "");
-    });
-    const chartString = result[0] ?? "";
-    const serviceNames = Array.from(
-      chartString.matchAll(/(\b\w+)(?=\s*\[<img\s)/g)
-    ).map((match) => match[1].toUpperCase());
-    console.log("서비스 이름:", serviceNames);
-
-    // `사용자` 또는 `client` 키워드를 포함하지 않는 항목만 필터링
-    filteredMatches = serviceNames.filter(
-      (item) =>
-        !item.includes("사용자") && !item.toLowerCase().includes("client")
-    );
-  }
 
   useEffect(() => {
     const fetchProjectData = async () => {
+      if (serviceNames && summary) return; // 이미 데이터가 있으면 요청 안함
+
       try {
         if (token) {
-          const response = await projectSummary(cid, token);
-          console.log("응답왔나?:", response);
+          const ServiceNameResponse = await fetch(cid, token);
+          setServiceNames(ServiceNameResponse);
+          console.log("서비스 배열", ServiceNameResponse);
+
+          const SummaryResponse = await projectSummary(cid, token);
+          if (SummaryResponse && typeof SummaryResponse.text === "string") {
+            const parsedSummary = JSON.parse(SummaryResponse.text);
+            setSummary(parsedSummary.aws_services); // aws_services 객체만 저장
+          } else {
+            setSummary(SummaryResponse);
+          }
+          console.log("요약", SummaryResponse);
         } else {
           console.error("토큰이 없습니다. 인증 문제가 발생할 수 있습니다.");
         }
@@ -75,8 +69,9 @@ const Services: React.FC<ServicesProps> = ({
       }
     };
 
+    // 데이터를 불러올 필요가 있는 경우에만 fetchProjectData 호출
     fetchProjectData();
-  }, [navigate]);
+  }, [cid, token]);
 
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setIsChecked(e.target.checked);
@@ -108,9 +103,22 @@ const Services: React.FC<ServicesProps> = ({
     }
   };
 
-  // 모달 열고 닫는 함수
-  const toggleModal = () => {
-    setIsModalOpen(!isModalOpen);
+  const openModal = async () => {
+    setIsModalOpen(true);
+    if (priceResponse) return;
+    try {
+      if (token) {
+        const response = await projectPrice(cid, token);
+        setPriceResponse(response);
+        console.log("PriceResponse", response);
+      }
+    } catch (error) {
+      console.error("프로젝트 price를 가져오는 중 오류 발생:", error);
+    }
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
   };
 
   return (
@@ -118,12 +126,12 @@ const Services: React.FC<ServicesProps> = ({
       <div className="price-summary-header">
         <span className="top-label-service">서비스</span>
         <span className="top-label-price">상세 정보</span>
-        <button className="top-price-summary-btn" onClick={toggleModal}>
+        <button className="top-price-summary-btn" onClick={openModal}>
           Price Summary
         </button>
       </div>
       <div className="service-container">
-        {filteredMatches.map((item, index) => (
+        {serviceNames.map((item, index) => (
           <div key={index}>
             <div className="service-element">
               <img
@@ -132,7 +140,21 @@ const Services: React.FC<ServicesProps> = ({
                 className="service-image"
               />
               <span className="service-label">{item}</span>
-              <span className="price-label">서비스 상세정보</span>
+              {/* 서비스 상세정보 라벨 대체 */}
+              {summary && summary[item] ? (
+                <div className="price-label">
+                  <h3>{summary[item].title}</h3>
+                  <ul>
+                    {summary[item].description.map(
+                      (desc: string, i: number) => (
+                        <li key={i}>{desc}</li>
+                      )
+                    )}
+                  </ul>
+                </div>
+              ) : (
+                <span className="price-label">loading...</span>
+              )}
             </div>
           </div>
         ))}
@@ -144,9 +166,15 @@ const Services: React.FC<ServicesProps> = ({
             <div className="modal">
               <h2>Price Summary Details</h2>
               <div className="modal-container">
-                <p>ㅎㅇ</p>
+                {priceResponse &&
+                priceResponse.price &&
+                priceResponse.price.text ? (
+                  <p>{priceResponse.price.text}</p>
+                ) : (
+                  <p>Loading...</p>
+                )}
               </div>
-              <button className="close-btn" onClick={toggleModal}>
+              <button className="close-btn" onClick={closeModal}>
                 Close
               </button>
             </div>

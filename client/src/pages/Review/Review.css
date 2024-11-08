@@ -2,6 +2,7 @@
   display: flex;
   margin: 0px 50px 0 50px;
   position: relative;
+  height: 100vh;
 }
 
 .vertical-line {
@@ -15,8 +16,60 @@
   flex: 2;
   display: flex;
   flex-direction: column; /* 세로 방향 정렬 */
-  align-items: stretch; /* 자식 요소를 세로로 확장 */
   position: relative;
+}
+
+/* The switch - the box around the slider */
+.container {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  display: flex;
+  justify-content: flex-start;
+  width: 51px;
+  height: 31px;
+  z-index: 2;
+}
+
+/* Hide default HTML checkbox */
+.checkbox {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+}
+
+.switch {
+  width: 100%;
+  height: 100%;
+  display: block;
+  background-color: #e9e9eb;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease-out;
+}
+
+/* The slider */
+.slider {
+  width: 27px;
+  height: 27px;
+  position: absolute;
+  left: calc(50% - 27px / 2 - 10px);
+  top: calc(50% - 27px / 2);
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.15), 0px 3px 1px rgba(0, 0, 0, 0.06);
+  transition: all 0.2s ease-out;
+  cursor: pointer;
+}
+
+.checkbox:checked + .switch {
+  background-color: #34c759;
+}
+
+.checkbox:checked + .switch .slider {
+  left: calc(50% - 27px / 2 + 10px);
+  top: calc(50% - 27px / 2);
 }
 
 .download {
@@ -55,6 +108,41 @@
   border-style: solid;
   border-width: 1px;
   border-color: #6bb961;
+}
+
+.terraform-code {
+  width: 100%;
+  height: 100%;
+}
+
+.terraform-frame {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background-color: #312d26;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 15px;
+}
+.terraform-container {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+pre {
+  height: 100%;
+  margin: 0;
+  border-radius: 15px;
+  overflow-y: auto;
+}
+
+code {
+  display: block;
+  margin-top: 20px;
+  height: 100%;
 }
 
 .mermaid-chart {
