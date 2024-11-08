@@ -75,7 +75,7 @@ export class TerraformService {
     }
 
     const prompt_content = `
-      recently error:
+      recently error - Prioritize errors over keywords.:
       ${errorMessage}
 
       Generate Terraform code based on the following keywords:
