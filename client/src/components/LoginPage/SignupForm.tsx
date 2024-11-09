@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { checkEmail, signup } from "../../services/users";
 import "./AuthForm.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCheckCircle } from "@fortawesome/free-solid-svg-icons";
 
 interface SignupFormProps {
   onSwitchToLogin: () => void;
@@ -13,17 +15,18 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSwitchToLogin }) => {
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [errors, setErrors] = useState<{ username?: string; email?: string; password?: string; passwordConfirm?: string }>({});
   const [isEmailChecked, setIsEmailChecked] = useState(false);
+  const [isEmailValid, setIsEmailValid] = useState(false);
 
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$/;
 
   const validateUsername = (username: string) => {
     if (!username.trim()) {
-      setErrors((prevErrors) => ({ ...prevErrors, username: "Username cannot be empty or whitespace only." }));
+      setErrors((prevErrors) => ({ ...prevErrors, username: "사용자 이름을 입력해 주세요" }));
       return false;
     }
     if (/\s/.test(username)) {
-      setErrors((prevErrors) => ({ ...prevErrors, username: "Username cannot contain spaces." }));
+      setErrors((prevErrors) => ({ ...prevErrors, username: "사용자 이름에 빈칸을 포함할 수 없습니다" }));
       return false;
     }
     setErrors((prevErrors) => ({ ...prevErrors, username: undefined }));
@@ -32,7 +35,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSwitchToLogin }) => {
 
   const validateEmail = (email: string) => {
     if (!emailRegex.test(email)) {
-      setErrors((prevErrors) => ({ ...prevErrors, email: "Invalid email format." }));
+      setErrors((prevErrors) => ({ ...prevErrors, email: "유효하지 않은 이메일 형식입니다" }));
       return false;
     }
     setErrors((prevErrors) => ({ ...prevErrors, email: undefined }));
@@ -43,7 +46,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSwitchToLogin }) => {
     if (!passwordRegex.test(password)) {
       setErrors((prevErrors) => ({
         ...prevErrors,
-        password: "Password must be 8-20 characters long, with uppercase, lowercase, number, and special character.",
+        password: "영어 대소문자, 숫자, 특수문자가 모두 포함되어야 합니다",
       }));
       return false;
     }
@@ -53,7 +56,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSwitchToLogin }) => {
 
   const validatePasswordConfirm = (passwordConfirm: string) => {
     if (passwordConfirm !== password) {
-      setErrors((prevErrors) => ({ ...prevErrors, passwordConfirm: "Passwords do not match." }));
+      setErrors((prevErrors) => ({ ...prevErrors, passwordConfirm: "비밀번호가 다릅니다" }));
       return false;
     }
     setErrors((prevErrors) => ({ ...prevErrors, passwordConfirm: undefined }));
@@ -67,13 +70,14 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSwitchToLogin }) => {
     try {
       const isDuplicate = await checkEmail(email);
       if (isDuplicate) {
-        setErrors((prevErrors) => ({ ...prevErrors, email: "Email is already in use." }));
+        setErrors((prevErrors) => ({ ...prevErrors, email: "이미 사용중인 이메일입니다" }));
       } else {
         setIsEmailChecked(true);
+        setIsEmailValid(true);
         setErrors((prevErrors) => ({ ...prevErrors, email: undefined }));
       }
     } catch (error) {
-      alert("Failed to check email. Please try again.");
+      alert("이메일 확인에 실패했습니다. 다시 시도해주세요.");
     }
   };
 
@@ -87,17 +91,17 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSwitchToLogin }) => {
 
     if (!isUsernameValid || !isEmailValid || !isPasswordValid || !isPasswordConfirmValid || !isEmailChecked) {
       if (!isEmailChecked) {
-        setErrors((prevErrors) => ({ ...prevErrors, email: "Please check email availability." }));
+        setErrors((prevErrors) => ({ ...prevErrors, email: "이메일 중복 확인을 해주세요" }));
       }
       return;
     }
 
     try {
       await signup(username, email, password);
-      alert("Signup successful! Please log in.");
+      alert("회원가입이 완료되었습니다. 로그인 해주세요.");
       onSwitchToLogin(); // 회원가입 성공 시 로그인 화면으로 전환
     } catch (error) {
-      alert("Signup failed. Please try again.");
+      alert("회원가입에 실패했습니다. 다시 시도해주세요.");
     }
   };
 
@@ -132,11 +136,23 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSwitchToLogin }) => {
               onChange={(e) => {
                 setEmail(e.target.value);
                 setIsEmailChecked(false);  // 이메일 변경 시 중복 체크 상태 초기화
+                setIsEmailValid(false);    // 이메일 변경 시 유효 상태 초기화
                 if (errors.email) validateEmail(e.target.value);
               }}
               onBlur={() => validateEmail(email)}
             />
-            <button className="email-btn-th" type="button" onClick={handleEmailCheck}>중복</button>
+            <button
+              className={`email-btn-th ${isEmailValid ? "email-checked" : ""}`} // 버튼 스타일 변경
+              type="button"
+              onClick={handleEmailCheck}
+              disabled={isEmailChecked}
+            >
+              {isEmailValid ? (
+                <FontAwesomeIcon icon={faCheckCircle} className="check-icon" />
+              ) : (
+                "중복"
+              )}
+            </button>
           </div>
           <div className="error-space">{errors.email && <span className="error-message-th">{errors.email}</span>}</div>
         </div>

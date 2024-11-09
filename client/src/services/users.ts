@@ -28,7 +28,7 @@ export const login = async (email: string, password: string) => {
             email,
             password,
         });
-        return response.data.access_token;
+        return response.data.achieved;
     } catch (error) {
         console.error('로그인 개박살!! :', error);
         throw error;
