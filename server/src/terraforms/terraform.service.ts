@@ -417,7 +417,7 @@ export class TerraformService {
 
   async destroyInfrastructure(CID: number, userId: number): Promise<any> {
     const execAsync = promisify(exec);
-    const localTerraformPath = `/temp/${CID}`;  // CID별 디렉토리 경로
+    const localTerraformPath = `/tmp/${CID}`;  // CID별 디렉토리 경로
     const mainTfFilePath = `${localTerraformPath}/main.tf`;
   
     try {
@@ -479,7 +479,7 @@ export class TerraformService {
     const stateFilePath = `${localTerraformPath}/terraform.tfstate`;
     const execAsync = promisify(exec);
     // AWS CLI 경로
-    const awsCliPath = `"C:/Program Files/Amazon/AWSCLIV2/aws"`;
+    const awsCliPath = `"aws"`;
 
     try {
       // 요청이 중단되었는지 확인
