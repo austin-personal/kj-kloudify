@@ -20,6 +20,11 @@
   ry: 10px;
 }
 
+#mermaid .cluster rect {
+  rx: 10px;
+  ry: 10px;
+}
+
 #mermaid {
   position: absolute;
 }
