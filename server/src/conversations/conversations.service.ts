@@ -929,7 +929,7 @@ export class ConversationsService {
             const response = await this.bedrockClient.invokeModel({
                 body: JSON.stringify(requestBody),
                 contentType: 'application/json',
-                modelId: 'anthropic.claude-3-5-sonnet-20240620-v1:0',
+                modelId: 'anthropic.claude-3-haiku-20240307-v1:0',
             }).promise();
 
             const responseBody = response.body.toString();
