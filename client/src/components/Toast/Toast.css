@@ -3,7 +3,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: #333;
+  background-color: rgba(0, 0, 0, 0.5);
   color: #fff;
   padding: 12px 20px;
   border-radius: 5px;
@@ -15,6 +15,7 @@
 }
 
 .toast-message {
+  font-size: 25px;
   flex-grow: 1;
   margin-right: 30px; /* close 버튼과의 여유 공간 */
   white-space: pre-wrap;
