@@ -13,6 +13,9 @@ import { setReviewReady, setHasSecret } from "../../store/loadingSlice";
 import { clearFinishData } from "../../store/finishDataSlice";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 
+import Lottie from "lottie-react";
+import Arrow from "./Arrow.json"
+
 interface Project {
   PID: number;
   CID: number;
@@ -112,6 +115,10 @@ const Home: React.FC = () => {
         </div>
         <MermaidChart chartCode={finishData}></MermaidChart>
         <div className="review-btn-container">
+
+          {isActive &&
+            <Lottie className="review-btn-arrow-th" animationData={Arrow} style={{ width: "80px" }}></Lottie>
+          }
           <button
             onClick={handleFinish}
             className={`review-btn-${!isActive ? "disabled" : "enabled"}`}
@@ -119,6 +126,7 @@ const Home: React.FC = () => {
           >
             Review
           </button>
+
         </div>
       </div>
     </div>
