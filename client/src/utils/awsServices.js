@@ -1,5 +1,3 @@
-// src/utils/awsServices.js
-
 // AWS 서비스 이름 배열
 export const awsServices = [
   "EC2",
@@ -53,9 +51,7 @@ export const awsServices = [
   "Timestream",
   "EventBridge",
   "Network ACL",
-  "Network ACLs",
-  "NACL",
-  "Internet-Gateway",
+  "Internet_Gateway",
   "Elastic-Container-Registry",
   "Elastic-Container-Service",
   "Elastic-Block-Store",
@@ -63,85 +59,64 @@ export const awsServices = [
   "Security-Group",
   "ELB",
   "User",
-  "Users",
   "API-Gateway",
   "NAT-Gateway",
-  "Systems-Manager",
   "Spot-Instances",
   "Cost-Explorer",
   "Read-Replica",
   "Elastic-IP",
   "Application-Load-Balancer",
-  "ALB",
   "Backup",
   "Elastic-Load-Balancing",
-  "Elastic-Load-Balancer",
 ];
 
 // 약어와 원본 매핑 객체
 const serviceAliases = {
   ASG: "Auto-Scaling",
-  CloudWatch: "CloudWatch",
   NAT: "NAT-Gateway",
   S3: "S3",
   RDS: "RDS",
   EC2: "EC2",
   ALB: "Application-Load-Balancer",
   EIP: "Elastic-IP",
-  Route: "Route-53",
-  IG: "Internet-Gateway",
-  Internet: "Internet-Gateway",
-  IGW: "Internet-Gateway",
   R53: "Route-53",
-  ELP: "Elastic-IP",
   NATGW: "NAT-Gateway",
-  "Simple-Storage-Service": "S3",
-  "Elastic-Load-Balancing": "ELB",
-  "Elastic-Load-Balancer": "ELB",
-  ELB: "ELB", // 다른 약어도 추가 가능
   ECR: "Elastic-Container-Registry",
   ECS: "Elastic-Container-Service",
   EBS: "Elastic-Block-Store",
   Security: "Security-Group",
-  // "Network ACL": "NACL",
-  "Network ACLs": "NACL",
-  "Network-Access-Control-List": "NACL",
-  ACL: "NACL",
-  // "Auto Scaling": "Auto-Scaling",
-  User: "Users",
-  // "API Gateway": "API-Gateway",
+  INTERNET_GATEWAY: "Internet-Gateway",
+  ELB: "ELB",
+  User: "User",
+  // 다른 약어도 추가 가능
 };
 
-// AWS 서비스 이름 배열과 약어 매핑은 기존 그대로 유지
+// 약어 및 대소문자에 유연한 서비스 이름 변환
+function normalizeServiceName(text: string): string {
+  // 공백과 밑줄을 하이픈으로 변경하여 대소문자 통일
+  const modifiedText = text.replace(/[\s_]+/g, "-").toUpperCase();
 
-// 매핑된 키로 변환하는 함수
-function normalizeServiceName(text) {
-  // 공백을 하이픈으로 변환
-  const modifiedText = text.replace(/\s+/g, "-");
-
-  for (const [key, alias] of Object.entries(serviceAliases)) {
-    const regex = new RegExp(`\\b${key}\\b`, "i");
-    if (regex.test(modifiedText)) {
-      return alias;
-    }
+  // serviceAliases에서 우선 검색
+  if (serviceAliases[modifiedText]) {
+    return serviceAliases[modifiedText];
   }
 
-  return modifiedText; // 수정된 텍스트 반환
+  // awsServices 배열에서 서비스 이름과 대조
+  const matchedService = awsServices.find(
+    (service) => service.toUpperCase() === modifiedText
+  );
+  return matchedService || modifiedText;
 }
 
-// 서비스 이름을 추출하는 함수
-export function extractServiceName(text) {
-  // 공백을 하이픈으로 변환 후 약어 변환
+// 서비스 이름 추출 함수
+export function extractServiceName(text: string): string | undefined {
   const normalizedText = normalizeServiceName(text);
+  console.log("추출:", normalizedText);
 
-  // 서비스 이름 뒤에 숫자나 문자 등 다른 텍스트가 추가로 와도 매칭되도록 정규식 수정
-  const regex = new RegExp(
-    `\\b(${awsServices.map((name) => name).join("|")}|${Object.keys(
-      serviceAliases
-    ).join("|")})(\\w+)?\\b`,
-    "i"
-  );
-
-  const match = normalizedText.match(regex);
-  return match ? serviceAliases[match[1]] || match[1] : null; // 매칭된 서비스 이름 반환
+  // 서비스가 awsServices 배열에 존재하는지 확인
+  if (awsServices.includes(normalizedText)) {
+    return normalizedText;
+  }
+  // serviceAliases에 매핑되어 있는 경우
+  return serviceAliases[normalizedText] || undefined; // null 대신 undefined 반환
 }
