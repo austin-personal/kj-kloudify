@@ -14,7 +14,7 @@ export class UsersController {
 
   // // 회원가입 엔드포인트
   // @Post('signUp')
-  // async signUp(@Body() createUserDto: CreateUserDto) {
+  // async signUp(@Body() createUserDto: CreateUserDto): Promise<{ achieved : boolean }> {
   //   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   //   const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$/;
 
@@ -33,15 +33,15 @@ export class UsersController {
   //     createUserDto.password,
   //     createUserDto.email
   //   );
-  //   return this.usersService.login(newUser); // 회원가입 후 로그인
+  //   return { achieved : !!newUser };
   // }
 
-  // 이메일 중복 체크  API
-  @Post('check-email')
-  async checkEmail(@Body('email') email: string): Promise<{ exists: boolean }> {
-    const user = await this.usersService.findOne(email);
-    return { exists: !!user }; // 사용자가 있으면 true, 없으면 false 반환
-  }
+  // // 이메일 중복 체크  API
+  // @Post('check-email')
+  // async checkEmail(@Body('email') email: string): Promise<{ exists: boolean }> {
+  //   const user = await this.usersService.findOne(email);
+  //   return { exists: !!user }; // 사용자가 있으면 true, 없으면 false 반환
+  // }
 
 
   // 로그인 엔드포인트
