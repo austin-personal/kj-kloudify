@@ -717,8 +717,8 @@ export class ConversationsService {
 
         const { keywords2, updatedText2 } = Keywordresult;
 
-        console.log("체크 1",updatedText);
-        console.log("체크 2",updatedText2);
+        // console.log("체크 1",updatedText);
+        // console.log("체크 2",updatedText2);
 
         if (keywords.length > 0) {
 

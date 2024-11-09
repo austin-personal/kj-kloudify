@@ -479,7 +479,7 @@ export class TerraformService {
     const stateFilePath = `${localTerraformPath}/terraform.tfstate`;
     const execAsync = promisify(exec);
     // AWS CLI 경로
-    const awsCliPath = `"C:/Program Files/Amazon/AWSCLIV2/aws"`;
+    const awsCliPath = `"aws"`;
 
     try {
       // 요청이 중단되었는지 확인
