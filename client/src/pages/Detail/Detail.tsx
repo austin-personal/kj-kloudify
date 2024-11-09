@@ -1,24 +1,26 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
-import DonutChart from "../../components/DetailPage/DonutChart";
 import {
   deleteProject,
   mermaid,
   projectOneInfo,
 } from "../../services/projects";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCloudArrowDown } from "@fortawesome/free-solid-svg-icons";
 import { faPlayCircle, faStopCircle } from "@fortawesome/free-solid-svg-icons";
 import { faCloud } from "@fortawesome/free-solid-svg-icons";
 import "./Detail.css";
+import { Icon } from "@iconify/react";
 import { open } from "../../services/conversations";
 import { useTemplates } from "../../components/Chat/TemplateProvider";
-import { destroy, download, state } from "../../services/terraforms";
+import { destroy, download, state, terraInfo } from "../../services/terraforms";
 import MermaidChart from "../../components/Mermaid/mermaid";
 import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
 import Lottie from "lottie-react";
 import Loadinganimation from "./LoadingService.json";
+import { useAppSelector } from "../../store/hooks";
+import CodeBlock from "../../components/CodeBlock/CodeBlock";
+import CodeBlockLoading from "../../components/CodeBlock/CodeBlockLoading";
 
 const domtoimage = require("dom-to-image");
 
@@ -146,6 +148,7 @@ const resourceTypeNames: { [key: string]: string } = {
 };
 
 const Detail: React.FC = () => {
+  const finishData = useAppSelector((state) => state.finishData.finishData);
   const templates = useTemplates();
   const { pid } = useParams<{ pid: string }>();
   const [project, setProject] = useState<Project | null>(null);
@@ -153,62 +156,18 @@ const Detail: React.FC = () => {
   const token = localStorage.getItem("token");
   const [isLoading, setIsLoading] = useState(true);
   const [isStateLoading, setIsStateLoading] = useState(true);
-  const [mermaidCode, setMermaidCode] = useState<string[]>([]);
   const [stateData, setStateData] = useState<{ [key: string]: any }>({});
   const [modalType, setModalType] = useState<string>("");
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
-  const [showOptions, setShowOptions] = useState(false);
+  const [isTerraformVisible, setIsTerraformVisible] = useState(false);
+  const [terraData, setTerraData] = useState<string>("");
   const mermaidRef = useRef<HTMLDivElement>(null);
+  const [cid, setCid] = useState<number>(0);
   const navigate = useNavigate();
 
   const toggleChat = () => {
     setIsChatOpen((prev) => !prev); // 슬라이드 상태를 반전
-  };
-
-  const handleMouseEnter = () => {
-    setShowOptions(true);
-  };
-
-  const handleMouseLeave = () => {
-    setShowOptions(false);
-  };
-
-  const handleDownload = async () => {
-    const cid = project?.CID
-    if (cid !== null) {
-      try {
-        const data = await download(cid, token);
-        const blob = new Blob([data], { type: "text/plain" });
-        const fileURL = URL.createObjectURL(blob);
-
-        const link = document.createElement("a");
-        link.href = fileURL;
-        link.download = `terraform_code_${cid}.tf`;
-        link.click();
-
-        URL.revokeObjectURL(fileURL);
-      } catch (error) {
-        console.error("Terraform code download failed:", error);
-      }
-    }
-  };
-
-  const handleScreenshot = async () => {
-    if (mermaidRef.current) {
-      // div 요소를 PNG 이미지로 변환
-      domtoimage
-        .toPng(mermaidRef.current)
-        .then((dataUrl: string) => {
-          const link = document.createElement("a");
-          link.href = dataUrl;
-          link.download = "capture.png";
-          link.click();
-        })
-        .catch((error: any) => {
-          console.error("Error capturing image:", error);
-        });
-    }
   };
 
   useEffect(() => {
@@ -221,15 +180,16 @@ const Detail: React.FC = () => {
           const response = await projectOneInfo(Number(pid), token);
           const projectData = response.data;
           setProject(projectData);
-
-          const mermaidTemp = await mermaid(Number(pid), token);
-          setMermaidCode([mermaidTemp]);
+          setCid(projectData.cid);
 
           // 채팅 내역을 처음에 불러옵니다.
           if (projectData.CID) {
             openChatHistory(projectData.CID).then(() => {
               setIsLoading(false);
             });
+            const data = await terraInfo(projectData.CID, token); // terraInfo 요청
+            setTerraData(data); // 가져온 데이터를 상태에 저장
+            console.log("왔냐 어뤃ㅇㅁ:", data)
           }
 
           setIsStateLoading(true);
@@ -357,6 +317,46 @@ const Detail: React.FC = () => {
     }
   };
 
+  const handleCheckboxChange = () => {
+    setIsTerraformVisible(!isTerraformVisible); // 상태 토글
+  };
+
+  const handleScreenshot = async () => {
+    if (mermaidRef.current) {
+      // div 요소를 PNG 이미지로 변환
+      domtoimage
+        .toPng(mermaidRef.current)
+        .then((dataUrl: string) => {
+          const link = document.createElement("a");
+          link.href = dataUrl;
+          link.download = "capture.png";
+          link.click();
+        })
+        .catch((error: any) => {
+          console.error("Error capturing image:", error);
+        });
+    }
+  };
+
+  const handleDownload = async () => {
+    if (cid !== null) {
+      try {
+        const data = await download(cid, token);
+        const blob = new Blob([data], { type: "text/plain" });
+        const fileURL = URL.createObjectURL(blob);
+
+        const link = document.createElement("a");
+        link.href = fileURL;
+        link.download = `terraform_code_${cid}.tf`;
+        link.click();
+
+        URL.revokeObjectURL(fileURL);
+      } catch (error) {
+        console.error("Terraform code download failed:", error);
+      }
+    }
+  };
+
   return (
     <div className="detail-page">
       <div className="project-header">
@@ -418,29 +418,10 @@ const Detail: React.FC = () => {
             ) : (
               <div>데이터가 없습니다.</div>
             )}
-            {/* <DonutChart slices={[25, 35, 40]} /> */}
           </div>
         </div>
 
         <div className="architecture-box">
-
-          <div
-            className="download-container-detail"
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-          >
-            <button className="download-button">
-              <FontAwesomeIcon
-                icon={faCloudArrowDown}
-                className="download-icon"
-              />
-              Download
-            </button>
-            <div className={`download-options ${showOptions ? "show" : ""}`}>
-              <button onClick={() => handleDownload()}>Terraform Code</button>
-              <button onClick={handleScreenshot}>Architecture</button>
-            </div>
-          </div>
 
           <div className="previous-chat">
             <button className="chat-button" onClick={toggleChat}>
@@ -484,9 +465,77 @@ const Detail: React.FC = () => {
               )}
             </div>
           ) : (
-            <div ref={mermaidRef} className="mermaid-chart">
-              <MermaidChart chartCode={mermaidCode}></MermaidChart>
-            </div>
+            <>
+              <div className="container">
+                <input
+                  type="checkbox"
+                  className="checkbox"
+                  id="checkbox"
+                  onChange={handleCheckboxChange}
+                />
+                <label className="switch" htmlFor="checkbox">
+                  <span className="slider">
+                    <Icon
+                      icon={isTerraformVisible ? "jam:sitemap" : "mdi:code-braces"}
+                      width="27"
+                      color="#312D26"
+                    />
+                  </span>
+                </label>
+                <span className="notice-tooltip">
+                  {isTerraformVisible ? "Architecture Image" : "Terraform Code"}
+                </span>
+              </div>
+              <div className="download">
+                {terraData ? (
+                  <button
+                    className={`download-button ${isTerraformVisible ? "terraform-btn" : "default-btn"
+                      }`}
+                    onClick={isTerraformVisible ? handleDownload : handleScreenshot}
+                  >
+                    <svg
+                      className="svgIcon"
+                      viewBox="0 0 384 512"
+                      height="1em"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path d="M169.4 470.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 370.8 224 64c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 306.7L54.6 265.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z"></path>
+                    </svg>
+                    <span className="icon2"></span>
+                    <span className="download-tooltip">
+                      {isTerraformVisible ? "Terratorm Download" : "Image Download"}
+                    </span>
+                  </button>
+                ) : (
+                  <button
+                    className={`download-button loading ${isTerraformVisible ? "terraform-btn" : "default-btn"
+                      }`}
+                    disabled
+                  >
+                    <div className="spinner"></div>
+
+                    <div className="tooltip">환경 설정중입니다. 기다려 주세요.</div>
+                  </button>
+                )}
+              </div>
+              {isTerraformVisible ? (
+                <div className="terraform-code">
+                  <div className="terraform-frame">
+                    <div className="terraform-container">
+                      {terraData ? (
+                        <CodeBlock code={terraData} className="code" />
+                      ) : (
+                        <CodeBlockLoading />
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div ref={mermaidRef} className="mermaid-chart">
+                  <MermaidChart chartCode={finishData} />
+                </div>
+              )}
+            </>
           )}
         </div>
 

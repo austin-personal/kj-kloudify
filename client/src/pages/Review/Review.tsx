@@ -5,8 +5,6 @@ import Toast from "../../components/Toast/Toast";
 import CodeBlock from "../../components/CodeBlock/CodeBlock";
 import CodeBlockLoading from "../../components/CodeBlock/CodeBlockLoading";
 import "./Review.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCloudArrowDown } from "@fortawesome/free-solid-svg-icons";
 import { Icon } from "@iconify/react";
 import { download, terraInfo } from "../../services/terraforms";
 import { useParams } from "react-router-dom";
@@ -23,7 +21,6 @@ const Review: React.FC = () => {
   const { pid: pidParam } = useParams<{ pid: string }>();
   const cid = cidParam ? parseInt(cidParam, 10) : null;
   const pid = pidParam ? parseInt(pidParam, 10) : null;
-  const [showOptions, setShowOptions] = useState(false);
   const [showToast, setShowToast] = useState(true);
   const mermaidRef = useRef<HTMLDivElement>(null); // MermaidChart 요소를 참조할 ref 추가
   const token = localStorage.getItem("token") ?? "";
@@ -69,14 +66,6 @@ const Review: React.FC = () => {
           console.error("Error capturing image:", error);
         });
     }
-  };
-
-  const handleMouseEnter = () => {
-    setShowOptions(true);
-  };
-
-  const handleMouseLeave = () => {
-    setShowOptions(false);
   };
 
   const handleDownload = async () => {

@@ -7,7 +7,7 @@ import SideBar from "../../components/SideBar/SideBar";
 import MermaidChart from "../../components/Mermaid/mermaid";
 
 import { projectOneInfo } from "../../services/projects";
-import { review } from "../../services/terraforms";
+import { review, terraInfo } from "../../services/terraforms";
 
 import { setReviewReady, setHasSecret } from "../../store/loadingSlice";
 import { clearFinishData } from "../../store/finishDataSlice";
@@ -15,6 +15,7 @@ import { useAppDispatch, useAppSelector } from "../../store/hooks";
 
 import Lottie from "lottie-react";
 import Arrow from "./Arrow.json"
+import { setData } from "../../store/dataSlice";
 
 interface Project {
   PID: number;
@@ -81,13 +82,20 @@ const Home: React.FC = () => {
     const cid = project?.CID || 0;
     try {
       dispatch(setReviewReady(false));
-      review(cid, Number(pid), token).then(({ message, bool }) => {
-        dispatch(setReviewReady(true));
-        if (!bool) {
-          alert(message);
-          navigate(`/home/${pid}`);
-        }
-      });
+      review(cid, Number(pid), token)
+        .then(async ({ message, bool }) => {
+          dispatch(setReviewReady(true));
+
+          if (!bool) {
+            alert(message);
+            navigate(`/home/${pid}`);
+          } else {
+            // review 성공 시 terraInfo 호출
+            const data = await terraInfo(cid, token);
+            dispatch(setData(data));
+            navigate(`/review/${pid}/${cid}`);
+          }
+        });
       navigate(`/review/${pid}/${cid}`);
     } catch (error) {
       console.error("review API 호출 실패:", error);

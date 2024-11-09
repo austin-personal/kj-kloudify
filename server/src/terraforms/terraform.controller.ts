@@ -115,6 +115,7 @@ export class TerraformController {
   @UseGuards(JwtAuthGuard)
   @Post('terraInfo')
   async getTerraInfo(@Body() deployDto: DeployDto) {
+    console.log("으아아악!$ㄸㅃ@ㄲㅉㄲㅁㄴ", deployDto);
     const filePath = `C:/tmp/${deployDto.CID}/main.tf`; // main.tf 파일을 포함한 전체 경로
     try {
       const result = await this.terraformService.getLocalFileContent(filePath);
