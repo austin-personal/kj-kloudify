@@ -95,38 +95,32 @@ export class ConversationsService {
             case 0: // 인트로 오식이
                 return `당신은 사용자의 요구에 맞춘 AWS 아키텍처 설계를 지원하는 전문가입니다.
 
-                        요구 사항 파악 및 구조화:
-                        사용자의 요구 사항을 파악하여 필요한 AWS 서비스의 종류와 개수를 결정합니다.
-                        이를 구조화하여 제안합니다.
+                        1. 요구 사항 파악 및 구조화: 사용자의 요구 사항을 파악하여 필요한 AWS 서비스의 종류와 개수를 결정합니다. 대화 중, 사용자가 요청한 구성 요소를 기반으로 점진적으로 아키텍처를 확장합니다.
 
-                        정확한 정보 수집:
-                        대화 중 사용자의 질문에 맞지 않는 응답이 있다면 다시 질문하여 정확한 정보를 얻습니다.
-                        대답마다 mermaid코드를 생성하여 사용자의 이해를 돕습니다.
+                        2. 정확한 정보 수집: 사용자의 질문에 맞지 않는 응답이 있다면 다시 질문하여 정확한 정보를 얻습니다. 수집된 정보를 바탕으로 서비스 구조를 코드로 표현하여 사용자의 이해를 돕습니다.
 
-                        구성 제안 및 확인:
-                        필요한 AWS 서비스 구성이 명확해지면 해당 구성을 제안합니다.
-                        사용자가 진행 요청 시, 코드만 출력합니다.
+                        3. 단계별 구성 제안 및 설명: 각 단계에서 구조에 대한 간략한 설명을 제공하여 사용자가 현재 설계된 내용과 그 목적을 이해할 수 있도록 합니다. 설명이 끝난 후, 사용자가 이해했는지 및 이대로 진행할지를 묻습니다.
 
-                        최소한의 서비스 구성:
-                        필수 기능만 포함하여 최소한의 서비스로만 구성합니다.
-                        선택적인 기능은 별도로 물어보고 사용자가 해당서비스를 요청했을때만 추가합니다.
+                        4. 단계별 사용자 확인: 구조에 대한 설명 후, "이대로 진행할까요?"라는 질문을 추가하여 사용자의 확인을 요청합니다. 사용자가 긍정하면 코드만 출력하고, 부정하거나 수정 요청 시 추가적인 정보를 반영해 다시 설명 및 질문합니다.
 
-                        사용자 표시:
-                        최종 아키텍처 다이어그램의 가장 바깥에 사용자를 표시합니다.
+                        5. 최소한의 서비스 구성: 필수 기능만 포함하여 최소한의 서비스로만 구성합니다. 선택적인 기능은 별도로 물어보고 사용자가 해당 서비스를 요청했을 때만 추가합니다.
 
-                        구성 완료 시 결과 생성 규칙:
+                        6. 사용자 표시: 최종 아키텍처 다이어그램의 가장 바깥에 사용자를 표시합니다.
+
+                        7. 구성 완료 시 결과 생성 규칙:
+
                         결과는 graph TD로 시작합니다.
                         VPC, 서브넷 등의 논리적 구성요소는 subgraph로 구분하여 표현합니다.
                         Public/Private 서브넷, VPC 경계 등을 나누고 style 명령어로 영역을 시각화합니다.
-
-                        각 AWS 서비스 노드는 다음 형식으로 작성합니다:
-                        serviceName[<img src='https://icon.icepanel.io/AWS/svg/ServiceName.svg'><br>ServiceName]
-                        코드 내 객체가 좌우 및 상하로 정렬되도록 생성하며, 화살표는 최대한 곡선 없이 직선으로 표현합니다.
+                        각 AWS 서비스 노드는 다음 형식으로 작성합니다: serviceName[<img src='https://icon.icepanel.io/AWS/svg/ServiceName.svg'><br>ServiceName]
+                        코드 내 객체가 좌우 및 상하로 정렬되도록 하고, 화살표는 최대한 곡선 없이 직선으로 표현합니다.
                         Mermaid.js의 그리드 레이아웃이나 서브그래프를 활용하여 객체의 정렬을 명시적으로 지정합니다.
-                        노드 간의 관계를 설정할 때 방향을 명확히 하여 정렬이 잘 되도록 합니다. 
-                        코드 시작 전에 **를 붙여줍니다.
-                        구조가 결정되고 사용자가 긍정할 시, 코드만 출력합니다.
-                        mermaid 코드에 대해 절대 언급하지마세요`;
+                        노드 간의 관계를 설정할 때 방향을 명확히 하여 정렬이 잘 되도록 합니다.
+
+                        8. 결과 설명 및 코드 생성 규칙:
+                        각 단계에서 간략히 구성된 아키텍처의 설명을 제공합니다.
+                        사용자가 구조를 확인한 후 긍정할 시, 설명 없이 코드만 출력합니다.
+                        주의사항: Mermaid 코드에 대해 절대 언급하지 말고, 코드 시작 전에 **를 붙여주세요.`;
 
             case 1:
                 return `당신은 사용자의 요구에 맞는 AWS 아키텍처 설계를 돕는 전문 안내자 역할을 합니다. 그 중 서버담당자입니다.
@@ -203,13 +197,16 @@ export class ConversationsService {
             case 6: // 아웃트로 육식이
                 return `당신은 사용자의 요구에 맞는 AWS 아키텍처 설계를 돕는 전문 안내자 역할을 합니다. 그 중 최종적으로 대화내역을 검토하는 담당자입니다.
                     지금까지의 대화 내용을 종합하여 필요한 AWS 서비스 구성을 아래 양식으로 생성해야합니다. 최종 구성은 Terraform 코드로 변환될 예정이며, 각 서비스와 옵션이 정확히 입력되어야 합니다.
-                    생성한 최종구조에 대해 간략하게 설명해주세요. 그리고 설명이 끝나면 다음의 양식대로 **양식 앞에 붙여 \n 없이 한줄로 글을 마무리해주세요.
-                    각각 생성된 코드에 대해서는 절대 언급하지 말아주세요.
+                    생성한 최종구조에 대해 간략하게 설명해주세요. 
+                    설명이 끝나면 다음의 양식대로 **양식 앞에 붙여 \n 없이 한줄로 글을 마무리해주세요.
+                    각각 생성된 코드에 대해서는 절대 언급하지 말아주세요. 반드시 시작할때 !!을 붙여주세요.
 
-                    생성된 서비스 양식:
+                    생성된 키워드 양식:
                     !!{ "service": "", "options": { "ami": "", "instance_type": "", "public":  } },{ "service": "", "options": { "engine": "", "instance_class": "", "allocated_storage":  } },{ "service": "", "options": { "bucket_name": "", "access": "" } }
 
                     그리고 해당 양식에 대해서 mermaid코드 또한 생성해주세요. 대화 로그를 참조하여 구조를 짜주세요. 구조에 변화가 없다면 대화로그를 참조하여 그대로 출력해주세요.
+                    바로 사용할 수 있도록 result같은 수식어를 붙이지 마세요.
+                    반드시 시작할때 **을 붙여주세요.
                     생성된 mermaid 양식:
                     **[graphTD ...]
                     `;
@@ -581,29 +578,40 @@ export class ConversationsService {
     }
 
     // DynamoDB에서 특정 CID의 대화 기록을 불러오는 함수
-    async getConversationsByCID(CID: number): Promise<any> {
-        const params = {
-            TableName: 'Conversations',
-            FilterExpression: 'CID = :cid',
-            ExpressionAttributeValues: {
-                ':cid': CID,
-            },
-            ConsistentRead: true // 강력한 읽기 일관성 보장
-        };
-        try {
-            console.log('쿼리 파라미터:', params);
-            const result = await this.dynamoDB.scan(params).promise();
-
-            if (!result.Items) {
-                return [];
+    async getConversationsByCID(CID: number): Promise<any[]> {
+        let lastEvaluatedKey;
+        const allItems: any[] = []; // 명시적으로 any[] 타입으로 설정
+    
+        do {
+            const params = {
+                TableName: 'Conversations',
+                FilterExpression: 'CID = :cid',
+                ExpressionAttributeValues: {
+                    ':cid': CID,
+                },
+                ExclusiveStartKey: lastEvaluatedKey, // 페이징을 위한 시작 키
+            };
+    
+            try {
+                console.log('쿼리 파라미터:', params);
+                const result = await this.dynamoDB.scan(params).promise();
+                
+                if (result.Items) {
+                    allItems.push(...(result.Items as any[])); // result.Items를 any[]로 타입 캐스팅
+                }
+    
+                lastEvaluatedKey = result.LastEvaluatedKey; // 다음 페이지가 있으면 설정
+    
+            } catch (error) {
+                console.error('대화 기록 불러오기 실패:', error.message);
+                throw new Error('대화 기록 불러오기 실패');
             }
-
-            return result.Items.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
-        } catch (error) {
-            console.error('대화 기록 불러오기 실패:', error.message);
-            throw new Error('대화 기록 불러오기 실패');
-        }
+        } while (lastEvaluatedKey); // `LastEvaluatedKey`가 없을 때까지 반복
+    
+        // 타임스탬프를 기준으로 정렬하여 반환
+        return allItems.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
     }
+    
 
     // **로 감싸진 텍스트에서 키워드 추출
     extractMermaid(text: string): { keywords: string[], updatedText: string } {
@@ -707,6 +715,9 @@ export class ConversationsService {
         const Keywordresult = this.extractKeywords(result.updatedText);
 
         const { keywords2, updatedText2 } = Keywordresult;
+
+        console.log("체크 1",updatedText);
+        console.log("체크 2",updatedText2);
 
         if (keywords.length > 0) {
 
