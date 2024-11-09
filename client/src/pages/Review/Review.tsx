@@ -115,25 +115,26 @@ const Review: React.FC = () => {
         </div>
         <div className="download">
           {isReviewReady ? (
-            <div
-              className="download-container"
-              onMouseEnter={handleMouseEnter}
-              onMouseLeave={handleMouseLeave}
+            <button
+              className={
+                isTerraformVisible
+                  ? "download-button terraform-btn"
+                  : "download-button default-btn"
+              }
+              onClick={isTerraformVisible ? handleDownload : handleScreenshot}
             >
-              <button className="download-button">
-                <FontAwesomeIcon
-                  icon={faCloudArrowDown}
-                  className="download-icon"
-                />
-                Download
-              </button>
-              <div className={`download-options ${showOptions ? "show" : ""}`}>
-                <button onClick={() => handleDownload()}>Terraform Code</button>
-                <button onClick={handleScreenshot}>Architecture</button>
-              </div>
-            </div>
+              <FontAwesomeIcon
+                icon={faCloudArrowDown}
+                className="download-icon"
+              />
+            </button>
           ) : (
-            <button className="download-button loading" disabled>
+            <button
+              className={`download-button loading ${
+                isTerraformVisible ? "terraform-btn" : "default-btn"
+              }`}
+              disabled
+            >
               <div className="spinner"></div>
 
               <div className="tooltip">환경 설정중입니다. 기다려 주세요.</div>
