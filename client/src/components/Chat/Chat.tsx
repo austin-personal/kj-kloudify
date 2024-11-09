@@ -175,9 +175,17 @@ const Chat: React.FC<ChatProps> = ({ projectCID }) => {
           const lastBotResponse =
             initialMessages[initialMessages.length - 1].botResponse;
 
-          if (lastBotResponse.includes("**")) {
+          if (lastBotResponse.includes("```")) {
+            // "```"로 감싸진 부분을 추출
+            const codeBlock = lastBotResponse.match(/```mermaid([\s\S]*?)```/);
+            if (codeBlock && codeBlock[1]) {
+              // "```"로 감싸진 내용이 존재하면 `finishData`로 전달
+              console.log(codeBlock[1])
+              dispatch(setFinishData([codeBlock[1].trim()]));
+            }
+          } else if (lastBotResponse.includes("**")) {
+            // "```"로 감싸진 부분이 없고 "**"가 있으면 기존 방식으로 파싱
             const afterAsterisks = lastBotResponse.split("**")[1].trim();
-
             dispatch(setFinishData([afterAsterisks]));
           }
         }
@@ -357,22 +365,44 @@ const Chat: React.FC<ChatProps> = ({ projectCID }) => {
 
   // 응답 메시지를 처리하는 함수
   const processResponseMessage = (responseMessage: string) => {
-    if (responseMessage.includes("**")) {
+    // "```"로 감싸진 부분이 있는지 먼저 확인
+    const codeBlock = responseMessage.match(/```([\s\S]*?)```/);
+
+    if (codeBlock && codeBlock[1]) {
+      // "```"로 감싸진 부분이 있을 경우 처리
+      const [beforeCodeBlock] = responseMessage.split("```").map((part) => part.trim());
+      const afterCodeBlock = codeBlock[1].trim();
+
+      // afterCodeBlock 데이터를 배열 형태로 설정
+      dispatch(setFinishData([afterCodeBlock]));
+
+      // beforeCodeBlock이 템플릿 이름과 매치하는지 찾기
+      const matchingTemplate = Object.values(templates).find(
+        (template) => template.name === beforeCodeBlock
+      );
+
+      // 일치하는 템플릿이 있으면 템플릿 메시지를 추가하고, 없으면 일반 메시지를 추가
+      createAndAddMessage(matchingTemplate, beforeCodeBlock);
+    }
+    // "```"가 없고 "**"로 감싸진 경우 처리
+    else if (responseMessage.includes("**")) {
       const [beforeAsterisks, afterAsterisks] = responseMessage
         .split("**")
         .map((part) => part.trim());
 
-      // "**"뒤에 있는 데이터를 배열형태로 받기
+      // "**" 뒤에 있는 데이터를 배열 형태로 받기
       dispatch(setFinishData([afterAsterisks]));
 
-      // 이제 beforeAsterisks가 템플릿 이름과 매치하는지 찾기
+      // beforeAsterisks가 템플릿 이름과 매치하는지 찾기
       const matchingTemplate = Object.values(templates).find(
         (template) => template.name === beforeAsterisks
       );
 
       // 일치하는 템플릿이 있으면 템플릿 메시지를 추가하고, 없으면 일반 메시지를 추가
       createAndAddMessage(matchingTemplate, beforeAsterisks);
-    } else {
+    }
+    // 별도의 특수 구문이 없는 경우 기존 템플릿 처리
+    else {
       const matchingTemplate = Object.values(templates).find(
         (template) => template.name === responseMessage
       );
