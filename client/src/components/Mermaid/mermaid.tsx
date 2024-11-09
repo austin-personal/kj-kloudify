@@ -4,30 +4,23 @@ import mermaid from "mermaid";
 import { select, zoom, ZoomBehavior, zoomIdentity } from "d3";
 import "./mermaid.css";
 import { extractServiceName } from "../../utils/awsServices";
+import Lottie from "lottie-react";
+import MermaidIntroAnimation from "./MermaidIntroAnimation.json";
 interface MermaidChartProps {
   chartCode: string[];
 }
 
 const MermaidChart: React.FC<MermaidChartProps> = ({ chartCode }) => {
+  const [prevChartString, setPrevChartString] = useState<string | null>(null);
   const data = localStorage.getItem("finishData");
   const location = useLocation();
-  console.log("파싱파싱22:", chartCode);
 
   const result = chartCode.map((code) => {
-    // 양 끝의 대괄호만 제거하고, 문자열 내 모든 소괄호 제거
     return code.replace(/^\[|\]$/g, "").replace(/[()]/g, "");
   });
 
-  const chartString =
-    result[0] ||
-    `flowchart LR
-  A[Welcome to Kloudify!]
-  B[채팅으로 AWS 아키텍처를 실시간으로 구축하고,\n Mermaid 시각화를 통해 확인하세요.]
-  style A font-size:34px;
-  classDef transparent fill-opacity:0,stroke-width:0
-  class A,B transparent`;
-  console.log("result:", result[0]);
-
+  const chartString = result[0] || "";
+  console.log("result:", chartString);
   const svgRef = useRef<d3.Selection<
     SVGSVGElement,
     unknown,
@@ -39,6 +32,8 @@ const MermaidChart: React.FC<MermaidChartProps> = ({ chartCode }) => {
   );
 
   useEffect(() => {
+    if (chartString === prevChartString) return; // chartString이 동일하면 렌더링 생략
+
     // Mermaid 설정
     mermaid.initialize({
       startOnLoad: false,
@@ -60,13 +55,13 @@ const MermaidChart: React.FC<MermaidChartProps> = ({ chartCode }) => {
       }
     `,
     });
-
     const renderDiagram = async () => {
       const element = document.querySelector(".mermaid-container");
       if (element) {
         try {
           const { svg } = await mermaid.render("mermaid", chartString);
           element.innerHTML = svg;
+          setPrevChartString(chartString); // 렌더링 완료 후 chartString 상태 업데이트
 
           const svgElement = element.querySelector("svg") as SVGSVGElement;
           if (svgElement) {
@@ -89,12 +84,12 @@ const MermaidChart: React.FC<MermaidChartProps> = ({ chartCode }) => {
 
             svgRef.current.call(zoomBehavior.current);
 
+            // 이미지 처리 추가 부분
             const paragraphsWithImages = element.querySelectorAll(
               "#mermaid p:has(img)"
             );
 
-            paragraphsWithImages.forEach((paragraph, index) => {
-              let textContent = paragraph.textContent || "";
+            paragraphsWithImages.forEach((paragraph) => {
               const imgElement = paragraph.querySelector("img");
               const imgSrc = (imgElement as HTMLImageElement).src;
               let extractedName = imgSrc.split("/").pop()?.replace(".svg", "");
@@ -111,50 +106,17 @@ const MermaidChart: React.FC<MermaidChartProps> = ({ chartCode }) => {
                 (imgElement as HTMLImageElement).src =
                   require(`../../img/aws-icons/default.svg`).default;
               }
-
-              // console.log(`Paragraph ${index + 1} img src: ${imgSrc}`);
-              // console.log(`Paragraph ${index + 1} text: ${textContent}`);
             });
-
-            // 모든 노드의 foreignObject > div를 선택
-            // const nodeDivs = document.querySelectorAll("foreignObject > div");
-            // const nodeDivss = document.querySelectorAll("svg foreignObject");
-
-            // nodeDivss.forEach((nodeDiv) => {
-            //   // 원하는 스타일 속성 적용
-            //   (nodeDiv as HTMLElement).style.position = "relative"; // 예시로 높이 설정
-            //   (nodeDiv as HTMLElement).style.width = "100%"; // 예시로 높이 설정
-            //   (nodeDiv as HTMLElement).style.height = "100%"; // 예시로 높이 설정
-            //   // 추가 스타일 설정 가능
-            // });
-
-            // nodeDivs.forEach((nodeDiv) => {
-            //   // 원하는 스타일 속성 적용
-            //   (nodeDiv as HTMLElement).style.lineHeight = "1"; // 예시로 높이 설정
-            //   (nodeDiv as HTMLElement).style.flex = "1"; // 예시로 높이 설정
-            //   // (nodeDiv as HTMLElement).style.position = "absolute";
-            //   (nodeDiv as HTMLElement).style.height = "100%";
-
-            //   // 추가 스타일 설정 가능
-            // });
-
-            if (chartCode.length === 0) {
-              //아키텍쳐 보드 데이터가 없을 때 나오는 Mermaid가 생성한 <p> 요소에 애니메이션 클래스 추가
-              const textElement = element.querySelector("#mermaid p");
-
-              if (textElement) {
-                textElement.classList.add("floating-text");
-              }
-            }
           }
         } catch (error) {
           console.error("Mermaid 렌더링 오류:", error);
         }
       }
     };
-
-    renderDiagram();
-  }, [chartString]);
+    if (chartString) {
+      renderDiagram();
+    }
+  }, [chartString, prevChartString]); // chartString 변경 시에만 실행
 
   const zoomIn = () => {
     if (svgRef.current && zoomBehavior.current) {
@@ -179,7 +141,23 @@ const MermaidChart: React.FC<MermaidChartProps> = ({ chartCode }) => {
   return (
     <div className="frame">
       <div className="mermaid-container">
-        <div id="mermaid"></div>
+        {chartString ? (
+          <div id="mermaid"></div>
+        ) : (
+          <div className="intro-container">
+            <h1>Welcome to Kloudify!</h1>
+            <p>
+              채팅으로 AWS 아키텍처를 실시간으로 구축하고,
+              <br />
+              Mermaid 시각화를 통해 확인하세요.
+            </p>
+            <Lottie
+              animationData={MermaidIntroAnimation}
+              style={{ width: "350px", height: "350px" }}
+              className="lottie-animation"
+            />
+          </div>
+        )}
       </div>
       <div className="zoom-controls">
         <button onClick={zoomIn}>+</button>
