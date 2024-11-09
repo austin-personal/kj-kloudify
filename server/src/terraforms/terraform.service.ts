@@ -417,7 +417,7 @@ export class TerraformService {
 
   async destroyInfrastructure(CID: number, userId: number): Promise<any> {
     const execAsync = promisify(exec);
-    const localTerraformPath = `/temp/${CID}`;  // CID별 디렉토리 경로
+    const localTerraformPath = `/tmp/${CID}`;  // CID별 디렉토리 경로
     const mainTfFilePath = `${localTerraformPath}/main.tf`;
   
     try {
