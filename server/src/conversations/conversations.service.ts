@@ -101,6 +101,7 @@ export class ConversationsService {
 
                         정확한 정보 수집:
                         대화 중 사용자의 질문에 맞지 않는 응답이 있다면 다시 질문하여 정확한 정보를 얻습니다.
+                        대답마다 mermaid코드를 생성하여 사용자의 이해를 돕습니다.
 
                         구성 제안 및 확인:
                         필요한 AWS 서비스 구성이 명확해지면 해당 구성을 제안합니다.
@@ -554,7 +555,7 @@ export class ConversationsService {
     async saveConversation(CID: number, userMessage: string, botResponse: string): Promise<void> {
         const lastID = await this.getLastID(); // 마지막 ID 조회
         const newID = lastID + 1; // 마지막 ID에 1을 더해 새로운 ID 생성
-
+    
         const params = {
             TableName: 'Conversations',
             Item: {
@@ -565,13 +566,15 @@ export class ConversationsService {
                 timestamp: new Date().toISOString(),
             }
         };
-
+    
         try {
             console.log('DynamoDB에 저장할 데이터:', params);
             await this.dynamoDB.put(params).promise();
             console.log('대화 기록이 성공적으로 저장되었습니다.');
         } catch (error) {
             console.error('대화 기록 저장 실패:', error.message);
+            console.error('에러 스택:', error.stack);
+            console.error('에러 전체 정보:', JSON.stringify(error));
             console.error('DynamoDB 요청 실패 params:', params);
             throw new Error('대화 기록 저장 실패');
         }
@@ -584,7 +587,8 @@ export class ConversationsService {
             FilterExpression: 'CID = :cid',
             ExpressionAttributeValues: {
                 ':cid': CID,
-            }
+            },
+            ConsistentRead: true // 강력한 읽기 일관성 보장
         };
         try {
             console.log('쿼리 파라미터:', params);
