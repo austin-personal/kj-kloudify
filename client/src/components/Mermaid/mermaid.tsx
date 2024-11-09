@@ -4,9 +4,9 @@ import mermaid from "mermaid";
 import { select, zoom, ZoomBehavior, zoomIdentity } from "d3";
 import "./mermaid.css";
 import { extractServiceName } from "../../utils/awsServices";
-import { getAwsIcon } from "../../utils/loadAwsIcons";
 import Lottie from "lottie-react";
 import MermaidIntroAnimation from "./MermaidIntroAnimation.json";
+
 interface MermaidChartProps {
   chartCode: string[];
 }
@@ -15,6 +15,19 @@ const MermaidChart: React.FC<MermaidChartProps> = ({ chartCode }) => {
   const [prevChartString, setPrevChartString] = useState<string | null>(null);
   const data = localStorage.getItem("finishData");
   const location = useLocation();
+
+  const getImagePath = (name: string) => {
+    try {
+      console.log("전:", name);
+      const serviceName = extractServiceName(name);
+      console.log("후2:", serviceName);
+      return require(`../../img/aws-icons/${serviceName}.svg`);
+    } catch (error) {
+      const serviceName = extractServiceName(name);
+      console.warn(`Image not found: ${serviceName}. Using default image.`);
+      return "https://icon.icepanel.io/AWS/svg/Compute/EC2.svg"; // 기본 이미지 경로 설정
+    }
+  };
 
   const result = chartCode.map((code) => {
     return code.replace(/^\[|\]$/g, "").replace(/[()]/g, "");
@@ -96,8 +109,9 @@ const MermaidChart: React.FC<MermaidChartProps> = ({ chartCode }) => {
               let extractedName = imgSrc.split("/").pop()?.replace(".svg", "");
               console.log("extractedName:", extractedName);
               // getAwsIcon 함수 사용
-              const iconSrc = getAwsIcon(extractedName || "default");
-              (imgElement as HTMLImageElement).src = iconSrc;
+              (imgElement as HTMLImageElement).src = getImagePath(
+                extractedName || "default"
+              );
             });
           }
         } catch (error) {
