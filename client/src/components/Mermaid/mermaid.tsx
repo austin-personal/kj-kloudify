@@ -4,6 +4,7 @@ import mermaid from "mermaid";
 import { select, zoom, ZoomBehavior, zoomIdentity } from "d3";
 import "./mermaid.css";
 import { extractServiceName } from "../../utils/awsServices";
+import { getAwsIcon } from "../../utils/loadAwsIcons";
 import Lottie from "lottie-react";
 import MermaidIntroAnimation from "./MermaidIntroAnimation.json";
 interface MermaidChartProps {
@@ -93,19 +94,10 @@ const MermaidChart: React.FC<MermaidChartProps> = ({ chartCode }) => {
               const imgElement = paragraph.querySelector("img");
               const imgSrc = (imgElement as HTMLImageElement).src;
               let extractedName = imgSrc.split("/").pop()?.replace(".svg", "");
-              extractedName = extractServiceName(extractedName);
-              try {
-                (
-                  imgElement as HTMLImageElement
-                ).src = require(`../../img/aws-icons/${extractedName}.svg`);
-              } catch (error) {
-                console.error(
-                  `이미지를 로드할 수 없습니다: ${extractedName}`,
-                  error
-                );
-                (imgElement as HTMLImageElement).src =
-                  require(`../../img/aws-icons/default.svg`).default;
-              }
+              console.log("extractedName:", extractedName);
+              // getAwsIcon 함수 사용
+              const iconSrc = getAwsIcon(extractedName || "default");
+              (imgElement as HTMLImageElement).src = iconSrc;
             });
           }
         } catch (error) {
