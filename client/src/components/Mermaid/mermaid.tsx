@@ -48,6 +48,17 @@ const MermaidChart: React.FC<MermaidChartProps> = ({ chartCode }) => {
       themeVariables: {
         primaryColor: "#cbe8f8",
       },
+      themeCSS: `
+      .node p {
+        text-align:center;
+        font-weight: bold;
+         line-height: 1;
+      }
+      .node img {
+        height: 60px;
+        object-fit: contain;
+      }
+    `,
     });
 
     const renderDiagram = async () => {
@@ -92,8 +103,6 @@ const MermaidChart: React.FC<MermaidChartProps> = ({ chartCode }) => {
                 (
                   imgElement as HTMLImageElement
                 ).src = require(`../../img/aws-icons/${extractedName}.svg`);
-                (imgElement as HTMLImageElement).style.width = "35.5px";
-                (imgElement as HTMLImageElement).style.height = "35.5px";
               } catch (error) {
                 console.error(
                   `이미지를 로드할 수 없습니다: ${extractedName}`,
@@ -101,33 +110,33 @@ const MermaidChart: React.FC<MermaidChartProps> = ({ chartCode }) => {
                 );
                 (imgElement as HTMLImageElement).src =
                   require(`../../img/aws-icons/default.svg`).default;
-                (imgElement as HTMLImageElement).style.width = "35.5px";
-                (imgElement as HTMLImageElement).style.height = "35.5px";
               }
+
               // console.log(`Paragraph ${index + 1} img src: ${imgSrc}`);
               // console.log(`Paragraph ${index + 1} text: ${textContent}`);
             });
 
             // 모든 노드의 foreignObject > div를 선택
-            const nodeDivs = document.querySelectorAll("foreignObject > div");
-            const nodeDivss = document.querySelectorAll("svg foreignObject");
+            // const nodeDivs = document.querySelectorAll("foreignObject > div");
+            // const nodeDivss = document.querySelectorAll("svg foreignObject");
 
-            nodeDivss.forEach((nodeDiv) => {
-              // 원하는 스타일 속성 적용
-              (nodeDiv as HTMLElement).style.position = "relative"; // 예시로 높이 설정
-              (nodeDiv as HTMLElement).style.width = "100%"; // 예시로 높이 설정
-              (nodeDiv as HTMLElement).style.height = "100%"; // 예시로 높이 설정
-              // 추가 스타일 설정 가능
-            });
+            // nodeDivss.forEach((nodeDiv) => {
+            //   // 원하는 스타일 속성 적용
+            //   (nodeDiv as HTMLElement).style.position = "relative"; // 예시로 높이 설정
+            //   (nodeDiv as HTMLElement).style.width = "100%"; // 예시로 높이 설정
+            //   (nodeDiv as HTMLElement).style.height = "100%"; // 예시로 높이 설정
+            //   // 추가 스타일 설정 가능
+            // });
 
-            nodeDivs.forEach((nodeDiv) => {
-              // 원하는 스타일 속성 적용
-              (nodeDiv as HTMLElement).style.lineHeight = "1"; // 예시로 높이 설정
-              (nodeDiv as HTMLElement).style.flex = "1"; // 예시로 높이 설정
-              // (nodeDiv as HTMLElement).style.position = "absolute";
-              (nodeDiv as HTMLElement).style.height = "100%";
-              // 추가 스타일 설정 가능
-            });
+            // nodeDivs.forEach((nodeDiv) => {
+            //   // 원하는 스타일 속성 적용
+            //   (nodeDiv as HTMLElement).style.lineHeight = "1"; // 예시로 높이 설정
+            //   (nodeDiv as HTMLElement).style.flex = "1"; // 예시로 높이 설정
+            //   // (nodeDiv as HTMLElement).style.position = "absolute";
+            //   (nodeDiv as HTMLElement).style.height = "100%";
+
+            //   // 추가 스타일 설정 가능
+            // });
 
             if (chartCode.length === 0) {
               //아키텍쳐 보드 데이터가 없을 때 나오는 Mermaid가 생성한 <p> 요소에 애니메이션 클래스 추가

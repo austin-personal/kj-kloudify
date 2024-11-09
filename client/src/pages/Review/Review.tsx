@@ -3,6 +3,7 @@ import React, { useRef, useState, useEffect } from "react";
 import Services from "../../components/Services/Services";
 import Toast from "../../components/Toast/Toast";
 import CodeBlock from "../../components/CodeBlock/CodeBlock";
+import CodeBlockLoading from "../../components/CodeBlock/CodeBlockLoading";
 import "./Review.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCloudArrowDown } from "@fortawesome/free-solid-svg-icons";
@@ -161,7 +162,11 @@ const Review: React.FC = () => {
           <div className="terraform-code">
             <div className="terraform-frame">
               <div className="terraform-container">
-                <CodeBlock code={terraData} className="code" />
+                {isReviewReady ? (
+                  <CodeBlock code={terraData} className="code" />
+                ) : (
+                  <CodeBlockLoading />
+                )}
               </div>
             </div>
           </div>

@@ -57,9 +57,17 @@
 
 .review-btn-container {
   width: 100%;
+  height: 180px;
   display: flex;
   justify-content: center; /* 수평 중앙 정렬 */
   align-items: center; /* 수직 중앙 정렬 */
+  z-index: 1001;
+  position: relative;
+}
+
+.review-btn-arrow-th {
+  position: absolute;
+  top: -40px;
 }
 
 .review-btn-enabled {
@@ -124,4 +132,26 @@
   box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 10%);
   margin: 20px 0 20px 0;
   cursor: not-allowed;
+}
+
+/* 오버레이 스타일 */
+.overlay-th {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.7); /* 반투명 검은색 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  cursor: pointer;
+}
+
+.overlay-message-th {
+  color: #fff;
+  font-size: 2rem;
+  text-align: center;
+  border-radius: 10px;
 }
