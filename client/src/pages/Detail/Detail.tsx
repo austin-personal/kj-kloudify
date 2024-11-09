@@ -163,7 +163,7 @@ const Detail: React.FC = () => {
   const [isTerraformVisible, setIsTerraformVisible] = useState(false);
   const [terraData, setTerraData] = useState<string>("");
   const mermaidRef = useRef<HTMLDivElement>(null);
-  const [cid, setCid] = useState<number>(0);
+
   const navigate = useNavigate();
 
   const toggleChat = () => {
@@ -173,14 +173,12 @@ const Detail: React.FC = () => {
   useEffect(() => {
     const controller = new AbortController();
     const signal = controller.signal;
-
     const fetchProjectData = async () => {
       try {
         if (pid) {
           const response = await projectOneInfo(Number(pid), token);
           const projectData = response.data;
           setProject(projectData);
-          setCid(projectData.cid);
 
           // 채팅 내역을 처음에 불러옵니다.
           if (projectData.CID) {
@@ -339,22 +337,20 @@ const Detail: React.FC = () => {
   };
 
   const handleDownload = async () => {
-    if (cid !== null) {
       try {
-        const data = await download(cid, token);
+        const data = await download(project.CID, token);
         const blob = new Blob([data], { type: "text/plain" });
         const fileURL = URL.createObjectURL(blob);
 
         const link = document.createElement("a");
         link.href = fileURL;
-        link.download = `terraform_code_${cid}.tf`;
+        link.download = `terraform_code_${project.CID}.tf`;
         link.click();
 
         URL.revokeObjectURL(fileURL);
       } catch (error) {
         console.error("Terraform code download failed:", error);
       }
-    }
   };
 
   return (
@@ -519,9 +515,9 @@ const Detail: React.FC = () => {
                 )}
               </div>
               {isTerraformVisible ? (
-                <div className="terraform-code">
-                  <div className="terraform-frame">
-                    <div className="terraform-container">
+                <div className="terraform-code-th">
+                  <div className="terraform-frame-th">
+                    <div className="terraform-container-th">
                       {terraData ? (
                         <CodeBlock code={terraData} className="code" />
                       ) : (
@@ -531,7 +527,7 @@ const Detail: React.FC = () => {
                   </div>
                 </div>
               ) : (
-                <div ref={mermaidRef} className="mermaid-chart">
+                <div ref={mermaidRef} className="mermaid-chart-th">
                   <MermaidChart chartCode={finishData} />
                 </div>
               )}
