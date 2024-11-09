@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import DonutChart from "../../components/DetailPage/DonutChart";
@@ -8,16 +8,19 @@ import {
   projectOneInfo,
 } from "../../services/projects";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCloudArrowDown } from "@fortawesome/free-solid-svg-icons";
 import { faPlayCircle, faStopCircle } from "@fortawesome/free-solid-svg-icons";
 import { faCloud } from "@fortawesome/free-solid-svg-icons";
 import "./Detail.css";
 import { open } from "../../services/conversations";
 import { useTemplates } from "../../components/Chat/TemplateProvider";
-import { destroy, state } from "../../services/terraforms";
+import { destroy, download, state } from "../../services/terraforms";
 import MermaidChart from "../../components/Mermaid/mermaid";
 import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
 import Lottie from "lottie-react";
 import Loadinganimation from "./LoadingService.json";
+
+const domtoimage = require("dom-to-image");
 
 interface Project {
   PID: number;
@@ -146,7 +149,6 @@ const Detail: React.FC = () => {
   const templates = useTemplates();
   const { pid } = useParams<{ pid: string }>();
   const [project, setProject] = useState<Project | null>(null);
-  const [isChatting, setIsChatting] = useState(false);
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
   const token = localStorage.getItem("token");
   const [isLoading, setIsLoading] = useState(true);
@@ -155,7 +157,59 @@ const Detail: React.FC = () => {
   const [stateData, setStateData] = useState<{ [key: string]: any }>({});
   const [modalType, setModalType] = useState<string>("");
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [showOptions, setShowOptions] = useState(false);
+  const mermaidRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+
+  const toggleChat = () => {
+    setIsChatOpen((prev) => !prev); // 슬라이드 상태를 반전
+  };
+
+  const handleMouseEnter = () => {
+    setShowOptions(true);
+  };
+
+  const handleMouseLeave = () => {
+    setShowOptions(false);
+  };
+
+  const handleDownload = async () => {
+    const cid = project?.CID
+    if (cid !== null) {
+      try {
+        const data = await download(cid, token);
+        const blob = new Blob([data], { type: "text/plain" });
+        const fileURL = URL.createObjectURL(blob);
+
+        const link = document.createElement("a");
+        link.href = fileURL;
+        link.download = `terraform_code_${cid}.tf`;
+        link.click();
+
+        URL.revokeObjectURL(fileURL);
+      } catch (error) {
+        console.error("Terraform code download failed:", error);
+      }
+    }
+  };
+
+  const handleScreenshot = async () => {
+    if (mermaidRef.current) {
+      // div 요소를 PNG 이미지로 변환
+      domtoimage
+        .toPng(mermaidRef.current)
+        .then((dataUrl: string) => {
+          const link = document.createElement("a");
+          link.href = dataUrl;
+          link.download = "capture.png";
+          link.click();
+        })
+        .catch((error: any) => {
+          console.error("Error capturing image:", error);
+        });
+    }
+  };
 
   useEffect(() => {
     const controller = new AbortController();
@@ -195,7 +249,7 @@ const Detail: React.FC = () => {
     const openChatHistory = async (cid: number) => {
       try {
         const response = await open(cid, token);
-        setChatHistory(defaultBotMessage);
+        console.log(response)
         if (response && response.length > 0) {
           let temp = -2;
           const formattedChat = response.flatMap((msg: any, index: number) => {
@@ -263,7 +317,7 @@ const Detail: React.FC = () => {
               },
             ];
           });
-          setChatHistory(formattedChat);
+          setChatHistory([...defaultBotMessage, ...formattedChat]);
         }
       } catch (error) {
         console.error("채팅 기록을 불러오는 중 오류 발생:", error);
@@ -271,6 +325,7 @@ const Detail: React.FC = () => {
     };
 
     fetchProjectData();
+    console.log("뭐야이거 :", chatHistory)
 
     return () => {
       controller.abort(); // 컴포넌트 언마운트 시 요청 취소
@@ -321,46 +376,8 @@ const Detail: React.FC = () => {
       </div>
 
       <div className="main-content">
-        <div className="previous-chat">
-          <button
-            className="chat-button"
-            onClick={() => setIsChatting(!isChatting)}
-          >
-            <FontAwesomeIcon className="bot-icon" icon={faCloud} />
-          </button>
-          <div
-            className={`previous-chat-explanation-th  ${isChatting ? "hide" : "visible"
-              }`}
-          >
-            Previous chat
-          </div>
-        </div>
+
         <div className="left-content">
-          <div
-            className={`previous-chatting-th ${isChatting ? "open" : "close"
-              }`}
-          >
-            {isLoading ? (
-              <div className="detail-loading-chat">
-                <Lottie
-                  animationData={Loadinganimation}
-                  style={{ width: "200px", height: "200px" }}
-                />
-              </div>
-            ) : (
-              <div className="chat-history">
-                {chatHistory.map((message) => (
-                  <div
-                    key={message.id}
-                    className={`chat-message ${message.sender === "bot" ? "bot-message" : "user-message"
-                      }`}
-                  >
-                    <span>{message.text}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
           <div className="service-status-th">
             <h3>주요 서비스 상태</h3>
             {isStateLoading ? (
@@ -404,67 +421,135 @@ const Detail: React.FC = () => {
             {/* <DonutChart slices={[25, 35, 40]} /> */}
           </div>
         </div>
+
         <div className="architecture-box">
-          <MermaidChart chartCode={mermaidCode}></MermaidChart>
+
+          <div
+            className="download-container-detail"
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+          >
+            <button className="download-button">
+              <FontAwesomeIcon
+                icon={faCloudArrowDown}
+                className="download-icon"
+              />
+              Download
+            </button>
+            <div className={`download-options ${showOptions ? "show" : ""}`}>
+              <button onClick={() => handleDownload()}>Terraform Code</button>
+              <button onClick={handleScreenshot}>Architecture</button>
+            </div>
+          </div>
+
+          <div className="previous-chat">
+            <button className="chat-button" onClick={toggleChat}>
+              <svg className="svgIcon" viewBox="0 0 384 512">
+                <FontAwesomeIcon className="bot-icon" icon={faCloud} />
+              </svg>
+              <p className="detail-chat-btn-text-th">Chat</p>
+            </button>
+          </div>
+
+          {isChatOpen ? (
+            <div
+              className="previous-chatting-th"
+            >
+              {isLoading ? (
+                <div className="detail-loading-chat">
+                  <Lottie
+                    animationData={Loadinganimation}
+                    style={{ width: "200px", height: "200px" }}
+                  />
+                </div>
+              ) : (
+                <div className="chat-history">
+                  {chatHistory.map((message) => (
+                    <>
+                      {
+                        message.sender === "bot" && (
+                          <FontAwesomeIcon className="bot-icon" icon={faCloud} />
+                        )
+                      }
+                      < div
+                        key={message.id}
+                        className={`chat-message ${message.sender === "bot" ? "bot-message" : "user-message"
+                          }`}
+                      >
+                        <span>{message.text}</span>
+                      </div>
+                    </>
+                  ))}
+                </div>
+              )}
+            </div>
+          ) : (
+            <div ref={mermaidRef} className="mermaid-chart">
+              <MermaidChart chartCode={mermaidCode}></MermaidChart>
+            </div>
+          )}
         </div>
+
       </div>
       {/* 삭제 확인 모달 */}
-      {showDeleteModal && (
-        <div className="delete-modal">
-          <div className="delete-modal-content">
-            {modalType === "deleteProject" && (
-              <>
-                <h3>경고: 모든 AWS 리소스 종료 작업</h3>
-                <p>
-                  이 버튼을 클릭하면 현재 계정 내 모든 AWS 서비스와 리소스가
-                  영구적으로 종료됩니다.
-                </p>
-                <p>
-                  이로 인해 서비스 중단, 데이터 손실, 복구 불가능한 결과가 발생할
-                  수 있습니다.
-                </p>
-                <p>이 작업을 수행하시겠습니까?</p>
-                <h4>⚠️ 한 번 더 확인해주세요. 이 작업은 취소할 수 없습니다.</h4>
-              </>
-            )}
-            {modalType === "error" && (
-              <>
-                <p>요청하신 작업 중 오류가 발생했습니다.</p>
-                <p>잠시 뒤 다시 시도해주세요.</p>
-              </>
-            )}
-            <div className="delete-modal-buttons">
+      {
+        showDeleteModal && (
+          <div className="delete-modal">
+            <div className="delete-modal-content">
               {modalType === "deleteProject" && (
                 <>
-                  <button
-                    className="delete-cancel-button-th"
-                    onClick={handleCancelDelete}
-                  >
-                    취소
-                  </button>
-                  <button
-                    className="delete-confirm-button-th"
-                    onClick={handleConfirmDelete}
-                  >
-                    삭제
-                  </button>
+                  <h3>경고: 모든 AWS 리소스 종료 작업</h3>
+                  <p>
+                    이 버튼을 클릭하면 현재 계정 내 모든 AWS 서비스와 리소스가
+                    영구적으로 종료됩니다.
+                  </p>
+                  <p>
+                    이로 인해 서비스 중단, 데이터 손실, 복구 불가능한 결과가 발생할
+                    수 있습니다.
+                  </p>
+                  <p>이 작업을 수행하시겠습니까?</p>
+                  <h4>⚠️ 한 번 더 확인해주세요. 이 작업은 취소할 수 없습니다.</h4>
                 </>
               )}
               {modalType === "error" && (
                 <>
-                  <button
-                    className="delete-cancel-button-th"
-                    onClick={handleCancelDelete}
-                  >
-                    확인
-                  </button>
+                  <p>요청하신 작업 중 오류가 발생했습니다.</p>
+                  <p>잠시 뒤 다시 시도해주세요.</p>
                 </>
               )}
+              <div className="delete-modal-buttons">
+                {modalType === "deleteProject" && (
+                  <>
+                    <button
+                      className="delete-cancel-button-th"
+                      onClick={handleCancelDelete}
+                    >
+                      취소
+                    </button>
+                    <button
+                      className="delete-confirm-button-th"
+                      onClick={handleConfirmDelete}
+                    >
+                      삭제
+                    </button>
+                  </>
+                )}
+                {modalType === "error" && (
+                  <>
+                    <button
+                      className="delete-cancel-button-th"
+                      onClick={handleCancelDelete}
+                    >
+                      확인
+                    </button>
+                  </>
+                )}
+              </div>
             </div>
           </div>
-        </div>
-      )}
-    </div>
+        )
+      }
+    </div >
   );
 };
 

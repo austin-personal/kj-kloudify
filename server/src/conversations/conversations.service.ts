@@ -880,9 +880,9 @@ export class ConversationsService {
 
         // 2. Bedrock 요청을 위한 프롬프트 내용 준비
         const prompt_content = type === 'summary'
-            ? `다음 키워드를 기반으로 각 서비스의 정보를 포함한 클라우드 아키텍처에 대한 상세 요약을 제공해 주세요. 각 서비스에 대해 두 줄 이내의 설명을 포함해 주세요. 순수 내용만 나오게 해주세요. 추가 설명은 필요 없습니다.
+            ? `다음 키워드를 기반으로 각 서비스의 정보를 포함한 클라우드 아키텍처에 대한 상세 요약을 제공해 주세요. 각 서비스에 대해 두 줄 이내의 설명을 포함해 주세요. 추가 설명은 필요 없습니다.
 
-아래와 같은 JSON 형식으로 출력해 주세요:
+아래와 같은 JSON 형식으로 출력해 주세요 (출력은 순수 내용만 나오게 해주세요):
 
 {
   "aws_services": {
@@ -892,12 +892,14 @@ export class ConversationsService {
         "<첫 번째 설명 문장>",
         "<두 번째 설명 문장>"
       ]
-    },
+    }
     // 키워드에 포함된 각 서비스마다 반복
   }
 }
 
 키워드: ${keywordData}
+
+출력은 **한국어로** 해주세요.
 `
             : `다음 키워드 내용을 바탕으로, 각 서비스의 가격 정보와 월간 총 예상 비용을 포함하여 불필요한 도입부나 마무리 멘트 없이 아래 형식으로 깔끔하게 정리해 주세요. 서비스의 개수는 유동적입니다.
 
@@ -933,7 +935,7 @@ export class ConversationsService {
             const response = await this.bedrockClient.invokeModel({
                 body: JSON.stringify(requestBody),
                 contentType: 'application/json',
-                modelId: 'anthropic.claude-3-5-sonnet-20240620-v1:0',
+                modelId: 'anthropic.claude-3-haiku-20240307-v1:0',
             }).promise();
 
             const responseBody = response.body.toString();

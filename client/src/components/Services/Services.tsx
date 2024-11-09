@@ -54,13 +54,13 @@ const Services: React.FC<ServicesProps> = ({
           console.log("서비스 배열", ServiceNameResponse);
 
           const SummaryResponse = await projectSummary(cid, token);
+          console.log("요약", SummaryResponse);
           if (SummaryResponse && typeof SummaryResponse.text === "string") {
             const parsedSummary = JSON.parse(SummaryResponse.text);
             setSummary(parsedSummary.aws_services); // aws_services 객체만 저장
           } else {
             setSummary(SummaryResponse);
           }
-          console.log("요약", SummaryResponse);
         } else {
           console.error("토큰이 없습니다. 인증 문제가 발생할 수 있습니다.");
         }

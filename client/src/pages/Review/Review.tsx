@@ -6,6 +6,7 @@ import CodeBlock from "../../components/CodeBlock/CodeBlock";
 import "./Review.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCloudArrowDown } from "@fortawesome/free-solid-svg-icons";
+import { Icon } from "@iconify/react";
 import { download, terraInfo } from "../../services/terraforms";
 import { useParams } from "react-router-dom";
 import { useAppSelector, useAppDispatch } from "../../store/hooks";
@@ -110,30 +111,46 @@ const Review: React.FC = () => {
             onChange={handleCheckboxChange}
           />
           <label className="switch" htmlFor="checkbox">
-            <span className="slider"></span>
+            <span className="slider">
+              <Icon
+                icon={isTerraformVisible ? "jam:sitemap" : "mdi:code-braces"}
+                width="27"
+                color="#312D26"
+              />
+            </span>
           </label>
+          <span className="notice-tooltip">
+            {isTerraformVisible ? "Architecture Image" : "Terraform Code"}
+          </span>
         </div>
         <div className="download">
           {isReviewReady ? (
-            <div
-              className="download-container"
-              onMouseEnter={handleMouseEnter}
-              onMouseLeave={handleMouseLeave}
+            <button
+              className={`download-button ${
+                isTerraformVisible ? "terraform-btn" : "default-btn"
+              }`}
+              onClick={isTerraformVisible ? handleDownload : handleScreenshot}
             >
-              <button className="download-button">
-                <FontAwesomeIcon
-                  icon={faCloudArrowDown}
-                  className="download-icon"
-                />
-                Download
-              </button>
-              <div className={`download-options ${showOptions ? "show" : ""}`}>
-                <button onClick={() => handleDownload()}>Terraform Code</button>
-                <button onClick={handleScreenshot}>Architecture</button>
-              </div>
-            </div>
+              <svg
+                className="svgIcon"
+                viewBox="0 0 384 512"
+                height="1em"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path d="M169.4 470.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 370.8 224 64c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 306.7L54.6 265.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z"></path>
+              </svg>
+              <span className="icon2"></span>
+              <span className="download-tooltip">
+                {isTerraformVisible ? "Terratorm Download" : "Image Download"}
+              </span>
+            </button>
           ) : (
-            <button className="download-button loading" disabled>
+            <button
+              className={`download-button loading ${
+                isTerraformVisible ? "terraform-btn" : "default-btn"
+              }`}
+              disabled
+            >
               <div className="spinner"></div>
 
               <div className="tooltip">환경 설정중입니다. 기다려 주세요.</div>

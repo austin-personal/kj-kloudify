@@ -23,7 +23,8 @@ interface ChatProps {
 interface Message {
   id: string;
   header?: string;
-  text: string | JSX.Element;
+  text?: string;
+  element?: JSX.Element; // 추가
   subtext?: string;
   sender: "user" | "bot";
   buttons?: { id: number; label: string }[];
@@ -36,12 +37,13 @@ interface Message {
 const defaultBotMessage: Message[] = [
   {
     id: uuidv4(),
-    text: "Kloudify와 쉽게 클라우드 아키텍쳐를 설계 해봐요! 우측 상단에 Kloudify와 대화하는 팁을 참고 하여 대화해 보세요.",
+    text: "Kloudify와 쉽게 클라우드 아키텍쳐를 설계 해봐요!\n 우측 상단에 Kloudify와 대화하는 팁을 참고 하여 대화해 보세요.",
     sender: "bot",
   },
   {
     id: uuidv4(),
-    text: "먼저, 당신의 웹서비스에 대해 알고 싶어요. 당신의 웹 서비스의 주요 목적과 기능은 무엇인가요?",
+    header: "구조 설정",
+    text: "먼저, 당신의 웹서비스에 대해 알고 싶어요.\n 당신의 웹 서비스의 주요 목적과 기능은 무엇인가요?",
     sender: "bot",
     subtext: "자유롭게 당신의 서비스를 설명해주세요.",
   },
@@ -82,6 +84,7 @@ const Chat: React.FC<ChatProps> = ({ projectCID }) => {
         dispatch(deactivate());
         dispatch(clearFinishData());
         const initialMessages = await open(projectCID, token);
+        console.log(initialMessages);
         setMessages(defaultBotMessage);
         if (initialMessages && initialMessages.length > 0) {
           let temp = -2;
@@ -172,9 +175,17 @@ const Chat: React.FC<ChatProps> = ({ projectCID }) => {
           const lastBotResponse =
             initialMessages[initialMessages.length - 1].botResponse;
 
-          if (lastBotResponse.includes("**")) {
+          if (lastBotResponse.includes("```")) {
+            // "```"로 감싸진 부분을 추출
+            const codeBlock = lastBotResponse.match(/```mermaid([\s\S]*?)```/);
+            if (codeBlock && codeBlock[1]) {
+              // "```"로 감싸진 내용이 존재하면 `finishData`로 전달
+              console.log(codeBlock[1])
+              dispatch(setFinishData([codeBlock[1].trim()]));
+            }
+          } else if (lastBotResponse.includes("**")) {
+            // "```"로 감싸진 부분이 없고 "**"가 있으면 기존 방식으로 파싱
             const afterAsterisks = lastBotResponse.split("**")[1].trim();
-
             dispatch(setFinishData([afterAsterisks]));
           }
         }
@@ -354,22 +365,44 @@ const Chat: React.FC<ChatProps> = ({ projectCID }) => {
 
   // 응답 메시지를 처리하는 함수
   const processResponseMessage = (responseMessage: string) => {
-    if (responseMessage.includes("**")) {
+    // "```"로 감싸진 부분이 있는지 먼저 확인
+    const codeBlock = responseMessage.match(/```([\s\S]*?)```/);
+
+    if (codeBlock && codeBlock[1]) {
+      // "```"로 감싸진 부분이 있을 경우 처리
+      const [beforeCodeBlock] = responseMessage.split("```").map((part) => part.trim());
+      const afterCodeBlock = codeBlock[1].trim();
+
+      // afterCodeBlock 데이터를 배열 형태로 설정
+      dispatch(setFinishData([afterCodeBlock]));
+
+      // beforeCodeBlock이 템플릿 이름과 매치하는지 찾기
+      const matchingTemplate = Object.values(templates).find(
+        (template) => template.name === beforeCodeBlock
+      );
+
+      // 일치하는 템플릿이 있으면 템플릿 메시지를 추가하고, 없으면 일반 메시지를 추가
+      createAndAddMessage(matchingTemplate, beforeCodeBlock);
+    }
+    // "```"가 없고 "**"로 감싸진 경우 처리
+    else if (responseMessage.includes("**")) {
       const [beforeAsterisks, afterAsterisks] = responseMessage
         .split("**")
         .map((part) => part.trim());
 
-      // "**"뒤에 있는 데이터를 배열형태로 받기
+      // "**" 뒤에 있는 데이터를 배열 형태로 받기
       dispatch(setFinishData([afterAsterisks]));
 
-      // 이제 beforeAsterisks가 템플릿 이름과 매치하는지 찾기
+      // beforeAsterisks가 템플릿 이름과 매치하는지 찾기
       const matchingTemplate = Object.values(templates).find(
         (template) => template.name === beforeAsterisks
       );
 
       // 일치하는 템플릿이 있으면 템플릿 메시지를 추가하고, 없으면 일반 메시지를 추가
       createAndAddMessage(matchingTemplate, beforeAsterisks);
-    } else {
+    }
+    // 별도의 특수 구문이 없는 경우 기존 템플릿 처리
+    else {
       const matchingTemplate = Object.values(templates).find(
         (template) => template.name === responseMessage
       );
@@ -395,7 +428,7 @@ const Chat: React.FC<ChatProps> = ({ projectCID }) => {
 
     const loadingMessage: Message = {
       id: uuidv4(),
-      text: <div className="loader"></div>,
+      element: <div className="loader"></div>,
       sender: "bot",
     };
     setMessages((prevMessages) => [...prevMessages, loadingMessage]);
@@ -493,7 +526,7 @@ const Chat: React.FC<ChatProps> = ({ projectCID }) => {
     // 로딩 메시지 추가
     const loadingMessage: Message = {
       id: uuidv4(),
-      text: <div className="loader"></div>,
+      element: <div className="loader"></div>,
       sender: "bot",
     };
     setMessages((prevMessages) => [...prevMessages, loadingMessage]);
@@ -595,7 +628,17 @@ const Chat: React.FC<ChatProps> = ({ projectCID }) => {
                 </div>
               )}
 
-              <div className="message-content">{message.text}</div>
+              <div className="message-content">
+                {message.text ? (
+                  <>
+                    {message.text}
+                  </>
+                ) : (
+                  <div className="loading-text-th">
+                    {message.element}
+                  </div>
+                )}
+              </div>
 
               {/* 체크박스가 존재하면 렌더링 */}
               {message.checks && (
