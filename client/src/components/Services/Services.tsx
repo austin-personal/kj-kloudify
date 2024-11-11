@@ -9,7 +9,7 @@ import { checkSecret } from "../../services/secrets";
 import { projectSummary, projectPrice } from "../../services/projects";
 import { fetch } from "../../services/conversations";
 import { extractServiceName } from "../../utils/awsServices";
-
+import showAlert from "../../utils/showAlert";
 interface ServicesProps {
   cid: number;
   pid: number;
@@ -95,10 +95,18 @@ const Services: React.FC<ServicesProps> = ({
       dispatch(setLoading(true));
       // deploy 함수 호출 (딱히 반환값을 사용하지 않으므로 await로만 호출)
       await deploy(cid, token);
-      alert("배포 성공! detail 페이지로 이동합니다.");
+      showAlert(
+        "배포 성공!",
+        "배포가 성공적으로 완료되어 Detail 페이지로 이동합니다.",
+        "success"
+      );
       navigate(`/detail/${pid}`);
     } catch (error) {
-      alert("배포 실패! 리뷰창으로 돌아갑니다. 다시 Deploy를 시도하세요.");
+      showAlert(
+        "배포 실패!",
+        "배포 중에 문제가 발생했습니다.리뷰창으로 돌아가서 다시 Deploy를 시도하세요.",
+        "error"
+      );
       await review(cid, pid, token);
     } finally {
       dispatch(setLoading(false));
