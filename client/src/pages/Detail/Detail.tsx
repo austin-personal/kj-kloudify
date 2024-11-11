@@ -22,6 +22,7 @@ import Deleteanimation from "./LoadingDestroy.json";
 import { useAppSelector } from "../../store/hooks";
 import CodeBlock from "../../components/CodeBlock/CodeBlock";
 import CodeBlockLoading from "../../components/CodeBlock/CodeBlockLoading";
+import { extractServiceStateName } from "../../utils/awsServices";
 
 const domtoimage = require("dom-to-image");
 
@@ -168,6 +169,19 @@ const Detail: React.FC = () => {
 
   const navigate = useNavigate();
 
+  const getImagePath = (name: string) => {
+    try {
+      console.log("디테일전:", name);
+      const serviceName = extractServiceStateName(name);
+      console.log("디테일후:", serviceName);
+      return require(`../../img/aws-icons/${serviceName}.svg`);
+    } catch (error) {
+      const serviceName = extractServiceStateName(name);
+      console.warn(`Image not found: ${serviceName}. Using default image.`);
+      return "https://icon.icepanel.io/AWS/svg/Compute/EC2.svg"; // 기본 이미지 경로 설정
+    }
+  };
+
   const toggleChat = () => {
     setIsChatOpen((prev) => !prev); // 슬라이드 상태를 반전
   };
@@ -189,14 +203,13 @@ const Detail: React.FC = () => {
             });
             const data = await terraInfo(projectData.CID, token); // terraInfo 요청
             setTerraData(data); // 가져온 데이터를 상태에 저장
-            console.log("왔냐 어뤃ㅇㅁ:", data)
+            console.log("왔냐 어뤃ㅇㅁ:", data);
           }
 
           setIsStateLoading(true);
           const stateTemp = await state(projectData.CID, token, { signal });
           setStateData(stateTemp || {});
           setIsStateLoading(false);
-
         }
       } catch (error) {
         console.error("프로젝트 정보를 가져오는 중 오류 발생:", error);
@@ -209,22 +222,22 @@ const Detail: React.FC = () => {
     const openChatHistory = async (cid: number) => {
       try {
         const response = await open(cid, token);
-        console.log(response)
+        console.log(response);
         if (response && response.length > 0) {
           let temp = -2;
           const formattedChat = response.flatMap((msg: any, index: number) => {
             // userMessage에서 - 이후의 부분만 가져오기
             const parsedUserMessage = msg.userMessage.includes("-")
               ? msg.userMessage
-                .slice(msg.userMessage.lastIndexOf("-") + 1)
-                .trim()
+                  .slice(msg.userMessage.lastIndexOf("-") + 1)
+                  .trim()
               : msg.userMessage;
 
             // '/'가 포함되어 있다면 '/' 앞에 있는 부분만 가져오기
             const finalParsedMessage = parsedUserMessage.includes("/")
               ? parsedUserMessage
-                .slice(0, parsedUserMessage.indexOf("/"))
-                .trim()
+                  .slice(0, parsedUserMessage.indexOf("/"))
+                  .trim()
               : parsedUserMessage;
 
             // botResponse에서 ** 이전의 부분만 가져오기
@@ -285,7 +298,7 @@ const Detail: React.FC = () => {
     };
 
     fetchProjectData();
-    console.log("뭐야이거 :", chatHistory)
+    console.log("뭐야이거 :", chatHistory);
 
     return () => {
       controller.abort(); // 컴포넌트 언마운트 시 요청 취소
@@ -377,7 +390,6 @@ const Detail: React.FC = () => {
       </div>
 
       <div className="main-content">
-
         <div className="left-content">
           <div className="service-status-th">
             <h3>주요 서비스 상태</h3>
@@ -401,6 +413,8 @@ const Detail: React.FC = () => {
                       className={`service-status-card ${statusClass}`}
                     >
                       <div className="card-header">
+                        {/* 이미지 여기 띄워놓음 */}
+                        <img src={getImagePath(value.resourceType)} />
                         <span className="resource-name">
                           {resourceTypeNames[value.resourceType] ||
                             value.resourceType}
@@ -423,7 +437,6 @@ const Detail: React.FC = () => {
         </div>
 
         <div className="architecture-box">
-
           <div className="previous-chat">
             <button className="chat-button" onClick={toggleChat}>
               <svg className="svgIcon" viewBox="0 0 384 512">
@@ -434,9 +447,7 @@ const Detail: React.FC = () => {
           </div>
 
           {isChatOpen ? (
-            <div
-              className="previous-chatting-th"
-            >
+            <div className="previous-chatting-th">
               {isLoading ? (
                 <div className="detail-loading-chat">
                   <Lottie
@@ -448,15 +459,16 @@ const Detail: React.FC = () => {
                 <div className="chat-history">
                   {chatHistory.map((message) => (
                     <>
-                      {
-                        message.sender === "bot" && (
-                          <FontAwesomeIcon className="bot-icon" icon={faCloud} />
-                        )
-                      }
-                      < div
+                      {message.sender === "bot" && (
+                        <FontAwesomeIcon className="bot-icon" icon={faCloud} />
+                      )}
+                      <div
                         key={message.id}
-                        className={`chat-message ${message.sender === "bot" ? "bot-message" : "user-message"
-                          }`}
+                        className={`chat-message ${
+                          message.sender === "bot"
+                            ? "bot-message"
+                            : "user-message"
+                        }`}
                       >
                         <span>{message.text}</span>
                       </div>
@@ -477,7 +489,9 @@ const Detail: React.FC = () => {
                 <label className="switch" htmlFor="checkbox">
                   <span className="slider">
                     <Icon
-                      icon={isTerraformVisible ? "jam:sitemap" : "mdi:code-braces"}
+                      icon={
+                        isTerraformVisible ? "jam:sitemap" : "mdi:code-braces"
+                      }
                       width="27"
                       color="#312D26"
                     />
@@ -490,9 +504,12 @@ const Detail: React.FC = () => {
               <div className="download">
                 {terraData ? (
                   <button
-                    className={`download-button ${isTerraformVisible ? "terraform-btn" : "default-btn"
-                      }`}
-                    onClick={isTerraformVisible ? handleDownload : handleScreenshot}
+                    className={`download-button ${
+                      isTerraformVisible ? "terraform-btn" : "default-btn"
+                    }`}
+                    onClick={
+                      isTerraformVisible ? handleDownload : handleScreenshot
+                    }
                   >
                     <svg
                       className="svgIcon"
@@ -504,18 +521,23 @@ const Detail: React.FC = () => {
                     </svg>
                     <span className="icon2"></span>
                     <span className="download-tooltip">
-                      {isTerraformVisible ? "Terratorm Download" : "Image Download"}
+                      {isTerraformVisible
+                        ? "Terratorm Download"
+                        : "Image Download"}
                     </span>
                   </button>
                 ) : (
                   <button
-                    className={`download-button loading ${isTerraformVisible ? "terraform-btn" : "default-btn"
-                      }`}
+                    className={`download-button loading ${
+                      isTerraformVisible ? "terraform-btn" : "default-btn"
+                    }`}
                     disabled
                   >
                     <div className="spinner"></div>
 
-                    <div className="tooltip">환경 설정중입니다. 기다려 주세요.</div>
+                    <div className="tooltip">
+                      환경 설정중입니다. 기다려 주세요.
+                    </div>
                   </button>
                 )}
               </div>
@@ -539,74 +561,74 @@ const Detail: React.FC = () => {
             </>
           )}
         </div>
-
       </div>
       {/* 삭제 확인 모달 */}
-      {
-        showDeleteModal && (
-          <div className="delete-modal">
-            <div className="delete-modal-content">
+      {showDeleteModal && (
+        <div className="delete-modal">
+          <div className="delete-modal-content">
+            {modalType === "deleteProject" && (
+              <>
+                <h3>경고: 모든 AWS 리소스 종료 작업</h3>
+                <p>
+                  이 버튼을 클릭하면 현재 계정 내 모든 AWS 서비스와 리소스가
+                  영구적으로 종료됩니다.
+                </p>
+                <p>
+                  이로 인해 서비스 중단, 데이터 손실, 복구 불가능한 결과가
+                  발생할 수 있습니다.
+                </p>
+                <p>이 작업을 수행하시겠습니까?</p>
+                <h4>⚠️ 한 번 더 확인해주세요. 이 작업은 취소할 수 없습니다.</h4>
+              </>
+            )}
+            {modalType === "error" && (
+              <>
+                <p>요청하신 작업 중 오류가 발생했습니다.</p>
+                <p>잠시 뒤 다시 시도해주세요.</p>
+              </>
+            )}
+            <div className="delete-modal-buttons">
               {modalType === "deleteProject" && (
                 <>
-                  <h3>경고: 모든 AWS 리소스 종료 작업</h3>
-                  <p>
-                    이 버튼을 클릭하면 현재 계정 내 모든 AWS 서비스와 리소스가
-                    영구적으로 종료됩니다.
-                  </p>
-                  <p>
-                    이로 인해 서비스 중단, 데이터 손실, 복구 불가능한 결과가 발생할
-                    수 있습니다.
-                  </p>
-                  <p>이 작업을 수행하시겠습니까?</p>
-                  <h4>⚠️ 한 번 더 확인해주세요. 이 작업은 취소할 수 없습니다.</h4>
+                  <button
+                    className="delete-cancel-button-th"
+                    onClick={handleCancelDelete}
+                  >
+                    취소
+                  </button>
+                  <button
+                    className="delete-confirm-button-th"
+                    onClick={handleConfirmDelete}
+                  >
+                    삭제
+                  </button>
                 </>
               )}
               {modalType === "error" && (
                 <>
-                  <p>요청하신 작업 중 오류가 발생했습니다.</p>
-                  <p>잠시 뒤 다시 시도해주세요.</p>
+                  <button
+                    className="delete-cancel-button-th"
+                    onClick={handleCancelDelete}
+                  >
+                    확인
+                  </button>
                 </>
               )}
-              <div className="delete-modal-buttons">
-                {modalType === "deleteProject" && (
-                  <>
-                    <button
-                      className="delete-cancel-button-th"
-                      onClick={handleCancelDelete}
-                    >
-                      취소
-                    </button>
-                    <button
-                      className="delete-confirm-button-th"
-                      onClick={handleConfirmDelete}
-                    >
-                      삭제
-                    </button>
-                  </>
-                )}
-                {modalType === "error" && (
-                  <>
-                    <button
-                      className="delete-cancel-button-th"
-                      onClick={handleCancelDelete}
-                    >
-                      확인
-                    </button>
-                  </>
-                )}
-              </div>
             </div>
           </div>
-        )
-      }
+        </div>
+      )}
       {/* 삭제 작업 중일 때 오버레이 표시 */}
       {isDeleting && (
         <div className="profile-loading-th">
-          <Lottie animationData={Deleteanimation} style={{ width: "300px", height: "300px" }} />
+          <Lottie
+            animationData={Deleteanimation}
+            style={{ width: "300px", height: "300px" }}
+          />
           <h3>삭제중입니다...</h3>
         </div>
       )}
-    </div >
+    </div>
   );
 };
 
