@@ -43,13 +43,13 @@ export const fetch = async (cid: number, token: string | null) => {
                     Authorization: `Bearer ${token}`
                 }
             });
-          
+        console.log("어떻게 오나",response.data);  
         // response.data가 JSON 문자열이라면 파싱 필요
         const data = typeof response.data === 'string' ? JSON.parse(`[${response.data}]`) : response.data;
-
-        // 각 항목의 service 필드만 배열로 추출
-        const services = Array.isArray(data) ? data.map((item: { service: string }) => item.service) : [];
-
+         // data가 배열인지 아닌지 확인
+         const services = Array.isArray(data)
+         ? data.map((item: { service: string }) => item.service)
+         : [data.service]; // data가 객체일 경우 service 값만 추출하여 배열로 반환
         return services;
     } catch (error) {
         console.error('대화 실패!! : ', error);
