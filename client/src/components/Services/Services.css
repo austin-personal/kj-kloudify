@@ -1,17 +1,20 @@
 .services {
+  display: flex;
+  flex-direction: column;
   flex: 2;
   margin: 0 0px 0 20px;
-  height: 60%;
+  height: 100%;
   color: #312d26;
+  flex-direction: column;
 }
 
 .service-container {
-  display: flex;
-  height: 190px;
-  flex-direction: column;
-  gap: 10px;
   margin-bottom: 20px;
   overflow-y: auto;
+  height: 100%;
+  display: flex;
+  flex-direction: column; /* 자식 요소를 세로로 정렬 */
+  gap: 10px; /* 요소 간 간격 */
 }
 
 .modal-container p {
@@ -40,9 +43,9 @@ hr {
 .price-summary-header {
   margin-top: 90px;
   display: flex;
+  flex: 1;
   justify-content: end;
   width: 100%;
-  height: 20px;
   align-items: center;
   margin-bottom: 10px;
 }
@@ -109,6 +112,7 @@ hr {
   background-color: #f7f2d2;
   padding: 10px;
   border-radius: 8px;
+  flex-basis: 100%;
   border: 1px solid #d3d3d3;
 }
 
@@ -265,9 +269,10 @@ hr {
 }
 
 .middle-btn {
+  /* 자식 요소를 오른쪽으로 정렬 */
   display: flex;
   justify-content: center;
-  /* 자식 요소를 오른쪽으로 정렬 */
+  flex: 1;
 }
 
 .info-btn {
@@ -401,20 +406,21 @@ hr {
 }
 
 .terms-and-conditions {
-  display: flex;
-  flex-direction: column;
   border: 1px solid #b1b1b1;
   background-color: #f2eed1;
   border-radius: 20px;
   padding: 20px;
-  height: 180px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .consent-box {
   font-size: 22px;
   outline: none;
   width: 100%;
-  height: 100px;
+  flex: 1;
   margin-top: 10px;
   border-radius: 4px;
   overflow-y: auto;
@@ -423,7 +429,7 @@ hr {
 }
 
 .consent-container {
-  display: inline-flex;
+  display: flex;
   justify-content: end;
   align-items: center;
   margin-top: 10px;
