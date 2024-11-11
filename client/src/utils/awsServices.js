@@ -242,6 +242,6 @@ export function extractServiceStateName(text: string): string | undefined {
   if (serviceStateAliases[text]) {
     return serviceStateAliases[text];
   } else {
-    console.log("해당하는 이미지가 없습니다.");
+    return null;
   }
 }

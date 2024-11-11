@@ -171,14 +171,14 @@ const Detail: React.FC = () => {
 
   const getImagePath = (name: string) => {
     try {
-      console.log("디테일전:", name);
       const serviceName = extractServiceStateName(name);
-      console.log("디테일후:", serviceName);
+      if (!serviceName) {
+        console.warn(`Image not found: ${serviceName}. Using default image.`);
+        return "https://icon.icepanel.io/AWS/svg/Compute/EC2.svg"; // 기본 이미지 경로 설정
+      }
       return require(`../../img/aws-icons/${serviceName}.svg`);
     } catch (error) {
-      const serviceName = extractServiceStateName(name);
-      console.warn(`Image not found: ${serviceName}. Using default image.`);
-      return "https://icon.icepanel.io/AWS/svg/Compute/EC2.svg"; // 기본 이미지 경로 설정
+      console.log("큰일남!");
     }
   };
 
