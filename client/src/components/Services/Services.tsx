@@ -8,6 +8,7 @@ import { checkSecret } from "../../services/secrets";
 import { projectSummary, projectPrice } from "../../services/projects";
 import { fetch } from "../../services/conversations";
 import { extractServiceName } from "../../utils/awsServices";
+
 interface ServicesProps {
   cid: number;
   pid: number;
@@ -33,9 +34,9 @@ const Services: React.FC<ServicesProps> = ({
 
   const getImagePath = (name: string) => {
     try {
-      // console.log("전:", name);
+      console.log("전:", name);
       const serviceName = extractServiceName(name);
-      // console.log("후2:", serviceName);
+      console.log("후2:", serviceName);
       return require(`../../img/aws-icons/${serviceName}.svg`);
     } catch (error) {
       console.warn(`Image not found: ${name}. Using default image.`);
@@ -121,6 +122,35 @@ const Services: React.FC<ServicesProps> = ({
     setIsModalOpen(false);
   };
 
+  const termsAndConditions: string = `
+  **이용약관**
+  
+  제1조 (목적)
+  본 약관은 당사("서비스 제공자")가 이용자("고객")를 대신하여 AWS 서비스를 배포하기 위해 필요한 AWS 접근 권한 정보의 제공에 관한 사항을 규정함을 목적으로 합니다.
+  
+  제2조 (정보 제공 동의)
+  고객은 다음의 AWS 관련 정보 제공에 동의합니다:
+  1. AWS_ACCESS_KEY_ID
+  2. AWS_SECRET_ACCESS_KEY
+  3. AWS_REGION
+  4. Key Pair의 Public Key
+  
+  제3조 (정보의 사용 목적)
+  수집된 정보는 고객을 대신하여 AWS 서비스를 배포하는 목적에만 사용되며, 그 외의 목적으로는 사용되지 않습니다.
+  
+  제4조 (정보의 보호)
+  서비스 제공자는 고객의 AWS 접근 권한 정보를 안전하게 관리하며, 관련 법령에 따라 보호합니다. 해당 정보는 제3자에게 제공하거나 공개하지 않습니다.
+  
+  제5조 (동의 철회)
+  고객은 언제든지 정보 제공 동의를 철회할 수 있으며, 이 경우 서비스 이용에 제한이 있을 수 있습니다.
+  
+  제6조 (문의)
+  본 약관에 대한 문의는 당사 고객센터를 통해 접수하시기 바랍니다.
+  
+  **부칙**
+  본 약관은 작성된 날로부터 효력이 발생합니다.
+  `;
+
   return (
     <div className="services">
       <div className="price-summary-header">
@@ -134,27 +164,39 @@ const Services: React.FC<ServicesProps> = ({
         {serviceNames.map((item, index) => (
           <div key={index}>
             <div className="service-element">
-              <img
-                src={getImagePath(item)}
-                alt="ec2"
-                className="service-image"
-              />
-              <span className="service-label">{item}</span>
-              {/* 서비스 상세정보 라벨 대체 */}
-              {summary && summary[item] ? (
-                <div className="price-label">
-                  <h3>{summary[item].title}</h3>
-                  <ul>
+              <div className="service-wrapper">
+                <img
+                  src={getImagePath(item)}
+                  alt={item}
+                  className="service-image"
+                />
+                <span className="service-label">{item}</span>
+              </div>
+
+              <div className="description-wrapper">
+                <input
+                  type="checkbox"
+                  id={`toggle-${item}`}
+                  className="toggle-checkbox"
+                />
+
+                {summary && summary[item].description ? (
+                  <ul className="description-list">
                     {summary[item].description.map(
                       (desc: string, i: number) => (
                         <li key={i}>{desc}</li>
                       )
                     )}
                   </ul>
-                </div>
-              ) : (
-                <span className="price-label">loading...</span>
-              )}
+                ) : (
+                  <span className="description-list">loading...</span>
+                )}
+
+                <label
+                  htmlFor={`toggle-${item}`}
+                  className="toggle-button"
+                ></label>
+              </div>
             </div>
           </div>
         ))}
@@ -164,14 +206,15 @@ const Services: React.FC<ServicesProps> = ({
         {isModalOpen && (
           <div className="modal-overlay">
             <div className="modal">
-              <h2>Price Summary Details</h2>
               <div className="modal-container">
                 {priceResponse &&
                 priceResponse.price &&
                 priceResponse.price.text ? (
-                  <p>{priceResponse.price.text}</p>
+                  <p>
+                    {priceResponse.price.text.replace(/\[.*?\]/g, "").trim()}
+                  </p>
                 ) : (
-                  <p>Loading...</p>
+                  <p>가격 정보 로딩중입니다..</p>
                 )}
               </div>
               <button className="close-btn" onClick={closeModal}>
@@ -183,11 +226,7 @@ const Services: React.FC<ServicesProps> = ({
       </div>
       <div className="terms-and-conditions">
         <div className="color-font-th">약관</div>
-        <textarea
-          className="readonly-input"
-          value="대충 AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEYU, AWS_REGION, key_pair Public key에 대한 정보 제공에 동의하냐는 내용의 약관 ..."
-          readOnly
-        />
+        <textarea className="consent-box" value={termsAndConditions} readOnly />
         <div className="consent-container">
           <input
             type="checkbox"

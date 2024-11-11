@@ -118,7 +118,6 @@ export class ConversationsService {
                         노드 간의 관계를 설정할 때 방향을 명확히 하여 정렬이 잘 되도록 합니다.
 
                         8. 결과 설명 및 코드 생성 규칙:
-                        각 단계에서 간략히 구성된 아키텍처의 설명을 제공합니다.
                         사용자가 구조를 확인한 후 긍정할 시, 설명 없이 코드만 출력합니다.
                         주의사항: Mermaid 코드에 대해 절대 언급하지 말고, 코드 시작 전에 **를 붙여주세요.`;
 
@@ -204,7 +203,7 @@ export class ConversationsService {
                     설명이 끝나고 키워드가 시작할때 !!을 반드시 붙여주세요.
 
                     생성된 키워드 양식:
-                    !!{ "service": "", "options": { "ami": "", "instance_type": "", "public":  } },{ "service": "", "options": { "engine": "", "instance_class": "", "allocated_storage":  } },{ "service": "", "options": { "bucket_name": "", "access": "" } }
+                    !!{ "service": "", "options": "" }
 
                     그리고 해당 양식에 대해서 mermaid코드 또한 생성해주세요. 대화 로그를 참조하여 구조를 짜주세요. 구조에 변화가 없다면 대화로그를 참조하여 그대로 출력해주세요.
                     바로 사용할 수 있도록 result같은 수식어를 붙이지 마세요.
@@ -213,6 +212,8 @@ export class ConversationsService {
                     머메이드 코드의 문법을 철저하게 지켜서 에러가 나지 않도록 해줘.
                     생성된 mermaid 양식:
                     **[graphTD ...]
+
+                    머메이드 코드와 키워드가 싱크가 반드시 맞아야 합니다. 서비스 수정을 요청할 경우 두가지 전부 수정해야합니다.
                     `;
 
             default:
@@ -359,22 +360,22 @@ export class ConversationsService {
 
         if (templateKey) {
             // 모델 카운터 증가 조건 확인 및 처리
-            const triggerKeywords = ['특정텍스트1', '특정텍스트2', '계활'];
-            const shouldIncrementCounter = triggerKeywords.some(keyword => user_question.includes(keyword));
-            if (shouldIncrementCounter) {
-                console.log(`키워드 조건 만족 - ${user_question}에 특정 키워드 포함됨, modelSwitchCounter 증가`);
-                try {
-                    await this.incrementModelCounter(CID);
-                } catch (error) {
-                    console.error('모델 카운터 증가 중 에러 발생:', error);
-                }
-            }
+            // const triggerKeywords = ['특정텍스트1', '특정텍스트2', '계활'];
+            // const shouldIncrementCounter = triggerKeywords.some(keyword => user_question.includes(keyword));
+            // if (shouldIncrementCounter) {
+            //     console.log(`키워드 조건 만족 - ${user_question}에 특정 키워드 포함됨, modelSwitchCounter 증가`);
+            //     try {
+            //         await this.incrementModelCounter(CID);
+            //     } catch (error) {
+            //         console.error('모델 카운터 증가 중 에러 발생:', error);
+            //     }
+            // }
 
             let mermaid1: string[] = [];
 
             mermaid1 = await this.fetchMermaidByCID(CID);
 
-            console.log("템플릿 머메이드가 찍히나?", `\n**${mermaid1.join(', ')}`);
+            // console.log("템플릿 머메이드가 찍히나?", `\n**${mermaid1.join(', ')}`);
 
             // 템플릿 응답 반환
             try {
@@ -487,7 +488,68 @@ export class ConversationsService {
             const parsedResponse = JSON.parse(responseBody);
 
             // 응답에서 'content' 필드의 'text' 값을 추출하여 botResponse로 사용
-            const botResponse = parsedResponse.content?.[0]?.text;
+            let botResponse = parsedResponse.content?.[0]?.text;
+            // console.log("첫번째 응답 생성");
+            // // 응답의 정확도를 높이기 위해 첫 번째 응답을 프롬프트에 다시 포함
+            // const refinedPromptContent = `
+            //     첫 번째 응답을 검토하고 필요한 경우 수정해 주세요:
+            //         - 응답이 질문에 명확히 답하는지
+            //         - 기술적 오류나 잘못된 정보가 없는지
+            //         - 요구사항에 부합하는지
+            //         - 특히, 생성된 머메이드 코드와 키워드와 설명이 일치하는지 논리적으로 맞는 구조인지 확인해주세요.
+            //         - 코드를 바로 사용할 수 있도록 다른 수식어가 붙어있으면 없에주세요.
+            //         - 답변에서 코드의 존재에 대해 언급하면 해당 문장만 없에주세요.
+
+            //     mermaid 코드 생성 규칙:
+            //         결과는 graph TD로 시작합니다.
+            //         Public/Private 서브넷, VPC 경계 등을 나누고 style 명령어로 영역을 시각화합니다.
+            //         각 AWS 서비스 노드는 다음 형식으로 작성합니다: serviceName[<img src='https://icon.icepanel.io/AWS/svg/ServiceName.svg'><br>ServiceName]
+            //         코드 내 객체가 좌우 및 상하로 정렬되도록 하고, 화살표는 최대한 곡선 없이 직선으로 표현합니다.
+            //         Mermaid.js의 그리드 레이아웃이나 서브그래프를 활용하여 객체의 정렬을 명시적으로 지정합니다.
+            //         노드 간의 관계를 설정할 때 방향을 명확히 하여 정렬이 잘 되도록 합니다.
+            //         사용자 표시: 최종 아키텍처 다이어그램의 가장 바깥에 사용자를 표시합니다.
+
+            //         반드시 기존 구조를 유지하며 필요없는 글자가 있는지, 문법에 어긋나는지 확인해주세요. 
+            //         현재 응답에 맞는 구조로 구성되었는지 확인해주세요.
+            //         사용자가 구조를 확인한 후 긍정할 시, 설명 없이 코드만 출력합니다.
+            //         주의사항: Mermaid 코드에 대해 절대 언급하지 말고, 코드 시작 전에 **를 붙여주세요.
+                    
+            //     개선한 답변만 출력해주세요.
+
+            //     첫 번째 응답:
+            //     ${botResponse}
+
+            //     수정된 답변:
+
+            //     `;
+
+            // // 재요청 바디 구성
+            // const refinedRequestBody = {
+            //     max_tokens: 2000,
+            //     anthropic_version: 'bedrock-2023-05-31',
+            //     messages: [
+            //         {
+            //             role: 'user',
+            //             content: refinedPromptContent,
+            //         },
+            //     ],
+            // };
+
+            // // 두 번째 요청 처리
+            // const refinedResponse = await client
+            // .invokeModel({
+            //     body: JSON.stringify(refinedRequestBody),
+            //     contentType: 'application/json',
+            //     modelId: 'anthropic.claude-3-5-sonnet-20240620-v1:0',
+            // })
+            // .promise();
+
+            // const refinedResponseBody = refinedResponse.body.toString();
+            // const finalParsedResponse = JSON.parse(refinedResponseBody);
+
+            // // 최종 보완된 응답
+            // console.log("보완된 응답 생성");
+            // botResponse = finalParsedResponse.content?.[0]?.text;
 
             // 키워드 처리 및 저장 (botResponse, user_question을 사용)
             let updatedResponse = await this.processTextAndAddKeywords(botResponse, user_question, CID, modelSwitchCounter);

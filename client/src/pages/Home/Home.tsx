@@ -7,14 +7,15 @@ import SideBar from "../../components/SideBar/SideBar";
 import MermaidChart from "../../components/Mermaid/mermaid";
 
 import { projectOneInfo } from "../../services/projects";
-import { review } from "../../services/terraforms";
+import { review, terraInfo } from "../../services/terraforms";
 
 import { setReviewReady, setHasSecret } from "../../store/loadingSlice";
 import { clearFinishData } from "../../store/finishDataSlice";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 
 import Lottie from "lottie-react";
-import Arrow from "./Arrow.json"
+import Arrow from "./Arrow.json";
+import { setData } from "../../store/dataSlice";
 
 interface Project {
   PID: number;
@@ -81,11 +82,16 @@ const Home: React.FC = () => {
     const cid = project?.CID || 0;
     try {
       dispatch(setReviewReady(false));
-      review(cid, Number(pid), token).then(({ message, bool }) => {
+      review(cid, Number(pid), token).then(async ({ message, bool }) => {
         dispatch(setReviewReady(true));
+
         if (!bool) {
           alert(message);
           navigate(`/home/${pid}`);
+        } else {
+          // review 성공 시 terraInfo 호출
+          const data = await terraInfo(cid, token);
+          dispatch(setData(data));
         }
       });
       navigate(`/review/${pid}/${cid}`);
@@ -115,10 +121,13 @@ const Home: React.FC = () => {
         </div>
         <MermaidChart chartCode={finishData}></MermaidChart>
         <div className="review-btn-container">
-
-          {isActive &&
-            <Lottie className="review-btn-arrow-th" animationData={Arrow} style={{ width: "80px" }}></Lottie>
-          }
+          {isActive && (
+            <Lottie
+              className="review-btn-arrow-th"
+              animationData={Arrow}
+              style={{ width: "80px" }}
+            ></Lottie>
+          )}
           <button
             onClick={handleFinish}
             className={`review-btn-${!isActive ? "disabled" : "enabled"}`}
@@ -126,7 +135,6 @@ const Home: React.FC = () => {
           >
             Review
           </button>
-
         </div>
       </div>
     </div>
