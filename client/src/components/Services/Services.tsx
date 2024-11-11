@@ -29,6 +29,7 @@ const Services: React.FC<ServicesProps> = ({
   const [serviceNames, setServiceNames] = useState<string[]>([]);
   const [summary, setSummary] = useState<any>(null);
   const [priceResponse, setPriceResponse] = useState<any>(null);
+  const [isDeployModalOpen, setIsDeployModalOpen] = useState(false);
   const navigate = useNavigate();
   const token = localStorage.getItem("token") ?? "";
   const dispatch = useDispatch();
@@ -129,6 +130,11 @@ const Services: React.FC<ServicesProps> = ({
 
   const closeModal = () => {
     setIsModalOpen(false);
+  };
+
+  const closeDeployModal = () => {
+    setIsDeployModalOpen(false);
+    navigate(`/detail/${pid}`);
   };
 
   const termsAndConditions: string = `
@@ -271,6 +277,15 @@ const Services: React.FC<ServicesProps> = ({
           </button>
         )}
       </div>
+      {isDeployModalOpen && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <button className="close-btn" onClick={closeDeployModal}>
+              확인
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

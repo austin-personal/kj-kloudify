@@ -124,7 +124,7 @@
   transition: all 0.5s;
   -webkit-transition: all 0.5s;
   width: 420px;
-  font-size: 20px;
+  font-size: 22px;
   margin: 10px 20px;
   cursor: pointer;
 }
@@ -408,7 +408,7 @@
   justify-content: start;
   align-items: center;
   cursor: pointer;
-  font-size: 22px;
+  font-size: 26px;
   margin-bottom: 8px;
   position: relative;
 }
