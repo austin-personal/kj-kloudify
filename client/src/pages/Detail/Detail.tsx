@@ -150,7 +150,6 @@ const resourceTypeNames: { [key: string]: string } = {
 };
 
 const Detail: React.FC = () => {
-  const finishData = useAppSelector((state) => state.finishData.finishData);
   const templates = useTemplates();
   const { pid } = useParams<{ pid: string }>();
   const [project, setProject] = useState<Project | null>(null);
