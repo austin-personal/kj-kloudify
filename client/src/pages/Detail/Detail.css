@@ -73,12 +73,12 @@
   display: flex;
   flex-direction: row;
   width: 80%;
-  height: 100%;
+  height: 77%;
 }
 
 .previous-chat {
   position: absolute;
-  bottom: 10px;
+  top: 10px;
   right: 10px;
 }
 
@@ -209,6 +209,7 @@
 
 .architecture-box {
   width: 67%;
+  height: 100%;
   position: relative;
 }
 
@@ -382,4 +383,32 @@
 .service-status-card.running .status-icon svg,
 .service-status-card.stopped .status-icon svg {
   transition: color 0.3s;
+}
+
+.terraform-code-th {
+  width: 100%;
+  height: 100%;
+}
+
+.terraform-frame-th {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background-color: #23241f;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 15px;
+}
+
+.terraform-container-th {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.mermaid-chart-th {
+  width: 100%;
+  height: 100%;
 }

@@ -18,6 +18,7 @@ import MermaidChart from "../../components/Mermaid/mermaid";
 import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
 import Lottie from "lottie-react";
 import Loadinganimation from "./LoadingService.json";
+import Deleteanimation from "./LoadingDestroy.json";
 import { useAppSelector } from "../../store/hooks";
 import CodeBlock from "../../components/CodeBlock/CodeBlock";
 import CodeBlockLoading from "../../components/CodeBlock/CodeBlockLoading";
@@ -162,8 +163,9 @@ const Detail: React.FC = () => {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isTerraformVisible, setIsTerraformVisible] = useState(false);
   const [terraData, setTerraData] = useState<string>("");
+  const [isDeleting, setIsDeleting] = useState<boolean>(false);
   const mermaidRef = useRef<HTMLDivElement>(null);
-  const [cid, setCid] = useState<number>(0);
+
   const navigate = useNavigate();
 
   const toggleChat = () => {
@@ -173,14 +175,12 @@ const Detail: React.FC = () => {
   useEffect(() => {
     const controller = new AbortController();
     const signal = controller.signal;
-
     const fetchProjectData = async () => {
       try {
         if (pid) {
           const response = await projectOneInfo(Number(pid), token);
           const projectData = response.data;
           setProject(projectData);
-          setCid(projectData.cid);
 
           // 채팅 내역을 처음에 불러옵니다.
           if (projectData.CID) {
@@ -305,6 +305,8 @@ const Detail: React.FC = () => {
 
   const handleConfirmDelete = async () => {
     try {
+      setShowDeleteModal(false);
+      setIsDeleting(true);
       if (modalType === "deleteProject") {
         // 프로젝트 삭제 로직
         await destroy(project.CID, token);
@@ -315,6 +317,7 @@ const Detail: React.FC = () => {
     } catch (error) {
       setModalType("error"); // 모달 타입 설정
     }
+    setIsDeleting(false);
   };
 
   const handleCheckboxChange = () => {
@@ -339,21 +342,19 @@ const Detail: React.FC = () => {
   };
 
   const handleDownload = async () => {
-    if (cid !== null) {
-      try {
-        const data = await download(cid, token);
-        const blob = new Blob([data], { type: "text/plain" });
-        const fileURL = URL.createObjectURL(blob);
+    try {
+      const data = await download(project.CID, token);
+      const blob = new Blob([data], { type: "text/plain" });
+      const fileURL = URL.createObjectURL(blob);
 
-        const link = document.createElement("a");
-        link.href = fileURL;
-        link.download = `terraform_code_${cid}.tf`;
-        link.click();
+      const link = document.createElement("a");
+      link.href = fileURL;
+      link.download = `terraform_code_${project.CID}.tf`;
+      link.click();
 
-        URL.revokeObjectURL(fileURL);
-      } catch (error) {
-        console.error("Terraform code download failed:", error);
-      }
+      URL.revokeObjectURL(fileURL);
+    } catch (error) {
+      console.error("Terraform code download failed:", error);
     }
   };
 
@@ -519,9 +520,9 @@ const Detail: React.FC = () => {
                 )}
               </div>
               {isTerraformVisible ? (
-                <div className="terraform-code">
-                  <div className="terraform-frame">
-                    <div className="terraform-container">
+                <div className="terraform-code-th">
+                  <div className="terraform-frame-th">
+                    <div className="terraform-container-th">
                       {terraData ? (
                         <CodeBlock code={terraData} className="code" />
                       ) : (
@@ -531,7 +532,7 @@ const Detail: React.FC = () => {
                   </div>
                 </div>
               ) : (
-                <div ref={mermaidRef} className="mermaid-chart">
+                <div ref={mermaidRef} className="mermaid-chart-th">
                   <MermaidChart chartCode={finishData} />
                 </div>
               )}
@@ -598,6 +599,13 @@ const Detail: React.FC = () => {
           </div>
         )
       }
+      {/* 삭제 작업 중일 때 오버레이 표시 */}
+      {isDeleting && (
+        <div className="profile-loading-th">
+          <Lottie animationData={Deleteanimation} style={{ width: "300px", height: "300px" }} />
+          <h3>삭제중입니다...</h3>
+        </div>
+      )}
     </div >
   );
 };
