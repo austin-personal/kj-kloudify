@@ -14,34 +14,27 @@
   overflow-y: auto;
 }
 
-.modal-container::-webkit-scrollbar {
-  width: 20px;
-  height: 8px;
+.modal-container p {
+  white-space: pre-wrap;
 }
 
-.modal-container::-webkit-scrollbar-thumb {
+.modal-container::-webkit-scrollbar,
+.service-container::-webkit-scrollbar,
+.consent-box::-webkit-scrollbar {
+  width: 10px;
+}
+
+.modal-container::-webkit-scrollbar-thumb,
+.service-container::-webkit-scrollbar-thumb,
+.consent-box::-webkit-scrollbar-thumb {
   border-radius: 20px;
-  background: #cccaba;
+  background: #fdc36d;
 }
 
 hr {
   border: none;
   border-top: 1px solid #ddd;
   margin: 10px 0;
-}
-
-.service-element {
-  background-color: #f2eed1;
-  padding: 10px;
-  border-style: solid;
-  border-width: 1px;
-  border-color: #a09e8a;
-  border-radius: 20px;
-  display: flex;
-  align-items: center;
-  /* 아이콘과 텍스트를 세로 중앙 정렬 */
-  justify-content: space-between;
-  /* 아이콘과 텍스트 사이 공간 확보 */
 }
 
 .price-summary-header {
@@ -110,6 +103,22 @@ hr {
   background-color: #f49a29;
 }
 
+.service-element {
+  display: flex;
+  align-items: flex-start;
+  background-color: #f7f2d2;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #d3d3d3;
+}
+
+.service-image {
+  width: 37px;
+  height: 37px;
+  border-radius: 10px;
+  margin-right: 10px;
+}
+
 .service-label,
 .price-label {
   font-size: 24px;
@@ -122,12 +131,61 @@ hr {
 
 .price-label {
   width: 80%;
+  position: relative;
 }
 
-.service-image {
-  width: 37px;
-  height: 37px;
-  border-radius: 10px;
+.service-wrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+}
+
+.description-wrapper {
+  flex: 4;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  position: relative;
+}
+
+.toggle-checkbox {
+  display: none; /* 체크박스를 숨깁니다 */
+}
+
+.description-list {
+  text-align: start;
+  width: 80%;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  -webkit-line-clamp: 1; /* 기본적으로 한 줄만 표시 */
+  transition: max-height 0.3s ease;
+  margin: 10px;
+  padding: 0;
+  font-size: 20px;
+}
+
+.toggle-checkbox:checked ~ .description-list {
+  -webkit-line-clamp: unset;
+  max-height: 500px; /* 확장될 높이 */
+}
+
+.toggle-button {
+  font-size: 16px;
+  color: #97978f;
+  cursor: pointer;
+  margin-top: 12px;
+  white-space: nowrap;
+}
+
+/* 라벨에 텍스트를 추가 */
+.toggle-checkbox:not(:checked) ~ .toggle-button::after {
+  content: "더보기";
+}
+
+.toggle-checkbox:checked ~ .toggle-button::after {
+  content: "간단히 보기";
 }
 
 .loading-btn {
@@ -259,7 +317,7 @@ hr {
 }
 
 .modal-container {
-  height: 70%;
+  height: 90%;
   overflow-y: auto;
 }
 
@@ -352,7 +410,7 @@ hr {
   height: 180px;
 }
 
-.readonly-input {
+.consent-box {
   font-size: 22px;
   outline: none;
   width: 100%;

@@ -24,14 +24,12 @@
   height: 85%;
 }
 
-.guide-line::-webkit-scrollbar,
-.readonly-input::-webkit-scrollbar {
+.guide-line::-webkit-scrollbar {
   width: 20px;
   height: 8px;
 }
 
-.guide-line::-webkit-scrollbar-thumb,
-.readonly-input::-webkit-scrollbar-thumb {
+.guide-line::-webkit-scrollbar-thumb {
   border-radius: 20px;
   background: #cccaba;
 }

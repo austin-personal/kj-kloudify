@@ -164,27 +164,39 @@ const Services: React.FC<ServicesProps> = ({
         {serviceNames.map((item, index) => (
           <div key={index}>
             <div className="service-element">
-              <img
-                src={getImagePath(item)}
-                alt="ec2"
-                className="service-image"
-              />
-              <span className="service-label">{item}</span>
-              {/* 서비스 상세정보 라벨 대체 */}
-              {summary && summary[item] ? (
-                <div className="price-label">
-                  <h3>{summary[item].title}</h3>
-                  <ul>
+              <div className="service-wrapper">
+                <img
+                  src={getImagePath(item)}
+                  alt={item}
+                  className="service-image"
+                />
+                <span className="service-label">{item}</span>
+              </div>
+
+              <div className="description-wrapper">
+                <input
+                  type="checkbox"
+                  id={`toggle-${item}`}
+                  className="toggle-checkbox"
+                />
+
+                {summary && summary[item].description ? (
+                  <ul className="description-list">
                     {summary[item].description.map(
                       (desc: string, i: number) => (
                         <li key={i}>{desc}</li>
                       )
                     )}
                   </ul>
-                </div>
-              ) : (
-                <span className="price-label">loading...</span>
-              )}
+                ) : (
+                  <span className="description-list">loading...</span>
+                )}
+
+                <label
+                  htmlFor={`toggle-${item}`}
+                  className="toggle-button"
+                ></label>
+              </div>
             </div>
           </div>
         ))}
@@ -194,14 +206,15 @@ const Services: React.FC<ServicesProps> = ({
         {isModalOpen && (
           <div className="modal-overlay">
             <div className="modal">
-              <h2>Price Summary Details</h2>
               <div className="modal-container">
                 {priceResponse &&
                 priceResponse.price &&
                 priceResponse.price.text ? (
-                  <p>{priceResponse.price.text}</p>
+                  <p>
+                    {priceResponse.price.text.replace(/\[.*?\]/g, "").trim()}
+                  </p>
                 ) : (
-                  <p>Loading...</p>
+                  <p>가격 정보 로딩중입니다..</p>
                 )}
               </div>
               <button className="close-btn" onClick={closeModal}>
@@ -213,11 +226,7 @@ const Services: React.FC<ServicesProps> = ({
       </div>
       <div className="terms-and-conditions">
         <div className="color-font-th">약관</div>
-        <textarea
-          className="readonly-input"
-          value={termsAndConditions}
-          readOnly
-        />
+        <textarea className="consent-box" value={termsAndConditions} readOnly />
         <div className="consent-container">
           <input
             type="checkbox"
