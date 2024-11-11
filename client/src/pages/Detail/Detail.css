@@ -204,7 +204,12 @@
   align-items: center;
   width: 100%;
   height: 100%;
-  padding: 10px;
+}
+
+.service-header-th {
+  font-size: 30px;
+  margin-bottom: 30px;
+  font-weight: bold;
 }
 
 .architecture-box {
@@ -280,109 +285,34 @@
   color: white;
 }
 
-/* Detail.css 또는 적절한 CSS 파일에 추가 */
-
-/* 서비스 상태 아이템 스타일 */
-.service-status-item {
+.service-status {
   display: flex;
+  justify-content: center;
   align-items: center;
-  margin-bottom: 8px;
-}
-
-.resource-name {
-  flex: 1;
   font-weight: bold;
-}
-
-/* 상태 아이콘과 텍스트 스타일 */
-.status-icon {
-  margin-right: 8px;
 }
 
 .status-text {
-  font-weight: bold;
-}
-
-/* Running 상태 스타일 */
-.service-status-item.running .status-text {
-  color: green;
-}
-
-.service-status-item.running .status-icon svg {
-  color: green;
-}
-
-/* Stopped 상태 스타일 */
-.service-status-item.stopped .status-text {
-  color: red;
-}
-
-.service-status-item.stopped .status-icon svg {
-  color: red;
-}
-
-
-/* 카드 스타일 */
-.service-status-card {
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 16px;
-  margin-bottom: 16px;
-  text-align: center;
-  background-color: #f9f9f9;
-}
-
-/* 상태별 카드 색상 변경 */
-.service-status-card.running {
-  border-color: #28a745;
-}
-
-.service-status-card.stopped {
-  border-color: #dc3545;
-}
-
-/* 카드 헤더 스타일 */
-.card-header {
-  margin-bottom: 8px;
-  font-size: 18px;
-  font-weight: bold;
-}
-
-/* 카드 바디 스타일 */
-.card-body {
   display: flex;
-  flex-direction: column;
+  justify-content: center;
   align-items: center;
 }
 
-.card-body .status-icon {
-  margin-bottom: 8px;
+.service-status.running .status-text {
+  color: #FF4C4C;
 }
 
-.card-body .status-text {
-  font-size: 16px;
-  font-weight: bold;
+.service-status.stopped .status-text {
+  color: #A9A9A9;
 }
 
-/* 상태별 텍스트 및 아이콘 색상 변경 */
-.service-status-card.running .status-text,
-.service-status-card.running .status-icon svg {
-  color: #28a745;
+.detail-service-icon-th {
+  width: 50px;
+  margin-right: 10px;
 }
 
-.service-status-card.stopped .status-text,
-.service-status-card.stopped .status-icon svg {
-  color: #dc3545;
-}
-
-
-.service-status-card {
-  transition: border-color 0.3s, background-color 0.3s;
-}
-
-.service-status-card.running .status-icon svg,
-.service-status-card.stopped .status-icon svg {
-  transition: color 0.3s;
+.service-stopped-th {
+  margin: 24px;
 }
 
 .terraform-code-th {

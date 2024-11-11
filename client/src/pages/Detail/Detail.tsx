@@ -7,7 +7,6 @@ import {
   projectOneInfo,
 } from "../../services/projects";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlayCircle, faStopCircle } from "@fortawesome/free-solid-svg-icons";
 import { faCloud } from "@fortawesome/free-solid-svg-icons";
 import "./Detail.css";
 import { Icon } from "@iconify/react";
@@ -19,7 +18,8 @@ import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
 import Lottie from "lottie-react";
 import Loadinganimation from "./LoadingService.json";
 import Deleteanimation from "./LoadingDestroy.json";
-import { useAppSelector } from "../../store/hooks";
+import Runninganimation from "./Running.json"
+import StopSign from "./Stopped.svg"
 import CodeBlock from "../../components/CodeBlock/CodeBlock";
 import CodeBlockLoading from "../../components/CodeBlock/CodeBlockLoading";
 import { extractServiceStateName } from "../../utils/awsServices";
@@ -208,7 +208,6 @@ const Detail: React.FC = () => {
             });
             const data = await terraInfo(projectData.CID, token); // terraInfo 요청
             setTerraData(data); // 가져온 데이터를 상태에 저장
-            console.log("왔냐 어뤃ㅇㅁ:", data);
           }
 
           setIsStateLoading(true);
@@ -234,15 +233,15 @@ const Detail: React.FC = () => {
             // userMessage에서 - 이후의 부분만 가져오기
             const parsedUserMessage = msg.userMessage.includes("-")
               ? msg.userMessage
-                  .slice(msg.userMessage.lastIndexOf("-") + 1)
-                  .trim()
+                .slice(msg.userMessage.lastIndexOf("-") + 1)
+                .trim()
               : msg.userMessage;
 
             // '/'가 포함되어 있다면 '/' 앞에 있는 부분만 가져오기
             const finalParsedMessage = parsedUserMessage.includes("/")
               ? parsedUserMessage
-                  .slice(0, parsedUserMessage.indexOf("/"))
-                  .trim()
+                .slice(0, parsedUserMessage.indexOf("/"))
+                .trim()
               : parsedUserMessage;
 
             // botResponse에서 ** 이전의 부분만 가져오기
@@ -285,7 +284,7 @@ const Detail: React.FC = () => {
             return [
               {
                 id: uuidv4(),
-                text: parsedUserMessage,
+                text: finalParsedMessage,
                 sender: "user",
               },
               {
@@ -397,7 +396,7 @@ const Detail: React.FC = () => {
       <div className="main-content">
         <div className="left-content">
           <div className="service-status-th">
-            <h3>주요 서비스 상태</h3>
+            <div className="service-header-th">주요 서비스 상태</div>
             {isStateLoading ? (
               // 로딩 중일 때 로딩 애니메이션 표시
               <Lottie
@@ -410,27 +409,20 @@ const Detail: React.FC = () => {
                   const isRunning = value.isRunning;
                   const statusText = isRunning ? "Running" : "Stopped";
                   const statusClass = isRunning ? "running" : "stopped";
-                  const statusIcon = isRunning ? faPlayCircle : faStopCircle;
 
                   return (
                     <div
                       key={key}
-                      className={`service-status-card ${statusClass}`}
+                      className={`service-status ${statusClass}`}
                     >
-                      <div className="card-header">
-                        {/* 이미지 여기 띄워놓음 */}
-                        <img src={getImagePath(value.resourceType)} />
-                        <span className="resource-name">
-                          {resourceTypeNames[value.resourceType] ||
-                            value.resourceType}
-                        </span>
-                      </div>
-                      <div className="card-body">
-                        <span className="status-icon">
-                          <FontAwesomeIcon icon={statusIcon} size="2x" />
-                        </span>
-                        <span className="status-text">{statusText}</span>
-                      </div>
+                      {/* 이미지 여기 띄워놓음 */}
+                      <img className="detail-service-icon-th" src={getImagePath(value.resourceType)} />
+                      <div className="status-text">{statusText}</div>
+                      {isRunning ? (
+                        <span><Lottie animationData={Runninganimation} style={{ width: "80px" }}></Lottie></span>
+                      ) : (
+                        <img className="service-stopped-th" src={StopSign} alt="Stop Sign" width="35" />
+                      )}
                     </div>
                   );
                 })}
@@ -469,11 +461,10 @@ const Detail: React.FC = () => {
                       )}
                       <div
                         key={message.id}
-                        className={`chat-message ${
-                          message.sender === "bot"
-                            ? "bot-message"
-                            : "user-message"
-                        }`}
+                        className={`chat-message ${message.sender === "bot"
+                          ? "bot-message"
+                          : "user-message"
+                          }`}
                       >
                         <span>{message.text}</span>
                       </div>
@@ -509,9 +500,8 @@ const Detail: React.FC = () => {
               <div className="download">
                 {terraData ? (
                   <button
-                    className={`download-button ${
-                      isTerraformVisible ? "terraform-btn" : "default-btn"
-                    }`}
+                    className={`download-button ${isTerraformVisible ? "terraform-btn" : "default-btn"
+                      }`}
                     onClick={
                       isTerraformVisible ? handleDownload : handleScreenshot
                     }
@@ -533,9 +523,8 @@ const Detail: React.FC = () => {
                   </button>
                 ) : (
                   <button
-                    className={`download-button loading ${
-                      isTerraformVisible ? "terraform-btn" : "default-btn"
-                    }`}
+                    className={`download-button loading ${isTerraformVisible ? "terraform-btn" : "default-btn"
+                      }`}
                     disabled
                   >
                     <div className="spinner"></div>
