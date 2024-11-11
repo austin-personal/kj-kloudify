@@ -10,6 +10,7 @@ import {
 } from "../../services/projects";
 import { deleteSecret, checkSecret } from "../../services/secrets";
 import { info } from "../../services/users";
+import { Icon } from "@iconify/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan, faPenToSquare } from "@fortawesome/free-regular-svg-icons";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
@@ -227,7 +228,8 @@ const Profile: React.FC = () => {
 
         {hasSecret ? (
           <div className="product-card">
-            <div className="product-price">AWS Credentials</div>
+            <Icon className="product-icon" icon="entypo:pin" width="20px" />
+            <div className="product-title">AWS Credentials</div>
             <div className="product-actions">
               <button className="edit-button" onClick={handleAWSKeySubmitClick}>
                 <FontAwesomeIcon icon={faPenToSquare} /> Edit
