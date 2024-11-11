@@ -1,5 +1,5 @@
 import Swal from "sweetalert2";
-
+import "./SweetAlert2Custom.css";
 const showAlert = (title, text, icon = "info") => {
   return Swal.fire({
     title: title,
