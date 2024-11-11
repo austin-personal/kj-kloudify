@@ -165,6 +165,7 @@ const Detail: React.FC = () => {
   const [isTerraformVisible, setIsTerraformVisible] = useState(false);
   const [terraData, setTerraData] = useState<string>("");
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
+  const [mermaidData, setMermaidData] = useState<string[]>([]); // Mermaid 데이터 상태 추가
   const mermaidRef = useRef<HTMLDivElement>(null);
 
   const navigate = useNavigate();
@@ -195,6 +196,11 @@ const Detail: React.FC = () => {
           const response = await projectOneInfo(Number(pid), token);
           const projectData = response.data;
           setProject(projectData);
+
+          if (projectData.PID) {
+            const data = await mermaid(projectData.PID, token);
+            setMermaidData([data]);
+          }
 
           // 채팅 내역을 처음에 불러옵니다.
           if (projectData.CID) {
@@ -555,7 +561,7 @@ const Detail: React.FC = () => {
                 </div>
               ) : (
                 <div ref={mermaidRef} className="mermaid-chart-th">
-                  <MermaidChart chartCode={finishData} />
+                  <MermaidChart chartCode={mermaidData} />
                 </div>
               )}
             </>
