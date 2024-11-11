@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Icon } from "@iconify/react";
 import "./Services.css";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
@@ -189,7 +190,13 @@ const Services: React.FC<ServicesProps> = ({
                     )}
                   </ul>
                 ) : (
-                  <span className="description-list">loading...</span>
+                  <span className="description-list-loading">
+                    <Icon
+                      icon="svg-spinners:180-ring-with-bg"
+                      color="#fdc36d"
+                      width="32px"
+                    />
+                  </span>
                 )}
 
                 <label
