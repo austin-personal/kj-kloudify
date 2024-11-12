@@ -100,6 +100,7 @@ export class TerraformService {
       6. please make s3 acl default(don't mention it).
       7. region is ${region}. Please create the AMI to match the region.
       8. "Create it without a key pair."
+      9. Replace aws_launch_configuration with aws_launch_template in Terraform code, as Launch Configurations are deprecated and Launch Templates are recommended for creating Auto Scaling groups.
       `;
 
     // 베드락 설정
@@ -110,7 +111,7 @@ export class TerraformService {
     });
 
     const requestBody = {
-      max_tokens: 2000,
+      max_tokens: 5000,
       anthropic_version: 'bedrock-2023-05-31',
       messages: [
           {

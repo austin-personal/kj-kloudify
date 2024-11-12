@@ -5,26 +5,24 @@ import { Icon } from "@iconify/react";
 import "./Services.css";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { setLoading } from "../../store/loadingSlice";
-import { deploy, review } from "../../services/terraforms";
-import { checkSecret } from "../../services/secrets";
+import { setLoading, setReviewReady } from "../../store/loadingSlice";
+import { deploy, review, terraInfo } from "../../services/terraforms";
 import { projectSummary, projectPrice } from "../../services/projects";
 import { fetch } from "../../services/conversations";
 import { extractServiceName } from "../../utils/awsServices";
 import showAlert from "../../utils/showAlert";
+import { setData } from "../../store/dataSlice";
 
 interface ServicesProps {
   cid: number;
   pid: number;
   isReviewReady: boolean;
-  chartCode: string[];
 }
 
 const Services: React.FC<ServicesProps> = ({
   cid,
   pid,
   isReviewReady,
-  chartCode,
 }) => {
   // 모달 열림 상태 관리
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -89,16 +87,10 @@ const Services: React.FC<ServicesProps> = ({
 
   const handleDeploy = async () => {
     try {
-      const hasCredentials = await checkSecret(token);
-      if (!hasCredentials) {
-        alert("AWS 자격 증명 정보를 입력해야 합니다.");
-        navigate("/guide");
-        return;
-      }
-
       dispatch(setLoading(true));
       // deploy 함수 호출 (딱히 반환값을 사용하지 않으므로 await로만 호출)
       await deploy(cid, token);
+      dispatch(setLoading(false));
       showAlert(
         "배포 성공!",
         "배포가 성공적으로 완료되어 Detail 페이지로 이동합니다.",
@@ -106,14 +98,24 @@ const Services: React.FC<ServicesProps> = ({
       );
       navigate(`/detail/${pid}`);
     } catch (error) {
+      dispatch(setLoading(false));
+      dispatch(setReviewReady(false));
+      review(cid, Number(pid), token).then(async ({ message, bool }) => {
+        dispatch(setReviewReady(true));
+        if (!bool) {
+          alert(message);
+          navigate(`/home/${pid}`);
+        } else {
+          // review 성공 시 terraInfo 호출
+          const data = await terraInfo(cid, token);
+          dispatch(setData(data));
+        }
+      });
       showAlert(
         "배포 실패!",
         "배포 중에 문제가 발생했습니다.리뷰창으로 돌아가서 다시 Deploy를 시도하세요.",
         "error"
       );
-      await review(cid, pid, token);
-    } finally {
-      dispatch(setLoading(false));
     }
   };
 
@@ -232,8 +234,8 @@ const Services: React.FC<ServicesProps> = ({
             <div className="modal">
               <div className="modal-container">
                 {priceResponse &&
-                priceResponse.price &&
-                priceResponse.price.text ? (
+                  priceResponse.price &&
+                  priceResponse.price.text ? (
                   <p>
                     {priceResponse.price.text.replace(/\[.*?\]/g, "").trim()}
                   </p>
