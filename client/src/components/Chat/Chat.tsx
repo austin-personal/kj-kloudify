@@ -14,17 +14,17 @@ import { activate, deactivate } from "../../store/btnSlice";
 import { useAppDispatch } from "../../store/hooks";
 import { clearFinishData, setFinishData } from "../../store/finishDataSlice";
 import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
 
 interface ChatProps {
   projectCID: number;
 }
 
 interface Message {
+  element?: JSX.Element; // 추가
   id: string;
   header?: string;
   text?: string;
-  element?: JSX.Element; // 추가
+  multiselect?: string;
   subtext?: string;
   sender: "user" | "bot";
   buttons?: { id: number; label: string }[];
@@ -140,6 +140,7 @@ const Chat: React.FC<ChatProps> = ({ projectCID }) => {
                 sender: "bot",
                 header: template?.header,
                 text: template ? template.text : responseText,
+                multiselect: template?.multiselect,
                 subtext: template?.subtext,
                 checks: isLastMessage ? template?.checks : undefined,
                 buttons: isLastMessage ? template?.buttons : undefined,
@@ -347,6 +348,7 @@ const Chat: React.FC<ChatProps> = ({ projectCID }) => {
         id: uuidv4(),
         text: template.text,
         subtext: template.subtext,
+        multiselect: template.multiselect,
         sender: "bot",
         buttons: template.buttons,
         nobutton: template.nobutton,
@@ -577,6 +579,13 @@ const Chat: React.FC<ChatProps> = ({ projectCID }) => {
     }
   };
 
+  const handleButtonChange = (messageId: string, label: string) => {
+    setSelectedChecks((prevState) => ({
+      ...prevState,
+      [messageId]: [label] // 선택한 체크박스만 활성화하고 다른 모든 체크박스는 해제
+    }));
+  };
+
   return (
     <div className="chat-container">
       <div className="notice-text">
@@ -625,6 +634,12 @@ const Chat: React.FC<ChatProps> = ({ projectCID }) => {
                     }`}
                 >
                   <strong>{message.header}</strong>
+                  {/* 다중선택이 존재하면 렌더링 */}
+                  {message.multiselect && (
+                    <div className="multiselectbox-container-th">
+                      {message.multiselect}
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -718,31 +733,56 @@ const Chat: React.FC<ChatProps> = ({ projectCID }) => {
                 <p className="template-sub-th">{message.subtext}</p>
               )}
 
-              {/* 노버튼이 존재하면 렌더링 */}
-              {message.nobutton && (
-                <button
-                  key={message.nobutton.id}
-                  className="important-template-btn-th"
-                  onClick={() => message.nobutton && handleButtonClick(message.id, message.nobutton)}
-                >
-                  {message.nobutton.label}
-                </button>
+              {/* 체크박스가 존재하면 렌더링 */}
+              {message.buttons && (
+                <div className="checkbox-container-th">
+                  {message.nobutton && (
+                    <label
+                      className="custom-checkbox"
+                      key={message.nobutton.label}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={
+                          selectedChecks[message.id]?.includes(
+                            message.nobutton.label
+                          ) || false
+                        }
+                        onChange={() =>
+                          message.nobutton?.label &&
+                          handleCheckChange(
+                            message.id,
+                            message.nobutton?.label,
+                            true
+                          )
+                        }
+                      />
+                      <svg viewBox="0 0 64 64" height="20px" width="20px">
+                        <path d="M 0 16 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 16 L 32 48 L 64 16 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 16" pathLength="575.0541381835938" className="path important-path-th"></path>
+                      </svg>
+                      <div className="important-check-message-th">{message.nobutton.label}</div>
+                    </label>
+                  )}
+                  {message.buttons.map((button) => (
+                    <label className="custom-checkbox" key={button.label}>
+                      <input
+                        type="checkbox"
+                        checked={selectedChecks[message.id]?.includes(button.label) || false}
+                        onChange={() =>
+                          handleButtonChange(message.id, button.label)
+                        }
+                      />
+                      <svg viewBox="0 0 64 64" height="20px" width="20px">
+                        <path d="M 0 16 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 16 L 32 48 L 64 16 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 16" pathLength="575.0541381835938" className="path"></path>
+                      </svg>
+                      <div className="check-message-th">{button.label}</div>
+                    </label>
+                  ))}
+                </div>
               )}
 
-              {/* 버튼이 존재하면 렌더링 */}
-              {message.buttons &&
-                message.buttons.map((button) => (
-                  <button
-                    key={button.id}
-                    className="template-btn-th"
-                    onClick={() => handleButtonClick(message.id, button)}
-                  >
-                    {button.label}
-                  </button>
-                ))}
-
               {/* 체크박스 제출 버튼 */}
-              {(message.checks || message.servicechecks) && (
+              {(message.checks || message.servicechecks || message.buttons) && (
                 <button
                   onClick={() => handleCheckSubmit(message.id)}
                   className="template-btn-th"
