@@ -37,7 +37,7 @@ const templates: Record<number, Template> = {
     5: {
         header: "구조 설정",
         name: "template1-4",
-        text: "추가적인 무언가가 필요한가요? 추가적으로 필요한 것만 알려주세요.",
+        text: "추가적인 무언가가 필요한가요?\n 추가적으로 필요한 것만 알려주세요.",
         multiselect: "다중 선택",
         checks: [
             { id: 8, label: "운영 우수성" },

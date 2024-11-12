@@ -120,7 +120,6 @@ const NavBar: React.FC = () => {
       }
       const cid = await create(projectName, token); // token이 string임을 보장
       navigate(`/home/${cid}`);
-      window.location.reload();
     } catch (error) { }
     setIsModalOpen(false); // 제출 후 모달을 닫기
   };

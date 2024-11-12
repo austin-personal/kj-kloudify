@@ -38,6 +38,7 @@ const Home: React.FC = () => {
   const [project, setProject] = useState<Project | null>(null);
   const [loading, setLoading] = useState(true);
   const { pid } = useParams<{ pid: string }>();
+  const [initialKey, setInitialKey] = useState(0);
 
   const token = localStorage.getItem("token");
 
@@ -78,6 +79,11 @@ const Home: React.FC = () => {
     }
   }, [loading, project, navigate]);
 
+  useEffect(() => {
+    // 컴포넌트가 처음 마운트될 때 key를 업데이트하여 MermaidChart 리렌더링
+    setInitialKey((prevKey) => prevKey + 1);
+  }, [pid]);
+
   const handleFinish = async () => {
     const cid = project?.CID || 0;
     try {
@@ -117,7 +123,7 @@ const Home: React.FC = () => {
           <div className="project-name-label">Project</div>
           <div className="home-project-name">{project!.projectName}</div>
         </div>
-        <MermaidChart chartCode={finishData}></MermaidChart>
+        <MermaidChart key={initialKey} chartCode={finishData}></MermaidChart>
         <div className="review-btn-container">
           {isActive && (
             <Lottie

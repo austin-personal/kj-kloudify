@@ -99,18 +99,47 @@
   border-radius: 10px;
 }
 
+.checkbox-container-th {
+  position: relative;
+  background-color: #fffce8;
+  padding: 10px;
+  border-radius: 10px;
+  margin-top: 5px;
+  width: 90%;
+}
+
+.checkbox-container-th.multiselect-enabled {
+  border: 3px solid #f6b755;
+}
+
+.multiselect-badge {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background-color: #f6b755;
+  color: white;
+  font-size: 18px;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-weight: bold;
+}
+
+.home-chat-text-th {
+  width: 100%;
+}
+
 .multiselectbox-container-th {
   display: flex;
   justify-content: center;
   align-items: center;
-  position: absolute;
-  left: -130px;
-  background-color: #f6b755;
-  box-shadow: 0px 2px 2px 1px rgba(0, 0, 0, 10%);
-  font-weight: bold;
+  width: 120px;
   height: 30px;
-  padding: 3px 20px;
+  background-color: #fffce8;
   border-radius: 10px;
+  padding: 0 15px;
+  margin-left: 17px;
+  margin-bottom: 5px;
+  font-weight: bold;
 }
 
 
@@ -410,14 +439,6 @@
   }
 }
 
-.checkbox-container-th {
-  background-color: #fffce8;
-  padding: 10px;
-  border-radius: 10px;
-  margin-top: 5px;
-  width: 90%;
-}
-
 .custom-checkbox {
   display: flex;
   justify-content: start;
@@ -436,7 +457,7 @@
 }
 
 .custom-checkbox svg {
-  margin: 0 10px;
+  margin: 0 2%;
   overflow: visible;
 }
 
