@@ -1003,7 +1003,7 @@ export class ConversationsService {
 
         // 3. Bedrock 요청 본문 생성
         const requestBody = {
-            max_tokens: 1000,
+            max_tokens: 5000,
             anthropic_version: 'bedrock-2023-05-31',
             messages: [
                 {
