@@ -137,6 +137,7 @@ export class TerraformService {
       Use aws_launch_template Instead of aws_launch_configuration:
       Update Resource Types: Replace aws_launch_configuration with aws_launch_template in the Terraform code.
       Use for Auto Scaling Groups: Since Launch Configurations are deprecated, use Launch Templates when creating Auto Scaling groups.
+      Please ensure that resource names do not exceed 20 characters.
       `;
 
     // 베드락 설정
