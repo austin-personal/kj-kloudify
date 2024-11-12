@@ -211,6 +211,7 @@ export class ConversationsService {
                     
                     반드시 시작할때 **을 붙여주세요.
                     머메이드 코드의 문법을 철저하게 지켜서 에러가 나지 않도록 해줘.
+                    머메이드의 src태그에 있는 url을 없에지 말아줘.
                     생성된 mermaid 양식:
                     **[graphTD ...]
 
