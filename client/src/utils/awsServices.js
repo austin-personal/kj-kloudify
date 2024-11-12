@@ -188,6 +188,14 @@ const serviceStateAliases = {
 
 const patternAliases = [
   {
+    keywords: ["vpc"],
+    serviceName: "vpc",
+  },
+  {
+    keywords: ["elastic", "load"],
+    serviceName: "elastic-load-balancing",
+  },
+  {
     keywords: ["application", "load"],
     serviceName: "application-load-balancer",
   },

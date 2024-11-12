@@ -7,7 +7,6 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setLoading, setReviewReady } from "../../store/loadingSlice";
 import { deploy, review, terraInfo } from "../../services/terraforms";
-import { checkSecret } from "../../services/secrets";
 import { projectSummary, projectPrice } from "../../services/projects";
 import { fetch } from "../../services/conversations";
 import { extractServiceName } from "../../utils/awsServices";
@@ -18,14 +17,12 @@ interface ServicesProps {
   cid: number;
   pid: number;
   isReviewReady: boolean;
-  chartCode: string[];
 }
 
 const Services: React.FC<ServicesProps> = ({
   cid,
   pid,
   isReviewReady,
-  chartCode,
 }) => {
   // 모달 열림 상태 관리
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -101,6 +98,8 @@ const Services: React.FC<ServicesProps> = ({
       );
       navigate(`/detail/${pid}`);
     } catch (error) {
+      dispatch(setLoading(false));
+      dispatch(setReviewReady(false));
       review(cid, Number(pid), token).then(async ({ message, bool }) => {
         dispatch(setReviewReady(true));
         if (!bool) {
@@ -112,7 +111,6 @@ const Services: React.FC<ServicesProps> = ({
           dispatch(setData(data));
         }
       });
-      dispatch(setLoading(false));
       showAlert(
         "배포 실패!",
         "배포 중에 문제가 발생했습니다.리뷰창으로 돌아가서 다시 Deploy를 시도하세요.",

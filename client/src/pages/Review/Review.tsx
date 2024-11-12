@@ -68,9 +68,6 @@ const Review: React.FC = () => {
     }
   };
 
-  if (isReviewReady) {
-  }
-
   return (
     <div className="review">
       <div className="review-board">
@@ -152,7 +149,6 @@ const Review: React.FC = () => {
         cid={cid ?? 0}
         pid={pid ?? 0}
         isReviewReady={isReviewReady}
-        chartCode={finishData}
       />
       <div>
         {showToast && (
