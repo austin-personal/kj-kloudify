@@ -71,7 +71,25 @@ export class TerraformService {
 
     let errorMessage = await this.getErrorMessageByCID(PID);
 
-    if (!errorMessage){
+    if (errorMessage) {
+      // `stderr`에서 에러 메시지 추출
+      try {
+        const errorData = JSON.parse(errorMessage);
+        if (errorData.stderr && typeof errorData.stderr.S === 'string') {
+          const stderrContent = errorData.stderr.S;
+          const extractedErrors = stderrContent.match(/Error: (.*?)(\\n|$)/g);
+          if (extractedErrors) {
+            errorMessage = extractedErrors.map(err => err.replace(/Error: /, '').trim()).join('\n');
+          } else {
+            errorMessage = 'None';
+          }
+        } else {
+          errorMessage = 'None';
+        }
+      } catch (e) {
+        errorMessage = 'None';
+      }
+    } else {
       errorMessage = 'None';
     }
 
