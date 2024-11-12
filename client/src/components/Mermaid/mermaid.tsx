@@ -25,7 +25,7 @@ const MermaidChart: React.FC<MermaidChartProps> = ({ chartCode }) => {
     } catch (error) {
       const serviceName = extractServiceName(name);
       console.warn(`Image not found: ${serviceName}. Using default image.`);
-      return "https://icon.icepanel.io/AWS/svg/Compute/EC2.svg"; // 기본 이미지 경로 설정
+      return require(`../../img/aws-icons/default.svg`).default; // 기본 이미지 경로 설정
     }
   };
 
