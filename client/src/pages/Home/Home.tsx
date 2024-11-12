@@ -7,11 +7,15 @@ import SideBar from "../../components/SideBar/SideBar";
 import MermaidChart from "../../components/Mermaid/mermaid";
 
 import { projectOneInfo } from "../../services/projects";
-import { review } from "../../services/terraforms";
+import { review, terraInfo } from "../../services/terraforms";
 
 import { setReviewReady, setHasSecret } from "../../store/loadingSlice";
 import { clearFinishData } from "../../store/finishDataSlice";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
+
+import Lottie from "lottie-react";
+import Arrow from "./Arrow.json";
+import { setData } from "../../store/dataSlice";
 
 interface Project {
   PID: number;
@@ -34,6 +38,7 @@ const Home: React.FC = () => {
   const [project, setProject] = useState<Project | null>(null);
   const [loading, setLoading] = useState(true);
   const { pid } = useParams<{ pid: string }>();
+  const [initialKey, setInitialKey] = useState(0);
 
   const token = localStorage.getItem("token");
 
@@ -74,15 +79,25 @@ const Home: React.FC = () => {
     }
   }, [loading, project, navigate]);
 
+  useEffect(() => {
+    // 컴포넌트가 처음 마운트될 때 key를 업데이트하여 MermaidChart 리렌더링
+    setInitialKey((prevKey) => prevKey + 1);
+  }, [pid]);
+
   const handleFinish = async () => {
     const cid = project?.CID || 0;
     try {
       dispatch(setReviewReady(false));
-      review(cid, Number(pid), token).then(({ message, bool }) => {
+      review(cid, Number(pid), token).then(async ({ message, bool }) => {
         dispatch(setReviewReady(true));
+
         if (!bool) {
           alert(message);
           navigate(`/home/${pid}`);
+        } else {
+          // review 성공 시 terraInfo 호출
+          const data = await terraInfo(cid, token);
+          dispatch(setData(data));
         }
       });
       navigate(`/review/${pid}/${cid}`);
@@ -101,8 +116,6 @@ const Home: React.FC = () => {
 
   return (
     <div className="home">
-      {/* 슬라이드바 삭제 */}
-      <SideBar />
       <Chat projectCID={project!.CID} />
       <div className="vertical-line"></div>
       <div className="right-side">
@@ -110,8 +123,15 @@ const Home: React.FC = () => {
           <div className="project-name-label">Project</div>
           <div className="home-project-name">{project!.projectName}</div>
         </div>
-        <MermaidChart chartCode={finishData}></MermaidChart>
+        <MermaidChart key={initialKey} chartCode={finishData}></MermaidChart>
         <div className="review-btn-container">
+          {isActive && (
+            <Lottie
+              className="review-btn-arrow-th"
+              animationData={Arrow}
+              style={{ width: "80px" }}
+            ></Lottie>
+          )}
           <button
             onClick={handleFinish}
             className={`review-btn-${!isActive ? "disabled" : "enabled"}`}

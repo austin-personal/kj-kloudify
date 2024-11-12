@@ -126,9 +126,9 @@ export const state = async (cid: number | undefined, token: string | null, optio
 }
 
 
-export const terraInfo = async (cid: number, token: string) => {
+export const terraInfo = async (cid: number, token: string | null) => {
     try {
-        console.log("terraInfo",cid,token);
+        // console.log("terraInfo",cid,token);
         const response = await axios.post(`${API_URL}/terraInfo`,
             {
                 CID: cid

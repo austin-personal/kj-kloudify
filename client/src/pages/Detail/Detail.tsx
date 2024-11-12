@@ -1,24 +1,28 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
-import DonutChart from "../../components/DetailPage/DonutChart";
 import {
   deleteProject,
   mermaid,
   projectOneInfo,
 } from "../../services/projects";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCloudArrowDown } from "@fortawesome/free-solid-svg-icons";
-import { faPlayCircle, faStopCircle } from "@fortawesome/free-solid-svg-icons";
 import { faCloud } from "@fortawesome/free-solid-svg-icons";
 import "./Detail.css";
+import { Icon } from "@iconify/react";
 import { open } from "../../services/conversations";
 import { useTemplates } from "../../components/Chat/TemplateProvider";
-import { destroy, download, state } from "../../services/terraforms";
+import { destroy, download, state, terraInfo } from "../../services/terraforms";
 import MermaidChart from "../../components/Mermaid/mermaid";
 import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
 import Lottie from "lottie-react";
 import Loadinganimation from "./LoadingService.json";
+import Deleteanimation from "./LoadingDestroy.json";
+import Runninganimation from "./Running.json"
+import StopSign from "./Stopped.svg"
+import CodeBlock from "../../components/CodeBlock/CodeBlock";
+import CodeBlockLoading from "../../components/CodeBlock/CodeBlockLoading";
+import { extractServiceStateName } from "../../utils/awsServices";
 
 const domtoimage = require("dom-to-image");
 
@@ -52,99 +56,6 @@ const defaultBotMessage: ChatMessage[] = [
   },
 ];
 
-// 컴포넌트 상단에 매핑 객체를 정의합니다.
-const resourceTypeNames: { [key: string]: string } = {
-  aws_instance: "EC2 Instance",
-  aws_s3_bucket: "S3 Bucket",
-  aws_lambda_function: "Lambda Function",
-  aws_rds_instance: "RDS Instance",
-  aws_dynamodb_table: "DynamoDB Table",
-  aws_iam_role: "IAM Role",
-  aws_iam_policy: "IAM Policy",
-  aws_iam_user: "IAM User",
-  aws_vpc: "VPC",
-  aws_subnet: "Subnet",
-  aws_security_group: "Security Group",
-  aws_ecs_cluster: "ECS Cluster",
-  aws_ecs_task_definition: "ECS Task Definition",
-  aws_eks_cluster: "EKS Cluster",
-  aws_elb: "Elastic Load Balancer (ELB)",
-  aws_alb: "Application Load Balancer (ALB)",
-  aws_glacier_vault: "Glacier Vault",
-  aws_cloudfront_distribution: "CloudFront Distribution",
-  aws_cloudwatch_alarm: "CloudWatch Alarm",
-  aws_cloudwatch_log_group: "CloudWatch Log Group",
-  aws_autoscaling_group: "Auto Scaling Group",
-  aws_autoscaling_policy: "Auto Scaling Policy",
-  aws_kinesis_stream: "Kinesis Stream",
-  aws_sqs_queue: "SQS Queue",
-  aws_sns_topic: "SNS Topic",
-  aws_route53_zone: "Route 53 Hosted Zone",
-  aws_route53_record: "Route 53 Record",
-  aws_elasticache_cluster: "ElastiCache Cluster",
-  aws_redshift_cluster: "Redshift Cluster",
-  aws_kms_key: "KMS Key",
-  aws_secretsmanager_secret: "Secrets Manager Secret",
-  aws_acm_certificate: "ACM Certificate",
-  aws_stepfunctions_state_machine: "Step Functions State Machine",
-  aws_emr_cluster: "EMR Cluster",
-  aws_batch_job_queue: "Batch Job Queue",
-  aws_batch_compute_environment: "Batch Compute Environment",
-  aws_sagemaker_notebook_instance: "SageMaker Notebook Instance",
-  aws_sagemaker_endpoint: "SageMaker Endpoint",
-  aws_apigateway_rest_api: "API Gateway REST API",
-  aws_apigatewayv2_api: "API Gateway v2",
-  aws_cloudformation_stack: "CloudFormation Stack",
-  aws_elastic_beanstalk_environment: "Elastic Beanstalk Environment",
-  aws_elastic_beanstalk_application: "Elastic Beanstalk Application",
-  aws_eip: "Elastic IP",
-  aws_rds_cluster: "RDS Cluster",
-  aws_efs_file_system: "EFS File System",
-  aws_msk_cluster: "MSK Cluster (Kafka)",
-  aws_neptune_cluster: "Neptune Cluster",
-  aws_network_acl: "Network ACL",
-  aws_nat_gateway: "NAT Gateway",
-  aws_transit_gateway: "Transit Gateway",
-  aws_codebuild_project: "CodeBuild Project",
-  aws_codepipeline: "CodePipeline",
-  aws_codecommit_repository: "CodeCommit Repository",
-  aws_codedeploy_application: "CodeDeploy Application",
-  aws_opsworks_stack: "OpsWorks Stack",
-  aws_backup_vault: "Backup Vault",
-  aws_workspaces_directory: "WorkSpaces Directory",
-  aws_directory_service_directory: "Directory Service Directory",
-  aws_route_table: "Route Table",
-  aws_route: "Route",
-  aws_rds_parameter_group: "RDS Parameter Group",
-  aws_sqs_dead_letter_queue: "SQS Dead Letter Queue",
-  aws_inspector_assessment_template: "Inspector Assessment Template",
-  aws_appmesh_mesh: "App Mesh",
-  aws_licensemanager_license_configuration: "License Manager Configuration",
-  aws_mq_broker: "MQ Broker",
-  aws_network_interface: "Network Interface",
-  aws_s3_access_point: "S3 Access Point",
-  aws_ec2_capacity_reservation: "EC2 Capacity Reservation",
-  aws_elastictranscoder_pipeline: "Elastic Transcoder Pipeline",
-  aws_glue_crawler: "Glue Crawler",
-  aws_glue_job: "Glue Job",
-  aws_ssm_parameter: "SSM Parameter",
-  aws_elasticsearch_domain: "Elasticsearch Domain",
-  aws_documentdb_cluster: "DocumentDB Cluster",
-  aws_athena_database: "Athena Database",
-  aws_gamelift_fleet: "GameLift Fleet",
-  aws_kendra_index: "Kendra Index",
-  aws_network_firewall: "Network Firewall",
-  aws_outposts_outpost: "Outpost",
-  aws_qldb_ledger: "QLDB Ledger",
-  aws_amplify_app: "Amplify App",
-  aws_appstream_fleet: "AppStream Fleet",
-  aws_apigatewayv2_stage: "API Gateway v2 Stage",
-  aws_cloud9_environment_ec2: "Cloud9 Environment",
-  aws_cognito_user_pool: "Cognito User Pool",
-  aws_cognito_identity_pool: "Cognito Identity Pool",
-  aws_dataexchange_dataset: "Data Exchange Dataset",
-};
-
 const Detail: React.FC = () => {
   const templates = useTemplates();
   const { pid } = useParams<{ pid: string }>();
@@ -153,68 +64,38 @@ const Detail: React.FC = () => {
   const token = localStorage.getItem("token");
   const [isLoading, setIsLoading] = useState(true);
   const [isStateLoading, setIsStateLoading] = useState(true);
-  const [mermaidCode, setMermaidCode] = useState<string[]>([]);
   const [stateData, setStateData] = useState<{ [key: string]: any }>({});
   const [modalType, setModalType] = useState<string>("");
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
-  const [showOptions, setShowOptions] = useState(false);
+  const [isTerraformVisible, setIsTerraformVisible] = useState(false);
+  const [terraData, setTerraData] = useState<string>("");
+  const [isDeleting, setIsDeleting] = useState<boolean>(false);
+  const [mermaidData, setMermaidData] = useState<string[]>([]); // Mermaid 데이터 상태 추가
   const mermaidRef = useRef<HTMLDivElement>(null);
+
   const navigate = useNavigate();
+
+  const getImagePath = (name: string) => {
+    try {
+      const serviceName = extractServiceStateName(name);
+      if (!serviceName) {
+        console.warn(`Image not found: ${serviceName}. Using default image.`);
+        return "https://icon.icepanel.io/AWS/svg/Compute/EC2.svg"; // 기본 이미지 경로 설정
+      }
+      return require(`../../img/aws-icons/${serviceName}.svg`);
+    } catch (error) {
+      console.log("큰일남!");
+    }
+  };
 
   const toggleChat = () => {
     setIsChatOpen((prev) => !prev); // 슬라이드 상태를 반전
   };
 
-  const handleMouseEnter = () => {
-    setShowOptions(true);
-  };
-
-  const handleMouseLeave = () => {
-    setShowOptions(false);
-  };
-
-  const handleDownload = async () => {
-    const cid = project?.CID
-    if (cid !== null) {
-      try {
-        const data = await download(cid, token);
-        const blob = new Blob([data], { type: "text/plain" });
-        const fileURL = URL.createObjectURL(blob);
-
-        const link = document.createElement("a");
-        link.href = fileURL;
-        link.download = `terraform_code_${cid}.tf`;
-        link.click();
-
-        URL.revokeObjectURL(fileURL);
-      } catch (error) {
-        console.error("Terraform code download failed:", error);
-      }
-    }
-  };
-
-  const handleScreenshot = async () => {
-    if (mermaidRef.current) {
-      // div 요소를 PNG 이미지로 변환
-      domtoimage
-        .toPng(mermaidRef.current)
-        .then((dataUrl: string) => {
-          const link = document.createElement("a");
-          link.href = dataUrl;
-          link.download = "capture.png";
-          link.click();
-        })
-        .catch((error: any) => {
-          console.error("Error capturing image:", error);
-        });
-    }
-  };
-
   useEffect(() => {
     const controller = new AbortController();
     const signal = controller.signal;
-
     const fetchProjectData = async () => {
       try {
         if (pid) {
@@ -222,21 +103,24 @@ const Detail: React.FC = () => {
           const projectData = response.data;
           setProject(projectData);
 
-          const mermaidTemp = await mermaid(Number(pid), token);
-          setMermaidCode([mermaidTemp]);
+          if (projectData.PID) {
+            const data = await mermaid(projectData.PID, token);
+            setMermaidData([data]);
+          }
 
           // 채팅 내역을 처음에 불러옵니다.
           if (projectData.CID) {
             openChatHistory(projectData.CID).then(() => {
               setIsLoading(false);
             });
+            const data = await terraInfo(projectData.CID, token); // terraInfo 요청
+            setTerraData(data); // 가져온 데이터를 상태에 저장
           }
 
           setIsStateLoading(true);
           const stateTemp = await state(projectData.CID, token, { signal });
           setStateData(stateTemp || {});
           setIsStateLoading(false);
-
         }
       } catch (error) {
         console.error("프로젝트 정보를 가져오는 중 오류 발생:", error);
@@ -249,7 +133,7 @@ const Detail: React.FC = () => {
     const openChatHistory = async (cid: number) => {
       try {
         const response = await open(cid, token);
-        console.log(response)
+        console.log(response);
         if (response && response.length > 0) {
           let temp = -2;
           const formattedChat = response.flatMap((msg: any, index: number) => {
@@ -307,7 +191,7 @@ const Detail: React.FC = () => {
             return [
               {
                 id: uuidv4(),
-                text: parsedUserMessage,
+                text: finalParsedMessage,
                 sender: "user",
               },
               {
@@ -325,7 +209,7 @@ const Detail: React.FC = () => {
     };
 
     fetchProjectData();
-    console.log("뭐야이거 :", chatHistory)
+    console.log("뭐야이거 :", chatHistory);
 
     return () => {
       controller.abort(); // 컴포넌트 언마운트 시 요청 취소
@@ -345,6 +229,8 @@ const Detail: React.FC = () => {
 
   const handleConfirmDelete = async () => {
     try {
+      setShowDeleteModal(false);
+      setIsDeleting(true);
       if (modalType === "deleteProject") {
         // 프로젝트 삭제 로직
         await destroy(project.CID, token);
@@ -354,6 +240,45 @@ const Detail: React.FC = () => {
       navigate("/profile");
     } catch (error) {
       setModalType("error"); // 모달 타입 설정
+    }
+    setIsDeleting(false);
+  };
+
+  const handleCheckboxChange = () => {
+    setIsTerraformVisible(!isTerraformVisible); // 상태 토글
+  };
+
+  const handleScreenshot = async () => {
+    if (mermaidRef.current) {
+      // div 요소를 PNG 이미지로 변환
+      domtoimage
+        .toPng(mermaidRef.current)
+        .then((dataUrl: string) => {
+          const link = document.createElement("a");
+          link.href = dataUrl;
+          link.download = "capture.png";
+          link.click();
+        })
+        .catch((error: any) => {
+          console.error("Error capturing image:", error);
+        });
+    }
+  };
+
+  const handleDownload = async () => {
+    try {
+      const data = await download(project.CID, token);
+      const blob = new Blob([data], { type: "text/plain" });
+      const fileURL = URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = fileURL;
+      link.download = `terraform_code_${project.CID}.tf`;
+      link.click();
+
+      URL.revokeObjectURL(fileURL);
+    } catch (error) {
+      console.error("Terraform code download failed:", error);
     }
   };
 
@@ -376,10 +301,9 @@ const Detail: React.FC = () => {
       </div>
 
       <div className="main-content">
-
         <div className="left-content">
           <div className="service-status-th">
-            <h3>주요 서비스 상태</h3>
+            <div className="service-header-th">주요 서비스 상태</div>
             {isStateLoading ? (
               // 로딩 중일 때 로딩 애니메이션 표시
               <Lottie
@@ -392,25 +316,21 @@ const Detail: React.FC = () => {
                   const isRunning = value.isRunning;
                   const statusText = isRunning ? "Running" : "Stopped";
                   const statusClass = isRunning ? "running" : "stopped";
-                  const statusIcon = isRunning ? faPlayCircle : faStopCircle;
 
                   return (
                     <div
                       key={key}
-                      className={`service-status-card ${statusClass}`}
+                      className={`service-status ${statusClass}`}
                     >
-                      <div className="card-header">
-                        <span className="resource-name">
-                          {resourceTypeNames[value.resourceType] ||
-                            value.resourceType}
-                        </span>
-                      </div>
-                      <div className="card-body">
-                        <span className="status-icon">
-                          <FontAwesomeIcon icon={statusIcon} size="2x" />
-                        </span>
-                        <span className="status-text">{statusText}</span>
-                      </div>
+                      {/* 이미지 여기 띄워놓음 */}
+                      <img className="detail-service-icon-th" src={getImagePath(value.resourceType)} />
+                      <div className="hover-text">{value.resourceType}</div>
+                      <div className="status-text">{statusText}</div>
+                      {isRunning ? (
+                        <span><Lottie animationData={Runninganimation} style={{ width: "80px" }}></Lottie></span>
+                      ) : (
+                        <img className="service-stopped-th" src={StopSign} alt="Stop Sign" width="35" />
+                      )}
                     </div>
                   );
                 })}
@@ -418,30 +338,10 @@ const Detail: React.FC = () => {
             ) : (
               <div>데이터가 없습니다.</div>
             )}
-            {/* <DonutChart slices={[25, 35, 40]} /> */}
           </div>
         </div>
 
         <div className="architecture-box">
-
-          <div
-            className="download-container-detail"
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-          >
-            <button className="download-button">
-              <FontAwesomeIcon
-                icon={faCloudArrowDown}
-                className="download-icon"
-              />
-              Download
-            </button>
-            <div className={`download-options ${showOptions ? "show" : ""}`}>
-              <button onClick={() => handleDownload()}>Terraform Code</button>
-              <button onClick={handleScreenshot}>Architecture</button>
-            </div>
-          </div>
-
           <div className="previous-chat">
             <button className="chat-button" onClick={toggleChat}>
               <svg className="svgIcon" viewBox="0 0 384 512">
@@ -452,9 +352,7 @@ const Detail: React.FC = () => {
           </div>
 
           {isChatOpen ? (
-            <div
-              className="previous-chatting-th"
-            >
+            <div className="previous-chatting-th">
               {isLoading ? (
                 <div className="detail-loading-chat">
                   <Lottie
@@ -466,14 +364,14 @@ const Detail: React.FC = () => {
                 <div className="chat-history">
                   {chatHistory.map((message) => (
                     <>
-                      {
-                        message.sender === "bot" && (
-                          <FontAwesomeIcon className="bot-icon" icon={faCloud} />
-                        )
-                      }
-                      < div
+                      {message.sender === "bot" && (
+                        <FontAwesomeIcon className="bot-icon" icon={faCloud} />
+                      )}
+                      <div
                         key={message.id}
-                        className={`chat-message ${message.sender === "bot" ? "bot-message" : "user-message"
+                        className={`chat-message ${message.sender === "bot"
+                          ? "bot-message"
+                          : "user-message"
                           }`}
                       >
                         <span>{message.text}</span>
@@ -484,72 +382,155 @@ const Detail: React.FC = () => {
               )}
             </div>
           ) : (
-            <div ref={mermaidRef} className="mermaid-chart">
-              <MermaidChart chartCode={mermaidCode}></MermaidChart>
-            </div>
+            <>
+              <div className="container">
+                <input
+                  type="checkbox"
+                  className="checkbox"
+                  id="checkbox"
+                  onChange={handleCheckboxChange}
+                />
+                <label className="switch" htmlFor="checkbox">
+                  <span className="slider">
+                    <Icon
+                      icon={
+                        isTerraformVisible ? "jam:sitemap" : "mdi:code-braces"
+                      }
+                      width="27"
+                      color="#312D26"
+                    />
+                  </span>
+                </label>
+                <span className="notice-tooltip">
+                  {isTerraformVisible ? "Architecture Image" : "Terraform Code"}
+                </span>
+              </div>
+              <div className="download">
+                {terraData ? (
+                  <button
+                    className={`download-button ${isTerraformVisible ? "terraform-btn" : "default-btn"
+                      }`}
+                    onClick={
+                      isTerraformVisible ? handleDownload : handleScreenshot
+                    }
+                  >
+                    <svg
+                      className="svgIcon"
+                      viewBox="0 0 384 512"
+                      height="1em"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path d="M169.4 470.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 370.8 224 64c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 306.7L54.6 265.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z"></path>
+                    </svg>
+                    <span className="icon2"></span>
+                    <span className="download-tooltip">
+                      {isTerraformVisible
+                        ? "Terratorm Download"
+                        : "Image Download"}
+                    </span>
+                  </button>
+                ) : (
+                  <button
+                    className={`download-button loading ${isTerraformVisible ? "terraform-btn" : "default-btn"
+                      }`}
+                    disabled
+                  >
+                    <div className="spinner"></div>
+
+                    <div className="tooltip">
+                      환경 설정중입니다. 기다려 주세요.
+                    </div>
+                  </button>
+                )}
+              </div>
+              {isTerraformVisible ? (
+                <div className="terraform-code-th">
+                  <div className="terraform-frame-th">
+                    <div className="terraform-container-th">
+                      {terraData ? (
+                        <CodeBlock code={terraData} className="code" />
+                      ) : (
+                        <CodeBlockLoading />
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div ref={mermaidRef} className="mermaid-chart-th">
+                  <MermaidChart chartCode={mermaidData} />
+                </div>
+              )}
+            </>
           )}
         </div>
-
       </div>
       {/* 삭제 확인 모달 */}
-      {
-        showDeleteModal && (
-          <div className="delete-modal">
-            <div className="delete-modal-content">
+      {showDeleteModal && (
+        <div className="delete-modal">
+          <div className="delete-modal-content">
+            {modalType === "deleteProject" && (
+              <>
+                <h3>경고: 모든 AWS 리소스 종료 작업</h3>
+                <p>
+                  이 버튼을 클릭하면 현재 계정 내 모든 AWS 서비스와 리소스가
+                  영구적으로 종료됩니다.
+                </p>
+                <p>
+                  이로 인해 서비스 중단, 데이터 손실, 복구 불가능한 결과가
+                  발생할 수 있습니다.
+                </p>
+                <p>이 작업을 수행하시겠습니까?</p>
+                <h4>⚠️ 한 번 더 확인해주세요. 이 작업은 취소할 수 없습니다.</h4>
+              </>
+            )}
+            {modalType === "error" && (
+              <>
+                <p>요청하신 작업 중 오류가 발생했습니다.</p>
+                <p>잠시 뒤 다시 시도해주세요.</p>
+              </>
+            )}
+            <div className="delete-modal-buttons">
               {modalType === "deleteProject" && (
                 <>
-                  <h3>경고: 모든 AWS 리소스 종료 작업</h3>
-                  <p>
-                    이 버튼을 클릭하면 현재 계정 내 모든 AWS 서비스와 리소스가
-                    영구적으로 종료됩니다.
-                  </p>
-                  <p>
-                    이로 인해 서비스 중단, 데이터 손실, 복구 불가능한 결과가 발생할
-                    수 있습니다.
-                  </p>
-                  <p>이 작업을 수행하시겠습니까?</p>
-                  <h4>⚠️ 한 번 더 확인해주세요. 이 작업은 취소할 수 없습니다.</h4>
+                  <button
+                    className="delete-cancel-button-th"
+                    onClick={handleCancelDelete}
+                  >
+                    취소
+                  </button>
+                  <button
+                    className="delete-confirm-button-th"
+                    onClick={handleConfirmDelete}
+                  >
+                    삭제
+                  </button>
                 </>
               )}
               {modalType === "error" && (
                 <>
-                  <p>요청하신 작업 중 오류가 발생했습니다.</p>
-                  <p>잠시 뒤 다시 시도해주세요.</p>
+                  <button
+                    className="delete-cancel-button-th"
+                    onClick={handleCancelDelete}
+                  >
+                    확인
+                  </button>
                 </>
               )}
-              <div className="delete-modal-buttons">
-                {modalType === "deleteProject" && (
-                  <>
-                    <button
-                      className="delete-cancel-button-th"
-                      onClick={handleCancelDelete}
-                    >
-                      취소
-                    </button>
-                    <button
-                      className="delete-confirm-button-th"
-                      onClick={handleConfirmDelete}
-                    >
-                      삭제
-                    </button>
-                  </>
-                )}
-                {modalType === "error" && (
-                  <>
-                    <button
-                      className="delete-cancel-button-th"
-                      onClick={handleCancelDelete}
-                    >
-                      확인
-                    </button>
-                  </>
-                )}
-              </div>
             </div>
           </div>
-        )
-      }
-    </div >
+        </div>
+      )}
+      {/* 삭제 작업 중일 때 오버레이 표시 */}
+      {isDeleting && (
+        <div className="profile-loading-th">
+          <Lottie
+            animationData={Deleteanimation}
+            style={{ width: "300px", height: "300px" }}
+          />
+          <h3>삭제중입니다...</h3>
+        </div>
+      )}
+    </div>
   );
 };
 

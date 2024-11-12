@@ -95,37 +95,32 @@ export class ConversationsService {
             case 0: // 인트로 오식이
                 return `당신은 사용자의 요구에 맞춘 AWS 아키텍처 설계를 지원하는 전문가입니다.
 
-                        요구 사항 파악 및 구조화:
-                        사용자의 요구 사항을 파악하여 필요한 AWS 서비스의 종류와 개수를 결정합니다.
-                        이를 구조화하여 제안합니다.
+                        1. 요구 사항 파악 및 구조화: 사용자의 요구 사항을 파악하여 필요한 AWS 서비스의 종류와 개수를 결정합니다.
 
-                        정확한 정보 수집:
-                        대화 중 사용자의 질문에 맞지 않는 응답이 있다면 다시 질문하여 정확한 정보를 얻습니다.
+                        2. 정확한 정보 수집: 사용자의 질문에 맞지 않는 응답이 있다면 다시 질문하여 정확한 정보를 얻습니다. 수집된 정보를 바탕으로 서비스 구조를 코드로 표현하여 사용자의 이해를 돕습니다.
 
-                        구성 제안 및 확인:
-                        필요한 AWS 서비스 구성이 명확해지면 해당 구성을 제안합니다.
-                        사용자가 진행 요청 시, 코드만 출력합니다.
+                        3. 단계별 구성 제안 및 설명: 각 단계에서 구조에 대한 간략한 설명을 제공하여 사용자가 현재 설계된 내용과 그 목적을 이해할 수 있도록 합니다. 설명이 끝난 후, 사용자가 이해했는지 및 이대로 진행할지를 묻습니다.
 
-                        최소한의 서비스 구성:
-                        필수 기능만 포함하여 최소한의 서비스로만 구성합니다.
-                        선택적인 기능은 별도로 물어보고 사용자가 해당서비스를 요청했을때만 추가합니다.
+                        4. 단계별 사용자 확인: 구조에 대한 설명 후, "이대로 진행할까요?"라는 질문을 추가하여 사용자의 확인을 요청합니다. 사용자가 긍정하면 코드만 출력하고, 부정하거나 수정 요청 시 추가적인 정보를 반영해 다시 설명 및 질문합니다.
 
-                        사용자 표시:
-                        최종 아키텍처 다이어그램의 가장 바깥에 사용자를 표시합니다.
+                        5. 최소한의 서비스 구성: 필수 기능만 포함하여 최소한의 서비스로만 구성합니다. 선택적인 기능은 별도로 물어보고 사용자가 해당 서비스를 요청했을 때만 추가합니다.
 
-                        구성 완료 시 결과 생성 규칙:
+                        // 6. 사용자 표시: 최종 아키텍처 다이어그램의 가장 위에 사용자를 표시합니다.
+
+                        7. 구성 완료 시 결과 생성 규칙:
+
                         결과는 graph TD로 시작합니다.
-                        VPC, 서브넷 등의 논리적 구성요소는 subgraph로 구분하여 표현합니다.
+                        VPC, 서브넷의 논리적 구성요소는 subgraph로 구분하여 표현합니다.
                         Public/Private 서브넷, VPC 경계 등을 나누고 style 명령어로 영역을 시각화합니다.
-
-                        각 AWS 서비스 노드는 다음 형식으로 작성합니다:
-                        serviceName[<img src='https://icon.icepanel.io/AWS/svg/ServiceName.svg'><br>ServiceName]
-                        코드 내 객체가 좌우 및 상하로 정렬되도록 생성하며, 화살표는 최대한 곡선 없이 직선으로 표현합니다.
+                        각 AWS 서비스 노드는 다음 형식으로 작성합니다: serviceName[<img src='https://icon.icepanel.io/AWS/svg/ServiceName.svg'><br>ServiceName]
+                        반드시 코드 내 객체가 좌우 및 상하로 정렬되도록 하고, 화살표는 최대한 곡선 없이 직선으로 표현합니다.
                         Mermaid.js의 그리드 레이아웃이나 서브그래프를 활용하여 객체의 정렬을 명시적으로 지정합니다.
-                        노드 간의 관계를 설정할 때 방향을 명확히 하여 정렬이 잘 되도록 합니다. 
-                        코드 시작 전에 **를 붙여줍니다.
-                        구조가 결정되고 사용자가 긍정할 시, 코드만 출력합니다.
-                        mermaid 코드에 대해 절대 언급하지마세요`;
+                        subgraph이름에 띄어쓰기를 넣지 마세요.
+                        route53은 포함시키지 말아줘.
+
+                        8. 결과 설명 및 코드 생성 규칙:
+                        사용자가 구조를 확인한 후 긍정할 시, 설명 없이 코드만 출력합니다.
+                        주의사항: Mermaid 코드에 대해 절대 언급하지 말고, 코드 시작 전에 **를 붙여주세요.`;
 
             case 1:
                 return `당신은 사용자의 요구에 맞는 AWS 아키텍처 설계를 돕는 전문 안내자 역할을 합니다. 그 중 서버담당자입니다.
@@ -135,11 +130,12 @@ export class ConversationsService {
                         
                         대화 내역을 전부 참고하여 질문에 맞지 않는 대답이 있다면 해당 질문을 다시 되물어서 정확한 정보를 얻도록 해주세요.
                         대화 내역을 참고한 결과 서버를 가동하는데에 충분한 정보가 모였다면 구성한 서비스를 보여주며 이대로 진행할꺼냐고 물어봐주세요.
-                        마지막으로 구성된 정보가 마무리되었다면 mermaid 코드로서 대화내역의 코드를 이어받아 서버 부분의 이미지가 구체화 되도록 AWS 아이콘들의 실제 URL을 사용해서 3티어 아키텍쳐 머메이드로 <img> 사용해서 ** 양식을 붙여서 보내주세요.
+                        마지막으로 구성된 정보가 완성되었다면, 대화 내역의 mermaid코드를 이어받아 서버 부분의 이미지를 구체화할 수 있도록 AWS 아이콘의 실제 URL을 사용하여 아키텍처를 Mermaid 코드로 생성해주세요. 이미지 삽입 시 <img> 태그를 사용하고, ** 양식을 적용해 주세요.
 
                         mermaid코드로 구성된 이미지 내용은 가장 단순한 형태로 나타내줘야 하며 사용자가 구성한 서비스를 간략히 잘 보여줘야 합니다.
-                        VPC같은 항목은 영역으로서 각각의 아키텍쳐가 얽혀있는 모양을 논리적으로 표현해주세요.
+                        VPC와 같은 항목은 영역으로서 각 아키텍처가 연결된 모양을 논리적으로 표현해 주세요.
                         대화 내역에 있는 mermaid 코드를 참조하여 기본 구조를 유지하면서 담당하고 있는 부분에 사용자의 요구사항을 추가하는 식으로 작성해야 합니다.
+                        반드시 코드 내 객체가 좌우 및 상하로 정렬되도록 하고, 화살표는 최대한 곡선 없이 직선으로 표현합니다.
 
                         구성이 완료되고 사용자가 이대로 진행을 요청을 하게되면 "다른 텍스트 없이" mermaid코드만 **을 붙여서 출력해주세요.
                         mermaid 코드의 존재나 특성에 대해 별도로 언급하지 마세요.`;
@@ -152,11 +148,12 @@ export class ConversationsService {
 
                         대화 내역을 전부 참고하여 질문에 맞지 않는 대답이 있다면 해당 질문을 다시 되물어서 정확한 정보를 얻도록 해주세요.
                         대화 내역을 참고한 결과 서버를 가동하는데에 충분한 정보가 모였다면 구성한 서비스를 보여주며 이대로 진행할꺼냐고 물어봐주세요.
-                        마지막으로 구성된 정보가 마무리되었다면 mermaid 코드로서 대화내역의 코드를 이어받아 서버 부분의 이미지가 구체화 되도록 AWS 아이콘들의 실제 URL을 사용해서 3티어 아키텍쳐 머메이드로 <img> 사용해서 ** 양식을 붙여서 보내주세요.
+                        마지막으로 구성된 정보가 완성되었다면, 대화 내역의 mermaid코드를 이어받아 서버 부분의 이미지를 구체화할 수 있도록 AWS 아이콘의 실제 URL을 사용하여 아키텍처를 Mermaid 코드로 생성해주세요. 이미지 삽입 시 <img> 태그를 사용하고, ** 양식을 적용해 주세요.
                         
                         mermaid코드로 구성된 이미지 내용은 가장 단순한 형태로 나타내줘야 하며 사용자가 구성한 서비스를 간략히 잘 보여줘야 합니다.
-                        VPC같은 항목은 영역으로서 각각의 아키텍쳐가 얽혀있는 모양을 논리적으로 표현해주세요.
+                        VPC와 같은 항목은 영역으로서 각 아키텍처가 연결된 모양을 논리적으로 표현해 주세요.
                         대화 내역에 있는 mermaid 코드를 참조하여 기본 구조를 유지하면서 담당하고 있는 부분에 사용자의 요구사항을 추가하는 식으로 작성해야 합니다.
+                        반드시 코드 내 객체가 좌우 및 상하로 정렬되도록 하고, 화살표는 최대한 곡선 없이 직선으로 표현합니다.
 
                         구성이 완료되고 사용자가 이대로 진행을 요청을 하게되면 "다른 텍스트 없이" mermaid코드만 **을 붙여서 출력해주세요.
                         mermaid 코드의 존재나 특성에 대해 별도로 언급하지 마세요.`;
@@ -169,11 +166,12 @@ export class ConversationsService {
                         
                         대화 내역을 전부 참고하여 질문에 맞지 않는 대답이 있다면 해당 질문을 다시 되물어서 정확한 정보를 얻도록 해주세요.
                         대화 내역을 참고한 결과 서버를 가동하는데에 충분한 정보가 모였다면 구성한 서비스를 보여주며 이대로 진행할꺼냐고 물어봐주세요.
-                        마지막으로 구성된 정보가 마무리되었다면 mermaid 코드로서 대화내역의 코드를 이어받아 서버 부분의 이미지가 구체화 되도록 AWS 아이콘들의 실제 URL을 사용해서 3티어 아키텍쳐 머메이드로 <img> 사용해서 ** 양식을 붙여서 보내주세요.
+                        마지막으로 구성된 정보가 완성되었다면, 대화 내역의 mermaid코드를 이어받아 서버 부분의 이미지를 구체화할 수 있도록 AWS 아이콘의 실제 URL을 사용하여 아키텍처를 Mermaid 코드로 생성해주세요. 이미지 삽입 시 <img> 태그를 사용하고, ** 양식을 적용해 주세요.
                         
                         mermaid코드로 구성된 이미지 내용은 가장 단순한 형태로 나타내줘야 하며 사용자가 구성한 서비스를 간략히 잘 보여줘야 합니다.
-                        VPC같은 항목은 영역으로서 각각의 아키텍쳐가 얽혀있는 모양을 논리적으로 표현해주세요.
+                        VPC와 같은 항목은 영역으로서 각 아키텍처가 연결된 모양을 논리적으로 표현해 주세요.
                         대화 내역에 있는 mermaid 코드를 참조하여 기본 구조를 유지하면서 담당하고 있는 부분에 사용자의 요구사항을 추가하는 식으로 작성해야 합니다.
+                        반드시 코드 내 객체가 좌우 및 상하로 정렬되도록 하고, 화살표는 최대한 곡선 없이 직선으로 표현합니다.
 
                         구성이 완료되고 사용자가 이대로 진행을 요청을 하게되면 "다른 텍스트 없이" mermaid코드만 **을 붙여서 출력해주세요.
                         mermaid 코드의 존재나 특성에 대해 별도로 언급하지 마세요.`;
@@ -186,11 +184,12 @@ export class ConversationsService {
                         
                         대화 내역을 전부 참고하여 질문에 맞지 않는 대답이 있다면 해당 질문을 다시 되물어서 정확한 정보를 얻도록 해주세요.
                         대화 내역을 참고한 결과 서버를 가동하는데에 충분한 정보가 모였다면 구성한 서비스를 보여주며 이대로 진행할꺼냐고 물어봐주세요.
-                        마지막으로 구성된 정보가 마무리되었다면 mermaid 코드로서 대화내역의 코드를 이어받아 서버 부분의 이미지가 구체화 되도록 AWS 아이콘들의 실제 URL을 사용해서 3티어 아키텍쳐 머메이드로 <img> 사용해서 ** 양식을 붙여서 보내주세요.
+                        마지막으로 구성된 정보가 완성되었다면, 대화 내역의 mermaid코드를 이어받아 서버 부분의 이미지를 구체화할 수 있도록 AWS 아이콘의 실제 URL을 사용하여 아키텍처를 Mermaid 코드로 생성해주세요. 이미지 삽입 시 <img> 태그를 사용하고, ** 양식을 적용해 주세요.
                         
                         mermaid코드로 구성된 이미지 내용은 가장 단순한 형태로 나타내줘야 하며 사용자가 구성한 서비스를 간략히 잘 보여줘야 합니다.
-                        VPC같은 항목은 영역으로서 각각의 아키텍쳐가 얽혀있는 모양을 논리적으로 표현해주세요.
+                        VPC와 같은 항목은 영역으로서 각 아키텍처가 연결된 모양을 논리적으로 표현해 주세요.
                         대화 내역에 있는 mermaid 코드를 참조하여 기본 구조를 유지하면서 담당하고 있는 부분에 사용자의 요구사항을 추가하는 식으로 작성해야 합니다.
+                        반드시 코드 내 객체가 좌우 및 상하로 정렬되도록 하고, 화살표는 최대한 곡선 없이 직선으로 표현합니다.
 
                         구성이 완료되고 사용자가 이대로 진행을 요청을 하게되면 "다른 텍스트 없이" mermaid코드만 **을 붙여서 출력해주세요.
                         mermaid 코드의 존재나 특성에 대해 별도로 언급하지 마세요.`;
@@ -202,15 +201,25 @@ export class ConversationsService {
             case 6: // 아웃트로 육식이
                 return `당신은 사용자의 요구에 맞는 AWS 아키텍처 설계를 돕는 전문 안내자 역할을 합니다. 그 중 최종적으로 대화내역을 검토하는 담당자입니다.
                     지금까지의 대화 내용을 종합하여 필요한 AWS 서비스 구성을 아래 양식으로 생성해야합니다. 최종 구성은 Terraform 코드로 변환될 예정이며, 각 서비스와 옵션이 정확히 입력되어야 합니다.
-                    생성한 최종구조에 대해 간략하게 설명해주세요. 그리고 설명이 끝나면 다음의 양식대로 **양식 앞에 붙여 \n 없이 한줄로 글을 마무리해주세요.
-                    각각 생성된 코드에 대해서는 절대 언급하지 말아주세요.
+                    생성한 최종구조에 대해 간략하게 설명해주세요. 
+                    설명이 끝나면 다음의 양식대로 \n 없이 한줄로 글을 마무리해주세요.
+                    각각 생성된 코드의 존재에 대해서는 절대 언급하지 말아주세요.
 
-                    생성된 서비스 양식:
-                    !!{ "service": "", "options": { "ami": "", "instance_type": "", "public":  } },{ "service": "", "options": { "engine": "", "instance_class": "", "allocated_storage":  } },{ "service": "", "options": { "bucket_name": "", "access": "" } }
+                    설명이 끝나고 키워드가 시작할때 !!을 반드시 붙여주세요.
+
+                    생성된 키워드 양식:
+                    !!{ "service": "", "options": "" },{"service" : "", "options":""}...
 
                     그리고 해당 양식에 대해서 mermaid코드 또한 생성해주세요. 대화 로그를 참조하여 구조를 짜주세요. 구조에 변화가 없다면 대화로그를 참조하여 그대로 출력해주세요.
+                    바로 사용할 수 있도록 result같은 수식어를 붙이지 마세요.
+                    
+                    반드시 시작할때 **을 붙여주세요.
+                    머메이드 코드의 문법을 철저하게 지켜서 에러가 나지 않도록 해줘.
+                    머메이드의 src태그에 있는 url을 없에지 말아줘.
                     생성된 mermaid 양식:
                     **[graphTD ...]
+
+                    머메이드 코드와 키워드가 싱크가 반드시 맞아야 합니다. 서비스 수정을 요청할 경우 두가지 전부 수정해야합니다.
                     `;
 
             default:
@@ -357,22 +366,22 @@ export class ConversationsService {
 
         if (templateKey) {
             // 모델 카운터 증가 조건 확인 및 처리
-            const triggerKeywords = ['특정텍스트1', '특정텍스트2', '계활'];
-            const shouldIncrementCounter = triggerKeywords.some(keyword => user_question.includes(keyword));
-            if (shouldIncrementCounter) {
-                console.log(`키워드 조건 만족 - ${user_question}에 특정 키워드 포함됨, modelSwitchCounter 증가`);
-                try {
-                    await this.incrementModelCounter(CID);
-                } catch (error) {
-                    console.error('모델 카운터 증가 중 에러 발생:', error);
-                }
-            }
+            // const triggerKeywords = ['특정텍스트1', '특정텍스트2', '계활'];
+            // const shouldIncrementCounter = triggerKeywords.some(keyword => user_question.includes(keyword));
+            // if (shouldIncrementCounter) {
+            //     console.log(`키워드 조건 만족 - ${user_question}에 특정 키워드 포함됨, modelSwitchCounter 증가`);
+            //     try {
+            //         await this.incrementModelCounter(CID);
+            //     } catch (error) {
+            //         console.error('모델 카운터 증가 중 에러 발생:', error);
+            //     }
+            // }
 
             let mermaid1: string[] = [];
 
             mermaid1 = await this.fetchMermaidByCID(CID);
 
-            console.log("템플릿 머메이드가 찍히나?", `\n**${mermaid1.join(', ')}`);
+            // console.log("템플릿 머메이드가 찍히나?", `\n**${mermaid1.join(', ')}`);
 
             // 템플릿 응답 반환
             try {
@@ -485,7 +494,68 @@ export class ConversationsService {
             const parsedResponse = JSON.parse(responseBody);
 
             // 응답에서 'content' 필드의 'text' 값을 추출하여 botResponse로 사용
-            const botResponse = parsedResponse.content?.[0]?.text;
+            let botResponse = parsedResponse.content?.[0]?.text;
+            // console.log("첫번째 응답 생성");
+            // // 응답의 정확도를 높이기 위해 첫 번째 응답을 프롬프트에 다시 포함
+            // const refinedPromptContent = `
+            //     첫 번째 응답을 검토하고 필요한 경우 수정해 주세요:
+            //         - 응답이 질문에 명확히 답하는지
+            //         - 기술적 오류나 잘못된 정보가 없는지
+            //         - 요구사항에 부합하는지
+            //         - 특히, 생성된 머메이드 코드와 키워드와 설명이 일치하는지 논리적으로 맞는 구조인지 확인해주세요.
+            //         - 코드를 바로 사용할 수 있도록 다른 수식어가 붙어있으면 없에주세요.
+            //         - 답변에서 코드의 존재에 대해 언급하면 해당 문장만 없에주세요.
+
+            //     mermaid 코드 생성 규칙:
+            //         결과는 graph TD로 시작합니다.
+            //         Public/Private 서브넷, VPC 경계 등을 나누고 style 명령어로 영역을 시각화합니다.
+            //         각 AWS 서비스 노드는 다음 형식으로 작성합니다: serviceName[<img src='https://icon.icepanel.io/AWS/svg/ServiceName.svg'><br>ServiceName]
+            //         코드 내 객체가 좌우 및 상하로 정렬되도록 하고, 화살표는 최대한 곡선 없이 직선으로 표현합니다.
+            //         Mermaid.js의 그리드 레이아웃이나 서브그래프를 활용하여 객체의 정렬을 명시적으로 지정합니다.
+            //         노드 간의 관계를 설정할 때 방향을 명확히 하여 정렬이 잘 되도록 합니다.
+            //         사용자 표시: 최종 아키텍처 다이어그램의 가장 바깥에 사용자를 표시합니다.
+
+            //         반드시 기존 구조를 유지하며 필요없는 글자가 있는지, 문법에 어긋나는지 확인해주세요. 
+            //         현재 응답에 맞는 구조로 구성되었는지 확인해주세요.
+            //         사용자가 구조를 확인한 후 긍정할 시, 설명 없이 코드만 출력합니다.
+            //         주의사항: Mermaid 코드에 대해 절대 언급하지 말고, 코드 시작 전에 **를 붙여주세요.
+                    
+            //     개선한 답변만 출력해주세요.
+
+            //     첫 번째 응답:
+            //     ${botResponse}
+
+            //     수정된 답변:
+
+            //     `;
+
+            // // 재요청 바디 구성
+            // const refinedRequestBody = {
+            //     max_tokens: 2000,
+            //     anthropic_version: 'bedrock-2023-05-31',
+            //     messages: [
+            //         {
+            //             role: 'user',
+            //             content: refinedPromptContent,
+            //         },
+            //     ],
+            // };
+
+            // // 두 번째 요청 처리
+            // const refinedResponse = await client
+            // .invokeModel({
+            //     body: JSON.stringify(refinedRequestBody),
+            //     contentType: 'application/json',
+            //     modelId: 'anthropic.claude-3-5-sonnet-20240620-v1:0',
+            // })
+            // .promise();
+
+            // const refinedResponseBody = refinedResponse.body.toString();
+            // const finalParsedResponse = JSON.parse(refinedResponseBody);
+
+            // // 최종 보완된 응답
+            // console.log("보완된 응답 생성");
+            // botResponse = finalParsedResponse.content?.[0]?.text;
 
             // 키워드 처리 및 저장 (botResponse, user_question을 사용)
             let updatedResponse = await this.processTextAndAddKeywords(botResponse, user_question, CID, modelSwitchCounter);
@@ -554,7 +624,7 @@ export class ConversationsService {
     async saveConversation(CID: number, userMessage: string, botResponse: string): Promise<void> {
         const lastID = await this.getLastID(); // 마지막 ID 조회
         const newID = lastID + 1; // 마지막 ID에 1을 더해 새로운 ID 생성
-
+    
         const params = {
             TableName: 'Conversations',
             Item: {
@@ -565,41 +635,55 @@ export class ConversationsService {
                 timestamp: new Date().toISOString(),
             }
         };
-
+    
         try {
             console.log('DynamoDB에 저장할 데이터:', params);
             await this.dynamoDB.put(params).promise();
             console.log('대화 기록이 성공적으로 저장되었습니다.');
         } catch (error) {
             console.error('대화 기록 저장 실패:', error.message);
+            console.error('에러 스택:', error.stack);
+            console.error('에러 전체 정보:', JSON.stringify(error));
             console.error('DynamoDB 요청 실패 params:', params);
             throw new Error('대화 기록 저장 실패');
         }
     }
 
     // DynamoDB에서 특정 CID의 대화 기록을 불러오는 함수
-    async getConversationsByCID(CID: number): Promise<any> {
-        const params = {
-            TableName: 'Conversations',
-            FilterExpression: 'CID = :cid',
-            ExpressionAttributeValues: {
-                ':cid': CID,
+    async getConversationsByCID(CID: number): Promise<any[]> {
+        let lastEvaluatedKey;
+        const allItems: any[] = []; // 명시적으로 any[] 타입으로 설정
+    
+        do {
+            const params = {
+                TableName: 'Conversations',
+                FilterExpression: 'CID = :cid',
+                ExpressionAttributeValues: {
+                    ':cid': CID,
+                },
+                ExclusiveStartKey: lastEvaluatedKey, // 페이징을 위한 시작 키
+            };
+    
+            try {
+                console.log('쿼리 파라미터:', params);
+                const result = await this.dynamoDB.scan(params).promise();
+                
+                if (result.Items) {
+                    allItems.push(...(result.Items as any[])); // result.Items를 any[]로 타입 캐스팅
+                }
+    
+                lastEvaluatedKey = result.LastEvaluatedKey; // 다음 페이지가 있으면 설정
+    
+            } catch (error) {
+                console.error('대화 기록 불러오기 실패:', error.message);
+                throw new Error('대화 기록 불러오기 실패');
             }
-        };
-        try {
-            console.log('쿼리 파라미터:', params);
-            const result = await this.dynamoDB.scan(params).promise();
-
-            if (!result.Items) {
-                return [];
-            }
-
-            return result.Items.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
-        } catch (error) {
-            console.error('대화 기록 불러오기 실패:', error.message);
-            throw new Error('대화 기록 불러오기 실패');
-        }
+        } while (lastEvaluatedKey); // `LastEvaluatedKey`가 없을 때까지 반복
+    
+        // 타임스탬프를 기준으로 정렬하여 반환
+        return allItems.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
     }
+    
 
     // **로 감싸진 텍스트에서 키워드 추출
     extractMermaid(text: string): { keywords: string[], updatedText: string } {
@@ -703,6 +787,9 @@ export class ConversationsService {
         const Keywordresult = this.extractKeywords(result.updatedText);
 
         const { keywords2, updatedText2 } = Keywordresult;
+
+        // console.log("체크 1",updatedText);
+        // console.log("체크 2",updatedText2);
 
         if (keywords.length > 0) {
 
@@ -876,9 +963,9 @@ export class ConversationsService {
 
         // 2. Bedrock 요청을 위한 프롬프트 내용 준비
         const prompt_content = type === 'summary'
-            ? `다음 키워드를 기반으로 각 서비스의 정보를 포함한 클라우드 아키텍처에 대한 상세 요약을 제공해 주세요. 각 서비스에 대해 두 줄 이내의 설명을 포함해 주세요. 순수 내용만 나오게 해주세요. 추가 설명은 필요 없습니다.
+            ? `다음 키워드를 기반으로 각 서비스의 정보를 포함한 클라우드 아키텍처에 대한 상세 요약을 제공해 주세요. 각 서비스에 대해 두 줄 이내의 설명을 포함해 주세요. 추가 설명은 필요 없습니다.
 
-아래와 같은 JSON 형식으로 출력해 주세요:
+아래와 같은 JSON 형식으로 출력해 주세요 (출력은 순수 내용만 나오게 해주세요):
 
 {
   "aws_services": {
@@ -888,34 +975,39 @@ export class ConversationsService {
         "<첫 번째 설명 문장>",
         "<두 번째 설명 문장>"
       ]
-    },
+    }
     // 키워드에 포함된 각 서비스마다 반복
   }
 }
 
 키워드: ${keywordData}
-`
-            : `다음 키워드 내용을 바탕으로, 각 서비스의 가격 정보와 월간 총 예상 비용을 포함하여 불필요한 도입부나 마무리 멘트 없이 아래 형식으로 깔끔하게 정리해 주세요. 서비스의 개수는 유동적입니다.
 
-            [각 서비스 반복 시작]
-            [서비스 이름]
-              - [세부 정보]
-              - 가격: [가격 정보]
-            [각 서비스 반복 끝]
-            
-            총 예상 비용 (월간):
-            - [서비스 이름]: [월간 비용]
-            - ...
-            
-            총계: [총 월간 비용]/월
-            
-            참고: 실제 비용은 사용량, 리전, 데이터 전송 등에 따라 달라질 수 있습니다.
-            
-            키워드: ${keywordData}`;
+출력은 **한국어로** 해주세요.
+`
+            : `다음 키워드 내용을 바탕으로, 각 서비스의 이름, 세부 정보, 가격 정보를 포함하여 불필요한 도입부나 마무리 멘트 없이 깔끔하게 정리해 주세요. 서비스의 개수는 유동적입니다.
+
+각 서비스에 대해 다음 형식을 사용하세요:
+
+서비스 이름 (예: AWS EC2)
+  - 세부 정보: 해당 서비스의 특징이나 사양
+  - 가격: 해당 서비스의 가격 정보
+
+(위의 형식으로 모든 서비스를 나열)
+
+총 예상 비용 (월간):
+- 서비스 이름: 월간 비용
+- ...
+
+총계: 총 월간 비용/월
+
+참고: 실제 비용은 사용량, 리전, 데이터 전송 등에 따라 달라질 수 있습니다.
+
+키워드: ${keywordData}
+`;
 
         // 3. Bedrock 요청 본문 생성
         const requestBody = {
-            max_tokens: 1000,
+            max_tokens: 5000,
             anthropic_version: 'bedrock-2023-05-31',
             messages: [
                 {

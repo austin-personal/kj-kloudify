@@ -175,6 +175,21 @@
   padding: 10px 20px;
   background-color: #fdc36d;
   margin-left: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.email-btn-th.email-checked {
+  background-color: #66BB6A; /* 초록색 */
+  color: white;
+}
+
+.check-icon {
+  animation: fadeIn 0.8s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.5); }
+  to { opacity: 1; transform: scale(1); }
 }
 
 .input-container-th {

@@ -14,17 +14,17 @@ import { activate, deactivate } from "../../store/btnSlice";
 import { useAppDispatch } from "../../store/hooks";
 import { clearFinishData, setFinishData } from "../../store/finishDataSlice";
 import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
 
 interface ChatProps {
   projectCID: number;
 }
 
 interface Message {
+  element?: JSX.Element; // 추가
   id: string;
   header?: string;
   text?: string;
-  element?: JSX.Element; // 추가
+  multiselect?: string;
   subtext?: string;
   sender: "user" | "bot";
   buttons?: { id: number; label: string }[];
@@ -140,6 +140,7 @@ const Chat: React.FC<ChatProps> = ({ projectCID }) => {
                 sender: "bot",
                 header: template?.header,
                 text: template ? template.text : responseText,
+                multiselect: template?.multiselect,
                 subtext: template?.subtext,
                 checks: isLastMessage ? template?.checks : undefined,
                 buttons: isLastMessage ? template?.buttons : undefined,
@@ -175,9 +176,17 @@ const Chat: React.FC<ChatProps> = ({ projectCID }) => {
           const lastBotResponse =
             initialMessages[initialMessages.length - 1].botResponse;
 
-          if (lastBotResponse.includes("**")) {
+          if (lastBotResponse.includes("```")) {
+            // "```"로 감싸진 부분을 추출
+            const codeBlock = lastBotResponse.match(/```mermaid([\s\S]*?)```/);
+            if (codeBlock && codeBlock[1]) {
+              // "```"로 감싸진 내용이 존재하면 `finishData`로 전달
+              console.log(codeBlock[1])
+              dispatch(setFinishData([codeBlock[1].trim()]));
+            }
+          } else if (lastBotResponse.includes("**")) {
+            // "```"로 감싸진 부분이 없고 "**"가 있으면 기존 방식으로 파싱
             const afterAsterisks = lastBotResponse.split("**")[1].trim();
-
             dispatch(setFinishData([afterAsterisks]));
           }
         }
@@ -339,6 +348,7 @@ const Chat: React.FC<ChatProps> = ({ projectCID }) => {
         id: uuidv4(),
         text: template.text,
         subtext: template.subtext,
+        multiselect: template.multiselect,
         sender: "bot",
         buttons: template.buttons,
         nobutton: template.nobutton,
@@ -357,22 +367,44 @@ const Chat: React.FC<ChatProps> = ({ projectCID }) => {
 
   // 응답 메시지를 처리하는 함수
   const processResponseMessage = (responseMessage: string) => {
-    if (responseMessage.includes("**")) {
+    // "```"로 감싸진 부분이 있는지 먼저 확인
+    const codeBlock = responseMessage.match(/```([\s\S]*?)```/);
+
+    if (codeBlock && codeBlock[1]) {
+      // "```"로 감싸진 부분이 있을 경우 처리
+      const [beforeCodeBlock] = responseMessage.split("```").map((part) => part.trim());
+      const afterCodeBlock = codeBlock[1].trim();
+
+      // afterCodeBlock 데이터를 배열 형태로 설정
+      dispatch(setFinishData([afterCodeBlock]));
+
+      // beforeCodeBlock이 템플릿 이름과 매치하는지 찾기
+      const matchingTemplate = Object.values(templates).find(
+        (template) => template.name === beforeCodeBlock
+      );
+
+      // 일치하는 템플릿이 있으면 템플릿 메시지를 추가하고, 없으면 일반 메시지를 추가
+      createAndAddMessage(matchingTemplate, beforeCodeBlock);
+    }
+    // "```"가 없고 "**"로 감싸진 경우 처리
+    else if (responseMessage.includes("**")) {
       const [beforeAsterisks, afterAsterisks] = responseMessage
         .split("**")
         .map((part) => part.trim());
 
-      // "**"뒤에 있는 데이터를 배열형태로 받기
+      // "**" 뒤에 있는 데이터를 배열 형태로 받기
       dispatch(setFinishData([afterAsterisks]));
 
-      // 이제 beforeAsterisks가 템플릿 이름과 매치하는지 찾기
+      // beforeAsterisks가 템플릿 이름과 매치하는지 찾기
       const matchingTemplate = Object.values(templates).find(
         (template) => template.name === beforeAsterisks
       );
 
       // 일치하는 템플릿이 있으면 템플릿 메시지를 추가하고, 없으면 일반 메시지를 추가
       createAndAddMessage(matchingTemplate, beforeAsterisks);
-    } else {
+    }
+    // 별도의 특수 구문이 없는 경우 기존 템플릿 처리
+    else {
       const matchingTemplate = Object.values(templates).find(
         (template) => template.name === responseMessage
       );
@@ -547,6 +579,13 @@ const Chat: React.FC<ChatProps> = ({ projectCID }) => {
     }
   };
 
+  const handleButtonChange = (messageId: string, label: string) => {
+    setSelectedChecks((prevState) => ({
+      ...prevState,
+      [messageId]: [label] // 선택한 체크박스만 활성화하고 다른 모든 체크박스는 해제
+    }));
+  };
+
   return (
     <div className="chat-container">
       <div className="notice-text">
@@ -580,6 +619,8 @@ const Chat: React.FC<ChatProps> = ({ projectCID }) => {
               <FontAwesomeIcon className="bot-icon" icon={faCloud} />
             )}
             <div className={`message ${message.sender}-message`}>
+
+
               {/* 헤더가 존재하면 렌더링 */}
               {message.header && (
                 <div
@@ -598,21 +639,25 @@ const Chat: React.FC<ChatProps> = ({ projectCID }) => {
                 </div>
               )}
 
-              <div className="message-content">
-                {message.text ? (
-                  <>
-                    {message.text}
-                  </>
-                ) : (
-                  <div className="loading-text-th">
-                    {message.element}
-                  </div>
-                )}
+              <div className="home-chat-text-th">
+                {/* 메세지 존재하면 렌더링 */}
+                <div className="message-content">
+                  {message.text ? (
+                    <>
+                      {message.text}
+                    </>
+                  ) : (
+                    <div className="loading-text-th">
+                      {message.element}
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* 체크박스가 존재하면 렌더링 */}
               {message.checks && (
-                <div className="checkbox-container-th">
+                <div className={`checkbox-container-th ${message.multiselect ? 'multiselect-enabled' : ''}`}>
+                  {message.multiselect && <div className="multiselect-badge">다중 선택 가능</div>}
                   {message.nocheck && (
                     <label
                       className="custom-checkbox"
@@ -660,7 +705,8 @@ const Chat: React.FC<ChatProps> = ({ projectCID }) => {
 
               {/* 서비스체크박스가 존재하면 렌더링 */}
               {message.servicechecks && (
-                <div className="checkbox-container-th">
+                <div className={`checkbox-container-th ${message.multiselect ? 'multiselect-enabled' : ''}`}>
+                  {message.multiselect && <div className="multiselect-badge">다중 선택 가능</div>}
                   {message.servicechecks.map((check) => (
                     <label className="custom-checkbox" key={check.label}>
                       <input
@@ -688,31 +734,56 @@ const Chat: React.FC<ChatProps> = ({ projectCID }) => {
                 <p className="template-sub-th">{message.subtext}</p>
               )}
 
-              {/* 노버튼이 존재하면 렌더링 */}
-              {message.nobutton && (
-                <button
-                  key={message.nobutton.id}
-                  className="important-template-btn-th"
-                  onClick={() => message.nobutton && handleButtonClick(message.id, message.nobutton)}
-                >
-                  {message.nobutton.label}
-                </button>
+              {/* 버튼이 존재하면 렌더링 */}
+              {message.buttons && (
+                <div className="checkbox-container-th">
+                  {message.nobutton && (
+                    <label
+                      className="custom-checkbox"
+                      key={message.nobutton.label}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={
+                          selectedChecks[message.id]?.includes(
+                            message.nobutton.label
+                          ) || false
+                        }
+                        onChange={() =>
+                          message.nobutton?.label &&
+                          handleCheckChange(
+                            message.id,
+                            message.nobutton?.label,
+                            true
+                          )
+                        }
+                      />
+                      <svg viewBox="0 0 64 64" height="20px" width="20px">
+                        <path d="M 0 16 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 16 L 32 48 L 64 16 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 16" pathLength="575.0541381835938" className="path important-path-th"></path>
+                      </svg>
+                      <div className="important-check-message-th">{message.nobutton.label}</div>
+                    </label>
+                  )}
+                  {message.buttons.map((button) => (
+                    <label className="custom-checkbox" key={button.label}>
+                      <input
+                        type="checkbox"
+                        checked={selectedChecks[message.id]?.includes(button.label) || false}
+                        onChange={() =>
+                          handleButtonChange(message.id, button.label)
+                        }
+                      />
+                      <svg viewBox="0 0 64 64" height="20px" width="20px">
+                        <path d="M 0 16 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 16 L 32 48 L 64 16 V 8 A 8 8 90 0 0 56 0 H 8 A 8 8 90 0 0 0 8 V 56 A 8 8 90 0 0 8 64 H 56 A 8 8 90 0 0 64 56 V 16" pathLength="575.0541381835938" className="path"></path>
+                      </svg>
+                      <div className="check-message-th">{button.label}</div>
+                    </label>
+                  ))}
+                </div>
               )}
 
-              {/* 버튼이 존재하면 렌더링 */}
-              {message.buttons &&
-                message.buttons.map((button) => (
-                  <button
-                    key={button.id}
-                    className="template-btn-th"
-                    onClick={() => handleButtonClick(message.id, button)}
-                  >
-                    {button.label}
-                  </button>
-                ))}
-
               {/* 체크박스 제출 버튼 */}
-              {(message.checks || message.servicechecks) && (
+              {(message.checks || message.servicechecks || message.buttons) && (
                 <button
                   onClick={() => handleCheckSubmit(message.id)}
                   className="template-btn-th"

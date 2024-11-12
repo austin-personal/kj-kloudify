@@ -11,7 +11,7 @@ export const signup = async (username: string, email: string, password: string) 
             password,
             email,
         });
-        return response.data.access_token;
+        return response.data.achieved;
     } catch (error) {
         console.error('회원가입 개박살!! : ', error);
         throw error;
