@@ -110,8 +110,6 @@ const Home: React.FC = () => {
 
   return (
     <div className="home">
-      {/* 슬라이드바 삭제 */}
-      <SideBar />
       <Chat projectCID={project!.CID} />
       <div className="vertical-line"></div>
       <div className="right-side">
