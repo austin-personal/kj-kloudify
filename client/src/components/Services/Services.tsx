@@ -5,13 +5,14 @@ import { Icon } from "@iconify/react";
 import "./Services.css";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { setLoading } from "../../store/loadingSlice";
-import { deploy, review } from "../../services/terraforms";
+import { setLoading, setReviewReady } from "../../store/loadingSlice";
+import { deploy, review, terraInfo } from "../../services/terraforms";
 import { checkSecret } from "../../services/secrets";
 import { projectSummary, projectPrice } from "../../services/projects";
 import { fetch } from "../../services/conversations";
 import { extractServiceName } from "../../utils/awsServices";
 import showAlert from "../../utils/showAlert";
+import { setData } from "../../store/dataSlice";
 
 interface ServicesProps {
   cid: number;
@@ -106,8 +107,17 @@ const Services: React.FC<ServicesProps> = ({
       );
       navigate(`/detail/${pid}`);
     } catch (error) {
-      await review(cid, pid, token);
-      window.location.reload();
+      review(cid, Number(pid), token).then(async ({ message, bool }) => {
+        dispatch(setReviewReady(true));
+        if (!bool) {
+          alert(message);
+          navigate(`/home/${pid}`);
+        } else {
+          // review 성공 시 terraInfo 호출
+          const data = await terraInfo(cid, token);
+          dispatch(setData(data));
+        }
+      });
       showAlert(
         "배포 실패!",
         "배포 중에 문제가 발생했습니다.리뷰창으로 돌아가서 다시 Deploy를 시도하세요.",
@@ -233,8 +243,8 @@ const Services: React.FC<ServicesProps> = ({
             <div className="modal">
               <div className="modal-container">
                 {priceResponse &&
-                priceResponse.price &&
-                priceResponse.price.text ? (
+                  priceResponse.price &&
+                  priceResponse.price.text ? (
                   <p>
                     {priceResponse.price.text.replace(/\[.*?\]/g, "").trim()}
                   </p>
