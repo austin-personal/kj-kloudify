@@ -115,6 +115,7 @@ export class ConversationsService {
                         각 AWS 서비스 노드는 다음 형식으로 작성합니다: serviceName[<img src='https://icon.icepanel.io/AWS/svg/ServiceName.svg'><br>ServiceName]
                         반드시 코드 내 객체가 좌우 및 상하로 정렬되도록 하고, 화살표는 최대한 곡선 없이 직선으로 표현합니다.
                         Mermaid.js의 그리드 레이아웃이나 서브그래프를 활용하여 객체의 정렬을 명시적으로 지정합니다.
+                        subgraph이름에 띄어쓰기를 넣지 마세요.
 
                         8. 결과 설명 및 코드 생성 규칙:
                         사용자가 구조를 확인한 후 긍정할 시, 설명 없이 코드만 출력합니다.
