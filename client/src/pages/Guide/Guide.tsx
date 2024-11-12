@@ -5,7 +5,7 @@ import KeyForm from "../../components/GuidePage/KeyForm";
 import { createSecret } from "../../services/secrets";
 import { useNavigate } from "react-router-dom";
 import CryptoJS from "crypto-js";
-
+import showAlert from "../../utils/showAlert";
 const Guide: React.FC = () => {
   const [keyId, setKeyId] = useState("");
   const [secretKey, setSecretKey] = useState("");
@@ -38,21 +38,20 @@ const Guide: React.FC = () => {
       const encryptedSecretKey = encryptData(secretKey);
       const encryptedRegion = encryptData(region);
 
-      const response = await createSecret(
-        keyId,
-        secretKey,
-        region,
-        token
-      ); // token이 string임을 보장
+      const response = await createSecret(keyId, secretKey, region, token); // token이 string임을 보장
       console.log(response);
     } catch (error) {
       console.log(error);
     }
     if (isFormValid()) {
-      alert("성공!");
+      showAlert("제출 완료", "AWS 키가 성공적으로 제출되었습니다.", "success");
       navigate(-1);
     } else {
-      alert("아직 입력하지 않은 정보가 있습니다.");
+      showAlert(
+        "제출 실패",
+        "아직 입력되지 않은 AWS 키가 있습니다.",
+        "warning"
+      );
     }
   };
 

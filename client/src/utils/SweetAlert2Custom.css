@@ -1,0 +1,23 @@
+.custom-alert {
+  border-radius: 10px;
+}
+
+.custom-alert-title {
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.custom-alert-content {
+  font-size: 1rem;
+  color: #666;
+}
+
+.custom-alert-button {
+  font-size: 1rem;
+  background-color: #fdc36d !important;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+}

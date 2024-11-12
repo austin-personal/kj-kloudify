@@ -13,11 +13,13 @@
   overflow-y: auto;
   height: 100%;
   display: flex;
+
   flex-direction: column; /* 자식 요소를 세로로 정렬 */
   gap: 10px; /* 요소 간 간격 */
 }
 
 .modal-container p {
+  height: 100%;
   white-space: pre-wrap;
 }
 
@@ -54,15 +56,13 @@ hr {
   font-size: 23px;
   width: 50%;
   /* 부모 너비의 50% */
-  margin-left: 5%;
+  margin-left: 2%;
   margin-right: 10%;
 }
 
 .top-label-price {
   font-size: 23px;
   width: 60%;
-  /* margin-left: 5%; */
-  margin-right: 14%;
 }
 
 .deploy-btn {
@@ -89,12 +89,13 @@ hr {
   border-color: #f49a29;
   border-radius: 10px;
   padding: 5px;
-  width: 60%;
+  width: 30%;
   height: 30px;
   font-weight: bold;
   font-size: 18px;
   cursor: pointer;
   transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
 .top-price-summary-btn:hover {
@@ -111,14 +112,14 @@ hr {
   align-items: flex-start;
   background-color: #f7f2d2;
   padding: 10px;
-  border-radius: 8px;
+  border-radius: 15px;
   flex-basis: 100%;
   border: 1px solid #d3d3d3;
 }
 
 .service-image {
-  width: 37px;
-  height: 37px;
+  width: 42px;
+  height: 42px;
   border-radius: 10px;
   margin-right: 10px;
 }
@@ -126,6 +127,7 @@ hr {
 .service-label,
 .price-label {
   font-size: 24px;
+  font-weight: bold;
   width: 30%;
   /* 부모 너비의 50% */
   margin-left: 2%;
@@ -170,6 +172,19 @@ hr {
   font-size: 20px;
 }
 
+.description-list-loading {
+  text-align: center;
+  width: 80%;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  -webkit-line-clamp: 1; /* 기본적으로 한 줄만 표시 */
+  transition: max-height 0.3s ease;
+  margin-top: 5px;
+  padding: 0;
+  font-size: 20px;
+}
+
 .toggle-checkbox:checked ~ .description-list {
   -webkit-line-clamp: unset;
   max-height: 500px; /* 확장될 높이 */
@@ -179,7 +194,7 @@ hr {
   font-size: 16px;
   color: #97978f;
   cursor: pointer;
-  margin-top: 12px;
+  margin-top: 13px;
   white-space: nowrap;
 }
 
@@ -322,8 +337,16 @@ hr {
 }
 
 .modal-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   height: 90%;
   overflow-y: auto;
+}
+
+.calculating-container {
+  text-align: center;
+  flex-direction: column;
 }
 
 .close-btn {
@@ -406,10 +429,10 @@ hr {
 }
 
 .terms-and-conditions {
-  border: 1px solid #b1b1b1;
+  border: 2px dashed #b1b1b1;
   background-color: #f2eed1;
   border-radius: 20px;
-  padding: 20px;
+  padding: 10px 20px;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -418,7 +441,8 @@ hr {
 
 .consent-box {
   font-size: 22px;
-  outline: none;
+  border: none;
+  font-size: 20px;
   width: 100%;
   flex: 1;
   margin-top: 10px;
@@ -443,6 +467,7 @@ hr {
   width: 24px;
   height: 24px;
   margin-right: 10px;
+  accent-color: #f6b755;
 }
 
 .consent-label {

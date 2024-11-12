@@ -10,13 +10,14 @@ import {
 } from "../../services/projects";
 import { deleteSecret, checkSecret } from "../../services/secrets";
 import { info } from "../../services/users";
+import { Icon } from "@iconify/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
+import { faTrashCan, faPenToSquare } from "@fortawesome/free-regular-svg-icons";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import { destroy } from "../../services/terraforms";
 import Lottie from "lottie-react";
-import Loadinganimation from "./LoadingDestroy.json"
-
+import Loadinganimation from "./LoadingDestroy.json";
+import showAlert from "../../utils/showAlert";
 // 유저 프로필 타입 정의
 interface UserProfile {
   UID: number;
@@ -182,7 +183,11 @@ const Profile: React.FC = () => {
       } else if (modalType === "deleteAWSKey") {
         // AWS Key 삭제 로직
         const response = await deleteSecret(token);
-        alert(response);
+        showAlert(
+          "삭제 완료",
+          "프로젝트가 성공적으로 삭제되었습니다.",
+          "success"
+        );
         dispatch(setHasSecret(false));
       }
     } catch (error) {
@@ -222,15 +227,21 @@ const Profile: React.FC = () => {
         </div>
 
         {hasSecret ? (
-          <button
-            className="AWS-Credential-btn delete"
-            onClick={(e) => {
-              e.stopPropagation();
-              handleAWSKeyDeleteClick();
-            }}
-          >
-            AWS Key 삭제
-          </button>
+          <div className="product-card">
+            <Icon className="product-icon" icon="entypo:pin" width="20px" />
+            <div className="product-title">AWS Credentials</div>
+            <div className="product-actions">
+              <button className="edit-button" onClick={handleAWSKeySubmitClick}>
+                <FontAwesomeIcon icon={faPenToSquare} /> Edit
+              </button>
+              <button
+                className="delete-button"
+                onClick={handleAWSKeyDeleteClick}
+              >
+                <FontAwesomeIcon icon={faTrashCan} /> Delete
+              </button>
+            </div>
+          </div>
         ) : (
           <button
             className="AWS-Credential-btn create"
@@ -257,8 +268,8 @@ const Profile: React.FC = () => {
                   {filterType === "all"
                     ? "All"
                     : filterType === "deployed"
-                      ? "완료"
-                      : "진행중"}{" "}
+                    ? "완료"
+                    : "진행중"}{" "}
                   &nbsp;
                   <FontAwesomeIcon icon={faChevronDown} />
                 </button>
@@ -299,8 +310,9 @@ const Profile: React.FC = () => {
                   <td>{project.projectName}</td>
                   <td className="status">
                     <div
-                      className={`status-common ${project.isDeployed ? "completed" : "in-progress"
-                        }`}
+                      className={`status-common ${
+                        project.isDeployed ? "completed" : "in-progress"
+                      }`}
                     >
                       {project.isDeployed ? "완료" : "진행중"}
                     </div>
@@ -355,8 +367,9 @@ const Profile: React.FC = () => {
             {Array.from({ length: totalPages }, (_, i) => (
               <span
                 key={i + 1}
-                className={`page-number ${currentPage === i + 1 ? "active" : ""
-                  }`}
+                className={`page-number ${
+                  currentPage === i + 1 ? "active" : ""
+                }`}
                 onClick={() => setCurrentPage(i + 1)}
               >
                 {i + 1}
@@ -376,28 +389,35 @@ const Profile: React.FC = () => {
       {showDeleteModal && (
         <div className="delete-modal">
           <div className="delete-modal-content">
-            {modalType === "deleteAWSKey" &&
+            {modalType === "deleteAWSKey" && (
               <>
                 <h3>AWS Key를 정말 삭제하시겠습니까?</h3>
               </>
-            }
-            {modalType === "deleteProject" &&
+            )}
+            {modalType === "deleteProject" && (
               <>
                 <h3>경고: 모든 AWS 리소스 종료 작업</h3>
-                <p>이 버튼을 클릭하면 현재 계정 내 모든 AWS 서비스와 리소스가 영구적으로 종료됩니다.</p>
-                <p>이로 인해 서비스 중단, 데이터 손실, 복구 불가능한 결과가 발생할 수 있습니다.</p>
+                <p>
+                  이 버튼을 클릭하면 현재 계정 내 모든 AWS 서비스와 리소스가
+                  영구적으로 종료됩니다.
+                </p>
+                <p>
+                  이로 인해 서비스 중단, 데이터 손실, 복구 불가능한 결과가
+                  발생할 수 있습니다.
+                </p>
                 <p>이 작업을 수행하시겠습니까?</p>
                 <h4>⚠️ 한 번 더 확인해주세요. 이 작업은 취소할 수 없습니다.</h4>
               </>
-            }
-            {modalType === "error" &&
+            )}
+            {modalType === "error" && (
               <>
                 <p>요청하신 작업 중 오류가 발생했습니다.</p>
                 <p>잠시뒤 다시 시작해주세요.</p>
               </>
-            }
+            )}
             <div className="delete-modal-buttons">
-              {(modalType === "deleteProject" || modalType === "deleteAWSKey") &&
+              {(modalType === "deleteProject" ||
+                modalType === "deleteAWSKey") && (
                 <>
                   <button
                     className="delete-cancel-button"
@@ -412,8 +432,8 @@ const Profile: React.FC = () => {
                     삭제
                   </button>
                 </>
-              }
-              {modalType === "error" &&
+              )}
+              {modalType === "error" && (
                 <>
                   <button
                     className="delete-cancel-button-th"
@@ -422,7 +442,7 @@ const Profile: React.FC = () => {
                     확인
                   </button>
                 </>
-              }
+              )}
             </div>
           </div>
         </div>
@@ -431,7 +451,10 @@ const Profile: React.FC = () => {
       {/* 삭제 작업 중일 때 오버레이 표시 */}
       {isDeleting && (
         <div className="profile-loading-th">
-          <Lottie animationData={Loadinganimation} style={{ width: "300px", height: "300px" }} />
+          <Lottie
+            animationData={Loadinganimation}
+            style={{ width: "300px", height: "300px" }}
+          />
           <h3>삭제중입니다...</h3>
         </div>
       )}

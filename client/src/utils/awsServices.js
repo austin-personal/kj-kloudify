@@ -90,13 +90,109 @@ const serviceAliases = {
   "elastic-load-balancing": "elastic-load-balancing",
   "simple-storage-service": "s3",
   user: "users",
-  // 다른 약어도 추가 가능
+};
+
+// detail 페이지를 위한 약어
+const serviceStateAliases = {
+  aws_instance: "ec2-instance",
+  aws_s3_bucket: "s3",
+  aws_lambda_function: "lambda",
+  aws_rds_instance: "rds",
+  aws_dynamodb_table: "dynamodb",
+  aws_iam_role: "iam-identity-center",
+  aws_iam_policy: "iam-identity-center",
+  aws_iam_user: "iam-identity-center",
+  aws_vpc: "vpc",
+  aws_subnet: "public-subnet",
+  aws_security_group: "security-group",
+  aws_ecs_cluster: "elastic-container-service",
+  aws_ecs_task_definition: "elastic-container-service",
+  aws_eks_cluster: "elastic-kubernetes-service",
+  aws_elb: "elastic-load-balancing",
+  aws_alb: "application-load-balancer",
+  aws_glacier_vault: "glacier-vault",
+  aws_cloudfront_distribution: "cloudfront",
+  aws_cloudwatch_alarm: "cloudwatch",
+  aws_cloudwatch_log_group: "cloudwatch",
+  aws_autoscaling_group: "auto-scaling",
+  aws_autoscaling_policy: "auto-scaling",
+  aws_kinesis_stream: "kinesis",
+  aws_sqs_queue: "simple-queue-service",
+  aws_sns_topic: "simple-notification-service",
+  aws_route53_zone: "route-53",
+  aws_route53_record: "route-53",
+  aws_elasticache_cluster: "elasticache",
+  aws_redshift_cluster: "redshift",
+  aws_kms_key: "key-management-service",
+  aws_secretsmanager_secret: "secrets-manager",
+  aws_acm_certificate: "certificate-manager",
+  aws_stepfunctions_state_machine: "step-functions",
+  aws_emr_cluster: "emr",
+  aws_batch_job_queue: "batch",
+  aws_batch_compute_environment: "batch",
+  aws_sagemaker_notebook_instance: "sagemaker",
+  aws_sagemaker_endpoint: "sagemaker",
+  aws_apigateway_rest_api: "api-gateway",
+  aws_apigatewayv2_api: "api-gateway",
+  aws_cloudformation_stack: "cloudformation",
+  aws_elastic_beanstalk_environment: "elastic-beanstalk",
+  aws_elastic_beanstalk_application: "elastic-beanstalk",
+  aws_eip: "elastic-ip",
+  aws_rds_cluster: "rds",
+  aws_efs_file_system: "efs",
+  aws_msk_cluster: "managed-streaming-for-apache-kafka",
+  aws_neptune_cluster: "neptune",
+  aws_network_acl: "network-access-control-list",
+  aws_nat_gateway: "nat-gateway",
+  aws_transit_gateway: "transit-gateway",
+  aws_codebuild_project: "codebuild",
+  aws_codepipeline: "codepipeline",
+  aws_codecommit_repository: "codecommit",
+  aws_codedeploy_application: "codedeploy",
+  aws_opsworks_stack: "opsworks",
+  aws_backup_vault: "backup-vault",
+  aws_workspaces_directory: "workspaces-family",
+  aws_directory_service_directory: "directory-service",
+  aws_route_table: "route-table",
+  aws_route: "route-53",
+  aws_rds_parameter_group: "rds",
+  aws_sqs_dead_letter_queue: "simple-queue-service",
+  aws_inspector_assessment_template: "inspector",
+  aws_appmesh_mesh: "app-mesh",
+  aws_licensemanager_license_configuration: "license-manager",
+  aws_mq_broker: "mq",
+  aws_network_interface: "network-interface",
+  aws_s3_access_point: "s3-access-point",
+  aws_ec2_capacity_reservation: "ec2",
+  aws_elastictranscoder_pipeline: "elastic-transcoder",
+  aws_glue_crawler: "glue_crawler",
+  aws_glue_job: "glue",
+  aws_ssm_parameter: "systems-manager",
+  aws_elasticsearch_domain: "elasticsearch",
+  aws_documentdb_cluster: "documentdb",
+  aws_athena_database: "athena",
+  aws_gamelift_fleet: "gamelift",
+  aws_kendra_index: "kendra",
+  aws_network_firewall: "network-firewall",
+  aws_outposts_outpost: "outpost-family",
+  aws_qldb_ledger: "quantum-ledger-database",
+  aws_amplify_app: "amplify",
+  aws_appstream_fleet: "appstream",
+  aws_apigatewayv2_stage: "api-gateway",
+  aws_cloud9_environment_ec2: "cloud9",
+  aws_cognito_user_pool: "cognito",
+  aws_cognito_identity_pool: "cognito",
+  aws_dataexchange_dataset: "data-exchange",
 };
 
 const patternAliases = [
   {
     keywords: ["s3", "glacier"],
     serviceName: "simple-storage-service-glacier",
+  },
+  {
+    keywords: ["s3"],
+    serviceName: "simple-storage-service",
   },
   { keywords: ["internet"], serviceName: "internet-gateway" },
   // 필요한 추가 패턴 매핑 가능
@@ -138,4 +234,14 @@ export function extractServiceName(text: string): string | undefined {
 
   // serviceAliases에 매핑되어 있는 경우
   return serviceAliases[normalizedText] || normalizedText;
+}
+
+// 서비스 상태 이름 추출 함수
+export function extractServiceStateName(text: string): string | undefined {
+  console.log("stateText", text);
+  if (serviceStateAliases[text]) {
+    return serviceStateAliases[text];
+  } else {
+    return null;
+  }
 }
