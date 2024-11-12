@@ -196,7 +196,7 @@ const patternAliases = [
     serviceName: "network-access-control-list",
   },
   {
-    keywords: ["table"],
+    keywords: ["route", "table"],
     serviceName: "route-table",
   },
   {
