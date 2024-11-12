@@ -101,6 +101,7 @@ const Services: React.FC<ServicesProps> = ({
       );
       navigate(`/detail/${pid}`);
     } catch (error) {
+      dispatch(setLoading(false));
       review(cid, Number(pid), token).then(async ({ message, bool }) => {
         dispatch(setReviewReady(true));
         if (!bool) {
@@ -112,7 +113,6 @@ const Services: React.FC<ServicesProps> = ({
           dispatch(setData(data));
         }
       });
-      dispatch(setLoading(false));
       showAlert(
         "배포 실패!",
         "배포 중에 문제가 발생했습니다.리뷰창으로 돌아가서 다시 Deploy를 시도하세요.",
