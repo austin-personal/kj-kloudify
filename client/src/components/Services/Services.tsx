@@ -45,7 +45,7 @@ const Services: React.FC<ServicesProps> = ({
       return require(`../../img/aws-icons/${serviceName}.svg`);
     } catch (error) {
       console.warn(`Image not found: ${name}. Using default image.`);
-      return "https://icon.icepanel.io/AWS/svg/Compute/EC2.svg"; // 기본 이미지 경로 설정
+      return require(`../../img/aws-icons/dedfault.svg`).default; // 기본 이미지 경로 설정
     }
   };
 
@@ -198,7 +198,7 @@ const Services: React.FC<ServicesProps> = ({
                   className="toggle-checkbox"
                 />
 
-                {summary && summary[item].description ? (
+                {summary && summary[item] && summary[item].description ? (
                   <ul className="description-list">
                     {summary[item].description.map(
                       (desc: string, i: number) => (
