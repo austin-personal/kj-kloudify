@@ -204,7 +204,7 @@ export class ConversationsService {
                     설명이 끝나고 키워드가 시작할때 !!을 반드시 붙여주세요.
 
                     생성된 키워드 양식:
-                    !!{ "service": "", "options": "" }
+                    !!{ "service": "", "options": "" },{"service" : "", "options":""}...
 
                     그리고 해당 양식에 대해서 mermaid코드 또한 생성해주세요. 대화 로그를 참조하여 구조를 짜주세요. 구조에 변화가 없다면 대화로그를 참조하여 그대로 출력해주세요.
                     바로 사용할 수 있도록 result같은 수식어를 붙이지 마세요.
