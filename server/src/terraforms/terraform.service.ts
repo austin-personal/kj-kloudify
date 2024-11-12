@@ -100,25 +100,43 @@ export class TerraformService {
       Generate Terraform code based on the following keywords:
       ${JSON.stringify(keywords)}
 
-      The generated Terraform code should:
-      1. You must produce Output only the complete Terraform code without additional explanations, ensuring it is fully deployable with just the AWS credentials and other essential variables specified.
-      2. Use variables only for essential credentials or dynamic values that must be configurable at runtime. Specifically, define variables for:
-        - \`aws_access_key\` and \`aws_secret_key\` and \`aws_region\` to allow secure credential configuration
-        - Any other critical dynamic values specified in the keywords list that must be adjustable.
-        - ${randomName} to specify the name of resources created by this Terraform code
-        - object names must start with a letter, not a number or special character.
-      3. Other configurations, such as instance types, AMIs, and static setup values, can be hardcoded directly into the Terraform code to simplify deployment.
+      The generated Terraform code should meet the following requirements:
 
-      4. Avoid including AWS credentials directly in the code; assume credentials will be provided through environment variables, such as process.env.AWS_ACCESS_KEY_ID and process.env.AWS_SECRET_ACCESS_KEY, or set up securely through Lambda configuration.
+      Output Only the Complete Terraform Code:
+      Provide only the complete Terraform code without any additional explanations.
+      This code should be fully deployable by specifying only the AWS credentials and other essential variables.
 
-      5. Only produces one code snippet. Be enclosed within triple backticks with 'hcl' specified for syntax highlighting, like:
+      Use Variables for Essential Credentials and Dynamic Values:
+      Include Variable Declarations: The code must include variable blocks for aws_access_key, aws_secret_key, and aws_region.
+      Resource Name Variableization: Use the variable ${randomName} to specify the names of the resources created by this Terraform code.
+      Adhere to Naming Conventions: All object names must start with a letter and must not start with a number or special character.
+
+      Hardcode Static Configuration Values:
+      Instance types, AMIs, and other static setup values can be hardcoded directly into the Terraform code to simplify deployment.
+      Ensure that the AMI used matches the specified ${region}.
+
+      Do Not Include AWS Credentials Directly in the Code:
+      Use Variables in the Provider Block: Configure the AWS provider to use the declared variables for credentials.
+      Avoid Hardcoding Credentials: Do not include AWS credentials directly in the code.
+
+      Produce a Single Code Snippet:
+      Enclose the Code with Triple Backticks: The code should be enclosed within triple backticks with 'hcl' specified for syntax highlighting, like:
      \`\`\`hcl
      <Terraform Code>
      \`\`\`
-      6. please make s3 acl default(don't mention it).
-      7. region is ${region}. Please create the AMI to match the region.
-      8. "Create it without a key pair."
-      9. Replace aws_launch_configuration with aws_launch_template in Terraform code, as Launch Configurations are deprecated and Launch Templates are recommended for creating Auto Scaling groups.
+
+      Use Default S3 ACL:
+      When creating S3 buckets, use the default ACL settings and do not specify it explicitly.
+
+      Specify the AWS Region:
+      The region is ${region}. Use an AMI that matches this region.
+
+      Create Resources Without a Key Pair:
+      Do not include a key pair when creating resources.
+      
+      Use aws_launch_template Instead of aws_launch_configuration:
+      Update Resource Types: Replace aws_launch_configuration with aws_launch_template in the Terraform code.
+      Use for Auto Scaling Groups: Since Launch Configurations are deprecated, use Launch Templates when creating Auto Scaling groups.
       `;
 
     // 베드락 설정
