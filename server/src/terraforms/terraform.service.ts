@@ -110,7 +110,7 @@ export class TerraformService {
     });
 
     const requestBody = {
-      max_tokens: 2000,
+      max_tokens: 5000,
       anthropic_version: 'bedrock-2023-05-31',
       messages: [
           {
