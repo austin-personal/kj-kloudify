@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import Lottie from "lottie-react";
+import PriceCalculatingAnimation from "./PriceCalculatingAnimation.json";
 import { Icon } from "@iconify/react";
 import "./Services.css";
 import { useNavigate } from "react-router-dom";
@@ -10,6 +12,7 @@ import { projectSummary, projectPrice } from "../../services/projects";
 import { fetch } from "../../services/conversations";
 import { extractServiceName } from "../../utils/awsServices";
 import showAlert from "../../utils/showAlert";
+
 interface ServicesProps {
   cid: number;
   pid: number;
@@ -235,7 +238,14 @@ const Services: React.FC<ServicesProps> = ({
                     {priceResponse.price.text.replace(/\[.*?\]/g, "").trim()}
                   </p>
                 ) : (
-                  <p>가격 정보 로딩중입니다..</p>
+                  <div className="calculating-container">
+                    <p>가격 계산 중입니다...</p>
+                    <Lottie
+                      animationData={PriceCalculatingAnimation}
+                      style={{ width: "350px", height: "350px" }}
+                      className="calculating-animation"
+                    />
+                  </div>
                 )}
               </div>
               <button className="close-btn" onClick={closeModal}>
