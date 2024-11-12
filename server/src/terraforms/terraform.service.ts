@@ -446,7 +446,7 @@ export class TerraformService {
   
       // Terraform destroy 명령 실행 (자격 증명 전달)
       const { stdout, stderr } = await execAsync(
-        `terraform -chdir=${localTerraformPath} destroy -auto-approve -var "aws_access_key=${accessKey}" -var "aws_secret_key=${secretAccessKey}" -var "aws_region=${region}"`
+        `terraform -chdir=${localTerraformPath} destroy -auto-approve -var "aws_access_key=${accessKey}" -var "aws_secret_key=${secretAccessKey}" -var "aws_region=${region} -lock=false"`
       );
       console.log('Terraform 삭제 완료:', stdout);
   
