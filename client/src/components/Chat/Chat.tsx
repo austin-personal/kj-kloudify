@@ -619,6 +619,8 @@ const Chat: React.FC<ChatProps> = ({ projectCID }) => {
               <FontAwesomeIcon className="bot-icon" icon={faCloud} />
             )}
             <div className={`message ${message.sender}-message`}>
+
+
               {/* 헤더가 존재하면 렌더링 */}
               {message.header && (
                 <div
@@ -634,30 +636,28 @@ const Chat: React.FC<ChatProps> = ({ projectCID }) => {
                     }`}
                 >
                   <strong>{message.header}</strong>
-                  {/* 다중선택이 존재하면 렌더링 */}
-                  {message.multiselect && (
-                    <div className="multiselectbox-container-th">
-                      {message.multiselect}
-                    </div>
-                  )}
                 </div>
               )}
 
-              <div className="message-content">
-                {message.text ? (
-                  <>
-                    {message.text}
-                  </>
-                ) : (
-                  <div className="loading-text-th">
-                    {message.element}
-                  </div>
-                )}
+              <div className="home-chat-text-th">
+                {/* 메세지 존재하면 렌더링 */}
+                <div className="message-content">
+                  {message.text ? (
+                    <>
+                      {message.text}
+                    </>
+                  ) : (
+                    <div className="loading-text-th">
+                      {message.element}
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* 체크박스가 존재하면 렌더링 */}
               {message.checks && (
-                <div className="checkbox-container-th">
+                <div className={`checkbox-container-th ${message.multiselect ? 'multiselect-enabled' : ''}`}>
+                  {message.multiselect && <div className="multiselect-badge">다중 선택 가능</div>}
                   {message.nocheck && (
                     <label
                       className="custom-checkbox"
@@ -705,7 +705,8 @@ const Chat: React.FC<ChatProps> = ({ projectCID }) => {
 
               {/* 서비스체크박스가 존재하면 렌더링 */}
               {message.servicechecks && (
-                <div className="checkbox-container-th">
+                <div className={`checkbox-container-th ${message.multiselect ? 'multiselect-enabled' : ''}`}>
+                  {message.multiselect && <div className="multiselect-badge">다중 선택 가능</div>}
                   {message.servicechecks.map((check) => (
                     <label className="custom-checkbox" key={check.label}>
                       <input
@@ -733,7 +734,7 @@ const Chat: React.FC<ChatProps> = ({ projectCID }) => {
                 <p className="template-sub-th">{message.subtext}</p>
               )}
 
-              {/* 체크박스가 존재하면 렌더링 */}
+              {/* 버튼이 존재하면 렌더링 */}
               {message.buttons && (
                 <div className="checkbox-container-th">
                   {message.nobutton && (

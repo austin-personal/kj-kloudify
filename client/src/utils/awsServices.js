@@ -188,6 +188,18 @@ const serviceStateAliases = {
 
 const patternAliases = [
   {
+    keywords: ["application", "load"],
+    serviceName: "application-load-balancer",
+  },
+  {
+    keywords: ["acl"],
+    serviceName: "network-access-control-list",
+  },
+  {
+    keywords: ["route", "table"],
+    serviceName: "route-table",
+  },
+  {
     keywords: ["security"],
     serviceName: "security-group",
   },
