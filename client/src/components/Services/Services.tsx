@@ -45,7 +45,7 @@ const Services: React.FC<ServicesProps> = ({
       return require(`../../img/aws-icons/${serviceName}.svg`);
     } catch (error) {
       console.warn(`Image not found: ${name}. Using default image.`);
-      return require(`../../img/aws-icons/dedfault.svg`).default; // 기본 이미지 경로 설정
+      return require(`../../img/aws-icons/default.svg`).default; // 기본 이미지 경로 설정
     }
   };
 
