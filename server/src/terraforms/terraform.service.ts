@@ -66,8 +66,8 @@ export class TerraformService {
     }
     const { accessKey, secretAccessKey , region} = await this.secretsService.getUserCredentials(uid);
 
-    const randomInt = Math.floor(Math.random() * (999999999 - 0 + 1)) + 0;
-    const randomName = "AWS - " + projectName + randomInt.toString();
+    const randomInt = Math.floor(Math.random() * (999999 - 0 + 1)) + 0;
+    const randomName = projectName + " " + randomInt.toString();
 
     let errorMessage = await this.getErrorMessageByCID(PID);
 
