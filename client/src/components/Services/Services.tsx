@@ -274,7 +274,7 @@ const Services: React.FC<ServicesProps> = ({
       <div className="middle-btn">
         {isReviewReady ? (
           <button
-            className="deploy-btn"
+            className={`deploy-btn ${isChecked ? "" : "check"}`}
             onClick={handleDeploy}
             disabled={handleDisabledBtn()}
           >

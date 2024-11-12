@@ -277,6 +277,21 @@ hr {
   opacity: 0;
 }
 
+.deploy-btn.check:hover,
+.deploy-btn.check:active {
+  transform: none;
+  box-shadow: none;
+}
+.deploy-btn.check::after {
+  transform: none;
+  opacity: 1;
+  background-color: inherit; /* 배경색을 상속받아 안 보이게 함 */
+}
+.check {
+  background-color: gray;
+  cursor: not-allowed;
+}
+
 .right-btn {
   display: flex;
   justify-content: flex-end;
