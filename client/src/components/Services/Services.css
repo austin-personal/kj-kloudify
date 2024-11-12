@@ -19,6 +19,7 @@
 }
 
 .modal-container p {
+  height: 100%;
   white-space: pre-wrap;
 }
 
@@ -126,6 +127,7 @@ hr {
 .service-label,
 .price-label {
   font-size: 24px;
+  font-weight: bold;
   width: 30%;
   /* 부모 너비의 50% */
   margin-left: 2%;
