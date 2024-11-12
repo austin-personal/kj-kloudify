@@ -101,7 +101,7 @@ export const mermaid = async (pid: number, token: string | null) => {
 //summeray 가져오기
 export const projectSummary = async (cid: number, token: string | null) => {
     try {
-        console.log("cid,token:", cid, token);
+        // console.log("cid,token:", cid, token);
         const response = await axios.get(`${API_URL}/${cid}/summary`, {
             headers: {
                 Authorization: `Bearer ${token}`
@@ -117,7 +117,7 @@ export const projectSummary = async (cid: number, token: string | null) => {
 //price 가져오기
 export const projectPrice = async (cid: number, token: string | null) => {
     try {
-        console.log("cid,token:", cid, token);
+        // console.log("cid,token:", cid, token);
         const response = await axios.get(`${API_URL}/${cid}/price`, {
             headers: {
                 Authorization: `Bearer ${token}`
