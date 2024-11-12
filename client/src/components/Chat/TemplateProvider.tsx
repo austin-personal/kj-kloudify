@@ -4,6 +4,7 @@ export interface Template {
     header?: string;
     name: string;
     text: string;
+    multiselect?: string;
     subtext?: string;
     buttons?: { id: number; label: string }[];
     nobutton?: { id: number; label: string };
@@ -36,7 +37,8 @@ const templates: Record<number, Template> = {
     5: {
         header: "구조 설정",
         name: "template1-4",
-        text: "추가적인 무언가가 필요한가요? 추가적으로 필요한 것만 알려주세요. (다중선택)",
+        text: "추가적인 무언가가 필요한가요? 추가적으로 필요한 것만 알려주세요.",
+        multiselect: "다중 선택",
         checks: [
             { id: 8, label: "운영 우수성" },
             { id: 9, label: "보안" },
@@ -49,7 +51,8 @@ const templates: Record<number, Template> = {
     6: {
         header: "구조 설정",
         name: "template1-5",
-        text: "당신의 웹서비스는 어떤 클라우드 기술이 필요한가요? (다중선택)",
+        text: "당신의 웹서비스는 어떤 클라우드 기술이 필요한가요?",
+        multiselect: "다중 선택",
         servicechecks: [
             { id: 14, label: "서버" },
             { id: 15, label: "데이터베이스" },
@@ -61,7 +64,8 @@ const templates: Record<number, Template> = {
     7: {
         header: "서버",
         name: "template2-1",
-        text: "지금부터는 서버에 대한 세부 설정을 할거예요.\n서버는 어떤 특징이 필요하나요? (다중선택)",
+        text: "지금부터는 서버에 대한 세부 설정을 할거예요.\n서버는 어떤 특징이 필요하나요?",
+        multiselect: "다중 선택",
         checks: [
             { id: 1, label: "기본 서버" },
             { id: 18, label: "CPU 집약적" },
@@ -86,7 +90,8 @@ const templates: Record<number, Template> = {
     9: {
         header: "서버",
         name: "template2-3",
-        text: "가장 중요한 가치는 무엇인가요? (다중선택) ",
+        text: "가장 중요한 가치는 무엇인가요?",
+        multiselect: "다중 선택",
         checks: [
             { id: 28, label: "가격 최적화" },
             { id: 29, label: "고가용성" },
@@ -144,7 +149,8 @@ const templates: Record<number, Template> = {
     14: {
         header: "스토리지",
         name: "template4-3",
-        text: "스토리지에서 가장 중요한 가치는 무엇인가요? (다중선택) ",
+        text: "스토리지에서 가장 중요한 가치는 무엇인가요?",
+        multiselect: "다중 선택",
         checks: [
             { id: 50, label: "가격 최적화" },
             { id: 51, label: "고가용성" },
@@ -156,7 +162,8 @@ const templates: Record<number, Template> = {
     15: {
         header: "네트워크",
         name: "template5-1",
-        text: "지금부터는 네트워크에 대한 세부 설정을 할거예요.\n애플리케이션의 네트워크 요구사항은 무엇인가요? (다중선택)",
+        text: "지금부터는 네트워크에 대한 세부 설정을 할거예요.\n애플리케이션의 네트워크 요구사항은 무엇인가요?",
+        multiselect: "다중 선택",
         checks: [
             { id: 46, label: "기본 성능의 보안과 네트워크" },
             { id: 55, label: "추가적인 보안" },

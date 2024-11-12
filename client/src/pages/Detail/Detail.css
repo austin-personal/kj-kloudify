@@ -286,10 +286,29 @@
 }
 
 .service-status {
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
   font-weight: bold;
+}
+
+.hover-text {
+  display: none;
+  position: absolute;
+  bottom: -10px; /* 이미지 아래쪽에 표시 */
+  left: 22px;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.service-status:hover .hover-text {
+  display: block; /* 마우스 올릴 때만 텍스트 보이도록 설정 */
 }
 
 .status-text {
