@@ -72,6 +72,7 @@ export const awsServices = [
 
 // 약어와 원본 매핑 객체
 const serviceAliases = {
+  nacl: "network-access-control-list",
   asg: "auto-scaling",
   nat: "nat-gateway",
   s3: "s3",
@@ -186,6 +187,22 @@ const serviceStateAliases = {
 };
 
 const patternAliases = [
+  {
+    keywords: ["security"],
+    serviceName: "security-group",
+  },
+  {
+    keywords: ["nat"],
+    serviceName: "nat-gateway",
+  },
+  {
+    keywords: ["route", "53"],
+    serviceName: "route-53",
+  },
+  {
+    keywords: ["auto", "scaling"],
+    serviceName: "auto-scaling",
+  },
   {
     keywords: ["s3", "glacier"],
     serviceName: "simple-storage-service-glacier",
