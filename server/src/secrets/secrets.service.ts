@@ -85,13 +85,13 @@ export class SecretsService {
       }
     
       // Decrypt the stored access keys
-      const decryptedAccessKeyId = this.decrypt(secrets.AccessKey);
-      const decryptedSecretAccessKey = this.decrypt(secrets.SecretAccessKey);
+      // const decryptedAccessKeyId = this.decrypt(secrets.AccessKey);
+      // const decryptedSecretAccessKey = this.decrypt(secrets.SecretAccessKey);
       const region = secrets.region;
     
       return {
-        accessKey: decryptedAccessKeyId,
-        secretAccessKey: decryptedSecretAccessKey,
+        accessKey: secrets.AccessKey,
+        secretAccessKey: secrets.SecretAccessKey,
         region: region
       };
     }

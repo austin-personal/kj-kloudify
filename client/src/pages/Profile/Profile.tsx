@@ -62,8 +62,8 @@ const Profile: React.FC = () => {
         const result = await checkSecret(userData.user.email);
         dispatch(setHasSecret(result));
         // 유저의 프로젝트 리스트 가져오기
-        const projectResumeData = await projectResumeInfo(userData.email);
-        const projecDeployedtData = await projectDeployedInfo(userData.email);
+        const projectResumeData = await projectResumeInfo(userData.user.email);
+        const projecDeployedtData = await projectDeployedInfo(userData.user.email);
         const combinedProjects = [
           ...projectResumeData.data,
           ...projecDeployedtData.data,
