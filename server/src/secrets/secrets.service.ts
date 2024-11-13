@@ -46,13 +46,13 @@ export class SecretsService {
       throw new Error('이미 AWS credential이 있습니다');
     }
 
-    const encryptedAccessKey = this.encrypt(AccessKey);
-    const encryptedSecretAccessKey = this.encrypt(SecretAccessKey);
+    // const encryptedAccessKey = this.encrypt(AccessKey);
+    // const encryptedSecretAccessKey = this.encrypt(SecretAccessKey);
   
 
     const secret = this.secretsRepository.create({
-      AccessKey: encryptedAccessKey,
-      SecretAccessKey: encryptedSecretAccessKey,
+      AccessKey: AccessKey,
+      SecretAccessKey: SecretAccessKey,
       region: Region,
       UID: userId,
     });

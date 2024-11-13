@@ -1,5 +1,5 @@
 import { Email } from './../../node_modules/aws-sdk/clients/finspacedata.d';
-import { Controller, Post, Patch, Body, UseGuards, Req, UnauthorizedException , Get, BadRequestException } from '@nestjs/common'; // UseGuards, Req 추가
+import { Controller, Post, Patch, Body, UseGuards, Req, UnauthorizedException , Get, BadRequestException , Res } from '@nestjs/common'; // UseGuards, Req 추가
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginDto } from './dto/login.dto';  // LoginDto 추가
@@ -7,6 +7,7 @@ import { JwtAuthGuard } from './jwt-auth.guard';  // auth에서 옮겨진 guard 
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CurrentUser } from './current-user.decorator';
 import { NotFoundException } from '@nestjs/common';
+import { Response } from 'express';
 
 @Controller('users')
 export class UsersController {
@@ -46,12 +47,27 @@ export class UsersController {
 
   // 로그인 엔드포인트
   @Post('login')
-  async login(@Body() loginDto: LoginDto): Promise<{ access_token: string }> {
+  async login(@Body() loginDto: LoginDto, @Res() res: Response): Promise<void> {
     console.log("user login: ", loginDto);
+
+    // 사용자 인증
     const user = await this.usersService.validateUser(loginDto.email, loginDto.password);
-    // validateUser 메서드에서 예외가 발생하지 않으면 user는 null이 될 수 없으므로 추가적인 null 체크 불필요
-    return this.usersService.login(user);  // 비밀번호를 제외한 user 정보
+
+    // JWT 토큰 생성
+    const { access_token } = await this.usersService.login(user);
+
+    // HTTP-only 쿠키 설정 (res를 express.Response로 인식)
+    (res as Response).cookie('token', access_token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production', // 배포 환경에서만 true
+      sameSite: 'strict', // CSRF 방지 설정
+      maxAge: 3600000, // 1시간
+    });
+
+    // 응답 전송
+    (res as Response).send({ message: '로그인 성공' });
   }
+
 
   // JWT 토큰에서 사용자 이메일을 추출하여 정보 조회
   @Get('info')
