@@ -92,6 +92,33 @@ export class SecretsService {
         region: region
       };
     }
+
+    // 시크릿 업데이트 함수
+    async updateSecret(userId: number, AccessKey: string, SecretAccessKey: string, Region: string) {
+      const user = await this.usersRepository.findOne({ where: { UID: userId } });
+      if (!user) {
+        throw new Error('User not found');
+      }
+  
+      if (!AccessKey || !SecretAccessKey) {
+        throw new Error('One or more keys are missing');
+      }
+  
+      const encryptedAccessKey = this.encrypt(AccessKey);
+      const encryptedSecretAccessKey = this.encrypt(SecretAccessKey);
+  
+      const secret = await this.secretsRepository.findOne({ where: { UID: userId } });
+      if (!secret) {
+        throw new Error('Secret not found');
+      }
+  
+      secret.AccessKey = encryptedAccessKey;
+      secret.SecretAccessKey = encryptedSecretAccessKey;
+      secret.region = Region;
+  
+      await this.secretsRepository.save(secret);
+    }
+    
   /**
    * 암호화 메서드
    */

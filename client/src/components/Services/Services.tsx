@@ -6,7 +6,7 @@ import "./Services.css";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setLoading, setReviewReady } from "../../store/loadingSlice";
-import { deploy, review, terraInfo } from "../../services/terraforms";
+import { deploy, destroy, review, terraInfo } from "../../services/terraforms";
 import { projectSummary, projectPrice } from "../../services/projects";
 import { fetch } from "../../services/conversations";
 import { extractServiceName } from "../../utils/awsServices";
@@ -100,6 +100,7 @@ const Services: React.FC<ServicesProps> = ({
     } catch (error) {
       dispatch(setLoading(false));
       dispatch(setReviewReady(false));
+      destroy(cid, token);
       review(cid, Number(pid), token).then(async ({ message, bool }) => {
         dispatch(setReviewReady(true));
         if (!bool) {
