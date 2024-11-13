@@ -90,8 +90,8 @@ export class SecretsService {
       const region = secrets.region;
     
       return {
-        accessKey: accessKey,
-        secretAccessKey: secretAccessKey,
+        accessKey: secrets.AccessKey,
+        secretAccessKey: secrets.SecretAccessKey,
         region: region
       };
     }
