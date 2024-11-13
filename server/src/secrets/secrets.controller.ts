@@ -10,15 +10,16 @@ export class SecretsController {
     private readonly usersService: UsersService
   ) {}
 
-  @UseGuards(JwtAuthGuard) // JwtAuthGuard를 바로 사용
+  // @UseGuards(JwtAuthGuard) // JwtAuthGuard를 바로 사용
   @Post()
   async createSecret(
     @Body('accessKey') accessKey: string,
     @Body('secretAccessKey') secretAccessKey: string,
     @Body('region') region: string,
-    @Req() req
+    @Body('email') email: string, // 요청 본문에서 이메일도 받아옴
+    // @Req() req
   ): Promise<{ message: string }> {
-    const email = req.user.email;  // JWT에서 이메일 추출
+    // const email = req.user.email;  // JWT에서 이메일 추출
   
     // accessKey와 secretAccessKey가 모두 존재하는지 확인
     if (accessKey && secretAccessKey) {
@@ -35,21 +36,21 @@ export class SecretsController {
   }
 
   // Delete Secrets API
-  @UseGuards(JwtAuthGuard) // JwtAuthGuard를 바로 사용
+  // @UseGuards(JwtAuthGuard) // JwtAuthGuard를 바로 사용
   @Delete()
   async deleteSecret(@Req() req) {
-    const email = req.user.email; // JWT에서 이메일 추출
-    const userInfo = await this.usersService.findOneByEmail(email);  // 이메일로 사용자 조회
+    // const email = req.user.email; // JWT에서 이메일 추출
+    // const userInfo = await this.usersService.findOneByEmail(email);  // 이메일로 사용자 조회
     const id = userInfo.UID;
     await this.secretsService.deleteSecret(id);
     return { message: 'Secret deleted successfully' };
   }
 
-  @UseGuards(JwtAuthGuard) // JwtAuthGuard를 바로 사용
+  // @UseGuards(JwtAuthGuard) // JwtAuthGuard를 바로 사용
   @Get('check')
   async checkSecret(@Req() req): Promise<{ exists: boolean }> {
-    const email = req.user.email; // JWT에서 이메일 추출
-    const userInfo = await this.usersService.findOneByEmail(email);  // 이메일로 사용자 조회
+    // const email = req.user.email; // JWT에서 이메일 추출
+    // const userInfo = await this.usersService.findOneByEmail(email);  // 이메일로 사용자 조회
     const id = userInfo.UID;
     
     // UID로 Secret 조회

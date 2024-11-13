@@ -13,6 +13,7 @@ import { JwtAuthGuard } from '../users/jwt-auth.guard';
 
 class DestroyDto {
   CID: number;
+  email: string;
 }
 
 @Controller('terraforms')
@@ -26,11 +27,11 @@ export class TerraformController {
   /**
    * 리뷰 엔드포인트: Terraform 코드 생성
    */
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Post('review')
   async review(@Body() reviewDto: ReviewDto, @Req() req ) {
-    const email = req.user.email;
-    const userInfo = await this.usersService.findOneByEmail(email); 
+    // const email = req.user.email;
+    // const userInfo = await this.usersService.findOneByEmail(email); 
 
     const projectInfo = await this.projectsService.findOneByPID(reviewDto.PID);
 
@@ -51,11 +52,11 @@ export class TerraformController {
   /**
    * 배포 엔드포인트: Terraform 코드 실행
    */
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Post('deploy')
   async deploy(@Body() deployDto: DeployDto, @Req() req) {
-    const email = req.user.email;
-    const userInfo = await this.usersService.findOneByEmail(email);  // 이메일로 사용자 조회
+    // const email = req.user.email;
+    // const userInfo = await this.usersService.findOneByEmail(email);  // 이메일로 사용자 조회
     deployDto.userId = userInfo.UID;
     const result = await this.terraformService.deployInfrastructure(deployDto);
     return result;
@@ -70,10 +71,10 @@ export class TerraformController {
     return result;
   }
 
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Post('destroy')
   async destroy(@Body() destroyDto: DestroyDto, @Req() req) {
-    const email = req.user.email;
+    const email = destroyDto.email;
     const userInfo = await this.usersService.findOneByEmail(email);  // 이메일로 사용자 조회
     const userId = userInfo.UID;
 
@@ -85,7 +86,7 @@ export class TerraformController {
     }
   }
   
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Post('state')
   async getState(@Body() deployDto: DeployDto, @Req() req, @Res() res) {
     const controller = new AbortController();
@@ -97,7 +98,7 @@ export class TerraformController {
       controller.abort(); // 비동기 작업 중단
     });
   
-    const email = req.user.email;
+    const email = deployDto.email;
     const userInfo = await this.usersService.findOneByEmail(email);
     const userId = userInfo.UID;
 
@@ -112,7 +113,7 @@ export class TerraformController {
     }
   }
 
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Post('terraInfo')
   async getTerraInfo(@Body() deployDto: DeployDto) {
     const filePath = `/tmp/${deployDto.CID}/main.tf`; // main.tf 파일을 포함한 전체 경로

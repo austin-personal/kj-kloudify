@@ -4,4 +4,5 @@ export class DeployDto {
   @IsString()
   userId: number;
   CID:number;
+  email:string;
 }

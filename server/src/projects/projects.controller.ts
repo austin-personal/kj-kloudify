@@ -20,15 +20,25 @@ export class ProjectsController {
   ) {}
 
   // 새로운 프로젝트 생성
-  @UseGuards(JwtAuthGuard) // JWT 인증 가드 사용
+  // @UseGuards(JwtAuthGuard) // JWT 인증 가드 사용
   @Post()
-  async create(@Body() createProjectDto: CreateProjectDto, @Req() req): Promise<Projects> {
-    const email = req.user.email; // JWT 가드가 통과된 후 req.user에서 이메일 추출
-    const user = await this.usersService.findOneByEmail(email); // 이메일로 사용자 검색
-    console.log("Project create: ",createProjectDto, user);
+  async create(
+    @Body() createProjectDto: CreateProjectDto, 
+    @Body('email') email: string // 요청 본문에서 email 받아옴
+  ): Promise<Projects> {
+    // 이메일이 요청 본문에 없으면 에러 발생
+    if (!email) {
+      throw new BadRequestException('Email is required');
+    }
+  
+    // 이메일로 사용자 조회
+    const user = await this.usersService.findOneByEmail(email);
+    console.log("Project create: ", createProjectDto, user);
+  
     if (!user) {
       throw new NotFoundException('User not found');
     }
+  
     // CreateProjectDto에 UID를 받지 않고, 추출된 UID를 사용
     return this.projectsService.create(createProjectDto, user);
   }
@@ -36,29 +46,43 @@ export class ProjectsController {
 
 
 // 모든 배포된 프로젝트 가져오기
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Get('deployed')
-  async findAllDeployed(@CurrentUser() user: any): Promise<Projects[]> {
-    const email = user.email;
+  async findAllDeployed(@Body('email') email: string): Promise<Projects[]> {
+    // 이메일이 요청 본문에 없으면 에러 발생
+    if (!email) {
+      throw new BadRequestException('Email is required');
+    }
+  
+    // 이메일로 사용자 조회
     const foundUser = await this.usersService.findOneByEmail(email);
     const userId = foundUser.UID; 
     console.log("projects-findAllDeployed: ", userId);
-    return this.projectsService.findDeployedByUserId(userId); // UID로 프로젝트 검색
+  
+    // UID로 프로젝트 검색
+    return this.projectsService.findDeployedByUserId(userId);
   }
 
   // 모든 배포되지 않은 프로젝트 가져오기
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Get('resume')
-  async findAllResume(@CurrentUser() user: any): Promise<Projects[]> {
-    const email = user.email;
-    const foundUser = await this.usersService.findOneByEmail(email);
-    const userId = foundUser.UID; 
-    console.log("projects-findAllResume: ", userId);
-    return this.projectsService.findResumeByUserId(userId); // UID로 프로젝트 검색
+async findAllResume(@Body('email') email: string): Promise<Projects[]> {
+  // 이메일이 요청 본문에 없으면 에러 발생
+  if (!email) {
+    throw new BadRequestException('Email is required');
   }
 
+  // 이메일로 사용자 조회
+  const foundUser = await this.usersService.findOneByEmail(email);
+  const userId = foundUser.UID; 
+  console.log("projects-findAllResume: ", userId);
+
+  // UID로 프로젝트 검색
+  return this.projectsService.findResumeByUserId(userId);
+}
+
 //특정 프로젝트 가져오기
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Get(':PID')  // Route parameter for PID
   async findOne(
     @CurrentUser() user: any,
@@ -70,19 +94,28 @@ export class ProjectsController {
   }
 
 // 프로젝트 삭제
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Delete()
-  async delete(@CurrentUser() user: any, @Body('PID') PID: number): Promise<void> {
-    const email = user.email;
+  async delete(
+    @Body('PID') PID: number, 
+    @Body('email') email: string // 요청 본문에서 email 받아옴
+  ): Promise<void> {
+    // 이메일이 요청 본문에 없으면 에러 발생
+    if (!email) {
+      throw new BadRequestException('Email is required');
+    }
+
+    // 이메일로 사용자 조회
     const foundUser = await this.usersService.findOneByEmail(email);
     const userId = foundUser.UID; 
-    console.log("project delete: ",PID, userId);
-    
-    return this.projectsService.remove(PID, userId); // 서비스로 전달
+    console.log("project delete: ", PID, userId);
+
+    // PID와 userId를 서비스로 전달
+    return this.projectsService.remove(PID, userId);
   }
 
  // 특정 프로젝트 이어서 시작하기
- @UseGuards(JwtAuthGuard)
+//  @UseGuards(JwtAuthGuard)
  @Get(':PID/resume')
  async resumeProject(
    @CurrentUser() user: any,
@@ -105,7 +138,7 @@ export class ProjectsController {
  }
  
   // 머메이드 코드 가져오기
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Get(':PID/archiboard')
   async getArchiboard(@Param('PID') PID: number): Promise<{ code: any[] }> {
     const project = await this.projectsService.findOneByPID(PID);
@@ -116,7 +149,7 @@ export class ProjectsController {
     return { code };
   }
   // 서비스 요약 해주기
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Get(':CID/summary')
   async getSummary(@Param('CID') CID: number): Promise<{ summary: string }> {
 
@@ -125,7 +158,7 @@ export class ProjectsController {
       return { summary };
   }
   
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Get(':CID/price')
   async getPrice(@Param('CID') CID: number): Promise<{ price: string }> {
       const price = await this.conversationsService.generateSummary(CID, 'price');
