@@ -57,7 +57,7 @@ export class SecretsController {
   }
 
   // @UseGuards(JwtAuthGuard) // JwtAuthGuard를 바로 사용
-  @Get('check')
+  @Post('check')
   async checkSecret(@Body('email') email: string): Promise<{ exists: boolean }> {
     // 이메일이 요청 본문에 없으면 에러 발생
     if (!email) {

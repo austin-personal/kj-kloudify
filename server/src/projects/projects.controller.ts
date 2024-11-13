@@ -24,9 +24,9 @@ export class ProjectsController {
   @Post()
   async create(
     @Body() createProjectDto: CreateProjectDto, 
-    @Body('email') email: string // 요청 본문에서 email 받아옴
   ): Promise<Projects> {
     // 이메일이 요청 본문에 없으면 에러 발생
+    let email = createProjectDto.email;
     if (!email) {
       throw new BadRequestException('Email is required');
     }
@@ -47,7 +47,7 @@ export class ProjectsController {
 
 // 모든 배포된 프로젝트 가져오기
   // @UseGuards(JwtAuthGuard)
-  @Get('deployed')
+  @Post('deployed')
   async findAllDeployed(@Body('email') email: string): Promise<Projects[]> {
     // 이메일이 요청 본문에 없으면 에러 발생
     if (!email) {
@@ -63,23 +63,24 @@ export class ProjectsController {
     return this.projectsService.findDeployedByUserId(userId);
   }
 
+
   // 모든 배포되지 않은 프로젝트 가져오기
   // @UseGuards(JwtAuthGuard)
-  @Get('resume')
-async findAllResume(@Body('email') email: string): Promise<Projects[]> {
-  // 이메일이 요청 본문에 없으면 에러 발생
-  if (!email) {
-    throw new BadRequestException('Email is required');
+  @Post('resume')
+  async findAllResume(@Body('email') email: string): Promise<Projects[]> {
+    // 이메일이 요청 본문에 없으면 에러 발생
+    if (!email) {
+      throw new BadRequestException('Email is required');
+    }
+
+    // 이메일로 사용자 조회
+    const foundUser = await this.usersService.findOneByEmail(email);
+    const userId = foundUser.UID; 
+    console.log("projects-findAllResume: ", userId);
+
+    // UID로 프로젝트 검색
+    return this.projectsService.findResumeByUserId(userId);
   }
-
-  // 이메일로 사용자 조회
-  const foundUser = await this.usersService.findOneByEmail(email);
-  const userId = foundUser.UID; 
-  console.log("projects-findAllResume: ", userId);
-
-  // UID로 프로젝트 검색
-  return this.projectsService.findResumeByUserId(userId);
-}
 
 //특정 프로젝트 가져오기
   // @UseGuards(JwtAuthGuard)

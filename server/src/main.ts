@@ -10,7 +10,7 @@ async function bootstrap() {
 
   // CORS 설정
   app.enableCors({
-    origin: 'http://localhost:80', // React 클라이언트의 도메인
+    origin: 'http://localhost', // React 클라이언트의 도메인
     credentials: true, // 쿠키 전송 허용
   });
 

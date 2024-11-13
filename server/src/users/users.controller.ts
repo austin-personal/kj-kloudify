@@ -8,10 +8,14 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { CurrentUser } from './current-user.decorator';
 import { NotFoundException } from '@nestjs/common';
 import { Request, Response } from 'express';
+import { JwtService } from '@nestjs/jwt'; // JwtService 임포트
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly jwtService: JwtService
+  ) {}
 
   // // 회원가입 엔드포인트
   // @Post('signUp')
@@ -70,15 +74,35 @@ export class UsersController {
 
 
   // JWT 토큰에서 사용자 이메일을 추출하여 정보 조회
+  // @UseGuards(JwtAuthGuard)  // JWT 인증 가드 적용
   @Get('info')
-  @UseGuards(JwtAuthGuard)  // JWT 인증 가드 적용
-  async getUserInfo(@CurrentUser() user: any) {
-    const email = user.email;  // JWT에서 이메일 추출
-    const userInfo = await this.usersService.findOneByEmail(email);  // 이메일로 사용자 조회
+  async getUserInfo(@Req() req: Request) {
+    const token = req.cookies?.token; // 쿠키에서 JWT 추출
+
+    if (!token) {
+      throw new UnauthorizedException('No token found in cookies');
+    }
+
+    // JWT 토큰 디코딩
+    let decoded;
+    try {
+      decoded = this.jwtService.verify(token); // 토큰 검증 및 디코딩
+    } catch (error) {
+      throw new UnauthorizedException('Invalid token');
+    }
+
+    const email = decoded.email; // 디코딩된 토큰에서 이메일 추출
+
+    if (!email) {
+      throw new NotFoundException('Email is missing in token');
+    }
+
+    // 이메일로 사용자 조회
+    const userInfo = await this.usersService.findOneByEmail(email);
 
     // userInfo가 null인 경우 처리
     if (!userInfo) {
-      throw new NotFoundException('User not found');  // 사용자 정보가 없을 경우 예외 발생
+      throw new NotFoundException('User not found');
     }
 
     return {
