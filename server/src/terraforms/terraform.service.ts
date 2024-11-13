@@ -66,17 +66,35 @@ export class TerraformService {
     }
     const { accessKey, secretAccessKey , region} = await this.secretsService.getUserCredentials(uid);
 
-    const randomInt = Math.floor(Math.random() * (999999999 - 0 + 1)) + 0;
-    const randomName = "AWS - " + projectName + randomInt.toString();
+    const randomInt = Math.floor(Math.random() * (999999 - 0 + 1)) + 0;
+    const randomName = projectName + " " + randomInt.toString();
 
     let errorMessage = await this.getErrorMessageByCID(PID);
 
-    if (!errorMessage){
+    if (errorMessage) {
+  // `stderr`에서 에러 메시지 추출
+  try {
+    const errorData = JSON.parse(errorMessage);
+    if (errorData.stderr && typeof errorData.stderr.S === 'string') {
+      const stderrContent = errorData.stderr.S;
+      const extractedErrors = stderrContent.match(/Error: (.*?)(\\n|$)/g);
+      if (extractedErrors) {
+        errorMessage = extractedErrors.map(err => err.replace(/Error: /, '').trim()).join('\n');
+      } else {
+        errorMessage = 'None';
+      }
+    } else {
       errorMessage = 'None';
     }
+  } catch (e) {
+    errorMessage = 'None';
+  }
+} else {
+  errorMessage = 'None';
+}
 
     const prompt_content = `
-      recently error - Prioritize errors over keywords.:
+      Recent error - Please generate code that resolves the error. Prioritize fixing the error over the keywords.:
       ${errorMessage}
 
       Generate Terraform code based on the following keywords:

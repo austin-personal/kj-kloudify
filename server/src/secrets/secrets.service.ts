@@ -8,10 +8,11 @@ import { Secrets } from './entity/secrets.entity';
 import { Users } from '../users/entity/users.entity';
 
 import * as crypto from 'crypto';
-
+import { readFileSync } from 'fs';
 
 @Injectable()
 export class SecretsService {
+  private publicKey: string;
   private encryptionKey: Buffer;
 // TypeORM 연결: User, Secrets entity
   constructor(
@@ -25,6 +26,8 @@ export class SecretsService {
       throw new Error('Invalid encryption key. It must be 32 characters long.');
     }
     this.encryptionKey = Buffer.from(key, 'utf-8');
+
+    this.publicKey = readFileSync('public_key.pem', 'utf-8');
   }
 
 // 새로운 Secrets 생성 함수
@@ -142,4 +145,10 @@ export class SecretsService {
     decrypted += decipher.final('utf8');
     return decrypted;
   }
+
+  getPublicKey(): string {
+    return this.publicKey;
+  }
+
+
 }
