@@ -30,8 +30,8 @@ export class TerraformController {
   // @UseGuards(JwtAuthGuard)
   @Post('review')
   async review(@Body() reviewDto: ReviewDto, @Req() req ) {
-    // const email = req.user.email;
-    // const userInfo = await this.usersService.findOneByEmail(email); 
+    const email = reviewDto.email;
+    const userInfo = await this.usersService.findOneByEmail(email); 
 
     const projectInfo = await this.projectsService.findOneByPID(reviewDto.PID);
 
@@ -55,8 +55,8 @@ export class TerraformController {
   // @UseGuards(JwtAuthGuard)
   @Post('deploy')
   async deploy(@Body() deployDto: DeployDto, @Req() req) {
-    // const email = req.user.email;
-    // const userInfo = await this.usersService.findOneByEmail(email);  // 이메일로 사용자 조회
+    const email = deployDto.email;
+    const userInfo = await this.usersService.findOneByEmail(email);  // 이메일로 사용자 조회
     deployDto.userId = userInfo.UID;
     const result = await this.terraformService.deployInfrastructure(deployDto);
     return result;
