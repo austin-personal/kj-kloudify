@@ -75,6 +75,7 @@ const Services: React.FC<ServicesProps> = ({
   };
 
   const handleDeploy = async () => {
+    let response;
     try {
       dispatch(setLoading(true));
       // deploy 함수 호출 (딱히 반환값을 사용하지 않으므로 await로만 호출)
@@ -88,8 +89,11 @@ const Services: React.FC<ServicesProps> = ({
       );
       navigate(`/detail/${pid}`);
     } catch (error) {
-      const response = await info();
-      await destroy(cid, response.user.email);
+      try {
+        response = await info();
+        await destroy(cid, response.user.email);
+      } catch (destroyError) {
+      }
       console.log("탈출!")
       dispatch(setLoading(false));
       dispatch(setReviewReady(false));
