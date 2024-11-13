@@ -35,6 +35,7 @@ export class TerraformController {
 
     const projectInfo = await this.projectsService.findOneByPID(reviewDto.PID);
 
+    console.log("review : email ?",email);
     //  유저 와 해당 프로젝트 매치 확인하기
     if (userInfo.UID !== projectInfo.UID) {
       throw new UnauthorizedException('Use does not match with the project(!CID)');
