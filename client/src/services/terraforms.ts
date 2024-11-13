@@ -3,6 +3,8 @@ import axios from 'axios';
 // 태현 api 주소 확인!!!
 const API_URL = `${process.env.REACT_APP_SERVER_URL}/terraforms`;
 
+axios.defaults.withCredentials = true;
+
 export const create = async () => {
     try {
         // 태현 api 주소 확인!!!
@@ -13,18 +15,13 @@ export const create = async () => {
     }
 };
 
-export const destroy = async (cid: number, token: string | null) => {
+export const destroy = async (cid: number) => {
     try {
         // 태현 api 주소 확인!!!
         console.log("destroy 호출중...")
         const response = await axios.post(`${API_URL}/destroy`, {
             CID: cid,
-        },
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
+        });
         console.log("destroy 호출 성공!!", response.data)
         return response.data;
     } catch (error) {
@@ -42,17 +39,12 @@ export const show = async () => {
     }
 };
 
-export const review = async (cid: number | 0, pid: number, token: string | null) => {
+export const review = async (cid: number | 0, pid: number) => {
     try {
         const response = await axios.post(`${API_URL}/review`,
             {
                 CID: cid,
                 PID: pid
-            },
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
             }
         );
         return response.data;
@@ -61,16 +53,11 @@ export const review = async (cid: number | 0, pid: number, token: string | null)
     }
 }
 
-export const deploy = async (cid: number, token: string) => {
+export const deploy = async (cid: number) => {
     try {
         const response = await axios.post(`${API_URL}/deploy`,
             {
                 CID: cid
-            },
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
             }
         );
         return response.data;
@@ -79,16 +66,11 @@ export const deploy = async (cid: number, token: string) => {
     }
 }
 
-export const download = async (cid: number | undefined, token: string | null) => {
+export const download = async (cid: number | undefined) => {
     try {
         const response = await axios.post(`${API_URL}/download`,
             {
                 CID: cid
-            },
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
             })
         return response.data;
     } catch (error) {
@@ -96,16 +78,13 @@ export const download = async (cid: number | undefined, token: string | null) =>
     }
 }
 
-export const state = async (cid: number | undefined, token: string | null, options: { signal?: AbortSignal } = {}) => {
+export const state = async (cid: number | undefined, options: { signal?: AbortSignal } = {}) => {
     try {
         const response = await axios.post(`${API_URL}/state`,
             {
                 CID: cid
             },
             {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                },
                 signal: options.signal,
             })
         return response.data.serviceStates;
@@ -115,16 +94,11 @@ export const state = async (cid: number | undefined, token: string | null, optio
 }
 
 
-export const terraInfo = async (cid: number, token: string | null) => {
+export const terraInfo = async (cid: number) => {
     try {
         const response = await axios.post(`${API_URL}/terraInfo`,
             {
                 CID: cid
-            },
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
             })
         return response.data;
     } catch (error) {

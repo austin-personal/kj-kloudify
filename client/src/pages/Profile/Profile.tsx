@@ -52,35 +52,29 @@ const Profile: React.FC = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false); // 드롭다운 상태 추가
   const [isDeleting, setIsDeleting] = useState<boolean>(false); // 삭제 작업 상태 추가
   const itemsPerPage = 5; // 한 페이지에 보여줄 항목 수
-  const token = localStorage.getItem("token");
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        if (token) {
-          const result = await checkSecret(token);
-          dispatch(setHasSecret(result));
-          // 유저 정보 가져오기
-          const userData = await info(token);
-          setUserProfile(userData.user);
-          // 유저의 프로젝트 리스트 가져오기
-          const projectResumeData = await projectResumeInfo(token);
-          const projecDeployedtData = await projectDeployedInfo(token);
-          const combinedProjects = [
-            ...projectResumeData.data,
-            ...projecDeployedtData.data,
-          ];
-          setProjects(combinedProjects); // 응답 데이터에 따라 수정 필요
-        } else {
-          // 토큰이 없으면 로그인 페이지로 이동
-          navigate("/");
-        }
+        const result = await checkSecret();
+        dispatch(setHasSecret(result));
+        // 유저 정보 가져오기
+        const userData = await info();
+        setUserProfile(userData.user);
+        // 유저의 프로젝트 리스트 가져오기
+        const projectResumeData = await projectResumeInfo();
+        const projecDeployedtData = await projectDeployedInfo();
+        const combinedProjects = [
+          ...projectResumeData.data,
+          ...projecDeployedtData.data,
+        ];
+        setProjects(combinedProjects); // 응답 데이터에 따라 수정 필요
       } catch (error) {
       }
     };
 
     fetchData();
-  }, [token, navigate]);
+  }, [navigate]);
 
   // 페이지가 변경될 때 currentPage를 조정하는 useEffect 추가
   useEffect(() => {
@@ -163,23 +157,19 @@ const Profile: React.FC = () => {
   };
 
   const handleConfirmDelete = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      throw new Error("토큰이 존재하지 않습니다.");
-    }
 
     try {
       setShowDeleteModal(false);
       setIsDeleting(true); // 삭제 작업 시작 전 로딩 상태로 설정
       if (modalType === "deleteProject" && projectToDelete) {
         // 프로젝트 삭제 로직
-        await destroy(projectToDelete.CID, token);
-        await deleteProject(projectToDelete.PID, token);
+        await destroy(projectToDelete.CID);
+        await deleteProject(projectToDelete.PID);
 
         setProjects(projects.filter((p) => p.PID !== projectToDelete.PID));
       } else if (modalType === "deleteAWSKey") {
         // AWS Key 삭제 로직
-        const response = await deleteSecret(token);
+        const response = await deleteSecret();
         showAlert(
           "삭제 완료",
           "프로젝트가 성공적으로 삭제되었습니다.",
@@ -265,8 +255,8 @@ const Profile: React.FC = () => {
                   {filterType === "all"
                     ? "All"
                     : filterType === "deployed"
-                    ? "완료"
-                    : "진행중"}{" "}
+                      ? "완료"
+                      : "진행중"}{" "}
                   &nbsp;
                   <FontAwesomeIcon icon={faChevronDown} />
                 </button>
@@ -307,9 +297,8 @@ const Profile: React.FC = () => {
                   <td>{project.projectName}</td>
                   <td className="status">
                     <div
-                      className={`status-common ${
-                        project.isDeployed ? "completed" : "in-progress"
-                      }`}
+                      className={`status-common ${project.isDeployed ? "completed" : "in-progress"
+                        }`}
                     >
                       {project.isDeployed ? "완료" : "진행중"}
                     </div>
@@ -364,9 +353,8 @@ const Profile: React.FC = () => {
             {Array.from({ length: totalPages }, (_, i) => (
               <span
                 key={i + 1}
-                className={`page-number ${
-                  currentPage === i + 1 ? "active" : ""
-                }`}
+                className={`page-number ${currentPage === i + 1 ? "active" : ""
+                  }`}
                 onClick={() => setCurrentPage(i + 1)}
               >
                 {i + 1}
@@ -415,21 +403,21 @@ const Profile: React.FC = () => {
             <div className="delete-modal-buttons">
               {(modalType === "deleteProject" ||
                 modalType === "deleteAWSKey") && (
-                <>
-                  <button
-                    className="delete-cancel-button"
-                    onClick={handleCancelDelete}
-                  >
-                    취소
-                  </button>
-                  <button
-                    className="delete-confirm-button"
-                    onClick={handleConfirmDelete}
-                  >
-                    삭제
-                  </button>
-                </>
-              )}
+                  <>
+                    <button
+                      className="delete-cancel-button"
+                      onClick={handleCancelDelete}
+                    >
+                      취소
+                    </button>
+                    <button
+                      className="delete-confirm-button"
+                      onClick={handleConfirmDelete}
+                    >
+                      삭제
+                    </button>
+                  </>
+                )}
               {modalType === "error" && (
                 <>
                   <button

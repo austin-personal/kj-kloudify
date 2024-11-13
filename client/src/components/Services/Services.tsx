@@ -32,7 +32,6 @@ const Services: React.FC<ServicesProps> = ({
   const [priceResponse, setPriceResponse] = useState<any>(null);
   const [isDeployModalOpen, setIsDeployModalOpen] = useState(false);
   const navigate = useNavigate();
-  const token = localStorage.getItem("token") ?? "";
   const dispatch = useDispatch();
 
   const getImagePath = (name: string) => {
@@ -47,20 +46,16 @@ const Services: React.FC<ServicesProps> = ({
   useEffect(() => {
     const fetchProjectData = async () => {
       if (serviceNames && summary) return; // 이미 데이터가 있으면 요청 안함
-
       try {
-        if (token) {
-          const ServiceNameResponse = await fetch(cid, token);
-          setServiceNames(ServiceNameResponse);
+        const ServiceNameResponse = await fetch(cid);
+        setServiceNames(ServiceNameResponse);
 
-          const SummaryResponse = await projectSummary(cid, token);
-          if (SummaryResponse && typeof SummaryResponse.text === "string") {
-            const parsedSummary = JSON.parse(SummaryResponse.text);
-            setSummary(parsedSummary.aws_services); // aws_services 객체만 저장
-          } else {
-            setSummary(SummaryResponse);
-          }
+        const SummaryResponse = await projectSummary(cid);
+        if (SummaryResponse && typeof SummaryResponse.text === "string") {
+          const parsedSummary = JSON.parse(SummaryResponse.text);
+          setSummary(parsedSummary.aws_services); // aws_services 객체만 저장
         } else {
+          setSummary(SummaryResponse);
         }
       } catch (error) {
       }
@@ -68,7 +63,7 @@ const Services: React.FC<ServicesProps> = ({
 
     // 데이터를 불러올 필요가 있는 경우에만 fetchProjectData 호출
     fetchProjectData();
-  }, [cid, token]);
+  }, [cid]);
 
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setIsChecked(e.target.checked);
@@ -82,7 +77,7 @@ const Services: React.FC<ServicesProps> = ({
     try {
       dispatch(setLoading(true));
       // deploy 함수 호출 (딱히 반환값을 사용하지 않으므로 await로만 호출)
-      await deploy(cid, token);
+      await deploy(cid);
       dispatch(setLoading(false));
       showAlert(
         "배포 성공!",
@@ -91,7 +86,7 @@ const Services: React.FC<ServicesProps> = ({
       );
       navigate(`/detail/${pid}`);
     } catch (error) {
-      await destroy(cid, token);
+      await destroy(cid);
       console.log("탈출!")
       dispatch(setLoading(false));
       dispatch(setReviewReady(false));
@@ -101,7 +96,7 @@ const Services: React.FC<ServicesProps> = ({
         "error"
       );
       console.log("review 호출!!")
-      review(cid, Number(pid), token).then(async ({ message, bool }) => {
+      review(cid, Number(pid)).then(async ({ message, bool }) => {
         console.log("review 성공!!")
         dispatch(setReviewReady(true));
         if (!bool) {
@@ -109,7 +104,7 @@ const Services: React.FC<ServicesProps> = ({
           navigate(`/home/${pid}`);
         } else {
           // review 성공 시 terraInfo 호출
-          const data = await terraInfo(cid, token);
+          const data = await terraInfo(cid);
           dispatch(setData(data));
         }
       });
@@ -120,10 +115,8 @@ const Services: React.FC<ServicesProps> = ({
     setIsModalOpen(true);
     if (priceResponse) return;
     try {
-      if (token) {
-        const response = await projectPrice(cid, token);
+        const response = await projectPrice(cid);
         setPriceResponse(response);
-      }
     } catch (error) {
     }
   };

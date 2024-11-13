@@ -19,25 +19,19 @@ const NavBar: React.FC = () => {
   const location = useLocation();
   const [userProfile, setUserProfile] = useState("");
   const hasSecret = useAppSelector((state) => state.loading.hasSecret);
-  const token = localStorage.getItem("token");
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        if (token) {
-          // 유저 정보 가져오기
-          const userData = await info(token);
-          setUserProfile(userData.user.username);
-        } else {
-          // 토큰이 없으면 로그인 페이지로 이동
-          navigate("/");
-        }
+        // 유저 정보 가져오기
+        const userData = await info();
+        setUserProfile(userData.user.username);
       } catch (error) {
       }
     };
 
     fetchData();
-  }, [token, navigate]);
+  }, [navigate]);
 
   const handleLogout = () => {
     localStorage.clear();
@@ -113,14 +107,10 @@ const NavBar: React.FC = () => {
 
     //prohectName을 DB에 넘김
     try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        throw new Error("토큰이 존재하지 않습니다.");
-      }
-      const cid = await create(projectName, token); // token이 string임을 보장
+      const cid = await create(projectName);
       navigate(`/home/${cid}`);
       window.location.reload();
-    } catch (error) {}
+    } catch (error) { }
     setIsModalOpen(false); // 제출 후 모달을 닫기
   };
 

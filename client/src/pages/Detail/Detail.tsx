@@ -61,7 +61,6 @@ const Detail: React.FC = () => {
   const { pid } = useParams<{ pid: string }>();
   const [project, setProject] = useState<Project | null>(null);
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
-  const token = localStorage.getItem("token");
   const [isLoading, setIsLoading] = useState(true);
   const [isStateLoading, setIsStateLoading] = useState(true);
   const [stateData, setStateData] = useState<{ [key: string]: any }>({});
@@ -97,12 +96,12 @@ const Detail: React.FC = () => {
     const fetchProjectData = async () => {
       try {
         if (pid) {
-          const response = await projectOneInfo(Number(pid), token);
+          const response = await projectOneInfo(Number(pid));
           const projectData = response.data;
           setProject(projectData);
 
           if (projectData.PID) {
-            const data = await mermaid(projectData.PID, token);
+            const data = await mermaid(projectData.PID);
             setMermaidData([data]);
           }
 
@@ -111,12 +110,12 @@ const Detail: React.FC = () => {
             openChatHistory(projectData.CID).then(() => {
               setIsLoading(false);
             });
-            const data = await terraInfo(projectData.CID, token); // terraInfo 요청
+            const data = await terraInfo(projectData.CID); // terraInfo 요청
             setTerraData(data); // 가져온 데이터를 상태에 저장
           }
 
           setIsStateLoading(true);
-          const stateTemp = await state(projectData.CID, token, { signal });
+          const stateTemp = await state(projectData.CID, { signal });
           setStateData(stateTemp || {});
           setIsStateLoading(false);
         }
@@ -129,7 +128,7 @@ const Detail: React.FC = () => {
 
     const openChatHistory = async (cid: number) => {
       try {
-        const response = await open(cid, token);
+        const response = await open(cid);
         if (response && response.length > 0) {
           let temp = -2;
           const formattedChat = response.flatMap((msg: any, index: number) => {
@@ -208,7 +207,7 @@ const Detail: React.FC = () => {
     return () => {
       controller.abort(); // 컴포넌트 언마운트 시 요청 취소
     };
-  }, [pid, token]);
+  }, [pid]);
 
   if (!project) return <div>Loading...</div>;
 
@@ -227,8 +226,8 @@ const Detail: React.FC = () => {
       setIsDeleting(true);
       if (modalType === "deleteProject") {
         // 프로젝트 삭제 로직
-        await destroy(project.CID, token);
-        await deleteProject(project.PID, token);
+        await destroy(project.CID);
+        await deleteProject(project.PID);
         setShowDeleteModal(false);
       }
       navigate("/profile");
@@ -260,7 +259,7 @@ const Detail: React.FC = () => {
 
   const handleDownload = async () => {
     try {
-      const data = await download(project.CID, token);
+      const data = await download(project.CID);
       const blob = new Blob([data], { type: "text/plain" });
       const fileURL = URL.createObjectURL(blob);
 

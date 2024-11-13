@@ -36,12 +36,7 @@ const Guide: React.FC = () => {
         return; // 유효하지 않으면 함수 종료
       }
 
-      const token = localStorage.getItem("token");
-      if (!token) {
-        throw new Error("토큰이 존재하지 않습니다.");
-      }
-
-      const publicKey = await getPublicKey(token);
+      const publicKey = await getPublicKey();
       // AWS credentials을 암호화하여 전송
       if (!publicKey) {
         throw new Error("공개 키를 가져오는 데 실패했습니다.");
@@ -51,7 +46,7 @@ const Guide: React.FC = () => {
       const encryptedSecretKey = encryptData(secretKey, publicKey);
       const encryptedRegion = encryptData(region, publicKey);
 
-      const response = await createSecret(encryptedKeyId, encryptedSecretKey, encryptedRegion, token); // token이 string임을 보장
+      const response = await createSecret(encryptedKeyId, encryptedSecretKey, encryptedRegion);
 
       showAlert("제출 완료", "AWS 키가 성공적으로 제출되었습니다.", "success");
       navigate(-1);

@@ -24,7 +24,6 @@ const Review: React.FC = () => {
   const pid = pidParam ? parseInt(pidParam, 10) : null;
   const [showToast, setShowToast] = useState(true);
   const mermaidRef = useRef<HTMLDivElement>(null); // MermaidChart 요소를 참조할 ref 추가
-  const token = localStorage.getItem("token") ?? "";
   const [isTerraformVisible, setIsTerraformVisible] = useState(false);
   dispatch(setHasSecret(true));
 
@@ -51,7 +50,7 @@ const Review: React.FC = () => {
   const handleDownload = async () => {
     if (cid !== null) {
       try {
-        const data = await download(cid, token);
+        const data = await download(cid);
         const blob = new Blob([data], { type: "text/plain" });
         const fileURL = URL.createObjectURL(blob);
 
@@ -65,6 +64,8 @@ const Review: React.FC = () => {
       }
     }
   };
+
+  useEffect(() => {},[])
 
   return (
     <div className="review">

@@ -40,8 +40,6 @@ const Home: React.FC = () => {
   const { pid } = useParams<{ pid: string }>();
   const [initialKey, setInitialKey] = useState(0);
 
-  const token = localStorage.getItem("token");
-
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const finishData = useAppSelector((state) => state.finishData.finishData);
@@ -53,14 +51,10 @@ const Home: React.FC = () => {
   useEffect(() => {
     const fetchProjectData = async () => {
       try {
-        const token = localStorage.getItem("token");
-        if (token) {
-          const response = await projectOneInfo(Number(pid), token);
-          setProject(response.data);
-          if (response.data.isDeployed === true) {
-            navigate("/profile");
-          }
-        } else {
+        const response = await projectOneInfo(Number(pid));
+        setProject(response.data);
+        if (response.data.isDeployed === true) {
+          navigate("/profile");
         }
       } catch (error) {
       } finally {
@@ -86,7 +80,7 @@ const Home: React.FC = () => {
     const cid = project?.CID || 0;
     try {
       dispatch(setReviewReady(false));
-      review(cid, Number(pid), token).then(async ({ message, bool }) => {
+      review(cid, Number(pid)).then(async ({ message, bool }) => {
         dispatch(setReviewReady(true));
 
         if (!bool) {
@@ -94,7 +88,7 @@ const Home: React.FC = () => {
           navigate(`/home/${pid}`);
         } else {
           // review 성공 시 terraInfo 호출
-          const data = await terraInfo(cid, token);
+          const data = await terraInfo(cid);
           dispatch(setData(data));
         }
       });

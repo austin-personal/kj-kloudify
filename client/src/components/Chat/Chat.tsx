@@ -80,10 +80,9 @@ const Chat: React.FC<ChatProps> = ({ projectCID }) => {
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        const token = localStorage.getItem("token") || "";
         dispatch(deactivate());
         dispatch(clearFinishData());
-        const initialMessages = await open(projectCID, token);
+        const initialMessages = await open(projectCID);
         setMessages(defaultBotMessage);
         if (initialMessages && initialMessages.length > 0) {
           let temp = -2;
