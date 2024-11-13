@@ -188,6 +188,10 @@ const serviceStateAliases = {
 
 const patternAliases = [
   {
+    keywords: ["dynamodb", "accelerator"],
+    serviceName: "dynamodb-accelerator",
+  },
+  {
     keywords: ["elastic", "load"],
     serviceName: "elastic-load-balancing",
   },
@@ -220,7 +224,7 @@ const patternAliases = [
     serviceName: "auto-scaling",
   },
   {
-    keywords: ["s3", "glacier"],
+    keywords: ["glacier"],
     serviceName: "simple-storage-service-glacier",
   },
   {
