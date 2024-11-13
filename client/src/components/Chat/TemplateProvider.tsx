@@ -139,7 +139,6 @@ const templates: Record<number, Template> = {
         header: "스토리지",
         name: "template4-2",
         text: "스토리지의 사용 목적은 무엇인가요?",
-        nobutton: { id: 48, label: "알아서 해줘" },
         buttons: [
             { id: 49, label: "기본 파일" },
             { id: 50, label: "미디어 저장 (사진, 동영상 등)" },
