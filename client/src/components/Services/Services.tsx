@@ -78,7 +78,8 @@ const Services: React.FC<ServicesProps> = ({
     try {
       dispatch(setLoading(true));
       // deploy 함수 호출 (딱히 반환값을 사용하지 않으므로 await로만 호출)
-      await deploy(cid);
+      const response = await info();
+      await deploy(cid, response.user.email);
       dispatch(setLoading(false));
       showAlert(
         "배포 성공!",
@@ -98,7 +99,7 @@ const Services: React.FC<ServicesProps> = ({
         "error"
       );
       console.log("review 호출!!")
-      review(cid, Number(pid)).then(async ({ message, bool }) => {
+      review(cid, Number(pid), response.user.email).then(async ({ message, bool }) => {
         console.log("review 성공!!")
         dispatch(setReviewReady(true));
         if (!bool) {

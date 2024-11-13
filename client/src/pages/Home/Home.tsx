@@ -16,6 +16,7 @@ import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import Lottie from "lottie-react";
 import Arrow from "./Arrow.json";
 import { setData } from "../../store/dataSlice";
+import { info } from "../../services/users";
 
 interface Project {
   PID: number;
@@ -80,7 +81,8 @@ const Home: React.FC = () => {
     const cid = project?.CID || 0;
     try {
       dispatch(setReviewReady(false));
-      review(cid, Number(pid)).then(async ({ message, bool }) => {
+      const response = await info();
+      review(cid, Number(pid), response.user.email).then(async ({ message, bool }) => {
         dispatch(setReviewReady(true));
 
         if (!bool) {

@@ -36,12 +36,13 @@ export const show = async () => {
     }
 };
 
-export const review = async (cid: number | 0, pid: number) => {
+export const review = async (cid: number | 0, pid: number, email: string) => {
     try {
         const response = await axios.post(`${API_URL}/review`,
             {
                 CID: cid,
-                PID: pid
+                PID: pid,
+                email: email
             }
         );
         return response.data;
@@ -50,11 +51,12 @@ export const review = async (cid: number | 0, pid: number) => {
     }
 }
 
-export const deploy = async (cid: number) => {
+export const deploy = async (cid: number, email: string) => {
     try {
         const response = await axios.post(`${API_URL}/deploy`,
             {
-                CID: cid
+                CID: cid,
+                email: email
             }
         );
         return response.data;
