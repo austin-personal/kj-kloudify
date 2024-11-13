@@ -68,9 +68,9 @@ const Guide: React.FC = () => {
         throw new Error("공개 키를 가져오는 데 실패했습니다.");
       }
 
-      const encryptedKeyId = encryptData(keyId, publicKey);
-      const encryptedSecretKey = encryptData(secretKey, publicKey);
-      const encryptedRegion = encryptData(region, publicKey);
+      const encryptedKeyId = await encryptData(keyId, publicKey);
+      const encryptedSecretKey = await encryptData(secretKey, publicKey);
+      const encryptedRegion = await encryptData(region, publicKey);
 
       const response = await info(); 
       await createSecret(encryptedKeyId, encryptedSecretKey, encryptedRegion, response.user.email);
