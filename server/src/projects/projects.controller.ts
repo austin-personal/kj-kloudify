@@ -123,6 +123,7 @@ export class ProjectsController {
    @Param('PID') PID: number
  ): Promise<{ projectName: string; chattings: any[]; archBoardKeywords: any[] }> {
    // 프로젝트 찾기
+   console.log("agasgasgfsafasfasfasfasfasf");
    const project = await this.projectsService.findOneByPID(PID);
    if (!project || project.isDeployed) {
      throw new NotFoundException('Project not found or already deployed');
