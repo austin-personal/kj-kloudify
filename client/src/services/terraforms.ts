@@ -16,6 +16,7 @@ export const create = async () => {
 export const destroy = async (cid: number, token: string | null) => {
     try {
         // 태현 api 주소 확인!!!
+        console.log("destroy 호출중...")
         const response = await axios.post(`${API_URL}/destroy`, {
             CID: cid,
         },
@@ -24,6 +25,7 @@ export const destroy = async (cid: number, token: string | null) => {
                     Authorization: `Bearer ${token}`
                 }
             });
+        console.log("destroy 호출 성공!!", response.data)
         return response.data;
     } catch (error) {
         throw error;

@@ -91,10 +91,18 @@ const Services: React.FC<ServicesProps> = ({
       );
       navigate(`/detail/${pid}`);
     } catch (error) {
+      await destroy(cid, token);
+      console.log("탈출!")
       dispatch(setLoading(false));
       dispatch(setReviewReady(false));
-      destroy(cid, token);
+      showAlert(
+        "배포 실패!",
+        "배포 중에 문제가 발생했습니다.리뷰창으로 돌아가서 다시 Deploy를 시도하세요.",
+        "error"
+      );
+      console.log("review 호출!!")
       review(cid, Number(pid), token).then(async ({ message, bool }) => {
+        console.log("review 성공!!")
         dispatch(setReviewReady(true));
         if (!bool) {
           alert(message);
@@ -105,11 +113,6 @@ const Services: React.FC<ServicesProps> = ({
           dispatch(setData(data));
         }
       });
-      showAlert(
-        "배포 실패!",
-        "배포 중에 문제가 발생했습니다.리뷰창으로 돌아가서 다시 Deploy를 시도하세요.",
-        "error"
-      );
     }
   };
 
