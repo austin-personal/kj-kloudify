@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import CryptoJS from "crypto-js";
 import showAlert from "../../utils/showAlert";
 import { info } from "../../services/users";
-import NodeRSA from 'node-rsa';
+import JSEncrypt from 'jsencrypt';
 
 const Guide: React.FC = () => {
   const [keyId, setKeyId] = useState("");
@@ -18,11 +18,14 @@ const Guide: React.FC = () => {
 
   // RSA 공개 키를 사용한 암호화 함수
   const encryptData = (data: string, publicKey: string) => {
-    const key = new NodeRSA(publicKey);
-    key.setOptions({ encryptionScheme: 'pkcs1_oaep' }); // OAEP 패딩 사용
-
+    const jsEncrypt = new JSEncrypt();
+    jsEncrypt.setPublicKey(publicKey);
+  
     // 데이터 암호화
-    const encryptedData = key.encrypt(data, 'base64');
+    const encryptedData = jsEncrypt.encrypt(data);
+    if (!encryptedData) {
+      throw new Error('Encryption failed');
+    }
     return encryptedData;
   };
 

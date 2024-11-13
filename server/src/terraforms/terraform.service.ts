@@ -402,12 +402,10 @@ export class TerraformService {
   }
 
   decryptData(encryptedData: string): string {
-    const [ivHex, encryptedHex] = encryptedData.split(':');
-    const iv = Buffer.from(ivHex, 'hex');
-    const buffer = Buffer.from(encryptedHex, 'hex');
-  
+    const buffer = Buffer.from(encryptedData, 'base64'); // Base64 인코딩된 데이터를 변환
+
     console.log("encrypt is here?", encryptedData);
-  
+
     const decrypted = crypto.privateDecrypt(
       {
         key: this.privateKey,
@@ -416,7 +414,7 @@ export class TerraformService {
       },
       buffer,
     );
-  
+
     return decrypted.toString('utf-8');
   }
   
