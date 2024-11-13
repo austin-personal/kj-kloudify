@@ -28,9 +28,13 @@ export const deleteSecret = async () => {
     }
 };
 
-export const checkSecret = async () => {
+export const checkSecret = async (email: string) => {
     try {
-        const response = await axios.get(`${API_URL}/check`);
+        const response = await axios.post(`${API_URL}/check`,
+            {
+                email
+            }
+        );
         return response.data.exists;
     } catch (error) {
         throw error;

@@ -56,11 +56,11 @@ const Profile: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const result = await checkSecret();
-        dispatch(setHasSecret(result));
-        // 유저 정보 가져오기
         const userData = await info();
         setUserProfile(userData.user);
+        // 유저 정보 가져오기
+        const result = await checkSecret(userData.user.email);
+        dispatch(setHasSecret(result));
         // 유저의 프로젝트 리스트 가져오기
         const projectResumeData = await projectResumeInfo(userData.email);
         const projecDeployedtData = await projectDeployedInfo(userData.email);
