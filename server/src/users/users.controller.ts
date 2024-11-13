@@ -7,7 +7,7 @@ import { JwtAuthGuard } from './jwt-auth.guard';  // auth에서 옮겨진 guard 
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CurrentUser } from './current-user.decorator';
 import { NotFoundException } from '@nestjs/common';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 
 @Controller('users')
 export class UsersController {
@@ -86,5 +86,30 @@ export class UsersController {
       user: userInfo,
     };
   }
+  
+  @Get('check-auth')
+  async checkAuth(@Req() req: Request, @Res() res: Response): Promise<void> {
+    const token = req.cookies?.token; // HttpOnly 쿠키에서 JWT 토큰 확인
+
+    if (!token) {
+      res.status(401).json({ isAuthenticated: false, message: '토큰이 없습니다.' });
+      return;
+    }
+
+    try {
+      const decoded = this.usersService.verifyToken(token); // JWT 토큰 검증
+      if (decoded) {
+        res.status(200).json({ isAuthenticated: true });
+      } else {
+        res.status(401).json({ isAuthenticated: false });
+      }
+      return;
+    } catch (error) {
+      console.error('토큰 검증 오류:', error);
+      res.status(401).json({ isAuthenticated: false, message: '토큰이 유효하지 않습니다.' });
+      return;
+    }
+  }
 
 }
+
