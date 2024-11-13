@@ -306,7 +306,7 @@ const Detail: React.FC = () => {
               <div className="service-status-list">
                 {Object.entries(stateData).map(([key, value]) => {
                   const isRunning = value.isRunning;
-                  const statusText = isRunning ? "Running" : "Stopped";
+                  const statusText = isRunning ? "On" : "Off";
                   const statusClass = isRunning ? "running" : "stopped";
 
                   return (
