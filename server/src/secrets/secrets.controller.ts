@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Delete, Req, UseGuards,Get } from '@nestjs/common';
+import { Controller, Post, Body, Delete, Req, UseGuards,Get , BadRequestException , NotFoundException , } from '@nestjs/common';
 import { SecretsService } from './secrets.service';
 import { UsersService } from '../users/users.service';
 import { JwtAuthGuard } from '../users/jwt-auth.guard';
@@ -38,26 +38,44 @@ export class SecretsController {
   // Delete Secrets API
   // @UseGuards(JwtAuthGuard) // JwtAuthGuard를 바로 사용
   @Delete()
-  async deleteSecret(@Req() req) {
-    // const email = req.user.email; // JWT에서 이메일 추출
-    // const userInfo = await this.usersService.findOneByEmail(email);  // 이메일로 사용자 조회
+  async deleteSecret(@Body('email') email: string): Promise<{ message: string }> {
+    // 이메일이 요청 본문에 없으면 에러 발생
+    if (!email) {
+      throw new BadRequestException('Email is required');
+    }
+
+    // 이메일로 사용자 조회
+    const userInfo = await this.usersService.findOneByEmail(email);
+    if (!userInfo) {
+      throw new NotFoundException('User not found');
+    }
+
     const id = userInfo.UID;
     await this.secretsService.deleteSecret(id);
+
     return { message: 'Secret deleted successfully' };
   }
 
   // @UseGuards(JwtAuthGuard) // JwtAuthGuard를 바로 사용
   @Get('check')
-  async checkSecret(@Req() req): Promise<{ exists: boolean }> {
-    // const email = req.user.email; // JWT에서 이메일 추출
-    // const userInfo = await this.usersService.findOneByEmail(email);  // 이메일로 사용자 조회
+  async checkSecret(@Body('email') email: string): Promise<{ exists: boolean }> {
+    // 이메일이 요청 본문에 없으면 에러 발생
+    if (!email) {
+      throw new BadRequestException('Email is required');
+    }
+
+    // 이메일로 사용자 조회
+    const userInfo = await this.usersService.findOneByEmail(email);
+    if (!userInfo) {
+      throw new NotFoundException('User not found');
+    }
+
     const id = userInfo.UID;
-    
+
     // UID로 Secret 조회
     const secret = await this.secretsService.secretCheck(id);
     console.log("secret check(bool): ", !!secret);
-    
-    
+
     // Secret이 존재하는지 여부를 논리값으로 반환
     return { exists: !!secret };
   }
