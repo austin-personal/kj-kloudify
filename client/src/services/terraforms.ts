@@ -9,7 +9,6 @@ export const create = async () => {
         const response = await axios.post(`${API_URL}/create`, {});
         return response.data;
     } catch (error) {
-        console.error('테라폼 생성 실패!! : ', error);
         throw error;
     }
 };
@@ -27,7 +26,6 @@ export const destroy = async (cid: number, token: string | null) => {
             });
         return response.data;
     } catch (error) {
-        console.error('클라우드 중지 개박살!! :', error);
         throw error;
     }
 };
@@ -38,7 +36,6 @@ export const show = async () => {
         const response = await axios.post(`${API_URL}/show`, {});
         return response.data;
     } catch (error) {
-        console.error('상태 보기 개박살!! :', error);
         throw error;
     }
 };
@@ -58,7 +55,6 @@ export const review = async (cid: number | 0, pid: number, token: string | null)
         );
         return response.data;
     } catch (error) {
-        console.error('리뷰 개박살!! :', error);
         throw error;
     }
 }
@@ -77,7 +73,6 @@ export const deploy = async (cid: number, token: string) => {
         );
         return response.data;
     } catch (error) {
-        console.error('디플로이 개박살!! :', error);
         throw error;
     }
 }
@@ -95,7 +90,6 @@ export const download = async (cid: number | undefined, token: string | null) =>
             })
         return response.data;
     } catch (error) {
-        console.error('다운로드 개박살!! ;', error)
         throw error;
     }
 }
@@ -114,21 +108,13 @@ export const state = async (cid: number | undefined, token: string | null, optio
             })
         return response.data.serviceStates;
     } catch (error) {
-        if (axios.isCancel(error)) {
-            console.log("요청이 취소되었습니다.");
-        } else {
-            console.error("스테이트 개박살!! ;", error);
-        }
-        if (!axios.isCancel(error)) {
-            throw error;
-        }
+        throw error;
     }
 }
 
 
 export const terraInfo = async (cid: number, token: string | null) => {
     try {
-        // console.log("terraInfo",cid,token);
         const response = await axios.post(`${API_URL}/terraInfo`,
             {
                 CID: cid
@@ -140,7 +126,6 @@ export const terraInfo = async (cid: number, token: string | null) => {
             })
         return response.data;
     } catch (error) {
-        console.error('테라폼 코드 개박살!! ;', error)
         throw error;
     }
 }

@@ -80,12 +80,10 @@ const Detail: React.FC = () => {
     try {
       const serviceName = extractServiceStateName(name);
       if (!serviceName) {
-        console.warn(`Image not found: ${serviceName}. Using default image.`);
         return "https://icon.icepanel.io/AWS/svg/Compute/EC2.svg"; // 기본 이미지 경로 설정
       }
       return require(`../../img/aws-icons/${serviceName}.svg`);
     } catch (error) {
-      console.log("큰일남!");
     }
   };
 
@@ -123,7 +121,6 @@ const Detail: React.FC = () => {
           setIsStateLoading(false);
         }
       } catch (error) {
-        console.error("프로젝트 정보를 가져오는 중 오류 발생:", error);
         setStateData({});
         setIsStateLoading(false);
         setIsLoading(false);
@@ -133,7 +130,6 @@ const Detail: React.FC = () => {
     const openChatHistory = async (cid: number) => {
       try {
         const response = await open(cid, token);
-        console.log(response);
         if (response && response.length > 0) {
           let temp = -2;
           const formattedChat = response.flatMap((msg: any, index: number) => {
@@ -204,12 +200,10 @@ const Detail: React.FC = () => {
           setChatHistory([...defaultBotMessage, ...formattedChat]);
         }
       } catch (error) {
-        console.error("채팅 기록을 불러오는 중 오류 발생:", error);
       }
     };
 
     fetchProjectData();
-    console.log("뭐야이거 :", chatHistory);
 
     return () => {
       controller.abort(); // 컴포넌트 언마운트 시 요청 취소
@@ -260,7 +254,6 @@ const Detail: React.FC = () => {
           link.click();
         })
         .catch((error: any) => {
-          console.error("Error capturing image:", error);
         });
     }
   };
@@ -278,7 +271,6 @@ const Detail: React.FC = () => {
 
       URL.revokeObjectURL(fileURL);
     } catch (error) {
-      console.error("Terraform code download failed:", error);
     }
   };
 

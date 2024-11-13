@@ -14,7 +14,6 @@ export const create = async (projectName: string, token: string) => {
             });
         return response.data.CID;
     } catch (error) {
-        console.error('프로젝트 생성 개박살!! : ', error);
         throw error;
     }
 };
@@ -30,7 +29,6 @@ export const deleteProject = async (PID: number, token: string | null) => {
         });
         return response;
     } catch (error) {
-        console.error('프로젝트 삭제 개박살!! :', error);
         throw error;
     }
 };
@@ -45,7 +43,6 @@ export const projectOneInfo = async (pid: number, token: string | null) => {
         });
         return response;
     } catch (error) {
-        console.error('프로젝트 정보 개박살!! :', error);
         throw error;
     }
 };
@@ -61,7 +58,6 @@ export const projectResumeInfo = async (token: string) => {
         });
         return response;
     } catch (error) {
-        console.error('배포안된 프로젝트 정보 개박살!! :', error);
         throw error;
     }
 };
@@ -77,7 +73,6 @@ export const projectDeployedInfo = async (token: string) => {
         });
         return response;
     } catch (error) {
-        console.error('배포된 프로젝트 정보 개박살!! :', error);
         throw error;
     }
 };
@@ -93,7 +88,6 @@ export const mermaid = async (pid: number, token: string | null) => {
         });
         return response.data.code[0].mermaid;
     } catch (error) {
-        console.error('머메이드 코드 개박살!! :', error);
         throw error;
     }
 };
@@ -101,7 +95,6 @@ export const mermaid = async (pid: number, token: string | null) => {
 //summeray 가져오기
 export const projectSummary = async (cid: number, token: string | null) => {
     try {
-        // console.log("cid,token:", cid, token);
         const response = await axios.get(`${API_URL}/${cid}/summary`, {
             headers: {
                 Authorization: `Bearer ${token}`
@@ -109,7 +102,6 @@ export const projectSummary = async (cid: number, token: string | null) => {
         });
         return response.data.summary;
     } catch (error) {
-        console.error('summary 개박살!! :', error);
         throw error;
     }
 };
@@ -117,7 +109,6 @@ export const projectSummary = async (cid: number, token: string | null) => {
 //price 가져오기
 export const projectPrice = async (cid: number, token: string | null) => {
     try {
-        // console.log("cid,token:", cid, token);
         const response = await axios.get(`${API_URL}/${cid}/price`, {
             headers: {
                 Authorization: `Bearer ${token}`
@@ -125,7 +116,6 @@ export const projectPrice = async (cid: number, token: string | null) => {
         });
         return response.data;
     } catch (error) {
-        console.error('summary 개박살!! :', error);
         throw error;
     }
 };

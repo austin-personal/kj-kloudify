@@ -84,7 +84,6 @@ const Chat: React.FC<ChatProps> = ({ projectCID }) => {
         dispatch(deactivate());
         dispatch(clearFinishData());
         const initialMessages = await open(projectCID, token);
-        console.log(initialMessages);
         setMessages(defaultBotMessage);
         if (initialMessages && initialMessages.length > 0) {
           let temp = -2;
@@ -181,7 +180,6 @@ const Chat: React.FC<ChatProps> = ({ projectCID }) => {
             const codeBlock = lastBotResponse.match(/```mermaid([\s\S]*?)```/);
             if (codeBlock && codeBlock[1]) {
               // "```"로 감싸진 내용이 존재하면 `finishData`로 전달
-              console.log(codeBlock[1])
               dispatch(setFinishData([codeBlock[1].trim()]));
             }
           } else if (lastBotResponse.includes("**")) {
@@ -451,7 +449,6 @@ const Chat: React.FC<ChatProps> = ({ projectCID }) => {
       }
 
       let responseMessage = await ask(messageToSend, projectCID);
-      console.log("responseMessage : ", responseMessage);
       if (responseMessage === "template6-1") {
         responseMessage = await ask("template6-1", projectCID);
         dispatch(activate());
@@ -562,7 +559,6 @@ const Chat: React.FC<ChatProps> = ({ projectCID }) => {
       // 응답 메시지 처리
       processResponseMessage(responseMessage);
     } catch (error) {
-      console.error("메시지 전송 오류:", error);
 
       // 로딩 메시지 제거
       setMessages((prevMessages) =>

@@ -18,7 +18,6 @@ export const createSecret = async (accessKey: string, secretAccessKey: string, r
             });
         return response.data.message;
     } catch (error) {
-        console.error('키 전달 실패: ', error);
         throw error;
     }
 };
@@ -33,7 +32,6 @@ export const deleteSecret = async (token: string) => {
             });
         return response.data.message;
     } catch (error) {
-        console.error('키 삭제 실패: ', error);
         throw error;
     }
 };
@@ -48,7 +46,6 @@ export const checkSecret = async (token: string) => {
             });
         return response.data.exists;
     } catch (error) {
-        console.error('키 확인 실패: ', error);
         throw error;
     }
 };

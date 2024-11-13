@@ -18,13 +18,10 @@ const MermaidChart: React.FC<MermaidChartProps> = ({ chartCode }) => {
 
   const getImagePath = (name: string) => {
     try {
-      console.log("전:", name);
       const serviceName = extractServiceName(name);
-      console.log("후2:", serviceName);
       return require(`../../img/aws-icons/${serviceName}.svg`);
     } catch (error) {
       const serviceName = extractServiceName(name);
-      console.warn(`Image not found: ${serviceName}. Using default image.`);
       return require(`../../img/aws-icons/default.svg`).default; // 기본 이미지 경로 설정
     }
   };
@@ -34,7 +31,6 @@ const MermaidChart: React.FC<MermaidChartProps> = ({ chartCode }) => {
   });
 
   const chartString = result[0] || "";
-  console.log("result:", chartString);
   const svgRef = useRef<d3.Selection<
     SVGSVGElement,
     unknown,
@@ -107,7 +103,6 @@ const MermaidChart: React.FC<MermaidChartProps> = ({ chartCode }) => {
               const imgElement = paragraph.querySelector("img");
               const imgSrc = (imgElement as HTMLImageElement).src;
               let extractedName = imgSrc.split("/").pop()?.replace(".svg", "");
-              console.log("extractedName:", extractedName);
               // getAwsIcon 함수 사용
               (imgElement as HTMLImageElement).src = getImagePath(
                 extractedName || "default"

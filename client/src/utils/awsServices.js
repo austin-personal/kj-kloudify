@@ -235,7 +235,6 @@ const patternAliases = [
 function normalizeServiceName(text: string): string {
   // 공백과 밑줄을 하이픈으로 변경하여 대소문자 통일
   let modifiedText = text.replace(/[\s_]+/g, "-").toLowerCase();
-  console.log("modifiedText", modifiedText);
 
   // 키워드 기반 패턴 매칭
   for (const pattern of patternAliases) {
@@ -259,7 +258,6 @@ function normalizeServiceName(text: string): string {
 // 서비스 이름 추출 함수
 export function extractServiceName(text: string): string | undefined {
   const normalizedText = normalizeServiceName(text);
-  console.log("normalizedText", normalizedText);
   // 서비스가 awsServices 배열에 존재하는지 확인
   if (awsServices.includes(normalizedText)) {
     return normalizedText;
@@ -271,7 +269,6 @@ export function extractServiceName(text: string): string | undefined {
 
 // 서비스 상태 이름 추출 함수
 export function extractServiceStateName(text: string): string | undefined {
-  console.log("stateText", text);
   if (serviceStateAliases[text]) {
     return serviceStateAliases[text];
   } else {

@@ -39,9 +39,7 @@ const Guide: React.FC = () => {
       const encryptedRegion = encryptData(region);
 
       const response = await createSecret(keyId, secretKey, region, token); // token이 string임을 보장
-      console.log(response);
     } catch (error) {
-      console.log(error);
     }
     if (isFormValid()) {
       showAlert("제출 완료", "AWS 키가 성공적으로 제출되었습니다.", "success");
