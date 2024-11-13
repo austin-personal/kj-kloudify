@@ -169,7 +169,7 @@ const Profile: React.FC = () => {
         setProjects(projects.filter((p) => p.PID !== projectToDelete.PID));
       } else if (modalType === "deleteAWSKey") {
         // AWS Key 삭제 로직
-        const response = await deleteSecret();
+        const response = await deleteSecret(userProfile.email);
         showAlert(
           "삭제 완료",
           "프로젝트가 성공적으로 삭제되었습니다.",

@@ -19,9 +19,15 @@ export const createSecret = async (accessKey: string, secretAccessKey: string, r
     }
 };
 
-export const deleteSecret = async () => {
+export const deleteSecret = async (email: string) => {
     try {
-        const response = await axios.delete(`${API_URL}`);
+        const response = await axios.delete(`${API_URL}`,
+            {
+                data: {
+                    email
+                }
+            }
+        );
         return response.data.message;
     } catch (error) {
         throw error;
