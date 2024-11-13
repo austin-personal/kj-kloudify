@@ -105,8 +105,6 @@ export const addNode = (keyword: string, nodes: AppNode[]): AppNode[] => {
 export const replaceNode = (keyword: string, nodeId: string, options:any[], nodes: AppNode[]): AppNode[] => {
    //require를 사용하여 이미지 경로를 가져옴
    // keyword를 소문자로 변환
-   console.log("keyword:",keyword);
-   console.log("nodeId:", nodeId);
 
    let imageChange: string;
    try {
@@ -141,7 +139,6 @@ export const replaceNode = (keyword: string, nodeId: string, options:any[], node
 export const addServiceNode = (keyword: string, options:any[],nodes: AppNode[]): AppNode[] => {
   // 백엔드에서 전달된 키워드에 따라 새로운 노드 생성
   // 마지막 노드의 y축 위치를 참조하여 50씩 증가시킴
-  console.log(keyword);
   const lastNodeY = nodes.length > 0 ? nodes[nodes.length - 1].position.y : 0;
   const lastNodeX = nodes.length > 0 ? nodes[nodes.length - 1].position.x : 0;
   const newNodeX = lastNodeX+ 80;
@@ -150,7 +147,6 @@ export const addServiceNode = (keyword: string, options:any[],nodes: AppNode[]):
   try {
     imageChange = require(`../../../img/aws-icons/${keyword}.svg`);
   } catch (error) {
-    console.log("????");
     imageChange = require("../../../img/aws-icons/default.svg").default; //경로에 없을 시 ec2 이미지가 디폴트로 나올것임.
   }
   const newNode : PositionLoggerNode ={

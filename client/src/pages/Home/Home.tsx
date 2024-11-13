@@ -61,10 +61,8 @@ const Home: React.FC = () => {
             navigate("/profile");
           }
         } else {
-          console.error("토큰이 없습니다. 인증 문제가 발생할 수 있습니다.");
         }
       } catch (error) {
-        console.error("프로젝트 정보를 가져오는 중 오류 발생:", error);
       } finally {
         setLoading(false);
       }
@@ -102,7 +100,6 @@ const Home: React.FC = () => {
       });
       navigate(`/review/${pid}/${cid}`);
     } catch (error) {
-      console.error("review API 호출 실패:", error);
       alert(
         "Terraform 상태 업데이트에 실패했습니다. 네트워크 연결을 확인하거나, 잠시 후 다시 시도해 주세요."
       );

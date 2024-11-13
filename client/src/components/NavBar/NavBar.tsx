@@ -33,7 +33,6 @@ const NavBar: React.FC = () => {
           navigate("/");
         }
       } catch (error) {
-        console.error("데이터 로딩 중 오류 발생:", error);
       }
     };
 
@@ -106,9 +105,9 @@ const NavBar: React.FC = () => {
     sessionStorage.removeItem("nodes"); // 세션 스토리지에서 노드 데이터 삭제
 
     // 프로젝트 이름 유효성 검사
-    const projectNamePattern = /^[a-zA-Z0-9]+$/; // 영어와 숫자만 허용하는 정규식
+    const projectNamePattern = /^[a-z0-9]+$/; // 영어와 숫자만 허용하는 정규식
     if (!projectNamePattern.test(projectName)) {
-      setErrorMessage("영어와 숫자로 이루어진 프로젝트명을 입력해주세요");
+      setErrorMessage("영어 소문자와 숫자로 이루어진 프로젝트명을 입력해주세요");
       return; // 유효하지 않으면 함수 종료
     }
 
@@ -172,7 +171,7 @@ const NavBar: React.FC = () => {
               <h2>Create New Project</h2>
               <form onSubmit={handleProjectSubmit}>
                 <label htmlFor="projectName">
-                  먼저, <span className="emphasis">영어</span>로 프로젝트 이름을
+                  먼저, <span className="emphasis">영어 소문자</span>로 프로젝트 이름을
                   입력해주세요.
                 </label>
                 <input

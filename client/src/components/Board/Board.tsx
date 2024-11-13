@@ -80,8 +80,6 @@ const Board = forwardRef(({ parsedData, finishData }: BoardProps, ref) => {
   useEffect(() => {
     if (parsedData.length > 0) {
       const lastElement = parsedData[parsedData.length - 1];
-      console.log("초기화됐나확인", parsedData);
-      console.log("새로운 마지막 요소:", lastElement);
       const newNodes = addNode(lastElement, nodes);
       setNodes(newNodes);
       // 노드가 추가된 후 fitView 호출
@@ -103,7 +101,6 @@ const Board = forwardRef(({ parsedData, finishData }: BoardProps, ref) => {
   useEffect(() => {
     setNodes([]); //노드 초기화
     if (!finishData || finishData.length === 0) {
-      console.log("finishData가 아직 로드되지 않았습니다.");
       return; // finishData가 없는 경우, 더 이상 실행하지 않습니다.
     } else {
       // 새로운 노드 배열을 생성합니다.
@@ -115,8 +112,6 @@ const Board = forwardRef(({ parsedData, finishData }: BoardProps, ref) => {
       for (let i = 0; i < finishData[0].length; i++) {
         const services = finishData.map((item: any) => String(item[i].service));
         const optionsValues = finishData.map((item: any) => item[i].options);
-        // console.log("서비스 잘 왔나???", services[0]);
-        // console.log("옵션 값 잘 왔나???", optionsValues[0]);
         const normalizedKeyword = services[0].toLowerCase();
 
         updatedNodes = addServiceNode(
@@ -187,9 +182,6 @@ const Board = forwardRef(({ parsedData, finishData }: BoardProps, ref) => {
         onConnect={onConnect}
         fitView
       >
-        <Panel>
-          {/* <button onClick={handleConnectNode}>연결 생성</button> */}
-        </Panel>
         <Background />
         <Controls />
       </ReactFlow>
