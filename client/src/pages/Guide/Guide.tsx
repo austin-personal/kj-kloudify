@@ -6,6 +6,7 @@ import { createSecret, getPublicKey } from "../../services/secrets";
 import { useNavigate } from "react-router-dom";
 import CryptoJS from "crypto-js";
 import showAlert from "../../utils/showAlert";
+import { info } from "../../services/users";
 const Guide: React.FC = () => {
   const [keyId, setKeyId] = useState("");
   const [secretKey, setSecretKey] = useState("");
@@ -46,7 +47,8 @@ const Guide: React.FC = () => {
       const encryptedSecretKey = encryptData(secretKey, publicKey);
       const encryptedRegion = encryptData(region, publicKey);
 
-      const response = await createSecret(encryptedKeyId, encryptedSecretKey, encryptedRegion);
+      const response = await info(); 
+      await createSecret(encryptedKeyId, encryptedSecretKey, encryptedRegion, response.user.email);
 
       showAlert("제출 완료", "AWS 키가 성공적으로 제출되었습니다.", "success");
       navigate(-1);

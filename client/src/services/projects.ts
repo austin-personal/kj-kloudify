@@ -4,10 +4,13 @@ const API_URL = `${process.env.REACT_APP_SERVER_URL}/projects`;
 
 axios.defaults.withCredentials = true;
 
-export const create = async (projectName: string) => {
+export const create = async (projectName: string, email: string) => {
     try {
         const response = await axios.post(`${API_URL}`,
-            { projectName }
+            { 
+                projectName,
+                email
+            }
         );
         return response.data.CID;
     } catch (error) {
@@ -15,10 +18,13 @@ export const create = async (projectName: string) => {
     }
 };
 
-export const deleteProject = async (PID: number) => {
+export const deleteProject = async (PID: number, email: string) => {
     try {
         const response = await axios.delete(`${API_URL}`, {
-            data: { PID }
+            data: {
+                PID,
+                email
+            }
         });
         return response;
     } catch (error) {
@@ -35,18 +41,26 @@ export const projectOneInfo = async (pid: number) => {
     }
 };
 
-export const projectResumeInfo = async () => {
+export const projectResumeInfo = async (email: string) => {
     try {
-        const response = await axios.get(`${API_URL}/resume`);
+        const response = await axios.post(`${API_URL}/resume`,
+            {
+                email: email
+            }
+        );
         return response;
     } catch (error) {
         throw error;
     }
 };
 
-export const projectDeployedInfo = async () => {
+export const projectDeployedInfo = async (email: string) => {
     try {
-        const response = await axios.get(`${API_URL}/deployed`);
+        const response = await axios.post(`${API_URL}/deployed`, 
+            {
+                email: email
+            }
+        );
         return response;
     } catch (error) {
         throw error;

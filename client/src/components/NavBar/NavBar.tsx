@@ -12,12 +12,19 @@ import {
 import { create } from "../../services/projects";
 import { info } from "../../services/users";
 
+interface UserProfile {
+  UID: number;
+  username: string;
+  password: string;
+  email: string;
+}
+
 const NavBar: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태
   const [errorMessage, setErrorMessage] = useState(""); // 오류 메시지 상태
   const navigate = useNavigate(); // useNavigate 훅 사용
   const location = useLocation();
-  const [userProfile, setUserProfile] = useState("");
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const hasSecret = useAppSelector((state) => state.loading.hasSecret);
 
   useEffect(() => {
@@ -25,7 +32,7 @@ const NavBar: React.FC = () => {
       try {
         // 유저 정보 가져오기
         const userData = await info();
-        setUserProfile(userData.user.username);
+        setUserProfile(userData.user);
       } catch (error) {
       }
     };
@@ -107,9 +114,11 @@ const NavBar: React.FC = () => {
 
     //prohectName을 DB에 넘김
     try {
-      const cid = await create(projectName);
-      navigate(`/home/${cid}`);
-      window.location.reload();
+      if (userProfile) {
+        const cid = await create(projectName, userProfile.email);
+        navigate(`/home/${cid}`);
+        window.location.reload();
+      }
     } catch (error) { }
     setIsModalOpen(false); // 제출 후 모달을 닫기
   };
@@ -143,7 +152,7 @@ const NavBar: React.FC = () => {
         </div>
         <div className="navbar-right">
           <Link to="/profile" className="profile-button">
-            {`안녕하세요,${userProfile}님`}
+            {`안녕하세요,${userProfile?.username}님`}
           </Link>
           <Link to="/login" className="profile-button" onClick={handleLogout}>
             <FontAwesomeIcon

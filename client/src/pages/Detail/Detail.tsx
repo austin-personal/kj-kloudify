@@ -23,6 +23,7 @@ import StopSign from "./Stopped.svg"
 import CodeBlock from "../../components/CodeBlock/CodeBlock";
 import CodeBlockLoading from "../../components/CodeBlock/CodeBlockLoading";
 import { extractServiceStateName } from "../../utils/awsServices";
+import { info } from "../../services/users";
 
 const domtoimage = require("dom-to-image");
 
@@ -40,6 +41,13 @@ interface ChatMessage {
   text: string;
   subtext?: string;
   sender: "bot" | "user";
+}
+
+interface UserProfile {
+  UID: number;
+  username: string;
+  password: string;
+  email: string;
 }
 
 const defaultBotMessage: ChatMessage[] = [
@@ -72,6 +80,7 @@ const Detail: React.FC = () => {
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
   const [mermaidData, setMermaidData] = useState<string[]>([]); // Mermaid 데이터 상태 추가
   const mermaidRef = useRef<HTMLDivElement>(null);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
 
   const navigate = useNavigate();
 
@@ -96,6 +105,9 @@ const Detail: React.FC = () => {
     const fetchProjectData = async () => {
       try {
         if (pid) {
+          const userData = await info();
+          setUserProfile(userData.user);
+
           const response = await projectOneInfo(Number(pid));
           const projectData = response.data;
           setProject(projectData);
@@ -115,8 +127,10 @@ const Detail: React.FC = () => {
           }
 
           setIsStateLoading(true);
-          const stateTemp = await state(projectData.CID, { signal });
-          setStateData(stateTemp || {});
+          if (userProfile) {
+            const stateTemp = await state(projectData.CID, userProfile.email, { signal });
+            setStateData(stateTemp || {});
+          }
           setIsStateLoading(false);
         }
       } catch (error) {
@@ -226,11 +240,13 @@ const Detail: React.FC = () => {
       setIsDeleting(true);
       if (modalType === "deleteProject") {
         // 프로젝트 삭제 로직
-        await destroy(project.CID);
-        await deleteProject(project.PID);
-        setShowDeleteModal(false);
+        if (userProfile) {
+          await destroy(project.CID, userProfile.email);
+          await deleteProject(project.PID, userProfile.email);
+          setShowDeleteModal(false);
+          navigate("/profile");
+        }
       }
-      navigate("/profile");
     } catch (error) {
       setModalType("error"); // 모달 타입 설정
     }

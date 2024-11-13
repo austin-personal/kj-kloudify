@@ -62,8 +62,8 @@ const Profile: React.FC = () => {
         const userData = await info();
         setUserProfile(userData.user);
         // 유저의 프로젝트 리스트 가져오기
-        const projectResumeData = await projectResumeInfo();
-        const projecDeployedtData = await projectDeployedInfo();
+        const projectResumeData = await projectResumeInfo(userData.email);
+        const projecDeployedtData = await projectDeployedInfo(userData.email);
         const combinedProjects = [
           ...projectResumeData.data,
           ...projecDeployedtData.data,
@@ -163,8 +163,8 @@ const Profile: React.FC = () => {
       setIsDeleting(true); // 삭제 작업 시작 전 로딩 상태로 설정
       if (modalType === "deleteProject" && projectToDelete) {
         // 프로젝트 삭제 로직
-        await destroy(projectToDelete.CID);
-        await deleteProject(projectToDelete.PID);
+        await destroy(projectToDelete.CID, userProfile.email);
+        await deleteProject(projectToDelete.PID, userProfile.email);
 
         setProjects(projects.filter((p) => p.PID !== projectToDelete.PID));
       } else if (modalType === "deleteAWSKey") {

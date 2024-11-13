@@ -4,13 +4,14 @@ const API_URL = `${process.env.REACT_APP_SERVER_URL}/secrets`;
 
 axios.defaults.withCredentials = true;
 
-export const createSecret = async (accessKey: string, secretAccessKey: string, region: string) => {
+export const createSecret = async (accessKey: string, secretAccessKey: string, region: string, email: string) => {
     try {
         const response = await axios.post(`${API_URL}`,
             {
                 accessKey,
                 secretAccessKey,
-                region
+                region,
+                email
             });
         return response.data.message;
     } catch (error) {

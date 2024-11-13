@@ -12,6 +12,7 @@ import { fetch } from "../../services/conversations";
 import { extractServiceName } from "../../utils/awsServices";
 import showAlert from "../../utils/showAlert";
 import { setData } from "../../store/dataSlice";
+import { info } from "../../services/users";
 
 interface ServicesProps {
   cid: number;
@@ -86,7 +87,8 @@ const Services: React.FC<ServicesProps> = ({
       );
       navigate(`/detail/${pid}`);
     } catch (error) {
-      await destroy(cid);
+      const response = await info();
+      await destroy(cid, response.user.email);
       console.log("탈출!")
       dispatch(setLoading(false));
       dispatch(setReviewReady(false));

@@ -13,11 +13,12 @@ export const create = async () => {
     }
 };
 
-export const destroy = async (cid: number) => {
+export const destroy = async (cid: number, email: string) => {
     try {
         console.log("destroy 호출중...")
         const response = await axios.post(`${API_URL}/destroy`, {
             CID: cid,
+            email: email
         });
         console.log("destroy 호출 성공!!", response.data)
         return response.data;
@@ -74,11 +75,12 @@ export const download = async (cid: number | undefined) => {
     }
 }
 
-export const state = async (cid: number | undefined, options: { signal?: AbortSignal } = {}) => {
+export const state = async (cid: number | undefined, email: string, options: { signal?: AbortSignal } = {}) => {
     try {
         const response = await axios.post(`${API_URL}/state`,
             {
-                CID: cid
+                CID: cid,
+                email: email,
             },
             {
                 signal: options.signal,
