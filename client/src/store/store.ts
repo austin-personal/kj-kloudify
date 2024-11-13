@@ -7,27 +7,27 @@ import finishDataReducer from "./finishDataSlice";
 import btnReducer from "./btnSlice";
 import dataReducer from "./dataSlice";
 
+// loading 리듀서에 대한 persist 설정
+const loadingPersistConfig = {
+  key: "loading",
+  storage,
+  whitelist: ["isReviewReady"], // 'isReviewReady'만 persist
+};
+
+// loadingReducer에만 persist를 적용
+const persistedLoadingReducer = persistReducer(loadingPersistConfig, loadingReducer);
+
 // combineReducers로 리듀서를 합침
 const rootReducer = combineReducers({
   terraInfo: dataReducer,
-  loading: loadingReducer, // 'loading' 상태가 포함된 리듀서
+  loading: persistedLoadingReducer, // 'loading' 상태가 포함된 리듀서
   finishData: finishDataReducer,
   button: btnReducer,
 });
 
-// persist 설정
-const persistConfig = {
-  key: "root",
-  storage, // 로컬 스토리지 사용
-  whitelist: ["loading.isReviewReady"], // 'loading' 리듀서만 persist
-};
-
-// persistReducer 적용
-const persistedReducer = persistReducer(persistConfig, rootReducer);
-
 // store 설정
 const store = configureStore({
-  reducer: persistedReducer, // persistedReducer를 사용
+  reducer: rootReducer,
 });
 
 // persistStore 설정
