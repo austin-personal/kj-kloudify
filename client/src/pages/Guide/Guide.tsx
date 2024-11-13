@@ -13,7 +13,6 @@ const Guide: React.FC = () => {
 
   const navigate = useNavigate();
 
-
   // 암호화 함수
   const encryptData = (data: string, ENCRYPTION_KEY: string) => {
     return CryptoJS.AES.encrypt(data, ENCRYPTION_KEY).toString();
@@ -27,6 +26,16 @@ const Guide: React.FC = () => {
   // submit 버튼 클릭 시 호출되는 함수
   const handleSubmit = async () => {
     try {
+      if (!isFormValid()) {
+        // 입력 값이 부족한 경우 경고 메시지 표시
+        showAlert(
+          "제출 실패",
+          "아직 입력되지 않은 AWS 키가 있습니다.",
+          "warning"
+        );
+        return; // 유효하지 않으면 함수 종료
+      }
+
       const token = localStorage.getItem("token");
       if (!token) {
         throw new Error("토큰이 존재하지 않습니다.");
@@ -44,16 +53,13 @@ const Guide: React.FC = () => {
 
       const response = await createSecret(encryptedKeyId, encryptedSecretKey, encryptedRegion, token); // token이 string임을 보장
 
-    } catch (error) {
-      alert("AWS credentials를 입력하는데 에러가 발생했습니다. 잠시 후 다시 제출해 주세요.")
-    }
-    if (isFormValid()) {
       showAlert("제출 완료", "AWS 키가 성공적으로 제출되었습니다.", "success");
       navigate(-1);
-    } else {
+
+    } catch (error) {
       showAlert(
         "제출 실패",
-        "아직 입력되지 않은 AWS 키가 있습니다.",
+        "오류가 발생했습니다. AWS 키를 다시 확인하거나 잠시 후 다시 제출해 주세요.",
         "warning"
       );
     }
