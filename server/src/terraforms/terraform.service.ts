@@ -69,6 +69,8 @@ export class TerraformService {
     }
     const { accessKey, secretAccessKey , region} = await this.secretsService.getUserCredentials(uid);
 
+    const region1 = this.decryptData(region);
+
     const randomInt = Math.floor(Math.random() * (999999 - 0 + 1)) + 0;
     const randomName = projectName + " " + randomInt.toString();
 
@@ -119,7 +121,7 @@ export class TerraformService {
      <Terraform Code>
      \`\`\`
       6. please make s3 acl default(don't mention it).
-      7. region is ${region}. Please create the AMI to match the region.
+      7. region is ${region1}. Please create the AMI to match the region.
       8. "Create it without a key pair."
       9. Replace aws_launch_configuration with aws_launch_template in Terraform code, as Launch Configurations are deprecated and Launch Templates are recommended for creating Auto Scaling groups.
       `;
@@ -400,15 +402,21 @@ export class TerraformService {
   }
 
   decryptData(encryptedData: string): string {
-    const buffer = Buffer.from(encryptedData, 'base64');
+    const [ivHex, encryptedHex] = encryptedData.split(':');
+    const iv = Buffer.from(ivHex, 'hex');
+    const buffer = Buffer.from(encryptedHex, 'hex');
+  
+    console.log("encrypt is here?", encryptedData);
+  
     const decrypted = crypto.privateDecrypt(
       {
         key: this.privateKey,
-        padding: crypto.constants.RSA_PKCS1_OAEP_PADDING, // Updated padding method
-        oaepHash: 'sha256', // Specifies the hash function used
+        padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
+        oaepHash: 'sha256',
       },
       buffer,
     );
+  
     return decrypted.toString('utf-8');
   }
   

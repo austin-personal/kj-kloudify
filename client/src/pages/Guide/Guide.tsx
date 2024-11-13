@@ -7,6 +7,8 @@ import { useNavigate } from "react-router-dom";
 import CryptoJS from "crypto-js";
 import showAlert from "../../utils/showAlert";
 import { info } from "../../services/users";
+import NodeRSA from 'node-rsa';
+
 const Guide: React.FC = () => {
   const [keyId, setKeyId] = useState("");
   const [secretKey, setSecretKey] = useState("");
@@ -14,9 +16,14 @@ const Guide: React.FC = () => {
 
   const navigate = useNavigate();
 
-  // 암호화 함수
-  const encryptData = (data: string, ENCRYPTION_KEY: string) => {
-    return CryptoJS.AES.encrypt(data, ENCRYPTION_KEY).toString();
+  // RSA 공개 키를 사용한 암호화 함수
+  const encryptData = (data: string, publicKey: string) => {
+    const key = new NodeRSA(publicKey);
+    key.setOptions({ encryptionScheme: 'pkcs1_oaep' }); // OAEP 패딩 사용
+
+    // 데이터 암호화
+    const encryptedData = key.encrypt(data, 'base64');
+    return encryptedData;
   };
 
   // 모든 조건을 체크하는 함수
