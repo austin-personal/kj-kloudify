@@ -60,5 +60,19 @@ export class SecretsController {
     // Secret이 존재하는지 여부를 논리값으로 반환
     return { exists: !!secret };
   }
-  
+  // Secrets 수정하기 API
+  @UseGuards(JwtAuthGuard) // JwtAuthGuard를 바로 사용
+  @Post('update')
+  async updateSecret(
+    @Body('accessKey') accessKey: string,
+    @Body('secretAccessKey') secretAccessKey: string,
+    @Body('region') region: string,
+    @Req() req
+  ): Promise<{ message: string }> {
+    const email = req.user.email;  // JWT에서 이메일 추출
+    const userInfo = await this.usersService.findOneByEmail(email);  // 이메일로 사용자 조회
+    const userId = userInfo.UID;
+    await this.secretsService.updateSecret(userId, accessKey, secretAccessKey, region);
+    return { message: 'Secret successfully updated' };
+  }
 }
