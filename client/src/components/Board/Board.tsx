@@ -182,9 +182,6 @@ const Board = forwardRef(({ parsedData, finishData }: BoardProps, ref) => {
         onConnect={onConnect}
         fitView
       >
-        <Panel>
-          {/* <button onClick={handleConnectNode}>연결 생성</button> */}
-        </Panel>
         <Background />
         <Controls />
       </ReactFlow>
