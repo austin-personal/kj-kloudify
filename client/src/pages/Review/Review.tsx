@@ -7,10 +7,12 @@ import CodeBlockLoading from "../../components/CodeBlock/CodeBlockLoading";
 import "./Review.css";
 import { Icon } from "@iconify/react";
 import { download, terraInfo } from "../../services/terraforms";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useAppSelector, useAppDispatch } from "../../store/hooks";
 import MermaidChart from "../../components/Mermaid/mermaid";
 import { setHasSecret } from "../../store/loadingSlice";
+import { projectDeployedInfo } from "../../services/projects";
+import { info } from "../../services/users";
 const domtoimage = require("dom-to-image");
 
 const Review: React.FC = () => {
@@ -25,6 +27,7 @@ const Review: React.FC = () => {
   const [showToast, setShowToast] = useState(true);
   const mermaidRef = useRef<HTMLDivElement>(null); // MermaidChart 요소를 참조할 ref 추가
   const [isTerraformVisible, setIsTerraformVisible] = useState(false);
+  const navigate = useNavigate();
   dispatch(setHasSecret(true));
 
   const handleCheckboxChange = () => {
@@ -65,7 +68,28 @@ const Review: React.FC = () => {
     }
   };
 
-  useEffect(() => {},[])
+  useEffect(() => {
+    const checkDeploymentStatus = async () => {
+      try {
+        const userInfo = await info();
+        const deployedData = (await projectDeployedInfo(userInfo.user.email)).data;
+
+        // cidParam과 일치하는 CID 항목을 찾음
+        const matchingProject = deployedData.find(
+          (project: { CID: number; isDeployed: boolean }) => project.CID === cid
+        );
+
+        // 일치하는 프로젝트가 있고, isDeployed가 true인 경우
+        if (matchingProject && matchingProject.isDeployed) {
+          navigate("/profile");
+        }
+      } catch (error) {
+        navigate(-1); // 에러 발생 시 이전 페이지로 이동
+      }
+    };
+
+    checkDeploymentStatus();
+  }, [cidParam, navigate]);
 
   return (
     <div className="review">
@@ -93,9 +117,8 @@ const Review: React.FC = () => {
         <div className="download">
           {isReviewReady ? (
             <button
-              className={`download-button ${
-                isTerraformVisible ? "terraform-btn" : "default-btn"
-              }`}
+              className={`download-button ${isTerraformVisible ? "terraform-btn" : "default-btn"
+                }`}
               onClick={isTerraformVisible ? handleDownload : handleScreenshot}
             >
               <svg
@@ -113,9 +136,8 @@ const Review: React.FC = () => {
             </button>
           ) : (
             <button
-              className={`download-button loading ${
-                isTerraformVisible ? "terraform-btn" : "default-btn"
-              }`}
+              className={`download-button loading ${isTerraformVisible ? "terraform-btn" : "default-btn"
+                }`}
               disabled
             >
               <div className="spinner"></div>
