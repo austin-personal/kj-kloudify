@@ -82,4 +82,12 @@ export class UsersService {
     return user;
   }
 
+  verifyToken(token: string): any {
+    try {
+      return this.jwtService.verify(token); // JWT 토큰 검증
+    } catch (error) {
+      return null; // 검증 실패 시 null 반환
+    }
+  }
+
 }
