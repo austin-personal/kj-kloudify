@@ -72,6 +72,7 @@ export const awsServices = [
 
 // 약어와 원본 매핑 객체
 const serviceAliases = {
+  dax: "dynamodb-dax",
   nacl: "network-access-control-list",
   asg: "auto-scaling",
   nat: "nat-gateway",
@@ -187,6 +188,10 @@ const serviceStateAliases = {
 };
 
 const patternAliases = [
+  {
+    keywords: ["beanstalk"],
+    serviceName: "elastic-beanstalk",
+  },
   {
     keywords: ["dynamodb", "accelerator"],
     serviceName: "dynamodb-accelerator",
