@@ -41,7 +41,7 @@ const Guide: React.FC = () => {
       encodedData
     );
   
-    return btoa(String.fromCharCode(...new Uint8Array(encryptedBuffer)));
+    return btoa(String.fromCharCode(...Array.from(new Uint8Array(encryptedBuffer))));
   };
 
   // 모든 조건을 체크하는 함수
