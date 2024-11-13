@@ -189,6 +189,10 @@ const serviceStateAliases = {
 
 const patternAliases = [
   {
+    keywords: ["vpc", "endpoint"],
+    serviceName: "vpc-endpoint",
+  },
+  {
     keywords: ["beanstalk"],
     serviceName: "elastic-beanstalk",
   },
