@@ -404,7 +404,8 @@ export class TerraformService {
     const decrypted = crypto.privateDecrypt(
       {
         key: this.privateKey,
-        padding: crypto.constants.RSA_PKCS1_PADDING,
+        padding: crypto.constants.RSA_PKCS1_OAEP_PADDING, // Updated padding method
+        oaepHash: 'sha256', // Specifies the hash function used
       },
       buffer,
     );
