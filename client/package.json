@@ -26,6 +26,7 @@
     "dom-to-image": "^2.6.0",
     "highlight.js": "^11.10.0",
     "html2canvas": "^1.4.1",
+    "jsencrypt": "^3.3.2",
     "lottie-react": "^2.4.0",
     "mermaid": "^11.4.0",
     "react": "^18.3.1",
