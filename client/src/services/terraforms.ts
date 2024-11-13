@@ -15,12 +15,10 @@ export const create = async () => {
 
 export const destroy = async (cid: number, email: string) => {
     try {
-        console.log("destroy 호출중...")
         const response = await axios.post(`${API_URL}/destroy`, {
             CID: cid,
             email: email
         });
-        console.log("destroy 호출 성공!!", response.data)
         return response.data;
     } catch (error) {
         throw error;

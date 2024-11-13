@@ -19,7 +19,7 @@ const GuideForm: React.FC<GuideFormProps> = ({
       <div className="guide-frame-th">
         <div className="instruction">
           <h2>Guide</h2>
-          <p className="guide-line">
+          <div className="guide-line">
             <h4>aws_access_key_id와 aws_secret_access_key 생성하기</h4>
             1. AWS Management Console에 로그인합니다.
             <img src={img1} />
@@ -38,7 +38,7 @@ const GuideForm: React.FC<GuideFormProps> = ({
             <br />
             6. 새로 생성된 aws_access_key_id와 aws_secret_access_key가 표시되며, 이 정보는 파일로 다운로드하거나 복사해두어야 합니다. (이후에 다시 볼 수 없으니 꼭 저장해두세요!)
             <img src={img6} />
-          </p>
+          </div>
         </div>
         <button className="submit" onClick={handleSubmit}>
           Submit

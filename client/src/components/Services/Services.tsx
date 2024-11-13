@@ -94,7 +94,6 @@ const Services: React.FC<ServicesProps> = ({
         await destroy(cid, response.user.email);
       } catch (destroyError) {
       }
-      console.log("탈출!")
       dispatch(setLoading(false));
       dispatch(setReviewReady(false));
       showAlert(
@@ -102,9 +101,7 @@ const Services: React.FC<ServicesProps> = ({
         "배포 중에 문제가 발생했습니다.리뷰창으로 돌아가서 다시 Deploy를 시도하세요.",
         "error"
       );
-      console.log("review 호출!!")
       review(cid, Number(pid), response.user.email).then(async ({ message, bool }) => {
-        console.log("review 성공!!")
         dispatch(setReviewReady(true));
         if (!bool) {
           alert(message);

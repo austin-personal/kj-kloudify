@@ -110,7 +110,6 @@ const MermaidChart: React.FC<MermaidChartProps> = ({ chartCode }) => {
             });
           }
         } catch (error) {
-          console.error("Mermaid 렌더링 오류:", error);
         }
       }
     };
