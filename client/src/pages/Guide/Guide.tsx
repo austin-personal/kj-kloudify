@@ -17,16 +17,31 @@ const Guide: React.FC = () => {
   const navigate = useNavigate();
 
   // RSA 공개 키를 사용한 암호화 함수
-  const encryptData = (data: string, publicKey: string) => {
-    const jsEncrypt = new JSEncrypt();
-    jsEncrypt.setPublicKey(publicKey);
+  async function encryptData(data: string, publicKeyPem: string): Promise<string> {
+    const binaryDerString = atob(publicKeyPem.replace(/-----[^-]+-----/g, '').replace(/\s+/g, ''));
+    const binaryDer = new Uint8Array(binaryDerString.split('').map(char => char.charCodeAt(0)));
   
-    // 데이터 암호화
-    const encryptedData = jsEncrypt.encrypt(data);
-    if (!encryptedData) {
-      throw new Error('Encryption failed');
-    }
-    return encryptedData;
+    const publicKey = await window.crypto.subtle.importKey(
+      'spki',
+      binaryDer.buffer,
+      {
+        name: 'RSA-OAEP',
+        hash: { name: 'SHA-256' },
+      },
+      true,
+      ['encrypt']
+    );
+  
+    const encodedData = new TextEncoder().encode(data);
+    const encryptedBuffer = await window.crypto.subtle.encrypt(
+      {
+        name: 'RSA-OAEP',
+      },
+      publicKey,
+      encodedData
+    );
+  
+    return btoa(String.fromCharCode(...new Uint8Array(encryptedBuffer)));
   };
 
   // 모든 조건을 체크하는 함수
