@@ -1,5 +1,6 @@
 import axios from 'axios';
 
+// 태현 api 주소 확인!!!
 const API_URL = `${process.env.REACT_APP_SERVER_URL}/conversations`;
 
 axios.defaults.withCredentials = true;
@@ -36,6 +37,7 @@ export const fetch = async (cid: number) => {
         const services = Array.isArray(data)
             ? data.map((item: { service: string }) => item.service)
             : [data.service];
+        return services;
     } catch (error) {
         throw error;
     }
