@@ -37,12 +37,9 @@ const Services: React.FC<ServicesProps> = ({
 
   const getImagePath = (name: string) => {
     try {
-      console.log("전:", name);
       const serviceName = extractServiceName(name);
-      console.log("후2:", serviceName);
       return require(`../../img/aws-icons/${serviceName}.svg`);
     } catch (error) {
-      console.warn(`Image not found: ${name}. Using default image.`);
       return require(`../../img/aws-icons/default.svg`).default; // 기본 이미지 경로 설정
     }
   };
@@ -55,10 +52,8 @@ const Services: React.FC<ServicesProps> = ({
         if (token) {
           const ServiceNameResponse = await fetch(cid, token);
           setServiceNames(ServiceNameResponse);
-          console.log("서비스 배열", ServiceNameResponse);
 
           const SummaryResponse = await projectSummary(cid, token);
-          console.log("요약", SummaryResponse);
           if (SummaryResponse && typeof SummaryResponse.text === "string") {
             const parsedSummary = JSON.parse(SummaryResponse.text);
             setSummary(parsedSummary.aws_services); // aws_services 객체만 저장
@@ -66,10 +61,8 @@ const Services: React.FC<ServicesProps> = ({
             setSummary(SummaryResponse);
           }
         } else {
-          console.error("토큰이 없습니다. 인증 문제가 발생할 수 있습니다.");
         }
       } catch (error) {
-        console.error("프로젝트 summary를 가져오는 중 오류 발생:", error);
       }
     };
 
@@ -98,10 +91,18 @@ const Services: React.FC<ServicesProps> = ({
       );
       navigate(`/detail/${pid}`);
     } catch (error) {
+      await destroy(cid, token);
+      console.log("탈출!")
       dispatch(setLoading(false));
       dispatch(setReviewReady(false));
-      destroy(cid, token);
+      showAlert(
+        "배포 실패!",
+        "배포 중에 문제가 발생했습니다.리뷰창으로 돌아가서 다시 Deploy를 시도하세요.",
+        "error"
+      );
+      console.log("review 호출!!")
       review(cid, Number(pid), token).then(async ({ message, bool }) => {
+        console.log("review 성공!!")
         dispatch(setReviewReady(true));
         if (!bool) {
           alert(message);
@@ -112,11 +113,6 @@ const Services: React.FC<ServicesProps> = ({
           dispatch(setData(data));
         }
       });
-      showAlert(
-        "배포 실패!",
-        "배포 중에 문제가 발생했습니다.리뷰창으로 돌아가서 다시 Deploy를 시도하세요.",
-        "error"
-      );
     }
   };
 
@@ -127,10 +123,8 @@ const Services: React.FC<ServicesProps> = ({
       if (token) {
         const response = await projectPrice(cid, token);
         setPriceResponse(response);
-        console.log("PriceResponse", response);
       }
     } catch (error) {
-      console.error("프로젝트 price를 가져오는 중 오류 발생:", error);
     }
   };
 

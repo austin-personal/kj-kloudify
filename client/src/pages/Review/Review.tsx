@@ -44,7 +44,6 @@ const Review: React.FC = () => {
           link.click();
         })
         .catch((error: any) => {
-          console.error("Error capturing image:", error);
         });
     }
   };
@@ -63,7 +62,6 @@ const Review: React.FC = () => {
 
         URL.revokeObjectURL(fileURL);
       } catch (error) {
-        console.error("Terraform code download failed:", error);
       }
     }
   };

@@ -13,7 +13,6 @@ export const signup = async (username: string, email: string, password: string) 
         });
         return response.data.achieved;
     } catch (error) {
-        console.error('회원가입 개박살!! : ', error);
         throw error;
     }
 };
@@ -22,15 +21,12 @@ export const signup = async (username: string, email: string, password: string) 
 export const login = async (email: string, password: string) => {
     try {
         // 태현 api 주소 확인!!!
-        console.log("뭐냐이거", process.env)
-        console.log("변수값은", email, password);
         const response = await axios.post(`${API_URL}/login`, {
             email,
             password,
         });
         return response.data.access_token;
     } catch (error) {
-        console.error('로그인 개박살!! :', error);
         throw error;
     }
 };
@@ -46,7 +42,6 @@ export const info = async (token: string) => {
         });
         return response.data;
     } catch (error) {
-        console.error('유저 패치 개박살!! :', error);
         throw error;
     }
 };
@@ -60,7 +55,6 @@ export const checkEmail = async (email: string) => {
         });
     return response.data.exists;
 } catch (error) {
-    console.error('유저 중복 개박살!! :', error);
     throw error;
 }
 };

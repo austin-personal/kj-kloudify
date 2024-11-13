@@ -71,13 +71,12 @@ const Profile: React.FC = () => {
             ...projecDeployedtData.data,
           ];
           setProjects(combinedProjects); // 응답 데이터에 따라 수정 필요
-          console.log(combinedProjects);
+          (combinedProjects);
         } else {
           // 토큰이 없으면 로그인 페이지로 이동
           navigate("/");
         }
       } catch (error) {
-        console.error("데이터 로딩 중 오류 발생:", error);
       }
     };
 
@@ -178,7 +177,6 @@ const Profile: React.FC = () => {
         await destroy(projectToDelete.CID, token);
         await deleteProject(projectToDelete.PID, token);
 
-        console.log(`Deleting project with PID: ${projectToDelete.PID}`);
         setProjects(projects.filter((p) => p.PID !== projectToDelete.PID));
       } else if (modalType === "deleteAWSKey") {
         // AWS Key 삭제 로직

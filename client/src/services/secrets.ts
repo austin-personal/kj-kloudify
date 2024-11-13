@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { promises } from 'dns';
 
 // 태현 api 주소 확인!!!
 const API_URL = `${process.env.REACT_APP_SERVER_URL}/secrets`;
@@ -18,7 +19,6 @@ export const createSecret = async (accessKey: string, secretAccessKey: string, r
             });
         return response.data.message;
     } catch (error) {
-        console.error('키 전달 실패: ', error);
         throw error;
     }
 };
@@ -33,7 +33,6 @@ export const deleteSecret = async (token: string) => {
             });
         return response.data.message;
     } catch (error) {
-        console.error('키 삭제 실패: ', error);
         throw error;
     }
 };
@@ -48,7 +47,20 @@ export const checkSecret = async (token: string) => {
             });
         return response.data.exists;
     } catch (error) {
-        console.error('키 확인 실패: ', error);
         throw error;
     }
 };
+
+export const getPublicKey = async (token: string): Promise<string | null> => {
+    try {
+        const response = await axios.get(`${API_URL}/public-key`,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+        return response.data.publicKey;
+    } catch (error) {
+        throw error;
+    }
+}
