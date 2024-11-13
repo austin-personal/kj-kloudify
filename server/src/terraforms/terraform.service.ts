@@ -28,6 +28,7 @@ import { promisify } from 'util';
 import { writeFile , mkdir } from 'fs/promises';
 import { ProjectsService } from '../projects/projects.service';
 import { execSync } from 'child_process';
+import * as crypto from 'crypto';
 
 const readFileAsync = promisify(fs.readFile);
 
@@ -38,12 +39,13 @@ export class TerraformService {
   private dynamoDBClient: DynamoDBClient; 
   private dynamoDbDocClient: DynamoDBDocumentClient;
   private dynamoDB: AWS.DynamoDB.DocumentClient;
-
+  private privateKey: string;
   constructor(
     private readonly projectsService: ProjectsService,
     private readonly secretsService: SecretsService,
     @InjectRepository(Projects)
     private readonly projectRepository: Repository<Projects>,
+    
   ) {
     this.s3 = new S3({ region: process.env.AWS_REGION });
     this.lambda = new Lambda({ region: process.env.AWS_REGION });
@@ -54,6 +56,7 @@ export class TerraformService {
       secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
   });
     this.dynamoDbDocClient = DynamoDBDocumentClient.from(this.dynamoDBClient);
+    this.privateKey = fs.readFileSync('private_key.pem', 'utf-8');
   }
   /**
    * AWS Bedrock Claude 3.5 Sonnet을 사용하여 Terraform 코드 생성
@@ -366,9 +369,13 @@ export class TerraformService {
       // Terraform 초기화 및 적용
       await execAsync(`terraform -chdir=${localTerraformPath} init`);
       console.log('Terraform 초기화 완료');
+
+      let accessKey1 = this.decryptData(accessKey);
+      let secretAccessKey1 = this.decryptData(secretAccessKey);
+      let region1 = this.decryptData(region);
   
       const { stdout, stderr } = await execAsync(
-        `terraform -chdir=${localTerraformPath} apply -auto-approve -var "aws_access_key=${accessKey}" -var "aws_secret_key=${secretAccessKey}" -var "aws_region=${region}"`
+        `terraform -chdir=${localTerraformPath} apply -auto-approve -var "aws_access_key=${accessKey1}" -var "aws_secret_key=${secretAccessKey1}" -var "aws_region=${region1}"`
       );
       console.log('Terraform 적용 완료:', stdout);
   
@@ -390,6 +397,18 @@ export class TerraformService {
       console.error('Deployment error:', error);
       throw new InternalServerErrorException(`Failed to deploy infrastructure: ${error.message}`);
     }
+  }
+
+  decryptData(encryptedData: string): string {
+    const buffer = Buffer.from(encryptedData, 'base64');
+    const decrypted = crypto.privateDecrypt(
+      {
+        key: this.privateKey,
+        padding: crypto.constants.RSA_PKCS1_PADDING,
+      },
+      buffer,
+    );
+    return decrypted.toString('utf-8');
   }
   
 
@@ -461,10 +480,14 @@ export class TerraformService {
       // Terraform 초기화 (init) - 이미 적용된 상태에서도 destroy를 위해 필요
       await execAsync(`terraform -chdir=${localTerraformPath} init`);
       console.log('Terraform 초기화 완료');
+
+      let accessKey1 = this.decryptData(accessKey);
+      let secretAccessKey1 = this.decryptData(secretAccessKey);
+      let region1 = this.decryptData(region);
   
       // Terraform destroy 명령 실행 (자격 증명 전달)
       const { stdout, stderr } = await execAsync(
-        `terraform -chdir=${localTerraformPath} destroy -auto-approve -var "aws_access_key=${accessKey}" -var "aws_secret_key=${secretAccessKey}" -var "aws_region=${region}"`
+        `terraform -chdir=${localTerraformPath} destroy -auto-approve -var "aws_access_key=${accessKey1}" -var "aws_secret_key=${secretAccessKey1}" -var "aws_region=${region1}"`
       );
       console.log('Terraform 삭제 완료:', stdout);
   
@@ -510,10 +533,14 @@ async getInfrastructureState(CID: number, userId: number, signal: AbortSignal): 
       }
 
       const { accessKey, secretAccessKey, region } = await this.secretsService.getUserCredentials(userId);
+      let accessKey1 = this.decryptData(accessKey);
+      let secretAccessKey1 = this.decryptData(secretAccessKey);
+      let region1 = this.decryptData(region);
+
       const options = {
           env: {
-              AWS_ACCESS_KEY_ID: accessKey,
-              AWS_SECRET_ACCESS_KEY: secretAccessKey,
+              AWS_ACCESS_KEY_ID: accessKey1,
+              AWS_SECRET_ACCESS_KEY: secretAccessKey1,
           },
           signal,
       };
