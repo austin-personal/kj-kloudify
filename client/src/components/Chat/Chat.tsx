@@ -184,7 +184,10 @@ const Chat: React.FC<ChatProps> = ({ projectCID }) => {
             }
           } else if (lastBotResponse.includes("**")) {
             // "```"로 감싸진 부분이 없고 "**"가 있으면 기존 방식으로 파싱
-            const afterAsterisks = lastBotResponse.split("**")[1].trim();
+            let afterAsterisks = lastBotResponse.split("**")[1].trim();
+            if (afterAsterisks.includes("**")) {
+              afterAsterisks = afterAsterisks.split("**")[0].trim();
+            }
             dispatch(setFinishData([afterAsterisks]));
           }
         }
@@ -386,10 +389,13 @@ const Chat: React.FC<ChatProps> = ({ projectCID }) => {
     }
     // "```"가 없고 "**"로 감싸진 경우 처리
     else if (responseMessage.includes("**")) {
-      const [beforeAsterisks, afterAsterisks] = responseMessage
+      let [beforeAsterisks, afterAsterisks] = responseMessage
         .split("**")
         .map((part) => part.trim());
 
+      if (afterAsterisks.includes("**")) {
+        afterAsterisks = afterAsterisks.split("**")[0].trim();
+      }
       // "**" 뒤에 있는 데이터를 배열 형태로 받기
       dispatch(setFinishData([afterAsterisks]));
 

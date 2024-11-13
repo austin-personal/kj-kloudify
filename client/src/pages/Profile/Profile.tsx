@@ -71,7 +71,6 @@ const Profile: React.FC = () => {
             ...projecDeployedtData.data,
           ];
           setProjects(combinedProjects); // 응답 데이터에 따라 수정 필요
-          (combinedProjects);
         } else {
           // 토큰이 없으면 로그인 페이지로 이동
           navigate("/");
