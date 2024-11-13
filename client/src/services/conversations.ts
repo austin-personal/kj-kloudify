@@ -1,6 +1,5 @@
 import axios from 'axios';
 
-// 태현 api 주소 확인!!!
 const API_URL = `${process.env.REACT_APP_SERVER_URL}/conversations`;
 
 axios.defaults.withCredentials = true;
@@ -28,19 +27,15 @@ export const open = async (cid: number) => {
     }
 };
 
-//서비스 키워드 가져오는 api
 export const fetch = async (cid: number) => {
     try {
         const response = await axios.post(`${API_URL}/fetch`,
             { CID: cid },
         );
-        // response.data가 JSON 문자열이라면 파싱 필요
         const data = typeof response.data === 'string' ? JSON.parse(`[${response.data}]`) : response.data;
-        // data가 배열인지 아닌지 확인
         const services = Array.isArray(data)
             ? data.map((item: { service: string }) => item.service)
-            : [data.service]; // data가 객체일 경우 service 값만 추출하여 배열로 반환
-        return services;
+            : [data.service];
     } catch (error) {
         throw error;
     }

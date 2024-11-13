@@ -1,13 +1,11 @@
 import axios from 'axios';
 
-// 태현 api 주소 확인!!!
 const API_URL = `${process.env.REACT_APP_SERVER_URL}/terraforms`;
 
 axios.defaults.withCredentials = true;
 
 export const create = async () => {
     try {
-        // 태현 api 주소 확인!!!
         const response = await axios.post(`${API_URL}/create`, {});
         return response.data;
     } catch (error) {
@@ -17,7 +15,6 @@ export const create = async () => {
 
 export const destroy = async (cid: number) => {
     try {
-        // 태현 api 주소 확인!!!
         console.log("destroy 호출중...")
         const response = await axios.post(`${API_URL}/destroy`, {
             CID: cid,
@@ -31,7 +28,6 @@ export const destroy = async (cid: number) => {
 
 export const show = async () => {
     try {
-        // 태현 api 주소 확인!!!
         const response = await axios.post(`${API_URL}/show`, {});
         return response.data;
     } catch (error) {
