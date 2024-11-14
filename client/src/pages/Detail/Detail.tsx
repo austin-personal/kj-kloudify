@@ -127,10 +127,10 @@ const Detail: React.FC = () => {
           }
 
           setIsStateLoading(true);
-          if (userProfile) {
-            const stateTemp = await state(projectData.CID, userProfile.email, { signal });
-            setStateData(stateTemp || {});
-          }
+
+          const stateTemp = await state(projectData.CID, userData.user.email, { signal });
+          setStateData(stateTemp || {});
+
           setIsStateLoading(false);
         }
       } catch (error) {
