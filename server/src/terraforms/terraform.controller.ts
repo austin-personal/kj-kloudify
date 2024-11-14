@@ -92,13 +92,13 @@ export class TerraformController {
   async getState(@Body() deployDto: DeployDto, @Req() req, @Res() res) {
     const controller = new AbortController();
     const signal = controller.signal;
-  
+
     // 클라이언트 연결 종료 시 이벤트 감지
     req.on('close', () => {
       console.log('Client connection closed');
       controller.abort(); // 비동기 작업 중단
     });
-  
+
     const email = deployDto.email;
     const userInfo = await this.usersService.findOneByEmail(email);
     const userId = userInfo.UID;
@@ -108,11 +108,17 @@ export class TerraformController {
       return res.status(200).send(result);
     } catch (error) {
       if (signal.aborted) {
+        console.warn('Request was aborted by the client');
         return res.status(400).send('Request was aborted by the client');
       }
+      console.error('State retrieval failed:', error);
       return res.status(500).send(`Failed to retrieve state for CID: ${deployDto.CID}`);
+    } finally {
+      // 리소스 정리 및 로그 추가
+      console.log('Request processing completed for CID:', deployDto.CID);
     }
   }
+
 
   // @UseGuards(JwtAuthGuard)
   @Post('terraInfo')
