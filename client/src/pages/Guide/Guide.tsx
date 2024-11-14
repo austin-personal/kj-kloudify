@@ -17,7 +17,7 @@ const Guide: React.FC = () => {
   const navigate = useNavigate();
 
   // RSA 공개 키를 사용한 암호화 함수
-  async function encryptData(data, publicKeyPem) {
+  async function encryptData(data: string, publicKeyPem: string): Promise<string> {
     // PEM 헤더와 푸터 제거 및 공백 제거
     const pemHeader = '-----BEGIN PUBLIC KEY-----';
     const pemFooter = '-----END PUBLIC KEY-----';
@@ -26,34 +26,51 @@ const Guide: React.FC = () => {
       .replace(pemFooter, '')
       .replace(/\r?\n|\r/g, '')  // 모든 줄 바꿈 제거
       .trim();
-      console.log("암호화 함수 - 변환된 공개 키:\n", publicKeyPem);
-      console.log("암호화 함수 - PEM 내용:\n", pemContents);
+  
+    console.log("암호화 함수 - 변환된 공개 키:\n", publicKeyPem);
+    console.log("암호화 함수 - PEM 내용:\n", pemContents);
+  
     // Base64 디코딩 및 Uint8Array 변환
     const binaryDer = Uint8Array.from(atob(pemContents), c => c.charCodeAt(0));
   
     // 공개 키 가져오기
-    const publicKey = await window.crypto.subtle.importKey(
-      'spki',
-      binaryDer.buffer,
-      {
-        name: 'RSA-OAEP',
-        hash: 'SHA-256',
-      },
-      true,
-      ['encrypt']
-    );
-    console.log("암호화 함수 - 공개 키 가져오기 성공:", publicKey);
+    let publicKey: CryptoKey;
+    try {
+      publicKey = await window.crypto.subtle.importKey(
+        'spki',
+        binaryDer.buffer,
+        {
+          name: 'RSA-OAEP',
+          hash: 'SHA-256',
+        },
+        true,
+        ['encrypt']
+      );
+      console.log("암호화 함수 - 공개 키 가져오기 성공:", publicKey);
+    } catch (error) {
+      console.error("암호화 함수 - 공개 키 가져오기 오류:", error);
+      throw new Error("공개 키 가져오기 실패");
+    }
+  
     // 데이터 인코딩
     const encodedData = new TextEncoder().encode(data);
     console.log("암호화 함수 - 인코딩된 데이터:", encodedData);
+  
     // 데이터 암호화
-    const encryptedBuffer = await window.crypto.subtle.encrypt(
-      {
-        name: 'RSA-OAEP',
-      },
-      publicKey,
-      encodedData
-    );
+    let encryptedBuffer: ArrayBuffer;
+    try {
+      encryptedBuffer = await window.crypto.subtle.encrypt(
+        {
+          name: 'RSA-OAEP',
+        },
+        publicKey,
+        encodedData
+      );
+      console.log("암호화 함수 - 데이터 암호화 성공");
+    } catch (error) {
+      console.error("암호화 함수 - 데이터 암호화 오류:", error);
+      throw new Error("데이터 암호화 실패");
+    }
   
     // 암호화된 데이터를 Base64로 인코딩하여 반환
     const encryptedBase64 = btoa(String.fromCharCode(...new Uint8Array(encryptedBuffer)));
