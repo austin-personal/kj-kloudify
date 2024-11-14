@@ -164,7 +164,7 @@ const templates: Record<number, Template> = {
         text: "지금부터는 네트워크에 대한 세부 설정을 할 거예요.\n애플리케이션의 네트워크 요구사항은 무엇인가요?",
         multiselect: "다중 선택",
         checks: [
-            { id: 57, label: "기본 성능의 보안과 네트워크" },
+            { id: 57, label: "기본 설정" },
             { id: 58, label: "추가적인 보안" },
             { id: 59, label: "퍼블릭 인터넷과 연결" }
         ],
