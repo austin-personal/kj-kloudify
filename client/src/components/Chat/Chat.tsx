@@ -645,9 +645,7 @@ const Chat: React.FC<ChatProps> = ({ projectCID }) => {
                 <div className="message-content">
                   {message.text ? (
                     <>
-                      <ReactMarkdown >
                         {message.text}
-                      </ReactMarkdown>
                     </>
                   ) : (
                     <div className="loading-text-th">
