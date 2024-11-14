@@ -73,7 +73,8 @@ const Guide: React.FC = () => {
     }
   
     // 암호화된 데이터를 Base64로 인코딩하여 반환
-    const encryptedBase64 = btoa(String.fromCharCode(...new Uint8Array(encryptedBuffer)));
+    const encryptedArray = Array.from(new Uint8Array(encryptedBuffer));
+    const encryptedBase64 = btoa(String.fromCharCode.apply(null, encryptedArray));
     console.log("암호화 함수 - 암호화된 데이터 (Base64):", encryptedBase64);
     return encryptedBase64;
   };
