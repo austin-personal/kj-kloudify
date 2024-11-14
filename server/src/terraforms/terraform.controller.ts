@@ -94,10 +94,10 @@ export class TerraformController {
     const signal = controller.signal;
 
     // 클라이언트 연결 종료 시 이벤트 감지
-    req.on('close', () => {
-      console.log('Client connection closed');
-      controller.abort(); // 비동기 작업 중단
-    });
+    // req.on('close', () => {
+    //   console.log('Client connection closed');
+    //   controller.abort(); // 비동기 작업 중단
+    // });
 
     const email = deployDto.email;
     const userInfo = await this.usersService.findOneByEmail(email);

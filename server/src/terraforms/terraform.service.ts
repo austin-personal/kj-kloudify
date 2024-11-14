@@ -30,6 +30,7 @@ import { ProjectsService } from '../projects/projects.service';
 import { execSync } from 'child_process';
 import * as crypto from 'crypto';
 
+const async = require('async');
 const readFileAsync = promisify(fs.readFile);
 
 @Injectable()
@@ -100,6 +101,7 @@ export class TerraformService {
 
     const prompt_content = `
       Recent error - Please generate code that resolves the error. Prioritize fixing the error over the keywords.:
+      
       ${errorMessage}
 
       Generate Terraform code based on the following keywords:
@@ -415,7 +417,7 @@ export class TerraformService {
       buffer,
     );
     console.log("복호화 함수 - 복호화된 데이터:", decrypted.toString('utf-8'));
-    
+
     return decrypted.toString('utf-8');
   }
   
@@ -525,32 +527,33 @@ export class TerraformService {
 
 ///////////////////////////////////////////////////////////////////////////////////
 
-async getInfrastructureState(CID: number, userId: number, signal: AbortSignal): Promise<any> {
-  const localTerraformPath = `/temp/${CID}`;
-  const stateFilePath = `${localTerraformPath}/terraform.tfstate`;
-  const execAsync = promisify(exec);
-  const awsCliPath = `"aws"`;
+  async getInfrastructureState(CID: number, userId: number, signal: AbortSignal): Promise<any> {
+    const localTerraformPath = `/temp/${CID}`;
+    const stateFilePath = `${localTerraformPath}/terraform.tfstate`;
+    const execAsync = promisify(exec);
+    const awsCliPath = `"aws"`;
 
-  try {
+    try {
       if (signal.aborted) {
-          throw new Error('Request was aborted by the client');
+        throw new Error('Request was aborted by the client');
       }
 
       if (!fs.existsSync(stateFilePath)) {
-          throw new Error(`State file not found for CID: ${CID}`);
+        throw new Error(`State file not found for CID: ${CID}`);
       }
 
       const { accessKey, secretAccessKey, region } = await this.secretsService.getUserCredentials(userId);
+
       let accessKey1 = this.decryptData(accessKey);
       let secretAccessKey1 = this.decryptData(secretAccessKey);
       let region1 = this.decryptData(region);
 
       const options = {
-          env: {
-              AWS_ACCESS_KEY_ID: accessKey1,
-              AWS_SECRET_ACCESS_KEY: secretAccessKey1,
-          },
-          signal,
+        env: {
+          AWS_ACCESS_KEY_ID: accessKey1,
+          AWS_SECRET_ACCESS_KEY: secretAccessKey1,
+        },
+        signal,
       };
 
       console.log(`Executing: terraform -chdir=${localTerraformPath} state list`);
@@ -560,97 +563,98 @@ async getInfrastructureState(CID: number, userId: number, signal: AbortSignal): 
       const serviceStates: any = {};
 
       function getResourceType(resourceAddress: string): string | null {
-          const parts = resourceAddress.split('.');
-          for (let i = 0; i < parts.length; i++) {
-              if (parts[i].startsWith('aws_')) {
-                  return parts[i];
-              }
+        const parts = resourceAddress.split('.');
+        for (let i = 0; i < parts.length; i++) {
+          if (parts[i].startsWith('aws_')) {
+            return parts[i];
           }
-          return null;
+        }
+        return null;
       }
 
-      await Promise.all(stateList.map(async resource => {
-          if (signal.aborted) {
-              throw new Error('Request was aborted by the client');
+      // async.eachLimit을 사용하여 동시 실행 제한 적용
+      await async.eachLimit(stateList, 4, async (resource) => {
+        if (signal.aborted) {
+          throw new Error('Request was aborted by the client');
+        }
+
+        console.log(`Retrieving details for: ${resource}`);
+        const { stdout: detailOutput } = await execAsync(`terraform -chdir=${localTerraformPath} state show ${resource}`, { signal });
+        const details = detailOutput;
+        const resourceType = getResourceType(resource);
+
+        let resourceId: string | null = null;
+        let isRunning = false;
+
+        if (resourceType === "aws_instance") {
+          const instanceIdMatch = details.match(/id\s+=\s+"(i-[a-zA-Z0-9]+)"/);
+          if (instanceIdMatch) {
+            resourceId = instanceIdMatch[1];
+            console.log(`Checking running status for EC2 instance: ${resourceId}`);
+            try {
+              const { stdout: statusOutput } = await execAsync(
+                `${awsCliPath} ec2 describe-instance-status --instance-ids ${resourceId} --region ${region1}`,
+                options
+              );
+              const statusData = JSON.parse(statusOutput);
+              isRunning = statusData.InstanceStatuses?.some((status: any) => status.InstanceState.Name === "running");
+            } catch (awsError) {
+              console.error(`Error retrieving EC2 instance status for ${resourceId}:`, awsError);
+            }
           }
-
-          console.log(`Retrieving details for: ${resource}`);
-          const { stdout: detailOutput } = await execAsync(`terraform -chdir=${localTerraformPath} state show ${resource}`, { signal });
-          const details = detailOutput;
-          const resourceType = getResourceType(resource);
-
-          let resourceId: string | null = null;
-          let isRunning = false;
-
-          if (resourceType === "aws_instance") {
-              const instanceIdMatch = details.match(/id\s+=\s+"(i-[a-zA-Z0-9]+)"/);
-              if (instanceIdMatch) {
-                  resourceId = instanceIdMatch[1];
-                  console.log(`Checking running status for EC2 instance: ${resourceId}`);
-                  try {
-                      const { stdout: statusOutput } = await execAsync(
-                          `${awsCliPath} ec2 describe-instance-status --instance-ids ${resourceId} --region ${region}`,
-                          options
-                      );
-                      const statusData = JSON.parse(statusOutput);
-                      isRunning = statusData.InstanceStatuses?.some((status: any) => status.InstanceState.Name === "running");
-                  } catch (awsError) {
-                      console.error(`Error retrieving EC2 instance status for ${resourceId}:`, awsError);
-                  }
-              }
-          } else if (resourceType === "aws_rds_instance") {
-              const dbInstanceIdMatch = details.match(/id\s+=\s+"(db-[a-zA-Z0-9]+)"/);
-              if (dbInstanceIdMatch) {
-                  resourceId = dbInstanceIdMatch[1];
-                  console.log(`Checking running status for RDS instance: ${resourceId}`);
-                  try {
-                      const { stdout: statusOutput } = await execAsync(
-                          `${awsCliPath} rds describe-db-instances --db-instance-identifier ${resourceId} --region ${region}`,
-                          options
-                      );
-                      const statusData = JSON.parse(statusOutput);
-                      isRunning = statusData.DBInstances?.some((dbInstance: any) => dbInstance.DBInstanceStatus === "available");
-                  } catch (awsError) {
-                      console.error(`Error retrieving RDS instance status for ${resourceId}:`, awsError);
-                  }
-              }
-          } else if (resourceType === "aws_s3_bucket") {
-              const bucketNameMatch = details.match(/bucket\s+=\s+"([^"]+)"/);
-              if (bucketNameMatch) {
-                  resourceId = bucketNameMatch[1];
-                  console.log(`S3 버킷 ${resourceId}는 접근 가능한 것으로 간주됩니다`);
-                  isRunning = true;
-              }
-          } else if (resourceType === "aws_vpc" || resourceType === "aws_subnet" || resourceType === "aws_security_group") {
-              const idMatch = details.match(/id\s+=\s+"([^"]+)"/);
-              if (idMatch) {
-                  resourceId = idMatch[1];
-                  console.log(`네트워크 리소스 ${resourceId}의 상태를 확인합니다`);
-                  // 네트워크 리소스는 상태가 실행 여부와 무관하므로 접근 가능한 것으로 간주
-                  isRunning = true;
-              }
+        } else if (resourceType === "aws_rds_instance") {
+          const dbInstanceIdMatch = details.match(/id\s+=\s+"(db-[a-zA-Z0-9]+)"/);
+          if (dbInstanceIdMatch) {
+            resourceId = dbInstanceIdMatch[1];
+            console.log(`Checking running status for RDS instance: ${resourceId}`);
+            try {
+              const { stdout: statusOutput } = await execAsync(
+                `${awsCliPath} rds describe-db-instances --db-instance-identifier ${resourceId} --region ${region1}`,
+                options
+              );
+              const statusData = JSON.parse(statusOutput);
+              isRunning = statusData.DBInstances?.some((dbInstance: any) => dbInstance.DBInstanceStatus === "available");
+            } catch (awsError) {
+              console.error(`Error retrieving RDS instance status for ${resourceId}:`, awsError);
+            }
           }
-
-          if (resourceId) {
-              serviceStates[resourceId] = { resourceType, isRunning };
+        } else if (resourceType === "aws_s3_bucket") {
+          const bucketNameMatch = details.match(/bucket\s+=\s+"([^"]+)"/);
+          if (bucketNameMatch) {
+            resourceId = bucketNameMatch[1];
+            console.log(`S3 버킷 ${resourceId}는 접근 가능한 것으로 간주됩니다`);
+            isRunning = true;
           }
-      }));
+        } else if (resourceType === "aws_vpc" || resourceType === "aws_subnet" || resourceType === "aws_security_group") {
+          const idMatch = details.match(/id\s+=\s+"([^"]+)"/);
+          if (idMatch) {
+            resourceId = idMatch[1];
+            console.log(`네트워크 리소스 ${resourceId}의 상태를 확인합니다`);
+            // 네트워크 리소스는 상태가 실행 여부와 무관하므로 접근 가능한 것으로 간주
+            isRunning = true;
+          }
+        }
+
+        if (resourceId) {
+          serviceStates[resourceId] = { resourceType, isRunning };
+        }
+      });
 
       console.log('Service states:', serviceStates);
 
       return {
-          status: 'State retrieved successfully',
-          serviceStates,
+        status: 'State retrieved successfully',
+        serviceStates,
       };
-  } catch (error) {
+    } catch (error) {
       if (signal.aborted) {
-          console.error('Request was aborted by the client');
-          throw new Error('Request was aborted by the client');
+        console.error('Request was aborted by the client');
+        throw new Error('Request was aborted by the client');
       }
       console.error('State retrieval error:', error);
       throw new Error(`Failed to retrieve state for CID: ${CID}`);
+    }
   }
-}
 
 
 // 에러 메시지 저장 메서드
