@@ -47,7 +47,9 @@ const Home: React.FC = () => {
 
   const isActive = useAppSelector((state) => state.button.isActive);
   //home 페이지면 무조건 키가 있어야 함.
-  dispatch(setHasSecret(true));
+  useEffect(() => {
+    dispatch(setHasSecret(true));
+  }, [])
 
   useEffect(() => {
     const fetchProjectData = async () => {
