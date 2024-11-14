@@ -402,10 +402,10 @@ export class TerraformService {
   }
 
   decryptData(encryptedData: string): string {
-    const buffer = Buffer.from(encryptedData, 'base64'); // Base64 인코딩된 데이터를 변환
-
-    console.log("encrypt is here?", encryptedData);
-
+    const buffer = Buffer.from(encryptedData, 'base64');
+    console.log("복호화 함수 - 암호화된 데이터 (Base64):", encryptedData);
+    console.log("복호화 함수 - 암호화된 데이터 (Buffer):", buffer);
+    console.log("복호화 함수 - 사용할 개인 키:\n", this.privateKey);
     const decrypted = crypto.privateDecrypt(
       {
         key: this.privateKey,
@@ -414,7 +414,8 @@ export class TerraformService {
       },
       buffer,
     );
-
+    console.log("복호화 함수 - 복호화된 데이터:", decrypted.toString('utf-8'));
+    
     return decrypted.toString('utf-8');
   }
   

@@ -17,22 +17,36 @@ const Guide: React.FC = () => {
   const navigate = useNavigate();
 
   // RSA 공개 키를 사용한 암호화 함수
-  async function encryptData(data: string, publicKeyPem: string): Promise<string> {
-    const binaryDerString = atob(publicKeyPem.replace(/-----[^-]+-----/g, '').replace(/\s+/g, ''));
-    const binaryDer = new Uint8Array(binaryDerString.split('').map(char => char.charCodeAt(0)));
+  async function encryptData(data, publicKeyPem) {
+    // PEM 헤더와 푸터 제거 및 공백 제거
+    const pemHeader = '-----BEGIN PUBLIC KEY-----';
+    const pemFooter = '-----END PUBLIC KEY-----';
+    const pemContents = publicKeyPem
+      .replace(pemHeader, '')
+      .replace(pemFooter, '')
+      .replace(/\r?\n|\r/g, '')  // 모든 줄 바꿈 제거
+      .trim();
+      console.log("암호화 함수 - 변환된 공개 키:\n", publicKeyPem);
+      console.log("암호화 함수 - PEM 내용:\n", pemContents);
+    // Base64 디코딩 및 Uint8Array 변환
+    const binaryDer = Uint8Array.from(atob(pemContents), c => c.charCodeAt(0));
   
+    // 공개 키 가져오기
     const publicKey = await window.crypto.subtle.importKey(
       'spki',
       binaryDer.buffer,
       {
         name: 'RSA-OAEP',
-        hash: { name: 'SHA-256' },
+        hash: 'SHA-256',
       },
       true,
       ['encrypt']
     );
-  
+    console.log("암호화 함수 - 공개 키 가져오기 성공:", publicKey);
+    // 데이터 인코딩
     const encodedData = new TextEncoder().encode(data);
+    console.log("암호화 함수 - 인코딩된 데이터:", encodedData);
+    // 데이터 암호화
     const encryptedBuffer = await window.crypto.subtle.encrypt(
       {
         name: 'RSA-OAEP',
@@ -41,7 +55,10 @@ const Guide: React.FC = () => {
       encodedData
     );
   
-    return btoa(String.fromCharCode(...Array.from(new Uint8Array(encryptedBuffer))));
+    // 암호화된 데이터를 Base64로 인코딩하여 반환
+    const encryptedBase64 = btoa(String.fromCharCode(...new Uint8Array(encryptedBuffer)));
+    console.log("암호화 함수 - 암호화된 데이터 (Base64):", encryptedBase64);
+    return encryptedBase64;
   };
 
   // 모든 조건을 체크하는 함수

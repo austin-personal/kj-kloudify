@@ -85,5 +85,11 @@ export class SecretsController {
     // 공개 키를 JSON 형식으로 반환
     return { publicKey: this.secretsService.getPublicKey() };
   }
+
+  @Get('rsa-test')
+  testRSA(): string {
+    // RsaService의 테스트 함수를 호출
+    return this.secretsService.testRSAEncryptionDecryption();
+  }
   
 }

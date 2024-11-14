@@ -14,7 +14,7 @@ import { readFileSync } from 'fs';
 export class SecretsService {
   private publicKey: string;
   private encryptionKey: Buffer;
-// TypeORM 연결: User, Secrets entity
+  // TypeORM 연결: User, Secrets entity
   constructor(
     @InjectRepository(Secrets)
     private secretsRepository: Repository<Secrets>,
@@ -150,5 +150,59 @@ export class SecretsService {
     return this.publicKey;
   }
 
+  testRSAEncryptionDecryption(): string {
+    try {
+      // 1. 공개 키와 개인 키를 로컬 파일에서 읽어옵니다.
+      const publicKeyPem = readFileSync('public_key.pem', 'utf-8');
+      const privateKeyPem = readFileSync('private_key.pem', 'utf-8');
+
+      console.log("로드된 공개 키:\n", publicKeyPem);
+      console.log("로드된 개인 키:\n", privateKeyPem);
+
+      // 2. 테스트용 메시지를 정의합니다.
+      const message = "RSA 암호화 및 복호화 테스트 메시지입니다.";
+      console.log("\n원본 메시지:", message);
+
+      // 3. 공개 키로 메시지를 암호화합니다.
+      const encryptedData = crypto.publicEncrypt(
+        {
+          key: publicKeyPem,
+          padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
+          oaepHash: 'sha256',
+        },
+        Buffer.from(message, 'utf-8')
+      );
+
+      // 암호화된 데이터를 Base64 문자열로 변환하여 출력합니다.
+      const encryptedBase64 = encryptedData.toString('base64');
+      console.log("\n암호화된 메시지 (Base64):", encryptedBase64);
+
+      // 4. 개인 키로 메시지를 복호화합니다.
+      const decryptedData = crypto.privateDecrypt(
+        {
+          key: privateKeyPem,
+          padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
+          oaepHash: 'sha256',
+        },
+        encryptedData
+      );
+
+      // 복호화된 데이터를 문자열로 변환하여 출력합니다.
+      const decryptedMessage = decryptedData.toString('utf-8');
+      console.log("\n복호화된 메시지:", decryptedMessage);
+
+      // 5. 원본 메시지와 복호화된 메시지를 비교하여 일치 여부를 확인합니다.
+      if (decryptedMessage === message) {
+        console.log("\n성공: 복호화된 메시지가 원본 메시지와 일치합니다.");
+        return "성공: 복호화된 메시지가 원본 메시지와 일치합니다.";
+      } else {
+        console.log("\n오류: 복호화된 메시지가 원본 메시지와 일치하지 않습니다.");
+        return "오류: 복호화된 메시지가 원본 메시지와 일치하지 않습니다.";
+      }
+    } catch (error) {
+      console.error("RSA 테스트 중 오류 발생:", error);
+      return `오류 발생: ${error.message}`;
+    }
+  }
 
 }
