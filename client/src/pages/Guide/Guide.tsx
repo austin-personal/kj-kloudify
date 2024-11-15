@@ -25,9 +25,6 @@ const Guide: React.FC = () => {
       .replace(/\r?\n|\r/g, '')  // 모든 줄 바꿈 제거
       .trim();
   
-    console.log("암호화 함수 - 변환된 공개 키:\n", publicKeyPem);
-    console.log("암호화 함수 - PEM 내용:\n", pemContents);
-  
     // Base64 디코딩 및 Uint8Array 변환
     const binaryDer = Uint8Array.from(atob(pemContents), c => c.charCodeAt(0));
   
@@ -44,15 +41,12 @@ const Guide: React.FC = () => {
         true,
         ['encrypt']
       );
-      console.log("암호화 함수 - 공개 키 가져오기 성공:", publicKey);
     } catch (error) {
-      console.error("암호화 함수 - 공개 키 가져오기 오류:", error);
       throw new Error("공개 키 가져오기 실패");
     }
   
     // 데이터 인코딩
     const encodedData = new TextEncoder().encode(data);
-    console.log("암호화 함수 - 인코딩된 데이터:", encodedData);
   
     // 데이터 암호화
     let encryptedBuffer: ArrayBuffer;
@@ -64,16 +58,13 @@ const Guide: React.FC = () => {
         publicKey,
         encodedData
       );
-      console.log("암호화 함수 - 데이터 암호화 성공");
     } catch (error) {
-      console.error("암호화 함수 - 데이터 암호화 오류:", error);
       throw new Error("데이터 암호화 실패");
     }
   
     // 암호화된 데이터를 Base64로 인코딩하여 반환
     const encryptedArray = Array.from(new Uint8Array(encryptedBuffer));
     const encryptedBase64 = btoa(String.fromCharCode.apply(null, encryptedArray));
-    console.log("암호화 함수 - 암호화된 데이터 (Base64):", encryptedBase64);
     return encryptedBase64;
   };
 
