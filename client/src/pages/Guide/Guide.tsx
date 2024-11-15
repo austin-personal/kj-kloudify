@@ -4,10 +4,8 @@ import GuideForm from "../../components/GuidePage/GuideForm";
 import KeyForm from "../../components/GuidePage/KeyForm";
 import { createSecret, getPublicKey } from "../../services/secrets";
 import { useNavigate } from "react-router-dom";
-import CryptoJS from "crypto-js";
 import showAlert from "../../utils/showAlert";
 import { info } from "../../services/users";
-import JSEncrypt from 'jsencrypt';
 
 const Guide: React.FC = () => {
   const [keyId, setKeyId] = useState("");
