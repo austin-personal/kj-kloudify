@@ -125,21 +125,21 @@ export class TerraformService {
 
       The generated Terraform code should:
       1. You must produce Output only the complete Terraform code without additional explanations, ensuring it is fully deployable with just the AWS credentials and other essential variables specified.
-      2. Use variables only for essential credentials or dynamic values that must be configurable at runtime. Specifically, define variables for:
-        - \`aws_access_key\` and \`aws_secret_key\` and \`aws_region\` to allow secure credential configuration
-        - Any other critical dynamic values specified in the keywords list that must be adjustable.
-        - ${randomName} to specify the name of resources created by this Terraform code
         - object names must start with a letter, not a number or special character.
-      3. Other configurations, such as instance types, AMIs, and static setup values, can be hardcoded directly into the Terraform code to simplify deployment.
+      2. Other configurations, such as instance types, AMIs, and static setup values, can be hardcoded directly into the Terraform code to simplify deployment.
 
-      4. Avoid including AWS credentials directly in the code; assume credentials will be provided through environment variables, such as process.env.AWS_ACCESS_KEY_ID and process.env.AWS_SECRET_ACCESS_KEY, or set up securely through Lambda configuration.
+      3. Avoid including AWS credentials directly in the code; assume credentials will be provided through environment variables, such as process.env.AWS_ACCESS_KEY_ID and process.env.AWS_SECRET_ACCESS_KEY, or set up securely through Lambda configuration.
 
-      5. Only produces one code snippet. Be enclosed within triple backticks with 'hcl' specified for syntax highlighting, like:
+      4. Only produces one code snippet. Be enclosed within triple backticks with 'hcl' specified for syntax highlighting, like:
      \`\`\`hcl
      <Terraform Code>
      \`\`\`
-      6. please make s3 acl default(don't mention it).
-      7. region is ${region1}. Please create the AMI to match the region.
+      5. please make s3 acl default(don't mention it).
+      6. region is ${region1}. Please create the AMI to match the region.
+      7. Use variables only for essential credentials or dynamic values that must be configurable at runtime. Specifically, define variables for:
+        - \`aws_access_key\` and \`aws_secret_key\` and \`aws_region\` to allow secure credential configuration
+        - Any other critical dynamic values specified in the keywords list that must be adjustable.
+        - ${randomName} to specify the name of resources created by this Terraform code
       8. "Create it without a key pair."
       9. Replace aws_launch_configuration with aws_launch_template in Terraform code, as Launch Configurations are deprecated and Launch Templates are recommended for creating Auto Scaling groups.
       `;

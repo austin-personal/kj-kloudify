@@ -51,7 +51,7 @@ export class UsersService {
     console.log("user login: ", payload);
     
     return {
-      access_token: this.jwtService.sign(payload),  // JWT 발급
+      access_token: this.jwtService.sign(payload, { expiresIn: '3h' }),  // JWT 발급
     };
   }
 

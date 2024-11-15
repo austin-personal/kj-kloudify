@@ -65,7 +65,7 @@ export class UsersController {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production', // 배포 환경에서만 true
       sameSite: 'strict', // CSRF 방지 설정
-      maxAge: 3600000, // 1시간
+      maxAge: 10800000, // 1시간
     });
 
     // 응답 전송
