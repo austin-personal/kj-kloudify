@@ -7,3 +7,4 @@ server/.env
 server/.terraform.lock.hcl
 server/terraform.tfstate
 server/terraform.tfstate.backup
+private_key.pem
