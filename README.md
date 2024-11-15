@@ -19,6 +19,7 @@ By progressively visualizing the evolving cloud architecture, Kloudify helps use
 >   - Backend APIs Progress: 50/100
 >   - Adapted LLM for project needs
 
+
 ### Front & Backend
 - React
 - Nest.JS
@@ -42,10 +43,10 @@ By progressively visualizing the evolving cloud architecture, Kloudify helps use
 
 ## Simple Flowchart with architectures
 ![kloudify-flowchart drawio](https://github.com/user-attachments/assets/a58c484a-03f2-4aeb-999c-0f493d1c8e78)
+- 현재 Lambda는 사용하지 않음.
 
-### Process
-![Screenshot 2024-10-27 at 19 28 30](https://github.com/user-attachments/assets/3e2acbbf-d665-414f-aeff-adcaf3c559f3)
+### Poster
+![포스터-김민석-Kloudify.pdf](https://github.com/user-attachments/files/17771172/-.-Kloudify.pdf)
 
-### Cloud Architecture
-![kloudify-architecture drawio](https://github.com/user-attachments/assets/ef5e8065-c37a-4c4e-b987-3dd38c846d6a)
+
 
