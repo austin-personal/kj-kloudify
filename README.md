@@ -43,6 +43,7 @@ By progressively visualizing the evolving cloud architecture, Kloudify helps use
 
 ## Simple Flowchart with architectures
 ![kloudify-flowchart drawio](https://github.com/user-attachments/assets/a58c484a-03f2-4aeb-999c-0f493d1c8e78)
+- 현재 Lambda는 사용하지 않음.
 
 ### Poster
 ![Screenshot 2024-10-27 at 19 28 30](https://github.com/user-attachments/assets/3e2acbbf-d665-414f-aeff-adcaf3c559f3)
