@@ -183,7 +183,6 @@ export class TerraformService {
 
       const responseBody = response.body.toString();
       const parsedResponse = JSON.parse(responseBody);
-      console.log("parsedResponse: ",parsedResponse);
       return parsedResponse;
   } catch (error) {
       throw new Error(`Bedrock 모델 호출 실패: ${error.message}`);
@@ -369,7 +368,6 @@ export class TerraformService {
       }
   
       const { accessKey, secretAccessKey , region} = credentials;
-      console.log("뜨냐?",region);
   
       // AWS S3 클라이언트 설정
       const s3 = new S3({
@@ -430,9 +428,6 @@ export class TerraformService {
 
   decryptData(encryptedData: string): string {
     const buffer = Buffer.from(encryptedData, 'base64');
-    console.log("복호화 함수 - 암호화된 데이터 (Base64):", encryptedData);
-    console.log("복호화 함수 - 암호화된 데이터 (Buffer):", buffer);
-    console.log("복호화 함수 - 사용할 개인 키:\n", this.privateKey);
     const decrypted = crypto.privateDecrypt(
       {
         key: this.privateKey,
@@ -441,7 +436,6 @@ export class TerraformService {
       },
       buffer,
     );
-    console.log("복호화 함수 - 복호화된 데이터:", decrypted.toString('utf-8'));
 
     return decrypted.toString('utf-8');
   }
