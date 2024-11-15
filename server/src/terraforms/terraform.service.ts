@@ -100,12 +100,28 @@ export class TerraformService {
 }
 
     const prompt_content = `
-      Recent error - Please generate code that resolves the error. Prioritize fixing the error over the keywords.:
-      
-      ${errorMessage}
-
       Generate Terraform code based on the following keywords:
       ${JSON.stringify(keywords)}
+
+      Recent error - Please generate code that resolves the error. Prioritize fixing the error over the keywords.:
+      ${errorMessage}
+
+      Requirements for Enhancing Terraform Code Generation:
+
+      Ensuring Network Component Completeness:
+      When creating a VPC, ensure that an internet gateway and the necessary routing table configurations are included to enable internet connectivity.
+
+      Adding Constraint Validation Logic:
+      Ensure that DAX cluster names do not exceed 20 characters. If the limit is exceeded, automatically shorten the name.
+
+      Using Valid Parameters:
+      For Elastic Beanstalk, use valid solution stack names as provided by AWS and select the most recent version available.
+
+      Accurate Application of Network ACLs:
+      Apply network ACLs to the appropriate subnets and explicitly define the necessary inbound and outbound rules.
+
+      Enhancing Error Handling and Validation:
+      Validate the limitations and dependencies of each resource when generating Terraform code, and provide detailed error messages if an issue arises.
 
       The generated Terraform code should:
       1. You must produce Output only the complete Terraform code without additional explanations, ensuring it is fully deployable with just the AWS credentials and other essential variables specified.
