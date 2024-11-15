@@ -505,7 +505,7 @@ const Chat: React.FC<ChatProps> = ({ projectCID }) => {
     setMessages((prevMessages) =>
       prevMessages.map((msg) =>
         msg.id === messageId
-          ? { ...msg, buttons: undefined, nobutton: undefined, checks: undefined, servicechecks: undefined }
+          ? { ...msg, buttons: undefined, nobutton: undefined, checks: undefined, servicechecks: undefined, nocheck: undefined }
           : msg
       )
     );
@@ -645,7 +645,7 @@ const Chat: React.FC<ChatProps> = ({ projectCID }) => {
                 <div className="message-content">
                   {message.text ? (
                     <>
-                        {message.text}
+                      {message.text}
                     </>
                   ) : (
                     <div className="loading-text-th">

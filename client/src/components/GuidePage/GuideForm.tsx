@@ -30,7 +30,7 @@ const GuideForm: React.FC<GuideFormProps> = ({
             3. 왼쪽 메뉴에서 Users를 선택한 후, 사용자 목록에서 키를 발급받을 사용자를 선택하거나 새 사용자를 생성합니다.
             <img src={img3} />
             <br />
-            4, 사용자를 선택한 후 Security credentials 탭으로 이동합니다.
+            4. 사용자를 선택한 후 Security credentials 탭으로 이동합니다.
             <img src={img4} />
             <br />
             5. Create access key 버튼을 클릭합니다.
