@@ -115,7 +115,7 @@ export class TerraformService {
       Ensure that DAX cluster names do not exceed 20 characters. If the limit is exceeded, automatically shorten the name.
 
       Using Valid Parameters:
-      For Elastic Beanstalk, use valid solution stack names as provided by AWS and select the most recent version available.
+      For Elastic Beanstalk, use valid solution stack names as provided by AWS and select the most recent version available. ex)"64bit Amazon Linux 2 v3.4.9 running PHP 8.0".
 
       Accurate Application of Network ACLs:
       Apply network ACLs to the appropriate subnets and explicitly define the necessary inbound and outbound rules.
