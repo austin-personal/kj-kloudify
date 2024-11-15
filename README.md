@@ -46,7 +46,7 @@ By progressively visualizing the evolving cloud architecture, Kloudify helps use
 - 현재 Lambda는 사용하지 않음.
 
 ### Poster
-[포스터-김민석-Kloudify.pdf](https://github.com/user-attachments/files/17771172/-.-Kloudify.pdf)
+![포스터-김민석-Kloudify.pdf](https://github.com/user-attachments/files/17771172/-.-Kloudify.pdf)
 
 
 
