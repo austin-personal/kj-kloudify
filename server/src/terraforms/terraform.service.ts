@@ -362,7 +362,6 @@ export class TerraformService {
   
       // 사용자별 AWS 자격 증명 조회
       const credentials = await this.secretsService.getUserCredentials(userId);
-      console.log('Retrieved credentials:', credentials);
       if (!credentials) {
         throw new Error(`User credentials not found for user ID: ${userId}`);
       }
