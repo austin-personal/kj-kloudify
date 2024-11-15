@@ -231,9 +231,9 @@ const Chat: React.FC<ChatProps> = ({ projectCID }) => {
         if (
           index !== prevMessages.length - 1 &&
           message.sender === "bot" &&
-          message.buttons
+          (message.buttons || message.checks || message.servicechecks)
         ) {
-          return { ...message, buttons: undefined, nobutton: undefined };
+          return { ...message, buttons: undefined, nobutton: undefined, checks: undefined, nocheck: undefined, servicechecks: undefined };
         }
         return message;
       });
@@ -494,6 +494,10 @@ const Chat: React.FC<ChatProps> = ({ projectCID }) => {
       !e.shiftKey &&
       e.nativeEvent.isComposing === false
     ) {
+      if (isSending) {
+        e.preventDefault(); // 메시지 전송 중이면 기본 동작 막기
+        return;
+      }
       e.preventDefault(); // 기본 Enter 동작 방지 (줄바꿈 방지)
       handleSendMessage(); // 메시지 전송 함수 호출
       if (textAreaRef.current) {
