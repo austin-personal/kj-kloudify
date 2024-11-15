@@ -115,7 +115,49 @@ export class TerraformService {
       Ensure that DAX cluster names do not exceed 20 characters. If the limit is exceeded, automatically shorten the name.
 
       Using Valid Parameters:
-      For Elastic Beanstalk, use valid solution stack names as provided by AWS and select the most recent version available. ex)"64bit Amazon Linux 2 v3.4.9 running PHP 8.0".
+      For Elastic Beanstalk, use valid solution stack names as provided by AWS and select the most recent version available. 
+      [list of available version:
+        "64bit Windows Server Core 2022 v2.15.6 running IIS 10.0",
+        "64bit Windows Server Core 2016 v2.15.6 running IIS 10.0",
+        "64bit Windows Server Core 2019 v2.15.6 running IIS 10.0",
+        "64bit Windows Server 2019 v2.15.6 running IIS 10.0",
+        "64bit Windows Server 2016 v2.15.6 running IIS 10.0",
+        "64bit Windows Server 2022 v2.15.6 running IIS 10.0",
+        "64bit Amazon Linux 2023 v4.4.0 running Docker",
+        "64bit Amazon Linux 2 v3.7.8 running Corretto 8",
+        "64bit Amazon Linux 2 v3.7.8 running Corretto 17",
+        "64bit Amazon Linux 2 v3.7.8 running Corretto 11",
+        "64bit Amazon Linux 2023 v4.4.0 running Corretto 21",
+        "64bit Amazon Linux 2023 v4.4.0 running Corretto 17",
+        "64bit Amazon Linux 2023 v4.4.0 running Corretto 11",
+        "64bit Amazon Linux 2023 v4.4.0 running Corretto 8",
+        "64bit Amazon Linux 2 v2.8.4 running .NET Core",
+        "64bit Amazon Linux 2023 v3.2.0 running .NET 6",
+        "64bit Amazon Linux 2023 v3.2.0 running .NET 8",
+        "64bit Amazon Linux 2 v4.0.4 running Docker",
+        "64bit Amazon Linux 2 v3.11.3 running Go 1",
+        "64bit Amazon Linux 2 v3.3.8 running ECS",
+        "64bit Amazon Linux 2 v3.8.5 running PHP 8.1",
+        "64bit Amazon Linux 2023 v4.0.15 running ECS",
+        "64bit Amazon Linux 2 v4.7.3 running Tomcat 9 Corretto 8",
+        "64bit Amazon Linux 2 v4.7.3 running Tomcat 9 Corretto 11",
+        "64bit Amazon Linux 2023 v4.4.0 running PHP 8.2",
+        "64bit Amazon Linux 2023 v4.1.0 running Ruby 3.2",
+        "64bit Amazon Linux 2023 v4.4.0 running PHP 8.3",
+        "64bit Amazon Linux 2023 v4.2.0 running Go 1",
+        "64bit Amazon Linux 2023 v4.4.0 running PHP 8.1",
+        "64bit Amazon Linux 2023 v6.3.0 running Node.js 20",
+        "64bit Amazon Linux 2023 v6.3.0 running Node.js 18",
+        "64bit Amazon Linux 2 v5.9.8 running Node.js 18",
+        "64bit Amazon Linux 2023 v5.4.0 running Tomcat 10 Corretto 17",
+        "64bit Amazon Linux 2023 v5.4.0 running Tomcat 9 Corretto 11",
+        "64bit Amazon Linux 2023 v5.4.0 running Tomcat 10 Corretto 21",
+        "64bit Amazon Linux 2023 v5.4.0 running Tomcat 9 Corretto 17",
+        "64bit Amazon Linux 2023 v4.3.0 running Python 3.12",
+        "64bit Amazon Linux 2023 v4.3.0 running Python 3.9",
+        "64bit Amazon Linux 2023 v4.3.0 running Python 3.11",
+        "64bit Amazon Linux 2 v3.7.5 running Python 3.8",
+        "64bit Amazon Linux 2018.03 v2.6.33 running Packer 1.0.3".]
 
       Accurate Application of Network ACLs:
       Apply network ACLs to the appropriate subnets and explicitly define the necessary inbound and outbound rules.
