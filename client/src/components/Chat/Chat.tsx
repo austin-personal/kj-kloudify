@@ -61,6 +61,8 @@ const Chat: React.FC<ChatProps> = ({ projectCID }) => {
   const [selectedChecks, setSelectedChecks] = useState<{
     [key: string]: string[];
   }>({});
+  const [isSending, setIsSending] = useState(false);
+
 
   const dispatch = useAppDispatch();
 
@@ -423,6 +425,8 @@ const Chat: React.FC<ChatProps> = ({ projectCID }) => {
     event?.preventDefault();
     if (input.trim() === "") return;
 
+    setIsSending(true); // 버튼 비활성화
+
     const userMessage: Message = {
       id: uuidv4(),
       text: input,
@@ -479,6 +483,8 @@ const Chat: React.FC<ChatProps> = ({ projectCID }) => {
         sender: "bot",
       };
       setMessages((prevMessages) => [...prevMessages, errorMessage]);
+    } finally {
+      setIsSending(false); // 버튼 활성화
     }
   };
 
@@ -509,6 +515,8 @@ const Chat: React.FC<ChatProps> = ({ projectCID }) => {
           : msg
       )
     );
+
+    setIsSending(true); // 버튼 비활성화
 
     // 사용자 메시지 추가
     let userMessageText: string;
@@ -577,6 +585,8 @@ const Chat: React.FC<ChatProps> = ({ projectCID }) => {
         sender: "bot",
       };
       setMessages((prevMessages) => [...prevMessages, errorMessage]);
+    } finally {
+      setIsSending(false); // 버튼 활성화
     }
   };
 
@@ -824,6 +834,7 @@ const Chat: React.FC<ChatProps> = ({ projectCID }) => {
             type="button"
             className="chat-button-sa"
             onClick={handleSendMessage}
+            disabled={isSending} // 버튼 비활성화 상태 적용
           >
             <FontAwesomeIcon
               icon={faPaperPlane}
