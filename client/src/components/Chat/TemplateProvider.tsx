@@ -82,9 +82,9 @@ const templates: Record<number, Template> = {
         nobutton: { id: 24, label: "알아서 해줘" },
         buttons: [
             { id: 25, label: "기본 서버 (EC2)" },
-            { id: 26, label: "컨테이너 서버 (ECS, EKS)" },
-            { id: 27, label: "배포, 관리, 확장 자동화 서버 (Elastic Beanstalk)" },
-            { id: 28, label: "이벤트 기반 서버 (Lambda)" }
+            { id: 26, label: "컨테이너 서버 (ECS)" },
+            { id: 27, label: "배포, 관리, 확장 자동화 서버" },
+            { id: 28, label: "이벤트 기반 서버" }
         ]
     },
     9: {
