@@ -173,7 +173,6 @@ export class ProjectsService {
     try {
       const result = await this.dynamoDB.scan(params).promise();
       const items = result.Items || [];
-      console.log("getMermaidCode: ", items);
       return items;
     } catch (error) {
       console.error('Error fetching data from DynamoDB:', error);

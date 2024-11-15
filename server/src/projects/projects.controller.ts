@@ -156,7 +156,6 @@ export class ProjectsController {
   async getSummary(@Param('CID') CID: number): Promise<{ summary: string }> {
 
       const summary = await this.conversationsService.generateSummary(CID, 'summary');
-      console.log("백 summary:",summary);
       return { summary };
   }
   
