@@ -44,6 +44,6 @@ By progressively visualizing the evolving cloud architecture, Kloudify helps use
 
 ![kloudify 포스터 (1) pdf](https://github.com/user-attachments/assets/4b4c736d-aa2b-48ed-b10c-ce2596b749f7)
 
-[포스터-김민석-Kloudify.pdf](https://github.com/user-attachments/files/17918272/-.-Kloudify.pdf)
+![포스터-김민석-Kloudify.pdf](https://github.com/user-attachments/files/17918272/-.-Kloudify.pdf)
 
 
