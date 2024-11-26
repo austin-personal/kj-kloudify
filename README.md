@@ -16,29 +16,24 @@ By progressively visualizing the evolving cloud architecture, Kloudify helps use
 >   - Project Architecture Design
 >   - Cloud Architecture Design
 >   - Built the Cloud Infrastructure
->   - Backend APIs Progress: 50/100
+>   - Backend APIs Progress
 >   - Adapted LLM for project needs
 
 
 ### Front & Backend
 - React
 - Nest.JS
-- Container: Docker
-  
-### Server
-- AWS EC2
-- AWS Lambda: To deploy the user's terraform file independently
-  
+
 ### LLM
 - AWS Bedrock: FM model Claude 3.5 Sonnet
   
-### DB
+### DevOps
 - AWS RDS-postgres: Default DB
 - AWS DynamoDB: To store Chatting data
 - AWS OpenSearch: To store vector data for the LLM model to enhance LLM capacity
-
-### Storage  
 - AWS S3: to store Terraform code and cloud arch image
+- Container: Docker
+- AWS EC2
 
 
 ## Simple Flowchart with architectures
@@ -46,7 +41,8 @@ By progressively visualizing the evolving cloud architecture, Kloudify helps use
 - 현재 Lambda는 사용하지 않음.
 
 ### Poster
-![포스터-김민석-Kloudify.pdf](https://github.com/user-attachments/files/17771172/-.-Kloudify.pdf)
+
+![kloudify 포스터 (1) pdf](https://github.com/user-attachments/assets/4b4c736d-aa2b-48ed-b10c-ce2596b749f7)
 
 
 
